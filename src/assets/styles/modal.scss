@@ -1,0 +1,52 @@
+.ivu-modal-wrap{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .ivu-modal{
+        top: 0;
+    }
+}
+.ivu-modal-content{
+    border-radius: 0;
+}
+.ivu-modal-header{
+    padding: 15px 20px;
+    border-bottom: none;
+}
+.ivu-modal-header p,
+.ivu-modal-header-inner{
+    font-size: 14px;
+    color: $font-dark;
+    line-height: 22px;
+    font-weight: bold;
+}
+
+.ivu-modal-close{
+    top: 18px;
+    right: 20px;
+}
+.ivu-modal-close .ivu-icon.ivu-icon-ios-close{
+    width: 16px;
+    height: 16px;
+}
+
+.ivu-modal-body{
+    padding: 25px 40px 100px;
+    color: $font-dark;
+    line-height: 20px;
+}
+
+.ivu-modal-footer{
+    border-top: none;
+    padding: 0 20px 15px 0;
+
+    .ivu-btn.ivu-btn-text{
+        height: 32px;
+        border: 1px solid $theme-color;
+        padding: 0 20px;
+    }
+}
+.ivu-modal-footer button+button{
+    margin-left: 10px;
+}
