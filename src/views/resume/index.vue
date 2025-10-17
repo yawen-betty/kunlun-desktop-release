@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { auth } from '@/utiles/tauriCommonds.ts';
 import {onMounted, ref} from "vue";
+import {FormItem, Input} from "view-ui-plus";
 
 const token = ref('');
 
@@ -17,13 +18,26 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <div class="resume">
 <!--    <div @click="save">保存</div>-->
     <div style="margin-top: 50px" @click="get">获取</div>
     <div>{{token}}</div>
+
+    <Form :label-width="80">
+      <FormItem label="Input">
+        <Input  placeholder="Enter something..."></Input>
+      </FormItem>
+
+      <FormItem label="Input">
+          <Input size="small" placeholder="Enter something..."></Input>
+      </FormItem>
+    </Form>
   </div>
 </template>
 
 <style scoped lang="scss">
-
+.resume{
+  background: #fff;
+  height: 100%;
+}
 </style>

@@ -17,7 +17,7 @@
 // massage样式重写  结束
 
 .ivu-form-item{
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 // 去掉单行文本、多行文本、日期选择器、下拉选择、radio、checkbox、数字输入框、开关 选中状态的阴影
@@ -30,7 +30,15 @@
 .ivu-date-picker-focused input,
 .ivu-input-number{
     box-shadow: none !important;
+    height: 40px;
+    background: $bg-gray;
+    padding: 12px 20px;
+    border: 0;
 }
+.ivu-input-small{
+    height: 32px;
+}
+
 // input、select 边框样式重写
 .ivu-input,
 .ivu-select-selection,
@@ -95,6 +103,13 @@
     top: 7px;
     right: 5px;
 }
+
+//.ivu-input{
+//    height: 40px;
+//    background: $bg-gray;
+//    padding: 12px 20px;
+//    border: 0;
+//}
 
 // select 下拉框样式重写
 .ivu-select{
