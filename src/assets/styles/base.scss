@@ -1,9 +1,24 @@
+@font-face {
+    font-family: 'PingFangSCBold';
+    src: url('../fonts/PingFangSCBold/PingFangSCBold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'YouSheBiaoTiHei';
+    src: url('../fonts/YouSheBiaoTiHei/YouSheBiaoTiHei-2.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 ul,li{
     list-style: none;
 }
 
 html,body{
     background: transparent !important;
+    font-family: PingFangSCBold, serif;
 }
 
 #app {
