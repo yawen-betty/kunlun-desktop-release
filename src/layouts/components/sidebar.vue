@@ -5,7 +5,7 @@ import Ellipsis from "@/components/ellipsis/index.vue";
 import routes from '@/router/routers.ts';
 import {useRoute, useRouter} from "vue-router";
 import SvgIcon from '@/components/svgIcon/index.vue';
-import {Col} from "view-ui-plus";
+import {Col, Image} from "view-ui-plus";
 
 /**
  * 监听窗口大小,调整尺寸 开始
@@ -64,7 +64,8 @@ onMounted(() => {
 <template>
   <div class="left-menu" :class="{ minibar: minSize}">
     <div class="user">
-      <div class="user-circle">{{hasChineseCharacters(UserInfo.info.userName)}}</div>
+      <img v-if="UserInfo.info.avatar" :src="UserInfo.info.avatar" class="user-avatar mr-10"/>
+      <div class="user-circle" v-else>{{hasChineseCharacters(UserInfo.info.userName)}}</div>
       <div v-if="!minSize" class="user-text">
         <Ellipsis
           :content="UserInfo.info.userName"
@@ -95,6 +96,12 @@ onMounted(() => {
     display: flex;
     align-items: center;
     padding: 60px 20px 20px;
+
+    .user-avatar{
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
 
     .user-circle{
       display: flex;

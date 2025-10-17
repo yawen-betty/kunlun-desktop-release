@@ -5,6 +5,6 @@ export class UserInfo {
     token: '', // token
     userName: '聘小方聘小方', // 用户名
     userId: '', // 用户ID
-    // 头像
+    avatar: 'https://ww2.sinaimg.cn/mw690/007ut4Uhly1hx4v375r00j30u017cdla.jpg',  // 头像
   });
 }
