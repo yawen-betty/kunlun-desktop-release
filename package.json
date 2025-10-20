@@ -15,7 +15,7 @@
   },
   "config": {
     "build": {
-      "name": "hundun"
+      "name": "kunlun"
     },
     "dev": {
       "baseUrl": "http://mgt.crm.dev.pangu.cc/",
