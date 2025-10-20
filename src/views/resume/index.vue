@@ -6,7 +6,10 @@ import {useCommon} from "@/utiles/useCommon.ts";
 const token = ref('');
 
 const save = async () => {
-  await auth.saveToken('testToken1234');
+  await auth.saveToken('');
+}
+const getToken = async () => {
+   token.value = await auth.getToken();
 }
 const get = async () => {
   console.info('///////////////',await auth.getToken())
@@ -37,7 +40,9 @@ const login = () => {
 
 <template>
   <div class="resume">
-<!--    <div @click="save">保存</div>-->
+    <div @click="save" class="mt-50">保存</div>
+    <div @click="get">获取</div> {{ token }}
+    <div @click="login">denglu</div>
     <div style="margin-top: 50px" @click="get">获取</div>
     <div>{{token}}</div>
 
