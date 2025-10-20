@@ -31,6 +31,14 @@ onMounted(async () => {
       <FormItem label="Input">
           <Input size="small" placeholder="Enter something..."></Input>
       </FormItem>
+
+      <FormItem label="Input">
+        <RadioGroup v-model="animal"  class="custom-radio">
+          <Radio label="金斑蝶"></Radio>
+          <Radio label="爪哇犀牛"></Radio>
+          <Radio label="印度黑羚"></Radio>
+        </RadioGroup>
+      </FormItem>
     </Form>
   </div>
 </template>
@@ -40,4 +48,5 @@ onMounted(async () => {
   background: #fff;
   height: 100%;
 }
+
 </style>
