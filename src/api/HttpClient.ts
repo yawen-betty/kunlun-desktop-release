@@ -84,7 +84,7 @@ export default class HttpClient{
       // 如果 URL 中已有 ?, 则使用 & 拼接，否则使用 ?
       fullUrl += fullUrl.includes('?') ? `&${params}` : `?${params}`;
     }
-
+    // return "http://www.google.com/";
     return fullUrl;
   }
 
