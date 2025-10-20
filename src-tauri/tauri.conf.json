@@ -13,7 +13,7 @@
   "app": {
     "windows": [
       {
-        "title": "",
+        "title": "昆仑",
         "maximized": true,
         "minWidth": 1366,
         "minHeight": 768,
