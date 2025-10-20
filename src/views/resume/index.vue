@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { auth } from '@/utiles/tauriCommonds.ts';
 import {onMounted, ref} from "vue";
-import {FormItem, Input} from "view-ui-plus";
+import {useCommon} from "@/utiles/useCommon.ts";
 
 const token = ref('');
 
@@ -12,9 +12,27 @@ const get = async () => {
   console.info('///////////////',await auth.getToken())
   token.value = await auth.getToken() as string;
 }
-onMounted(async () => {
-  // await keyboard.listenSaveShortcut();
-})
+
+/**
+ * http测试
+ */
+const {http} = useCommon();
+const login = () => {
+  http.request<any>({
+    url: '/login',
+    method: 'POST',
+    prefix: ''
+  }, {
+    username:'admin',
+    password:'123456'
+  }).then(res => {
+    console.info('登录成功', res);
+  }).catch(err => {
+    console.info('登录失败', err);
+  })
+}
+
+
 </script>
 
 <template>

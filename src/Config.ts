@@ -4,11 +4,11 @@
  */
 export class Config {
   static readonly version: string = '0.1.0';
-  static readonly packageTime: string = '20251014';
-  static readonly timestamp: number = 1760444837946;
-  static readonly baseUrl = 'https://dev.liangjiyuren.cn/';
+  static readonly packageTime: string = '20251016';
+  static readonly timestamp: number = 1760601140160;
+  static readonly baseUrl = 'http://mgt.crm.dev.pangu.cc/';
   static readonly basePath = '/';
   static readonly env : 'dev' | 'test' | 'prod' | 'local' = 'dev';
-  static readonly buildVersion: string = 'V0.1.0-D20251014';
+  static readonly buildVersion: string = 'V0.1.0-D20251016';
   static readonly buildName: string = 'hundun';
 }

@@ -71,7 +71,6 @@ onMounted(() => {
 
 </template>
 <style scoped lang="scss">
-
 .ellipsis {
     position: relative;
     overflow: hidden;

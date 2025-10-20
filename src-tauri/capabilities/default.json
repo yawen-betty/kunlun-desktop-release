@@ -8,10 +8,6 @@
     "core:window:allow-start-dragging",
     "core:window:allow-close",
     "core:window:allow-minimize",
-    "core:window:allow-toggle-maximize",
-    {
-      "identifier": "http:default",
-      "allow": [{ "url": "http://mgt.crm.dev.pangu.cc/" }]
-    }
-  ]
+      "core:window:allow-toggle-maximize"
+    ]
 }
