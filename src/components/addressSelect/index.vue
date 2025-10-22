@@ -18,13 +18,13 @@
                 </div>
                 <template v-else>
                     <div class="select-content ellipsis" v-if="!props.multiple">
-                        {{ lastCountryId === '1' ? props.modelValue[0]?.name : props.modelValue[0]?.zhCn }}
+                      {{ props.modelValue[0]?.name }}
                     </div>
                     <div class="tag-box" v-else>
                         <span v-for="(info,index) in props.modelValue as  QueryCompanyListOutDto[]" :key="info.id"
                               class="tag p5">
                             <span class="tag-text ellipsis mr-5">
-                                {{ lastCountryId === '1' ? info.name : info.zhCn }}
+                                info.name
                             </span>
                             <svg-icon name="icon-cha" size="8" color="#9499A5" class="icon-cha pointer"
                                       @click.stop="clearSelect(index)"/>
@@ -42,21 +42,16 @@
         </div>
         <template #content>
             <div class="custom-address-content">
-                <AddressSearch :disabled="disabled"
-                               v-model:currentCountry="currentCountry" :isDropDown="isDropDown"
-                               @onChangeCountry="onChangeCountry"/>
+                <AddressSearch :disabled="disabled":isDropDown="isDropDown">
 
                 <div class="address-cascade-container">
                     <AddressCascade
                         :modelValue="modelValue"
-                        :currentCountry="currentCountry"
                         :isPopTipVisible="isDropDown"
-                        :optionsList="currentCountry.id === '1' ? cityTree : overseaTree"
+                        :optionsList="cityTree"
                         :originalCityTree="cityTree"
-                        :originalOverseaTree="overseaTree"
                         :multiple="multiple"
                         :max="max"
-                        :getOverseasAreaList="getOverseasAreaList"
                     />
                 </div>
             </div>
@@ -65,7 +60,7 @@
 </template>
 
 <script setup lang="ts" name="AddressSelect">
-import { computed, inject, nextTick, onMounted, PropType, provide, ref, useSlots, watch }from 'vue';
+import { computed, nextTick, onMounted, PropType, provide, ref, useSlots, watch }from 'vue';
 import { SystemPath }from '@/api/system/SystemPath';
 import { QueryCompanyListOutDto }from '@/api/system/dto/QueryCompanyList';
 import AddressSearch from '@/components/addressSelect/components/addressSearch.vue';
@@ -126,32 +121,13 @@ const emits = defineEmits(['update:modelValue', 'change']);
 const isDropDown = ref<boolean>(false);
 // 当前选中的值
 const selectVal = ref<AreaInfoBean[]>([]);
-
-// 当前选中国家id
-const currentCountry = ref<QueryCountryListOutDto>({
-    id: '1',
-    zhCn: '中国',
-    name: ''
-});
-
-// last id
-const lastCountryId = ref<string>('1');
 // 国内全量数据
 const cityTree = ref<SearchAreaOutDto[]>([]);
-// 国外级联选择器
-const overseaTree = ref<QueryOverseaAreaListOutDto[]>([]);
 
 watch(() => isDropDown.value,
     (newVal: boolean) => {
         if (newVal) {
-            selectVal.value = props.modelValue as any;
-            lastCountryId.value = '1';
-        }else {
-            currentCountry.value = {
-                id: '1',
-                zhCn: '中国',
-                name: ''
-            };
+          selectVal.value = props.modelValue as any;
         }
     });
 
@@ -194,13 +170,6 @@ const clearSelect = (index: number) => {
     }
 };
 
-// 切换国家
-const onChangeCountry = async () => {
-    if (currentCountry.value.id !== '1') {
-        overseaTree.value = await getOverseasAreaList(currentCountry.value.id);
-        lastCountryId.value = currentCountry.value.id;
-    }
-};
 
 // 显示或隐藏下拉
 const toggleDrop = () => {
@@ -208,22 +177,6 @@ const toggleDrop = () => {
     isDropDown.value = !isDropDown.value;
 };
 
-// 查询海外的地址
-const getOverseasAreaList = async (countryId: string, search = '', statesId: string = '', isAll: string = '') => {
-    const path = SystemPath.QueryOverseaAreaList;
-    const params: QueryOverseaAreaListInDto = {
-        countryId,
-        statesId,
-        keyword: search,
-        isAll
-    };
-
-    const res = await http.request<QueryOverseaAreaListOutDto>(path, params);
-
-    if (res.code === 200) {
-        return res.data;
-    }
-};
 
 // 查询国内数据
 const getArea = () => {
