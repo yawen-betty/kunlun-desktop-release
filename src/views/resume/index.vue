@@ -6,7 +6,7 @@ import {useCommon} from "@/utiles/useCommon.ts";
 const token = ref('');
 
 const save = async () => {
-  await auth.saveToken('');
+  await auth.saveToken('asasd');
 }
 const getToken = async () => {
    token.value = await auth.getToken();

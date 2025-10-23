@@ -20,7 +20,9 @@ interface HttpResponse {
   headers: Record<string, string>;
   body: any;
 }
+export interface EmptyOutDto {
 
+}
 export default class HttpClient{
   static create(): any {
     return {
@@ -37,46 +39,46 @@ export default class HttpClient{
   private static fixUrl(path: Path, data?: any): string {
     let baseUrl = HttpClient.baseURL;
     let urlParts = [];
-    
+
     // 确保baseUrl末尾没有斜杠
     if (baseUrl && baseUrl.endsWith('/')) {
       baseUrl = baseUrl.slice(0, -1);
     }
-    
+
     // 确保baseUrl包含协议
     if (baseUrl && !baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
       // 如果没有指定协议，默认使用http
       baseUrl = `http://${baseUrl}`;
     }
-    
+
     // 添加基础URL
     if (baseUrl) {
       urlParts.push(baseUrl);
     }
-    
+
     // 添加api路径段
     urlParts.push('api');
-    
+
     // 添加prefix（如果有）
     if (path.prefix) {
       urlParts.push(path.prefix);
     }
-    
+
     // 添加具体的url
     if (path.url) {
       // 确保url不以斜杠开头
       const cleanUrl = path.url.startsWith('/') ? path.url.slice(1) : path.url;
       urlParts.push(cleanUrl);
     }
-    
+
     // 构建完整URL
     let fullUrl = urlParts.join('/');
-    
+
     // 再次确保URL包含协议，如果还是没有的话
     if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
       fullUrl = `http://${fullUrl}`;
     }
-    
+
     // 针对 GET 请求处理查询参数
     if (path.method === 'GET' && data && Object.keys(data).length > 0) {
       // 简单处理，URLSearchParams 接受对象
@@ -105,7 +107,7 @@ export default class HttpClient{
   ): Promise<T> {
     console.log('开始请求:', path);
     console.log('请求数据:', data);
-    
+
     // 对于GET请求，传递data参数用于构建查询字符串
     const fullUrl = HttpClient.fixUrl(path, path.method === 'GET' ? data : undefined);
     console.log('构建的URL:', fullUrl);

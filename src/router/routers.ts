@@ -29,7 +29,7 @@ const onlyHeader = function (meta: any) {
 const all = [
   {
     path: '/',
-    redirect: '/resume'
+    redirect: '/login'
   },
   {
     // 登录
