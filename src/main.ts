@@ -8,6 +8,9 @@ import 'virtual:svg-icons-register';
 import HttpClient from "@/api/HttpClient.ts";
 import directive from './directive';
 
+// 导入Tauri API
+import { invoke } from '@tauri-apps/api/core';
+
 const app = createApp(App);
 app.use(router).mount('#app');
 app.use(ViewUIPlus);
