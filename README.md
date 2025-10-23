@@ -47,17 +47,7 @@
 | `baseUrl` | `String` | API 请求的基础 URL。前端所有 API 请求都将以此为前缀。 |
 | `basePath` | `String` | 应用部署的基础路径。用于路由配置或资源引用。 |
 
-#### 4.2.2 各环境配置值
-
-以下是 `package.json` 中定义的各环境基础配置的具体值：
-
-| 环境 | `baseUrl` | `basePath` |
-| :--- | :--- | :--- |
-| `dev` | `http://mgt.crm.dev.pangu.cc/` | `/` |
-| `test` | `https://test.liangjiyuren.cn/` | `/` |
-| `prod` | `(生产环境请根据实际部署填写)` | `/` |
-
-#### 4.2.3 生成特定环境配置
+#### 4.2.2 生成特定环境配置
 
 在启动项目或构建之前，您需要运行相应的 `config` 脚本来生成当前环境的配置文件。
 
@@ -77,7 +67,7 @@ npm run config:dev
 npm run tauri dev
 ```
 
-#### 4.2.4 注意事项
+#### 4.2.3 注意事项
 
 - `src/Config.ts` 文件是自动生成的，**请勿手动修改**。任何配置变更应在 `package.json` 的 `config` 字段或 `AppConf.mts` 中进行。
 - 确保在切换开发环境（如从 `dev` 到 `test`）时，重新运行对应的 `config` 脚本。
