@@ -1,7 +1,7 @@
 .ivu-tooltip-inner{
-    padding: 12px 14px;
-    max-width: 600px;
+    padding: vh(12) vw(14);
+    max-width: vw(600);
 }
 .ivu-tooltip-popper{
-    line-height: 20px;
+    line-height: vh(20);
 }
