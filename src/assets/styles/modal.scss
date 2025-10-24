@@ -11,42 +11,42 @@
     border-radius: 0;
 }
 .ivu-modal-header{
-    padding: 15px 20px;
+    padding: vh(15) vw(20);
     border-bottom: none;
 }
 .ivu-modal-header p,
 .ivu-modal-header-inner{
-    font-size: 14px;
+    font-size: vw(14);
     color: $font-dark;
-    line-height: 22px;
+    line-height: vh(22);
     font-weight: bold;
 }
 
 .ivu-modal-close{
-    top: 18px;
-    right: 20px;
+    top: vh(18);
+    right: vw(20);
 }
 .ivu-modal-close .ivu-icon.ivu-icon-ios-close{
-    width: 16px;
-    height: 16px;
+    width: vw(16);
+    height: vw(16);
 }
 
 .ivu-modal-body{
-    padding: 25px 40px 100px;
+    padding: vh(25) vw(40) vh(100);
     color: $font-dark;
-    line-height: 20px;
+    line-height: vh(20);
 }
 
 .ivu-modal-footer{
     border-top: none;
-    padding: 0 20px 15px 0;
+    padding: 0 vw(20) vh(15) 0;
 
     .ivu-btn.ivu-btn-text{
-        height: 32px;
-        border: 1px solid $theme-color;
-        padding: 0 20px;
+        height: vh(32);
+        border: vw(1) solid $theme-color;
+        padding: 0 vw(20);
     }
 }
 .ivu-modal-footer button+button{
-    margin-left: 10px;
+    margin-left: vw(10);
 }

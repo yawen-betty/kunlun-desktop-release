@@ -4,20 +4,20 @@
 
 // massage样式重写  开始
 .ivu-message-notice-content{
-    padding: 10px 15px;
+    padding: vh(10) vw(15);
 }
 .ivu-message-custom-content{
     display: flex;
     align-items: center;
-    height: 24px;
+    height: vh(24);
 }
 .ivu-message .ivu-icon{
-    margin-right: 10px;
+    margin-right: vw(10);
 }
 // massage样式重写  结束
 
 .ivu-form-item{
-    margin-bottom: 40px;
+    margin-bottom: vh(40);
 }
 
 // 去掉单行文本、多行文本、日期选择器、下拉选择、radio、checkbox、数字输入框、开关 选中状态的阴影
@@ -30,20 +30,20 @@
 .ivu-date-picker-focused input,
 .ivu-input-number{
     box-shadow: none !important;
-    height: 40px;
+    height: vh(40);
     background: $bg-gray;
-    padding: 12px 20px;
+    padding: vh(12) vw(20);
     border: 0;
 }
 .ivu-input-small{
-    height: 32px;
+    height: vh(32);
 }
 
 // input、select 边框样式重写
 .ivu-input,
 .ivu-select-selection,
 .ivu-input-number{
-    border-radius: 2px;
+    border-radius: vw(2);
     border-color: $border-default;
 }
 .ivu-input:focus,
@@ -61,7 +61,7 @@
 .ivu-select-multiple .ivu-select-selection,
 .ivu-select-single .ivu-select-selection .ivu-select-placeholder,
 .ivu-select-single .ivu-select-selection .ivu-select-selected-value{
-    padding-left: 10px;
+    padding-left: vw(10);
 }
 .ivu-select-multiple .ivu-select-selection .ivu-select-placeholder{
     padding-left: 0;
@@ -69,18 +69,18 @@
 
 // select 多选标签样式重写
 .ivu-select-multiple .ivu-select-selection{
-    padding-bottom: 4px;
+    padding-bottom: vh(4);
 }
 .ivu-select-multiple .ivu-select-selection .ivu-select-placeholder{
-    height: 26px;
+    height: vh(26);
 }
 .ivu-select-multiple .ivu-tag{
-    height: 22px;
+    height: vh(22);
     border: none;
-    margin-top: 4px;
+    margin-top: vh(4);
     margin-bottom: 0;
-    margin-right: 7px;
-    padding: 0 5px;
+    margin-right: vw(7);
+    padding: 0 vw(5);
     border-radius: 0;
     background: $tag-bg;
     color: $font-dark;
@@ -90,8 +90,8 @@
 }
 .ivu-icon.ivu-icon-ios-close {
     display: block;
-    width: 8px;
-    height: 8px;
+    width: vw(8);
+    height: vw(8);
     background-image: url('data:image/svg+xml;utf8,<svg t="1700569989619" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6212" xmlns:xlink="http://www.w3.org/1999/xlink" width="8" height="8"><path d="M600.63744 512l418.46784 418.44736-91.09504 91.09504L509.5424 603.07456 91.11552 1021.5424 0 930.44736 418.46784 512 0 93.53216 91.09504 2.4576 509.5424 420.90496 928.01024 2.4576l91.07456 91.07456L600.63744 512z" p-id="6213" fill="%239499A5" /></svg>');
     background-size: 100%;
     background-repeat: no-repeat;
@@ -100,8 +100,8 @@
     transform: scale(1) rotate(0);
 }
 .ivu-select-multiple .ivu-tag i{
-    top: 7px;
-    right: 5px;
+    top: vh(7);
+    right: vw(5);
 }
 
 //.ivu-input{
@@ -117,21 +117,21 @@
 
     .ivu-select-dropdown{
         right: 0;
-        margin-top: 3px;
-        padding: 10px 0 10px 10px;
+        margin-top: vh(3);
+        padding: vh(10) 0 vh(10) vw(10);
 
         .ivu-select-dropdown-list{
-            max-height: 180px;
+            max-height: vh(180);
             overflow: auto;
 
             .ivu-select-item{
                 position: relative;
-                height: 32px;
-                margin-bottom: 4px;
-                margin-right: 10px;
-                padding: 0 10px;
-                line-height: 32px;
-                font-size: 14px;
+                height: vh(32);
+                margin-bottom: vh(4);
+                margin-right: vw(10);
+                padding: 0 vw(10);
+                line-height: vh(32);
+                font-size: vw(14);
                 color: $font-dark;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -143,7 +143,7 @@
 
                 &:hover{
                     background: $hover-color;
-                    padding-left: 26px;
+                    padding-left: vw(26);
                     transition: all 0.2s ease-in-out;
                 }
 
@@ -160,15 +160,15 @@
     .ivu-select-item-selected{
         background: $theme-color;
         color: $white !important;
-        padding-left: 26px !important;
+        padding-left: vw(26) !important;
 
         &:before{
             position: absolute;
-            left: 10px;
-            top: 13px;
+            left: vw(10);
+            top: vh(13);
             display: block;
-            width: 6px;
-            height: 6px;
+            width: vw(6);
+            height: vw(6);
             border-radius: 50%;
             background: #fff;
             content: '';
@@ -181,9 +181,9 @@
 }
 // 右侧按钮重写
 .ivu-icon-ios-arrow-down{
-    right: 10px !important;;
-    width: 10px;
-    height: 10px;
+    right: vw(10) !important;;
+    width: vw(10);
+    height: vw(10);
     background-image: url('data:image/svg+xml;utf8,<svg t="1757473662752" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1862" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><path d="M103.69024 204.8L0 308.4288l512 512.47104 512-512.45056L920.30976 204.8 512 613.29408 103.66976 204.8z" p-id="1863" fill="%239499A5" /></svg>');
     background-size: 100%;
     background-repeat: no-repeat;
@@ -195,9 +195,9 @@
 }
 
 .ivu-icon-ios-close-circle{
-    right: 10px !important;
-    width: 10px;
-    height: 10px;
+    right: vw(10) !important;
+    width: vw(10);
+    height: vw(10);
     background-image: url('data:image/svg+xml;utf8,<svg t="1757473629798" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1152" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><path d="M600.63744 509.5424l418.46784 418.46784-91.09504 91.07456L509.5424 600.63744 91.11552 1019.0848 0 928.01024 418.46784 509.5424 0 91.09504 91.09504 0 509.5424 418.44736 928.01024 0l91.07456 91.09504L600.63744 509.5424z" p-id="1153" fill="%239499A5" /></svg>');
     background-size: 100%;
     background-repeat: no-repeat;
@@ -205,18 +205,18 @@
     cursor: pointer;
 }
 .ivu-input-icon-clear{
-    top: 11px;
+    top: vh(11);
 }
 .ivu-input-suffix{
-    right: 10px;
-    top: 9px;
-    width: 12px;
-    height: 12px;
+    right: vw(10);
+    top: vh(9);
+    width: vw(12);
+    height: vw(12);
 
     .svg-icon{
         display: block;
-        width: 12px !important;
-        height: 12px !important;
+        width: vw(12) !important;
+        height: vw(12) !important;
     }
 }
 .ivu-date-picker{
@@ -225,7 +225,7 @@
 
         .ivu-icon-ios-close-circle{
             position: absolute;
-            top: 10px !important;
+            top: vh(10) !important;
             right: 0 !important;
         }
     }
@@ -254,13 +254,13 @@ fieldset[disabled] .ivu-input,
     border-color: #f3f3f3 !important;
 }
 .ivu-checkbox-label-text{
-    padding-left: 10px;
+    padding-left: vw(10);
 }
 .ivu-checkbox-wrapper,.ivu-radio-wrapper{
-    margin-right: 20px;
+    margin-right: vw(20);
 }
 .ivu-radio{
-    margin-right: 10px;
+    margin-right: vw(10);
 }
 .ivu-checkbox+span, .ivu-checkbox-wrapper+span{
     margin-right: 0;
@@ -277,11 +277,11 @@ fieldset[disabled] .ivu-input,
 .ivu-form-item-error .ivu-input,
 .ivu-form-item-error .ivu-input-number,
 .ivu-form-item-error .ivu-select-selection,
-.ivu-form-item-error .ivu-select-visible .ivu-select-selection,{
+.ivu-form-item-error .ivu-select-visible .ivu-select-selection{
     border-color: $remind-red !important;
 }
 .ivu-form-item-error-tip{
-    padding-top: 5px;
+    padding-top: vh(5);
     color: $remind-red;
     right: 0;
     left: 0;
@@ -294,34 +294,34 @@ fieldset[disabled] .ivu-input,
     content: '*';
     display: inline-block;
     line-height: 1;
-    font-size: 14px;
+    font-size: vw(14);
     color: #ed4014;
 }
 
 // dropdown
 .ivu-select-dropdown{
-    margin-top: 3px;
-    padding: 10px 0 6px;
-    border-radius: 2px;
-    filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.10));
+    margin-top: vh(3);
+    padding: vh(10) 0 vh(6);
+    border-radius: vw(2);
+    filter: drop-shadow(0 0 vw(6) rgba(0, 0, 0, 0.10));
 
     .ivu-dropdown-menu{
-        max-height: 216px;
-        padding: 0 10px;
+        max-height: vh(216);
+        padding: 0 vw(10);
         overflow: auto;
 
         .ivu-dropdown-item{
-            height: 32px;
-            margin-bottom: 4px;
-            padding: 0 10px;
-            line-height: 32px;
+            height: vh(32);
+            margin-bottom: vh(4);
+            padding: 0 vw(10);
+            line-height: vh(32);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             transition: all 0.2s ease-in-out;
 
             &:hover{
-                padding-left: 26px;
+                padding-left: vw(26);
                 background-color: $hover-color;
             }
         }
@@ -329,7 +329,7 @@ fieldset[disabled] .ivu-input,
 }
 
 .ivu-picker-panel-sidebar{
-    border-radius: 2px;
+    border-radius: vw(2);
 }
 .ivu-picker-panel-shortcut:hover{
     background-color: $theme-color;
@@ -340,16 +340,16 @@ fieldset[disabled] .ivu-input,
 // radio 样式
 .custom-radio{
     .ivu-radio-wrapper,.ivu-radio-group-item,.ivu-radio-default{
-        width: 190px;
-        height: 40px;
-        border-radius: 2px;
+        width: vw(190);
+        height: vh(40);
+        border-radius: vw(2);
         background: $bg-gray;
         color: $font-dark;
-        font-size: 16px;
+        font-size: vw(16);
         font-style: normal;
         font-weight: bold;
         text-align: center;
-        line-height: 40px;
+        line-height: vh(40);
 
         &.ivu-radio-wrapper-checked{
             color: $theme-color;
