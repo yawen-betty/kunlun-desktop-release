@@ -1,93 +1,145 @@
 <template>
   <div class="login-page">
     <div class="left-section">
-      <div class="brand-header">
-        <img v-if="config.logoUrl" :src="config.logoUrl" alt="Logo" class="logo" />
-        <h1 class="app-name">{{ config.appName || 'AI聘次方' }}</h1>
-      </div>
-      
-      <div class="slogan-area">
-        <p class="slogan-cn">{{ config.sloganZh || '求职不用"硬扛"，你的求职竞争力，从此"次方"增涨！' }}</p>
-        <p class="slogan-en">{{ config.sloganEn || 'No more struggling through job hunting – with AI PinCifang, your job-hunting competitiveness grows exponentially!' }}</p>
+      <div class="brand-area">
+        <Image
+          src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimage109.360doc.com%2FDownloadImg%2F2025%2F04%2F0321%2F296122601_4_20250403090445718&refer=http%3A%2F%2Fimage109.360doc.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1763859057&t=66792e5ac87ee6fe103b9cd1865c808e"
+          alt="Logo" class="logo mr-30"/>
+        <h1 class="app-name">AI聘次方</h1>
       </div>
 
-      <img :src="config.loginImageUrl || illustrationDefault" alt="Illustration" class="illustration" />
+      <div class="slogan-area">
+        <p class="slogan-cn">求职不用“硬扛”，你的求职竞争力，从此“次方”增涨！</p>
+        <p class="slogan-en">No more struggling through job hunting – with AI PinCifang, your job-hunting
+          competitiveness grows exponentially!</p>
+      </div>
+
+      <div class="illustration-area">
+        <img src="@/assets/images/illustration.svg" alt="Illustration" class="illustration"/>
+      </div>
     </div>
 
     <div class="right-section">
       <div class="login-box">
         <h2 class="login-title">微信扫码登录/注册</h2>
-        <img v-if="qrCodeUrl" :src="qrCodeUrl" alt="二维码" class="qrcode" />
+        <img :src="qrCodeUrl" alt="QR Code" class="qrcode">
+
+
         <div class="agreement-text">
-          登录即代表同意
-          <a @click="showAgreement(1)" class="agreement-link">《服务协议》</a>
-          和
-          <a @click="showAgreement(2)" class="agreement-link">《隐私协议》</a>
+          登录即同意
+          <a href="javascript:void(0)" class="agreement-link" @click="openServiceAgreement">《服务协议》</a>、
+          <a href="javascript:void(0)" class="agreement-link" @click="openPrivacyAgreement">《隐私协议》</a>
         </div>
       </div>
     </div>
 
-    <div class="version-info">{{ version }}</div>
-
-    <Modal v-model="agreementVisible" :title="agreementTitle" width="600">
-      <div v-html="agreementContent"></div>
-    </Modal>
+    <div class="version-info">{{ Config.version }}{{ Config.env !== 'prod' && Config.env }}</div>
   </div>
+
+  <!-- 服务协议弹窗 -->
+  <AgreementModal
+    :visible="showServiceAgreement"
+    title="服务协议"
+    @close="closeModal"
+  >
+    <div class="agreement-content">
+    </div>
+  </AgreementModal>
+
+  <!-- 隐私协议弹窗 -->
+  <AgreementModal
+    :visible="showPrivacyAgreement"
+    title="隐私协议"
+    @close="closeModal"
+  >
+    <div class="agreement-content">
+      <h2>隐私协议</h2>
+      <p>欢迎使用AI聘次方服务！本隐私协议旨在说明我们如何收集、使用、存储和保护您的个人信息。</p>
+
+      <h3>1. 信息收集</h3>
+      <p>我们收集的信息包括但不限于您提供的注册信息、使用服务时产生的信息、设备信息等。</p>
+
+      <h3>2. 信息使用</h3>
+      <p>我们使用收集的信息提供、维护和改进我们的服务，开发新功能，确保服务安全等。</p>
+
+      <h3>3. 信息存储</h3>
+      <p>我们将按照法律法规的要求，对您的个人信息进行安全存储和保护。</p>
+
+      <h3>4. 信息共享</h3>
+      <p>未经您的明确同意，我们不会向第三方共享您的个人信息，但法律法规另有规定的除外。</p>
+
+      <h3>5. 未成年人保护</h3>
+      <p>我们重视对未成年人个人信息的保护，未满18周岁的未成年人应在监护人的指导下使用我们的服务。</p>
+
+      <h3>6. 数据安全</h3>
+      <p>我们采取各种安全措施保护您的个人信息，包括加密、访问控制等。</p>
+
+      <h3>7. 用户权利</h3>
+      <p>您有权访问、更正、删除您的个人信息，也有权限制或反对我们处理您的个人信息。</p>
+
+      <h3>8. 隐私政策更新</h3>
+      <p>我们可能会不时更新本隐私政策，并在必要时通知您。</p>
+
+      <h3>9. 联系我们</h3>
+      <p>如您对本隐私政策有任何疑问，请随时联系我们。</p>
+    </div>
+  </AgreementModal>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { Modal } from 'view-ui-plus';
-import { ConfigService } from '@/service/ConfigService';
-import { AgreementService } from '@/service/AgreementService';
-import { Config } from '@/Config';
-import illustrationDefault from '@/assets/images/illustration.svg';
+import QRCode from 'qrcode'
+import {onMounted, ref} from 'vue';
+import {Image} from "view-ui-plus";
+import {Config} from "@/Config.ts";
+import AgreementModal from '@/views/login/components/AgreementModal.vue';
 
-const config = ref({
-  logoUrl: '',
-  appName: '',
-  sloganZh: '',
-  sloganEn: '',
-  loginImageUrl: ''
-});
+const qrCodeUrl = ref<string>('');
 
-const qrCodeUrl = ref('');
-const version = ref(Config.buildVersion);
-const agreementVisible = ref(false);
-const agreementTitle = ref('');
-const agreementContent = ref('');
+// 协议弹窗管理
+const showServiceAgreement = ref(false);
+const showPrivacyAgreement = ref(false);
 
-const configService = ConfigService.getInstance();
-const agreementService = AgreementService.getInstance();
-
-const loadConfig = async () => {
-  try {
-    const result = await configService.getApplicationConfig();
-    if (result.code === 200 && result.data) {
-      config.value = result.data;
-    }
-  } catch (error) {
-    console.error('加载配置失败:', error);
-  }
+// 打开服务协议弹窗
+const openServiceAgreement = () => {
+  showServiceAgreement.value = true;
+  document.body.style.overflow = 'hidden';
 };
 
-const showAgreement = async (type: number) => {
-  try {
-    const result = await agreementService.getAgreement(type);
-    if (result.code === 200 && result.data) {
-      agreementTitle.value = type === 1 ? '服务协议' : '隐私协议';
-      agreementContent.value = result.data.content || '暂无内容';
-      agreementVisible.value = true;
-    }
-  } catch (error) {
-    console.error('加载协议失败:', error);
-  }
+// 打开隐私协议弹窗
+const openPrivacyAgreement = () => {
+  showPrivacyAgreement.value = true;
+  document.body.style.overflow = 'hidden';
 };
+
+// 关闭弹窗
+const closeModal = () => {
+  showServiceAgreement.value = false;
+  showPrivacyAgreement.value = false;
+  document.body.style.overflow = 'auto';
+};
+
+const generateQRCode = async () => {
+  try {
+    const res = {}
+    const url = 'https://open.weixin.qq.com/connect/qrconnect?appid=' + res.appid + '&scope=' + res.scope + '&redirect_uri=' + res.redirect_uri + '&state=' + res.state + '&login_type=' + res.login_type + '&style=' + res.theme + '&self_redirect=' + res.self_redirect + '&href=' + res.href + '&id=' + res.id
+    qrCodeUrl.value = await QRCode.toDataURL(url, {
+      width: 1920 * 0.16666666666666666,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    })
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 onMounted(() => {
-  loadConfig();
+  generateQRCode()
 });
 </script>
+
 
 <style scoped lang="scss">
 .login-page {
@@ -95,128 +147,122 @@ onMounted(() => {
   width: 100%;
   height: 100vh;
   background-color: $bg-gray;
-  position: relative;
 
   .left-section {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    padding-left: 5.73%;
-    padding-top: 7.78%;
+    padding: vh(80) 0 0 vw(110);
 
-    .brand-header {
+    .brand-area {
       display: flex;
       align-items: center;
-      gap: 2.08%;
+      margin-bottom: vh(96);
 
       .logo {
-        width: 50px;
-        height: 50px;
+        width: vw(50);
+        height: vw(50);
+        border-radius: vw(10);
+        background: #FFF;
+        box-shadow: vw(4) vw(4) vw(20) 0 rgba(0, 0, 0, 0.10);
       }
 
       .app-name {
         font-family: 'YouSheBiaoTiHei', sans-serif;
-        font-size: 46px;
+        font-size: vw(46);
         color: $font-dark;
+        font-style: normal;
         font-weight: 400;
-        line-height: 60px;
-        margin: 0;
+        line-height: normal;
       }
     }
 
     .slogan-area {
-      margin-top: 96px;
-      width: 44.06%;
-
       .slogan-cn {
         color: $font-dark;
-        font-size: 32px;
+        font-size: vw(32);
         font-family: 'YouSheBiaoTiHei', sans-serif;
+        font-style: normal;
         font-weight: 400;
-        line-height: 1.3;
-        margin: 0 0 13px 0;
+        line-height: normal;
+        margin-bottom: vh(13);
       }
 
       .slogan-en {
         color: $font-light;
         font-family: 'YouSheBiaoTiHei', sans-serif;
-        font-size: 24px;
+        font-size: vw(24);
+        font-style: normal;
         font-weight: 400;
-        line-height: 1.4;
-        margin: 0;
+        line-height: normal;
       }
     }
 
-    .illustration {
-      margin-top: 76px;
-      width: 544px;
-      height: 544px;
+    .illustration-area {
+      padding-left: vw(95);
+      margin-top: vh(17);
+
+      .illustration {
+        width: vw(544);
+        height: vw(544);
+      }
     }
   }
 
+
   .right-section {
-    flex: 0 0 29.17%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-right: 5%;
+    padding: vh(185) vw(260) 0 vw(94);
 
     .login-box {
-      width: 560px;
-      height: 710px;
-      border-radius: 2px;
+      width: vw(560);
+      height: vh(710);
+      border-radius: vw(2);
       background: rgba(255, 255, 255, 0.50);
-      box-shadow: 6px 6px 50px 0 rgba(0, 0, 0, 0.10);
-      backdrop-filter: blur(5px);
+      box-shadow: vw(6) vw(6) vw(50) 0 rgba(0, 0, 0, 0.10);
+      backdrop-filter: blur(vw(5));
       display: flex;
+      justify-content: center;
       flex-direction: column;
-      align-items: center;
-      padding-top: 109px;
+      padding: vh(109) vw(120) vh(146);
 
       .login-title {
         color: $font-dark;
-        font-size: 32px;
+        font-size: vw(32);
+        font-style: normal;
         font-weight: bold;
-        line-height: 32px;
-        margin: 0 0 71px 0;
+        margin-bottom: vh(39);
+        text-align: center;
       }
 
       .qrcode {
-        width: 320px;
-        height: 320px;
-        margin-bottom: 40px;
+        width: vw(320);
+        height: vw(320);
       }
+    }
+  }
 
-      .agreement-text {
-        color: $font-middle;
-        font-size: 16px;
-        font-weight: 400;
-        line-height: 24px;
-        text-align: center;
+  .agreement-text {
+    margin-top: vh(40);
+    color: #9499A4;
+    font-size: vw(16);
+    font-style: normal;
+    font-weight: 400;
+    line-height: vw(24);
 
-        .agreement-link {
-          color: $theme-color;
-          cursor: pointer;
-          text-decoration: none;
-
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
+    .agreement-link {
+      color: $theme-color;
     }
   }
 
   .version-info {
-    position: fixed;
-    bottom: 24px;
+    position: absolute;
+    bottom: vh(30);
     left: 50%;
     transform: translateX(-50%);
     color: $font-light;
-    font-size: 16px;
+    font-size: vw(16);
+    font-style: normal;
     font-weight: 400;
-    line-height: 24px;
-    text-align: center;
+    line-height: vw(24)
   }
 }
 </style>
