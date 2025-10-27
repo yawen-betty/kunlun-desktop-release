@@ -25,6 +25,7 @@ serde_json = "1"
 tauri-plugin-http = "2.5.2"
 reqwest = { version = "0.12", features = ["json", "multipart"] }
 tauri-plugin-store = "2.4.0"
+tauri-plugin-os = "2.3.1"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.
