@@ -27,8 +27,8 @@
 
         <div class="agreement-text">
           登录即同意
-          <a href="javascript:void(0)" class="agreement-link" @click="openServiceAgreement">《服务协议》</a>、
-          <a href="javascript:void(0)" class="agreement-link" @click="openPrivacyAgreement">《隐私协议》</a>
+          <span class="agreement-link pointer" @click="openAgreement('2')">《服务协议》</span>、
+          <span class="agreement-link pointer" @click="openAgreement('1')">《隐私协议》</span>
         </div>
       </div>
     </div>
@@ -38,52 +38,11 @@
 
   <!-- 服务协议弹窗 -->
   <AgreementModal
-    :visible="showServiceAgreement"
-    title="服务协议"
+    :visible="showAgreement"
+    title="用户协议"
     @close="closeModal"
-  >
-    <div class="agreement-content">
-    </div>
-  </AgreementModal>
-
-  <!-- 隐私协议弹窗 -->
-  <AgreementModal
-    :visible="showPrivacyAgreement"
-    title="隐私协议"
-    @close="closeModal"
-  >
-    <div class="agreement-content">
-      <h2>隐私协议</h2>
-      <p>欢迎使用AI聘次方服务！本隐私协议旨在说明我们如何收集、使用、存储和保护您的个人信息。</p>
-
-      <h3>1. 信息收集</h3>
-      <p>我们收集的信息包括但不限于您提供的注册信息、使用服务时产生的信息、设备信息等。</p>
-
-      <h3>2. 信息使用</h3>
-      <p>我们使用收集的信息提供、维护和改进我们的服务，开发新功能，确保服务安全等。</p>
-
-      <h3>3. 信息存储</h3>
-      <p>我们将按照法律法规的要求，对您的个人信息进行安全存储和保护。</p>
-
-      <h3>4. 信息共享</h3>
-      <p>未经您的明确同意，我们不会向第三方共享您的个人信息，但法律法规另有规定的除外。</p>
-
-      <h3>5. 未成年人保护</h3>
-      <p>我们重视对未成年人个人信息的保护，未满18周岁的未成年人应在监护人的指导下使用我们的服务。</p>
-
-      <h3>6. 数据安全</h3>
-      <p>我们采取各种安全措施保护您的个人信息，包括加密、访问控制等。</p>
-
-      <h3>7. 用户权利</h3>
-      <p>您有权访问、更正、删除您的个人信息，也有权限制或反对我们处理您的个人信息。</p>
-
-      <h3>8. 隐私政策更新</h3>
-      <p>我们可能会不时更新本隐私政策，并在必要时通知您。</p>
-
-      <h3>9. 联系我们</h3>
-      <p>如您对本隐私政策有任何疑问，请随时联系我们。</p>
-    </div>
-  </AgreementModal>
+    :agreementType="agreementType"
+  />
 </template>
 
 <script setup lang="ts">
@@ -96,26 +55,20 @@ import AgreementModal from '@/views/login/components/AgreementModal.vue';
 const qrCodeUrl = ref<string>('');
 
 // 协议弹窗管理
-const showServiceAgreement = ref(false);
-const showPrivacyAgreement = ref(false);
+const showAgreement = ref<boolean>(false);
+// 类型
+const agreementType = ref<string>('1');
 
-// 打开服务协议弹窗
-const openServiceAgreement = () => {
-  showServiceAgreement.value = true;
-  document.body.style.overflow = 'hidden';
-};
 
-// 打开隐私协议弹窗
-const openPrivacyAgreement = () => {
-  showPrivacyAgreement.value = true;
-  document.body.style.overflow = 'hidden';
+// 打开隐私协议弹窗 隐私：'1' 服务 '2'
+const openAgreement = (type:string) => {
+  showAgreement.value = true;
+  agreementType.value = type;
 };
 
 // 关闭弹窗
 const closeModal = () => {
-  showServiceAgreement.value = false;
-  showPrivacyAgreement.value = false;
-  document.body.style.overflow = 'auto';
+  showAgreement.value = false;
 };
 
 const generateQRCode = async () => {
