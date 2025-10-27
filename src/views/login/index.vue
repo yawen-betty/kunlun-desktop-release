@@ -74,7 +74,8 @@ const closeModal = () => {
 const generateQRCode = async () => {
   try {
     const res = {}
-    const url = 'https://open.weixin.qq.com/connect/qrconnect?appid=' + res.appid + '&scope=' + res.scope + '&redirect_uri=' + res.redirect_uri + '&state=' + res.state + '&login_type=' + res.login_type + '&style=' + res.theme + '&self_redirect=' + res.self_redirect + '&href=' + res.href + '&id=' + res.id
+    const url = `https://open.weixin.qq.com/connect/qrconnect?appid=${res.appid}&scope=snsapi_login&redirect_uri=${res.redirect_uri}
+    &state=${res.state}&login_type=jssdk&style=black&self_redirect=${true}&href=&id=ewm`
     qrCodeUrl.value = await QRCode.toDataURL(url, {
       width: 1920 * 0.16666666666666666,
       margin: 2,
