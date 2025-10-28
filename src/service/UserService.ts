@@ -1,14 +1,13 @@
-import { UserPath } from '@/api/user/UserPath'
-import HttpClient from '@/api/HttpClient'
-import { inject } from 'vue'
-import { Result } from '@/api/BaseDto'
-import { EmptyOutDto } from '@/api/HttpClient'
-import { InitProfileInDto } from '@/api/user/dto/InitProfile'
-import { GetProfileInDto, GetProfileOutDto } from '@/api/user/dto/GetProfile'
-import { UpdateProfileInDto } from '@/api/user/dto/UpdateProfile'
-import { UploadAvatarInDto, UploadAvatarOutDto } from '@/api/user/dto/UploadAvatar'
-import { GetModelAccountInDto, GetModelAccountOutDto } from '@/api/user/dto/GetModelAccount'
-import { SaveModelAccountInDto } from '@/api/user/dto/SaveModelAccount'
+import { UserPaths } from '@/api/user/UserPaths';
+import HttpClient, { EmptyOutDto } from '@/api/HttpClient';
+import { inject } from 'vue';
+import { InitProfileInDto, InitProfileOutDto } from '@/api/user/dto/InitProfile';
+import { GetProfileInDto, GetProfileOutDto } from '@/api/user/dto/GetProfile';
+import { UpdateProfileInDto, UpdateProfileOutDto } from '@/api/user/dto/UpdateProfile';
+import { UploadAvatarInDto, UploadAvatarOutDto } from '@/api/user/dto/UploadAvatar';
+import { GetModelAccountInDto, GetModelAccountOutDto } from '@/api/user/dto/GetModelAccount';
+import { SaveModelAccountInDto, SaveModelAccountOutDto } from '@/api/user/dto/SaveModelAccount';
+import { Result } from '@/api/BaseDto';
 
 export class UserService {
     private http: HttpClient;
@@ -29,59 +28,43 @@ export class UserService {
     
     /**
      * 补全基本信息
-     * @param {InitProfileInDto} params - 用户基本信息
-     * @returns {Promise<Result<EmptyOutDto>>} 操作结果
      */
-    public async initProfile(params: InitProfileInDto): Promise<Result<EmptyOutDto>> {
-        return await this.http.request<Result<EmptyOutDto>>(UserPath.initProfile, params);
+    public async initProfile(params: InitProfileInDto): Promise<EmptyOutDto> {
+        return await this.http.request<EmptyOutDto>(UserPaths.initProfile, params);
     }
     
     /**
      * 获取当前用户信息
-     * @param {GetProfileInDto} params - 请求参数（无实际参数）
-     * @returns {Promise<Result<GetProfileOutDto>>} 用户信息
      */
     public async getProfile(params: GetProfileInDto): Promise<Result<GetProfileOutDto>> {
-        return await this.http.request<Result<GetProfileOutDto>>(UserPath.getProfile, params);
+        return await this.http.request<Result<GetProfileOutDto>>(UserPaths.getProfile, params);
     }
     
     /**
      * 更新当前用户信息
-     * @param {UpdateProfileInDto} params - 更新的用户信息
-     * @returns {Promise<Result<EmptyOutDto>>} 操作结果
      */
-    public async updateProfile(params: UpdateProfileInDto): Promise<Result<EmptyOutDto>> {
-        return await this.http.request<Result<EmptyOutDto>>(UserPath.updateProfile, params);
+    public async updateProfile(params: UpdateProfileInDto): Promise<EmptyOutDto> {
+        return await this.http.request<EmptyOutDto>(UserPaths.updateProfile, params);
     }
     
     /**
      * 上传头像
-     * @param {string} filePath - 文件路径
-     * @returns {Promise<Result<UploadAvatarOutDto>>} 上传结果
      */
-    public async uploadAvatar(filePath: string): Promise<Result<UploadAvatarOutDto>> {
-        return await this.http.uploadFile<Result<UploadAvatarOutDto>>(
-            UserPath.uploadAvatar,
-            filePath,
-            'file'
-        );
+    public async uploadAvatar(params: UploadAvatarInDto): Promise<Result<UploadAvatarOutDto>> {
+        return await this.http.request<Result<UploadAvatarOutDto>>(UserPaths.uploadAvatar, params);
     }
     
     /**
      * 获取模型账号配置
-     * @param {GetModelAccountInDto} params - 请求参数（无实际参数）
-     * @returns {Promise<Result<GetModelAccountOutDto>>} 账号配置
      */
     public async getModelAccount(params: GetModelAccountInDto): Promise<Result<GetModelAccountOutDto>> {
-        return await this.http.request<Result<GetModelAccountOutDto>>(UserPath.getModelAccount, params);
+        return await this.http.request<Result<GetModelAccountOutDto>>(UserPaths.getModelAccount, params);
     }
     
     /**
      * 保存模型账号配置
-     * @param {SaveModelAccountInDto} params - API Key信息
-     * @returns {Promise<Result<EmptyOutDto>>} 操作结果
      */
-    public async saveModelAccount(params: SaveModelAccountInDto): Promise<Result<EmptyOutDto>> {
-        return await this.http.request<Result<EmptyOutDto>>(UserPath.saveModelAccount, params);
+    public async saveModelAccount(params: SaveModelAccountInDto): Promise<EmptyOutDto> {
+        return await this.http.request<EmptyOutDto>(UserPaths.saveModelAccount, params);
     }
 }

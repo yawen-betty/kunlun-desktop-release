@@ -1,9 +1,9 @@
-import { AdminPath } from '@/api/admin/AdminPath'
-import HttpClient from '@/api/HttpClient'
-import { inject } from 'vue'
-import { Result } from '@/api/BaseDto'
-import { GetConfigInDto, GetConfigOutDto } from '@/api/admin/dto/GetConfig'
-import { GetAgreementInDto, GetAgreementOutDto } from '@/api/admin/dto/GetAgreement'
+import { AdminPaths } from '@/api/admin/AdminPaths';
+import HttpClient from '@/api/HttpClient';
+import { inject } from 'vue';
+import { GetConfigInDto, GetConfigOutDto } from '@/api/admin/dto/GetConfig';
+import { GetAgreementInDto, GetAgreementOutDto } from '@/api/admin/dto/GetAgreement';
+import { Result } from '@/api/BaseDto';
 
 export class AdminService {
     private http: HttpClient;
@@ -24,24 +24,19 @@ export class AdminService {
     
     /**
      * 获取公共应用配置
-     * @param {GetConfigInDto} params - 请求参数（无实际参数）
-     * @returns {Promise<Result<GetConfigOutDto>>} 应用配置
      */
     public async getConfig(params: GetConfigInDto): Promise<Result<GetConfigOutDto>> {
-        return await this.http.request<Result<GetConfigOutDto>>(AdminPath.getConfig, params);
+        return await this.http.request<Result<GetConfigOutDto>>(AdminPaths.getConfig, params);
     }
     
     /**
      * 获取协议内容
-     * @param {GetAgreementInDto} params - 协议类型参数
-     * @returns {Promise<Result<GetAgreementOutDto>>} 协议内容
      */
-    public async getAgreement(params: GetAgreementInDto): Promise<Result<GetAgreementOutDto>> {
-        // 构建带路径参数的URL
-        const pathWithParams = {
-            ...AdminPath.getAgreement,
-            url: AdminPath.getAgreement.url.replace('{type}', params.type.toString())
+    public async getAgreements(type: number): Promise<Result<GetAgreementOutDto>> {
+        const path = {
+            ...AdminPaths.getAgreements,
+            url: `/agreements/${type}`
         };
-        return await this.http.request<Result<GetAgreementOutDto>>(pathWithParams, {});
+        return await this.http.request<Result<GetAgreementOutDto>>(path, {});
     }
 }

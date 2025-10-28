@@ -1,42 +1,21 @@
 import {Path} from "../Path";
+
 export class SystemPath {
     /**
-     * [AS0001]获取全部地点
-     * @type {Path}
+     * 查询地区 (API设计文档)
      */
-    static QueryArea: Path = {
-        url: '/fx/area/query',
+    static AddressQueryArea: Path = {
+        url: '/area',
         method: 'POST',
-        prefix: 'system'
+        prefix: 'address'
     }
 
     /**
-     * [AS0002]搜索地点
-     * @type {Path}
+     * 搜索地区 (API设计文档)
      */
-    static SearchArea: Path = {
-        url: '/fx/area/search',
+    static AddressSearchArea: Path = {
+        url: '/search',
         method: 'POST',
-        prefix: 'system'
-    }
-
-    /**
-     * [O0001]查询海外国家列表
-     * @type {Path}
-     */
-    static QueryCountryList: Path = {
-        url: '/fx/oversea/country/list',
-        method: 'GET',
-        prefix: 'system'
-    }
-
-    /**
-     * [O0002]海外地区列表
-     * @type {Path}
-     */
-    static QueryOverseaAreaList: Path = {
-        url: '/fx/oversea/area/list',
-        method: 'GET',
-        prefix: 'system'
+        prefix: 'address'
     }
 }
