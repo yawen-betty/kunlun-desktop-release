@@ -5,7 +5,7 @@
         <Image
           src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimage109.360doc.com%2FDownloadImg%2F2025%2F04%2F0321%2F296122601_4_20250403090445718&refer=http%3A%2F%2Fimage109.360doc.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1763859057&t=66792e5ac87ee6fe103b9cd1865c808e"
           alt="Logo" class="logo mr-30"/>
-        <h1 class="app-name">AI聘次方</h1>
+        <h1 class="app-name">{{SystemInfo.info.loginTitle}}</h1>
       </div>
 
       <div class="slogan-area">
@@ -15,7 +15,7 @@
       </div>
 
       <div class="illustration-area">
-        <img src="@/assets/images/illustration.svg" alt="Illustration" class="illustration"/>
+        <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration"/>
       </div>
     </div>
 
@@ -51,6 +51,7 @@ import {onMounted, ref} from 'vue';
 import {Image} from "view-ui-plus";
 import {Config} from "@/Config.ts";
 import AgreementModal from '@/views/login/components/AgreementModal.vue';
+import {SystemInfo} from "@/utiles/systemInfo.ts";
 
 const qrCodeUrl = ref<string>('');
 

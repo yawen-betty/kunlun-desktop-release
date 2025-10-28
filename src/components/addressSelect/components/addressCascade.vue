@@ -185,16 +185,16 @@ watch(() => props.optionsList, async (newValue) => {
 .address-cascade-wrapper {
   display: flex;
   flex: 1;
-  height: 296px;
+  height: vh(296);
 
   .address-cascade-list {
     display: flex;
     flex-direction: column;
-    row-gap: 4px;
+    row-gap: vw(4);
     flex: 1;
     height: calc(100% - 30px);
-    padding: 0 15px;
-    margin: 15px 0;
+    padding: 0 vw(10);
+    margin: vh(15) 0;
     list-style: none;
     overflow-y: auto;
 
@@ -202,8 +202,8 @@ watch(() => props.optionsList, async (newValue) => {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-left: 10px;
-      line-height: 26px; /* 文字垂直居中 */
+      padding-left: vw(10);
+      line-height: vw(26);
       cursor: pointer;
 
       span {
@@ -228,15 +228,15 @@ watch(() => props.optionsList, async (newValue) => {
     .cascade-children-highlight {
       justify-content: flex-start;
       background: #5999ff !important;
-      color: #fff !important;
+      color: $white !important;
 
       &::before {
         content: '';
-        width: 6px;
-        height: 6px;
-        background-color: #fff;
+        width: vw(6);
+        height: vw(6);
+        background-color: $white;
         border-radius: 50%;
-        margin-right: 10px;
+        margin-right: vw(10);
       }
 
       &:hover {
@@ -252,10 +252,10 @@ watch(() => props.optionsList, async (newValue) => {
 
 @keyframes move-title {
   from {
-    padding-left: 10px;
+    padding-left: vw(10);
   }
   to {
-    padding-left: 25px;
+    padding-left: vw(25);
   }
 }
 </style>
