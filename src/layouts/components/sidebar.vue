@@ -76,7 +76,7 @@ onMounted(() => {
     <Menu :active-name="activeMenu" @on-select="selectMenu" ref="menuRef">
       <template v-for="item in routes" :key="item.path">
         <MenuItem :name="item.path" v-if="item.show">
-          <SvgIcon :name="item.meta.icon" :size="minSize ? 20 : 16"/>
+          <SvgIcon :name="item.meta.icon" :size="minSize ? '20px' : '16px'"/>
           {{item.meta.title}}
         </MenuItem>
       </template>

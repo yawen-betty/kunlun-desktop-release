@@ -2,12 +2,11 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import ViewUIPlus from 'view-ui-plus';
 import 'view-ui-plus/dist/styles/viewuiplus.css';
-import '@/assets/styles/index.scss';
 import router from './router';
 import 'virtual:svg-icons-register';
 import HttpClient from "@/api/HttpClient.ts";
 import directive from './directive';
-
+import '@/assets/styles/index.scss';
 // 导入Tauri API
 import { invoke } from '@tauri-apps/api/core';
 

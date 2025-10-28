@@ -3,5 +3,5 @@
 
 fn main() {
   // 调用lib.rs中的run函数，该函数已经包含了所有插件的注册和命令的注册
-  tauri_test_lib::run();
+  kunlun_lib::run();
 }
