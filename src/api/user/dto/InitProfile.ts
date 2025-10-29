@@ -19,7 +19,7 @@ export class InitProfileInDto extends BaseInDto {
     /**
      * 城市
      */
-    city: string = '';
+    city: string[] = [];
 
     /**
      * 手机号

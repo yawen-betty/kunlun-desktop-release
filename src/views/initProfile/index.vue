@@ -12,10 +12,13 @@
       <Form ref="formValidateRef" :model="formValidate" :rules="ruleValidate" class="form-validate">
         <InitProfileForm :form-data="formValidate"/>
       </Form>
-      
+
 
       <div class="form-submit">
-        <Button type="primary" @click="handleSubmit" class="submit_btn">完成</Button>
+        <Button type="primary" @click="handleSubmit" class="submit_btn">
+          <SvgIcon name="icon-fuhe" class="submit-icon" size="10"/>
+          <span>完成</span>
+        </Button>
       </div>
     </div>
   </div>
@@ -30,13 +33,54 @@ import {UserService} from '@/service/UserService.ts';
 import {useRouter} from 'vue-router';
 import {SystemInfo} from "@/utiles/systemInfo.ts";
 import InitProfileForm from '@/components/initProfileForm/index.vue'
+import SvgIcon from "@/components/svgIcon/index.vue";
 
 const router = useRouter();
 const userService = UserService.getInstance();
 
 const formValidateRef = ref<any>(null);
 // 表单数据
-const formValidate = reactive<InitProfileInDto>(new InitProfileInDto());
+const formValidate = reactive<InitProfileInDto>({
+  ...new InitProfileInDto(),
+  birthDate: '1996-01'
+});
+
+// 手机号校验
+const validateMobile = (rule: any, value: string, callback: any) => {
+
+  if (value.length !== 11) {
+    callback(new Error('手机号格式有误'));
+    return;
+  }
+  if (!value.startsWith('1')) {
+    callback(new Error('手机号格式有误'));
+    return;
+  }
+  if (new Set(value).size === 1) {
+    callback(new Error('手机号格式有误'));
+    return;
+  }
+  callback();
+};
+
+// 邮箱校验
+const validateEmail = (rule: any, value: string, callback: any) => {
+  const atCount = (value.match(/@/g) || []).length;
+  if (atCount !== 1) {
+    callback(new Error('邮箱格式有误'));
+    return;
+  }
+  const [local, domain] = value.split('@');
+  if (!local || !domain) {
+    callback(new Error('邮箱格式有误'));
+    return;
+  }
+  if (!domain.includes('.') || domain.startsWith('.') || domain.endsWith('.') || domain.includes('..')) {
+    callback(new Error('邮箱格式有误'));
+    return;
+  }
+  callback();
+};
 
 // 校验
 const ruleValidate = {
@@ -50,13 +94,15 @@ const ruleValidate = {
     {required: true, message: '请选择出生年月', trigger: 'change'},
   ],
   city: [
-    {required: true, message: '请选择居住城市', trigger: 'change', type: 'array'},
+    {required: true, message: '请选择居住城市', trigger: 'change'},
   ],
   mobile: [
     {required: true, message: '请输入手机号码', trigger: 'blur'},
+    {validator: validateMobile, trigger: 'blur'},
   ],
   email: [
     {required: true, message: '请输入个人邮箱', trigger: 'blur'},
+    {validator: validateEmail, trigger: 'blur'},
   ],
 }
 
@@ -118,24 +164,34 @@ const handleSubmit = async () => {
     display: flex;
     justify-content: flex-end;
 
+
     .submit_btn {
       width: vw(80);
       height: vh(32);
-      padding: vh(10) vw(20);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
+      padding: 0 vw(20);
       border-radius: vw(2);
       background: linear-gradient(0deg, #FC8719 0%, #FC8719 100%), #E8EAEC;
       outline: none;
       border: 0;
-      color: $white;
-      font-size: vw(12);
-      font-style: normal;
-      font-weight: 600;
-      line-height: vw(12);
+      box-shadow: none;
+      display: flex;
+      justify-content: center;
 
+      span {
+        color: $white;
+        font-size: vw(12);
+        font-style: normal;
+        font-weight: 600;
+        line-height: vw(12);
+      }
+    }
+
+    :deep(.ivu-btn span) {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+      gap: vw(6);
     }
   }
 
