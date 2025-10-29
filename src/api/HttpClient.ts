@@ -115,7 +115,8 @@ export default class HttpClient{
     // 请求头和认证逻辑
     let defaultHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Accept': 'application/json',
+      'version': Config.version
     };
     if (HttpClient.token) {
       defaultHeaders['Authorization'] = `Bearer ${HttpClient.token}`;
