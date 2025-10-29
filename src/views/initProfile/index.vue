@@ -10,39 +10,13 @@
       <h3 class="form-title">Hello！请完善您的基本信息</h3>
 
       <Form ref="formValidateRef" :model="formValidate" :rules="ruleValidate" class="form-validate">
-
-        <div class="form-row">
-          <FormItem label="姓名" prop="name">
-            <Input v-model="formValidate.name" placeholder="请输入" :maxlength="10" clearable></Input>
-          </FormItem>
-          <FormItem label="性别" prop="gender">
-            <RadioGroup v-model="formValidate.gender" class="custom-radio">
-              <Radio :label="info.key" v-for="info in sex" :key="info.key">{{ info.value }}</Radio>
-            </RadioGroup>
-          </FormItem>
-        </div>
-
-        <div class="form-row">
-          <FormItem label="出生年月" prop="birthDate" class="custom-date_picker">
-            <DatePicker type="month" placeholder="请选择" v-model="formValidate.birthDate"/>
-          </FormItem>
-          <FormItem label="居住城市" prop="city">
-            <AddressSelect
-              v-model="formValidate.city"
-            />
-          </FormItem>
-        </div>
-        <div class="form-row">
-          <FormItem label="手机号码" prop="mobile">
-            <Input v-model="formValidate.mobile" placeholder="请输入" clearable></Input>
-          </FormItem>
-
-          <FormItem label="个人邮箱" prop="email">
-            <Input v-model="formValidate.email" placeholder="请输入" :maxlength="30" clearable></Input>
-          </FormItem>
-
-        </div>
+        <InitProfileForm :form-data="formValidate"/>
       </Form>
+      
+
+      <div class="form-submit">
+        <Button type="primary" @click="handleSubmit" class="submit_btn">完成</Button>
+      </div>
     </div>
   </div>
 
@@ -50,27 +24,47 @@
 
 <script setup lang="ts">
 import {reactive, ref} from 'vue';
-import {Image, Input, Radio, RadioGroup} from 'view-ui-plus';
+import {Image, Form, Button} from 'view-ui-plus';
 import {InitProfileInDto} from '@/api/user/dto/InitProfile.ts';
 import {UserService} from '@/service/UserService.ts';
 import {useRouter} from 'vue-router';
 import {SystemInfo} from "@/utiles/systemInfo.ts";
-import {sex} from "@/enums/enumDict.ts";
-import AddressSelect from '@/components/addressSelect/index.vue'
+import InitProfileForm from '@/components/initProfileForm/index.vue'
 
 const router = useRouter();
 const userService = UserService.getInstance();
 
-const formValidateRef = ref(null);
+const formValidateRef = ref<any>(null);
 // 表单数据
 const formValidate = reactive<InitProfileInDto>(new InitProfileInDto());
 
 // 校验
-const ruleValidate = {}
+const ruleValidate = {
+  name: [
+    {required: true, message: '请输入姓名', trigger: 'blur'}
+  ],
+  gender: [
+    {required: true, message: '请选择性别', trigger: 'change'},
+  ],
+  birthDate: [
+    {required: true, message: '请选择出生年月', trigger: 'change'},
+  ],
+  city: [
+    {required: true, message: '请选择居住城市', trigger: 'change', type: 'array'},
+  ],
+  mobile: [
+    {required: true, message: '请输入手机号码', trigger: 'blur'},
+  ],
+  email: [
+    {required: true, message: '请输入个人邮箱', trigger: 'blur'},
+  ],
+}
 
 // 提交表单
 const handleSubmit = async () => {
+  formValidateRef.value.validate((valid: boolean) => {
 
+  })
 };
 </script>
 
@@ -117,14 +111,31 @@ const handleSubmit = async () => {
 
   .form-validate {
     margin-top: vh(100);
+  }
 
-    .form-row {
+  .form-submit {
+    margin-top: vh(120);
+    display: flex;
+    justify-content: flex-end;
+
+    .submit_btn {
+      width: vw(80);
+      height: vh(32);
+      padding: vh(10) vw(20);
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      border-radius: vw(2);
+      background: linear-gradient(0deg, #FC8719 0%, #FC8719 100%), #E8EAEC;
+      outline: none;
+      border: 0;
+      color: $white;
+      font-size: vw(12);
+      font-style: normal;
+      font-weight: 600;
+      line-height: vw(12);
 
-      :deep(.ivu-form-item) {
-        width: vw(400);
-      }
     }
   }
 
