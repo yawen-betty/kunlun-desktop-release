@@ -92,6 +92,7 @@
       :footer-hide="true"
       width="24%"
       class-name="custom-module-modal"
+      @on-cancel="handleCustomModalClose"
     >
       <div class="custom-modal-content">
         <div class="modal-header">
@@ -110,7 +111,7 @@
           </FormItem>
         </Form>
         <div class="modal-footer">
-          <button class="btn-cancel" @click="showCustomModal = false">取消</button>
+          <button class="btn-cancel" @click="handleCustomModalClose">取消</button>
           <button class="btn-confirm" @click="createCustomModule">确定</button>
         </div>
       </div>
@@ -304,6 +305,12 @@ const showCustomModuleModal = () => {
   showCustomModal.value = true;
 };
 
+const handleCustomModalClose = () => {
+  formData.value.name = '';
+  formRef.value?.resetFields();
+  showCustomModal.value = false;
+};
+
 const createCustomModule = () => {
   formRef.value?.validate((valid) => {
     if (!valid) {
@@ -317,8 +324,7 @@ const createCustomModule = () => {
       isCustom: true
     };
     selectedModules.value.push(newModule);
-    showCustomModal.value = false;
-    formData.value.name = '';
+    handleCustomModalClose();
   });
 };
 
@@ -407,8 +413,8 @@ onMounted(() => {
 <style lang="scss">
 .delete-confirm-modal.ivu-modal-wrap {
   .ivu-modal-content {
-    border-radius: 2px;
-    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.1);
+    border-radius: vw(2);
+    box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
   }
 
   .ivu-modal-body {
@@ -417,26 +423,26 @@ onMounted(() => {
 }
 
 .delete-modal-content {
-  padding: 15px 20px;
+  padding: vh(15) vw(20);
 
   .modal-header {
-      margin-bottom: 40px;
+      margin-bottom: vh(40);
 
     .modal-title {
-      font-size: 14px;
-      font-weight: 500;
+      font-size: vw(14);
+      font-weight: 600;
       color: $font-dark;
-      line-height: 22px;
+      line-height: vh(22);
     }
   }
 
   .modal-body {
-      padding: 0 20px;
-      height: 126px;
+      padding: 0 vw(20);
+      height: vh(126);
     p {
-      font-size: 14px;
+      font-size: vw(14);
       color: $font-dark;
-      line-height: 20px;
+      line-height: vh(20);
       margin: 0;
     }
   }
@@ -444,14 +450,14 @@ onMounted(() => {
   .modal-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: vw(10);
 
     button {
-      padding: 10px 20px;
-      border-radius: 2px;
-      font-size: 12px;
-      font-weight: 500;
-      line-height: 12px;
+      padding: vh(10) vw(20);
+      border-radius: vw(2);
+      font-size: vw(12);
+      font-weight: 600;
+      line-height: vh(12);
       cursor: pointer;
       border: none;
       outline: none;
@@ -460,7 +466,7 @@ onMounted(() => {
     .btn-cancel {
       background: $white;
       color: $theme-color;
-      border: 1px solid $theme-color;
+      border: vw(1) solid $theme-color;
 
       &:hover {
         opacity: 0.8;
@@ -480,8 +486,8 @@ onMounted(() => {
 
 .custom-module-modal.ivu-modal-wrap {
     .ivu-modal-content {
-        border-radius: 2px;
-        box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.1);
+        border-radius: vw(2);
+        box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
     }
 
     .ivu-modal-body {
@@ -490,19 +496,19 @@ onMounted(() => {
 }
 
 .custom-modal-content {
-    padding: 15px 20px;
+    padding: vh(15) vw(20);
 
     .modal-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 40px;
+        margin-bottom: vh(40);
 
         .modal-title {
-            font-size: 14px;
-            font-weight: 500;
+            font-size: vw(14);
+            font-weight: 600;
             color: $font-dark;
-            line-height: 22px;
+            line-height: vh(22);
         }
 
         .icon-close {
@@ -517,7 +523,8 @@ onMounted(() => {
     }
 
     .ivu-form{
-        padding: 0 20px;
+        padding: 0 vw(20);
+        height: vh(126);
     }
     .ivu-form-item {
         margin-bottom: 0;
@@ -525,15 +532,15 @@ onMounted(() => {
 
     .input-wrapper {
         position: relative;
-        margin-bottom: 40px;
+        margin-bottom: vh(40);
 
         .ivu-input {
-            height: 40px;
+            height: vh(40);
             background: $bg-gray;
             border: none;
-            border-radius: 2px;
-            padding: 0 60px 0 20px;
-            font-size: 16px;
+            border-radius: vw(2);
+            padding: 0 vw(60) 0 vw(20);
+            font-size: vw(16);
             font-weight: 600;
             color: $font-dark;
 
@@ -549,8 +556,8 @@ onMounted(() => {
         }
 
         .ivu-input-word-count{
-            right: 20px;
-            font-size: 16px;
+            right: vw(20);
+            font-size: vw(16);
             font-weight: 600;
             color: $placeholder-color;
             background: transparent;
@@ -561,14 +568,14 @@ onMounted(() => {
     .modal-footer {
         display: flex;
         justify-content: flex-end;
-        gap: 10px;
+        gap: vw(10);
 
         button {
-            padding: 10px 20px;
-            border-radius: 2px;
-            font-size: 12px;
-            font-weight: 500;
-            line-height: 12px;
+            padding: vh(10) vw(20);
+            border-radius: vw(2);
+            font-size: vw(12);
+            font-weight: 600;
+            line-height: vh(12);
             cursor: pointer;
             border: none;
             outline: none;
@@ -577,7 +584,7 @@ onMounted(() => {
         .btn-cancel {
             background: $white;
             color: $theme-color;
-            border: 1px solid $theme-color;
+            border: vw(1) solid $theme-color;
 
             &:hover {
                 opacity: 0.8;
@@ -605,10 +612,10 @@ onMounted(() => {
 .module-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: vw(6);
+  padding: vh(6) vw(12);
   background: $white;
-  border-radius: 2px;
+  border-radius: vw(2);
   cursor: pointer;
   color: $font-middle;
   font-size: vw(14);
@@ -634,13 +641,13 @@ onMounted(() => {
   display: flex;
   background: transparent;
 
-  border-radius: 4px;
+  border-radius: vw(4);
 }
 
 .module-column {
   position: relative;
   background: transparent;
-  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.10));
+  filter: drop-shadow(0 0 vw(6) rgba(0, 0, 0, 0.10));
   &.available {
     background: $white;
     border-left: none;
@@ -673,7 +680,7 @@ onMounted(() => {
   font-size: vw(14);
   color: $font-dark;
 
-  border-radius: 4px;
+  border-radius: vw(4);
     font-family: "PingFangSCBold";
 
     &:not(:last-child){
@@ -770,7 +777,7 @@ onMounted(() => {
 :deep(.sortable-ghost) {
   opacity: 1 !important;
   background: transparent !important;
-  border-top: 2px solid $theme-color !important;
+  border-top: vw(2) solid $theme-color !important;
   color: #B0B7C6;
 }
 
@@ -786,8 +793,8 @@ onMounted(() => {
 :deep(.sortable-drag) {
   opacity: 1 !important;
   background: $white !important;
-  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.1) !important;
-  border-radius: 4px !important;
+  box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1) !important;
+  border-radius: vw(4) !important;
   .icon-drag {
       >use{
         fill: $theme-color !important;
