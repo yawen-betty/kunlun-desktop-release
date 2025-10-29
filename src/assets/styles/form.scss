@@ -65,7 +65,7 @@
 .ivu-select-multiple .ivu-select-selection,
 .ivu-select-single .ivu-select-selection .ivu-select-placeholder,
 .ivu-select-single .ivu-select-selection .ivu-select-selected-value {
-  padding-left: vw(10);
+  padding-left: vw(20);
 }
 
 .ivu-select-multiple .ivu-select-selection .ivu-select-placeholder {
@@ -153,7 +153,6 @@
 
         &:hover {
           background: $hover-color;
-          padding-left: vw(26);
           transition: all 0.2s ease-in-out;
         }
 
@@ -218,8 +217,21 @@
   cursor: pointer;
 }
 
+.ivu-icon-ios-calendar-outline{
+  width: vw(10);
+  height: vw(10);
+  background-image: url('data:image/svg+xml;utf8,<svg t="1761704694787" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5203" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><path d="M940.81024 133.12L396.8 677.13024 83.18976 357.10976 0 440.32l313.61024 313.61024 83.18976 83.18976L1024 216.30976 940.78976 133.12z" p-id="5204" fill="%239499A5" /></svg>');
+  background-position: center center;
+  background-size: 100%;
+  background-repeat: no-repeat;
+
+  &:before{
+    display: none;
+  }
+}
+
 .ivu-input-icon-clear {
-  top: vh(11);
+  top: vh(15);
 }
 
 .ivu-input-suffix {
@@ -238,12 +250,10 @@
 .ivu-date-picker {
   .ivu-input-suffix {
     top: 0;
-
-    .ivu-icon-ios-close-circle {
-      position: absolute;
-      top: vh(10) !important;
-      right: 0 !important;
-    }
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
@@ -433,4 +443,9 @@ fieldset[disabled] .ivu-input,
       background: $hover-color
     }
   }
+}
+
+// 输入框字号重写
+.ivu-input{
+  font-size: vw(14);
 }
