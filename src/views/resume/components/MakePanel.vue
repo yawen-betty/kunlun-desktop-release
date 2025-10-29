@@ -60,7 +60,7 @@ onMounted(() => {
                 <FormItem class="custom-form-item" prop="identity">
                     <RadioGroup v-model="formData.identity" class="custom-radio">
                         <Radio label="0">职场人</Radio>
-                        <Radio label="1">应届/在校生</Radio>
+                        <Radio label="1">在校/应届生</Radio>
                     </RadioGroup>
                 </FormItem>
                 <FormItem>
@@ -83,7 +83,7 @@ onMounted(() => {
                 <ul class="info-ul">
                     <li v-for="item in infoList" :key="item"><span>·</span>{{ item }}</li>
                 </ul>
-                <img src="@/assets/images/resume.png" alt="">
+                <img src="../../../assets/images/resume.png" alt="">
             </div>
         </div>
     </div>

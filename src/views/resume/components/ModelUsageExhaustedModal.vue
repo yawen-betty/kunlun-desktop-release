@@ -50,11 +50,11 @@
         @click="handleSave"
         class="save-btn"
       >
-        <img src="@/assets/svg/menu-resume.svg" class="save-icon" alt="" />
+        <img src="../../../assets/svg/menu-resume.svg" class="save-icon" alt="" />
         <span>保存</span>
       </Button>
 
-      <img src="@/assets/images/ai.png" class="decoration-img" alt="" />
+      <img src="../../../assets/images/ai.png" class="decoration-img" alt="" />
     </div>
   </Modal>
 </template>
