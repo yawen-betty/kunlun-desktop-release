@@ -29,18 +29,11 @@
         <FormItem label="API Key" prop="apiKey" class="api-key-item">
           <Input
             v-model="formData.apiKey"
-            :type="showApiKey ? 'text' : 'password'"
+            type="password"
+            password
             placeholder="请输入"
             class="api-key-input"
           >
-            <template #suffix>
-              <div class="eye-icon-wrapper" @click="toggleApiKeyVisibility">
-                <Icon
-                  :type="showApiKey ? 'md-eye' : 'md-eye-off'"
-                  class="eye-icon"
-                />
-              </div>
-            </template>
           </Input>
         </FormItem>
       </Form>
@@ -50,7 +43,7 @@
         @click="handleSave"
         class="save-btn"
       >
-        <img src="../../../assets/svg/menu-resume.svg" class="save-icon" alt="" />
+        <img src="../../../assets/svg/icon-resume.svg" class="save-icon" alt="" />
         <span>保存</span>
       </Button>
 
@@ -255,43 +248,43 @@ const handleSave = async () => {
 
     .api-key-input {
       :deep(.ivu-input) {
-        height: vh(40);
-        background-color: $bg-gray;
-        border: none;
-        border-radius: vw(2);
-        padding: 0 vw(20);
-        font-size: vw(16);
-        color: $font-dark;
-
-        &::placeholder {
-          color: $placeholder-color;
-            font-family: "PingFangSCBold",serif;
-            font-size: vw(16);
-            font-weight: 600;
-            line-height: 1.5; /* 100% */
-        }
-
-        &:focus {
-          box-shadow: none;
-          background-color: $bg-gray;
-        }
+        //height: vh(40);
+        //background-color: $bg-gray;
+        //border: none;
+        //border-radius: vw(2);
+        //padding: 0 vw(20);
+        //font-size: vw(16);
+        //color: $font-dark;
+        //
+        //&::placeholder {
+        //  color: $placeholder-color;
+        //    font-family: "PingFangSCBold",serif;
+        //    font-size: vw(16);
+        //    font-weight: 600;
+        //    line-height: 1.5; /* 100% */
+        //}
+        //
+        //&:focus {
+        //  box-shadow: none;
+        //  background-color: $bg-gray;
+        //}
       }
 
-        :deep(.ivu-input-suffix){
-            height: 100%;
-            top: 0;
-
-      .eye-icon-wrapper {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        cursor: pointer;
-
-        .eye-icon {
-          font-size: vw(14);
-        }
-      }
-        }
+        //:deep(.ivu-input-suffix){
+        //    height: 100%;
+        //    top: 0;
+        //
+        //  .eye-icon-wrapper {
+        //    display: flex;
+        //    align-items: center;
+        //    height: 100%;
+        //    cursor: pointer;
+        //
+        //    .eye-icon {
+        //      font-size: vw(14);
+        //    }
+        //  }
+        //}
     }
   }
 }
