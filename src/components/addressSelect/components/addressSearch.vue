@@ -23,6 +23,10 @@
         </div>
       </template>
     </Poptip>
+
+    <svg-icon name="icon-cha" size="16" @click.stop="handleClose" class="icon-close pointer"
+              color="#9499A5"
+    />
   </div>
 </template>
 
@@ -55,6 +59,8 @@ const props = defineProps({
   },
 });
 
+const emits = defineEmits(['onClose']);
+
 const emitUpdate = inject<(item: AreaInfoBean) => void>('emitUpdate');
 // 搜索弹窗状态
 const isSearchDropDown = ref<boolean>(false);
@@ -85,6 +91,13 @@ const handleSearch = async (v: Event) => {
   searchList.value = [];
   if (!searchValue.value) return;
   handleSearchCityList();
+};
+
+/**
+ * @description: 关闭
+ */
+const handleClose = async () => {
+  emits('onClose')
 };
 
 /**
@@ -144,6 +157,14 @@ const getHighLightFont = (name: string, highLightFont: string, type: string): st
   justify-content: flex-start;
   align-items: center;
   border-bottom: 1px solid $border-default;
+  position: relative;
+
+  .icon-close {
+    position: absolute;
+    right: vw(20);
+    top: 50%;
+    transform: translateY(-50%);
+  }
 
   .keyword {
     width: vw(300);

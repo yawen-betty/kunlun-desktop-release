@@ -94,7 +94,7 @@ const ruleValidate = {
     {required: true, message: '请选择出生年月', trigger: 'change'},
   ],
   city: [
-    {required: true, message: '请选择居住城市', trigger: 'change'},
+    {required: true, message: '请选择居住城市', trigger: 'change', type: 'array'},
   ],
   mobile: [
     {required: true, message: '请输入手机号码', trigger: 'blur'},

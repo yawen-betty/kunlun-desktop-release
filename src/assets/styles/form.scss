@@ -35,7 +35,7 @@
   height: vh(40);
   background: $bg-gray;
   padding: vh(12) vw(20);
-  border: 0;
+  border: 0 !important;
 }
 
 .ivu-input-small {
@@ -217,15 +217,15 @@
   cursor: pointer;
 }
 
-.ivu-icon-ios-calendar-outline{
+.ivu-icon-ios-calendar-outline {
   width: vw(10);
   height: vw(10);
-  background-image: url('data:image/svg+xml;utf8,<svg t="1761704694787" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5203" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><path d="M940.81024 133.12L396.8 677.13024 83.18976 357.10976 0 440.32l313.61024 313.61024 83.18976 83.18976L1024 216.30976 940.78976 133.12z" p-id="5204" fill="%239499A5" /></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg class="icon" width="16px" height="16.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M103.69024 204.8L0 308.4288l512 512.47104 512-512.45056L920.30976 204.8 512 613.29408 103.66976 204.8z" fill="%239499A5" /></svg>');
   background-position: center center;
   background-size: 100%;
   background-repeat: no-repeat;
 
-  &:before{
+  &:before {
     display: none;
   }
 }
@@ -446,6 +446,6 @@ fieldset[disabled] .ivu-input,
 }
 
 // 输入框字号重写
-.ivu-input{
+.ivu-input {
   font-size: vw(14);
 }

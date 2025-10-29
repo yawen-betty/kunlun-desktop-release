@@ -32,8 +32,8 @@
           </div>
         </template>
       </div>
-      <svg-icon name="icon-jiantou-xia" size="10" @click.stop="toggleDrop()" class="icon-svg icon-arrow"
-                :style="{display:props.disabled ? 'block':'none'}"/>
+      <svg-icon name="icon-jiantou-xia" size="6" @click.stop="toggleDrop()" class="icon-svg icon-arrow"
+                :style="{display:props.disabled && 'block'}" color="#9499A5"/>
 
       <svg-icon name="icon-cha" size="10" @click.stop="clearSelect(-1)" class="icon-svg icon-close"
                 color="#9499A5"
@@ -42,7 +42,7 @@
     </div>
     <template #content>
       <div class="custom-address-content">
-        <AddressSearch :disabled="disabled" :isDropDown="isDropDown"/>
+        <AddressSearch :disabled="disabled" :isDropDown="isDropDown" @onClose="handleClose"/>
 
         <div class="address-cascade-container">
           <AddressCascade
@@ -166,6 +166,10 @@ const clearSelect = (index: number) => {
   }
 };
 
+//关闭
+const handleClose = () => {
+  isDropDown.value = false;
+}
 
 // 显示或隐藏下拉
 const toggleDrop = () => {
@@ -247,12 +251,12 @@ onMounted(() => {
     display: flex;
     align-items: center;
     min-height: vh(32);
-    padding: vh(9) vw(30) vh(9) vw(10);
+    padding: vh(12) vw(20);
     background: $bg-gray;
     height: vh(40);
 
     &.custom-input_multiple {
-      padding: vh(5) vw(30) vh(5) vw(10);
+      padding: vh(5) vw(20);
     }
 
     .icon-arrow {
