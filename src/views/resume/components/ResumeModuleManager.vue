@@ -8,7 +8,7 @@
     <Teleport to="body">
       <div v-if="visible" class="module-dropdown" :style="dropdownStyle">
         <div class="module-manager">
-        <div class="module-column" :style="{ width: `calc(${columnWidth} / 1920) * 100vw` }">
+        <div class="module-column" :style="{ width: columnWidthStyle }">
           <div :class="['module-list', !selectedModules.length && 'empty']" ref="selectedListRef">
             <div
               v-for="item in selectedModules"
@@ -35,7 +35,7 @@
           </div>
         </div>
 
-        <div v-if="showAvailableList" class="module-column available" :style="{ width: `calc(${columnWidth} / 1920) * 100vw` }">
+        <div v-if="showAvailableList" class="module-column available" :style="{ width: columnWidthStyle }">
           <div class="module-list">
             <div
               v-for="item in availableModules"
@@ -182,6 +182,8 @@ const modalTitle = computed(() =>
 const emit = defineEmits<{
   'on-apply': [modules: ModuleItem[]]
 }>();
+
+const columnWidthStyle = computed(() => `calc(${props.columnWidth} / 1920 * 100vw)`);
 
 const visible = ref(false);
 const hoveredId = ref<string | null>(null);
