@@ -1,8 +1,9 @@
-import { AuthPaths } from '@/api/auth/AuthPaths';
-import HttpClient from '@/api/HttpClient';
-import { inject } from 'vue';
-import { WechatLoginInDto, WechatLoginOutDto } from '@/api/auth/dto/WechatLogin';
-import { Result } from '@/api/BaseDto';
+import { AuthPaths } from '@/api/auth/AuthPaths'
+import HttpClient, { EmptyOutDto } from '@/api/HttpClient'
+import { inject } from 'vue'
+import { WechatLoginInDto, WechatLoginOutDto } from '@/api/auth/dto/WechatLogin'
+import { LogoutInDto } from '@/api/auth/dto/Logout'
+import { Result } from '@/api/BaseDto'
 
 export class AuthService {
     private http: HttpClient;
@@ -26,5 +27,12 @@ export class AuthService {
      */
     public async wechatLogin(params: WechatLoginInDto): Promise<Result<WechatLoginOutDto>> {
         return await this.http.request<Result<WechatLoginOutDto>>(AuthPaths.wechatLogin, params);
+    }
+    
+    /**
+     * 退出登录
+     */
+    public async logout(params: LogoutInDto): Promise<EmptyOutDto> {
+        return await this.http.request<EmptyOutDto>(AuthPaths.logout, params);
     }
 }

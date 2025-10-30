@@ -1,65 +1,66 @@
 <template>
   <div class="module-wrapper" ref="triggerRef">
     <div class="module-trigger" :class="{ active: visible }" @click="toggleVisible">
-        <SvgIcon class="icon" :name="triggerIcon" size="12" color="#9499A4" />
+      <SvgIcon class="icon" :name="triggerIcon" size="12" color="#9499A4"/>
       <span>{{ triggerText }}</span>
     </div>
 
     <Teleport to="body">
       <div v-if="visible" class="module-dropdown" :style="dropdownStyle">
         <div class="module-manager">
-        <div class="module-column" :style="{ width: columnWidthStyle }">
-          <div :class="['module-list', !selectedModules.length && 'empty']" ref="selectedListRef">
-            <div
-              v-for="item in selectedModules"
-              :key="item.id"
-              class="module-item"
-              :class="{ hover: hoveredId === item.id, disabled: disabledDragIds.includes(item.id) }"
-              @mouseenter="hoveredId = item.id"
-              @mouseleave="hoveredId = null"
-            >
-              <div class="name-wrapper">
-                  <SvgIcon class="icon-drag mr-10" name="icon-tuozhuai" size="12" color="#9499A4" />
+          <div class="module-column" :style="{ width: columnWidthStyle }">
+            <div :class="['module-list', !selectedModules.length && 'empty']" ref="selectedListRef">
+              <div
+                v-for="item in selectedModules"
+                :key="item.id"
+                class="module-item"
+                :class="{ hover: hoveredId === item.id, disabled: disabledDragIds.includes(item.id) }"
+                @mouseenter="hoveredId = item.id"
+                @mouseleave="hoveredId = null"
+              >
+                <div class="name-wrapper">
+                  <SvgIcon class="icon-drag mr-10" name="icon-tuozhuai" size="12" color="#9499A4"/>
                   <span class="module-name">{{ item.name }}</span>
+                </div>
+                <SvgIcon class="icon-delete" name="icon-shanchu-xian" size="12" color="#9499A4"
+                         @click="removeModule(item.id)"/>
               </div>
-              <SvgIcon class="icon-delete" name="icon-shanchu-xian" size="12" color="#9499A4" @click="removeModule(item.id)" />
+            </div>
+            <div v-if="showAddButton" class="module-add" @click="showAvailableList = true">
+              <span>{{ addButtonText }}</span>
+            </div>
+            <div class="module-actions">
+              <span class="action-btn" @click="handleCancel">取消</span>
+              <div class="divider"></div>
+              <span class="action-btn" @click="handleApply">应用</span>
             </div>
           </div>
-          <div v-if="showAddButton" class="module-add" @click="showAvailableList = true">
-            <span>{{ addButtonText }}</span>
-          </div>
-          <div class="module-actions">
-            <span class="action-btn" @click="handleCancel">取消</span>
-            <div class="divider"></div>
-            <span class="action-btn" @click="handleApply">应用</span>
-          </div>
-        </div>
 
-        <div v-if="showAvailableList" class="module-column available" :style="{ width: columnWidthStyle }">
-          <div class="module-list">
-            <div
-              v-for="item in availableModules"
-              :key="item.id"
-              class="module-item pl-10"
-              :class="{ hover: hoveredId === item.id }"
-              @mouseenter="hoveredId = item.id"
-              @mouseleave="hoveredId = null"
-              @click="addModule(item.id)"
-            >
-              <span class="module-name">{{ item.name }}</span>
-            </div>
-            <div
-              class="module-item pl-10"
-              :class="{ hover: hoveredId === 'custom' }"
-              @mouseenter="hoveredId = 'custom'"
-              @mouseleave="hoveredId = null"
-              @click="showCustomModuleModal"
-            >
-              <span class="module-name">{{ customModuleText }}</span>
+          <div v-if="showAvailableList" class="module-column available" :style="{ width: columnWidthStyle }">
+            <div class="module-list">
+              <div
+                v-for="item in availableModules"
+                :key="item.id"
+                class="module-item pl-10"
+                :class="{ hover: hoveredId === item.id }"
+                @mouseenter="hoveredId = item.id"
+                @mouseleave="hoveredId = null"
+                @click="addModule(item.id)"
+              >
+                <span class="module-name">{{ item.name }}</span>
+              </div>
+              <div
+                class="module-item pl-10"
+                :class="{ hover: hoveredId === 'custom' }"
+                @mouseenter="hoveredId = 'custom'"
+                @mouseleave="hoveredId = null"
+                @click="showCustomModuleModal"
+              >
+                <span class="module-name">{{ customModuleText }}</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
     </Teleport>
 
@@ -68,9 +69,9 @@
       :closable="true"
       :mask-closable="false"
       :footer-hide="true"
-      width="24%"
       class-name="delete-confirm-modal"
     >
+      <!--      width="24%"-->
       <div class="delete-modal-content">
         <div class="modal-header">
           <span class="modal-title">提示</span>
@@ -85,12 +86,12 @@
       </div>
     </Modal>
 
+    <!--      width="24%"-->
     <Modal
       v-model="showCustomModal"
       :closable="true"
       :mask-closable="false"
       :footer-hide="true"
-      width="24%"
       class-name="custom-module-modal"
       @on-cancel="handleCustomModalClose"
     >
@@ -121,14 +122,14 @@
 
 <script lang="ts">
 export enum ItemType {
-    MODULE = 'module',
-    FIELD = 'field'
+  MODULE = 'module',
+  FIELD = 'field'
 }
 </script>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, computed } from 'vue';
-import { Modal, Message } from 'view-ui-plus';
+import {ref, onMounted, nextTick, computed} from 'vue';
+import {Modal, Message} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import Sortable from 'sortablejs';
 
@@ -152,11 +153,11 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   appliedModules: () => [
-    { id: '1', name: '教育经历' },
-    { id: '2', name: '工作经历' },
-    { id: '3', name: '专业技能' },
-    { id: '4', name: '奖项证书' },
-    { id: '5', name: '自我评价' }
+    {id: '1', name: '教育经历'},
+    {id: '2', name: '工作经历'},
+    {id: '3', name: '专业技能'},
+    {id: '4', name: '奖项证书'},
+    {id: '5', name: '自我评价'}
   ],
   availableModulesList: () => [],
   disabledDragIds: () => [],
@@ -196,7 +197,7 @@ const deleteModuleId = ref('');
 
 const showCustomModal = ref(false);
 const formRef = ref<any>();
-const formData = ref({ name: '' });
+const formData = ref({name: ''});
 const rules = computed(() => ({
   name: [
     {
@@ -223,17 +224,17 @@ const selectedModules = ref<ModuleItem[]>([...props.appliedModules]);
 const customAvailableModules = ref<ModuleItem[]>([...props.availableModulesList]);
 
 const allModules: ModuleItem[] = [
-  { id: '1', name: '教育经历' },
-  { id: '2', name: '工作经历' },
-  { id: '3', name: '专业技能' },
-  { id: '4', name: '奖项证书' },
-  { id: '5', name: '自我评价' },
-  { id: '6', name: '项目经历' },
-  { id: '7', name: '培训情况' },
-  { id: '8', name: '语言能力' },
-  { id: '9', name: '专利/学术成果' },
-  { id: '10', name: '兴趣爱好' },
-  { id: '12', name: '实习经历' }
+  {id: '1', name: '教育经历'},
+  {id: '2', name: '工作经历'},
+  {id: '3', name: '专业技能'},
+  {id: '4', name: '奖项证书'},
+  {id: '5', name: '自我评价'},
+  {id: '6', name: '项目经历'},
+  {id: '7', name: '培训情况'},
+  {id: '8', name: '语言能力'},
+  {id: '9', name: '专利/学术成果'},
+  {id: '10', name: '兴趣爱好'},
+  {id: '12', name: '实习经历'}
 ];
 
 const availableModules = computed(() => {
@@ -297,7 +298,7 @@ const addModule = (id: string) => {
   } else {
     const module = allModules.find(m => m.id === id);
     if (module && !selectedModules.value.find(m => m.id === id)) {
-      selectedModules.value.push({ ...module });
+      selectedModules.value.push({...module});
     }
   }
 };
@@ -314,7 +315,7 @@ const handleCustomModalClose = () => {
 };
 
 const createCustomModule = () => {
-  formRef.value?.validate((valid) => {
+  formRef.value?.validate((valid: boolean) => {
     if (!valid) {
       Message.warning('请完善必填项！');
       return;
@@ -329,7 +330,6 @@ const createCustomModule = () => {
     handleCustomModalClose();
   });
 };
-
 
 
 const handleCancel = () => {
@@ -367,7 +367,7 @@ const initSortable = () => {
           return evt.related.className.indexOf('disabled') === -1;
         },
         onEnd: (evt) => {
-          const { oldIndex, newIndex } = evt;
+          const {oldIndex, newIndex} = evt;
           if (oldIndex !== undefined && newIndex !== undefined && oldIndex !== newIndex) {
             const disabledCount = selectedModules.value.filter(m => props.disabledDragIds.includes(m.id)).length;
             const actualNewIndex = Math.max(newIndex, disabledCount);
@@ -428,7 +428,7 @@ onMounted(() => {
   padding: vh(15) vw(20);
 
   .modal-header {
-      margin-bottom: vh(40);
+    margin-bottom: vh(40);
 
     .modal-title {
       font-size: vw(14);
@@ -439,8 +439,9 @@ onMounted(() => {
   }
 
   .modal-body {
-      padding: 0 vw(20);
-      height: vh(126);
+    padding: 0 vw(20);
+    height: vh(126);
+
     p {
       font-size: vw(14);
       color: $font-dark;
@@ -487,121 +488,122 @@ onMounted(() => {
 }
 
 .custom-module-modal.ivu-modal-wrap {
-    .ivu-modal-content {
-        border-radius: vw(2);
-        box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
-    }
+  .ivu-modal-content {
+    border-radius: vw(2);
+    box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
+  }
 
-    .ivu-modal-body {
-        padding: 0;
-    }
+  .ivu-modal-body {
+    padding: 0;
+  }
 }
 
 .custom-modal-content {
-    padding: vh(15) vw(20);
+  padding: vh(15) vw(20);
 
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: vh(40);
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: vh(40);
 
-        .modal-title {
-            font-size: vw(14);
-            font-weight: 600;
-            color: $font-dark;
-            line-height: vh(22);
-        }
-
-        .icon-close {
-            cursor: pointer;
-            color: $font-middle;
-            flex-shrink: 0;
-
-            &:hover {
-                color: $theme-color;
-            }
-        }
+    .modal-title {
+      font-size: vw(14);
+      font-weight: 600;
+      color: $font-dark;
+      line-height: vh(22);
     }
 
-    .ivu-form{
-        padding: 0 vw(20);
-        height: vh(126);
+    .icon-close {
+      cursor: pointer;
+      color: $font-middle;
+      flex-shrink: 0;
+
+      &:hover {
+        color: $theme-color;
+      }
     }
-    .ivu-form-item {
-        margin-bottom: 0;
+  }
+
+  .ivu-form {
+    padding: 0 vw(20);
+    height: vh(126);
+  }
+
+  .ivu-form-item {
+    margin-bottom: 0;
+  }
+
+  .input-wrapper {
+    position: relative;
+    margin-bottom: vh(40);
+
+    .ivu-input {
+      height: vh(40);
+      background: $bg-gray;
+      border: none;
+      border-radius: vw(2);
+      padding: 0 vw(60) 0 vw(20);
+      font-size: vw(16);
+      font-weight: 600;
+      color: $font-dark;
+
+      &::placeholder {
+        color: $placeholder-color;
+        font-weight: 600;
+      }
+
+      &:focus {
+        background: $bg-gray;
+        box-shadow: none;
+      }
     }
 
-    .input-wrapper {
-        position: relative;
-        margin-bottom: vh(40);
+    .ivu-input-word-count {
+      right: vw(20);
+      font-size: vw(16);
+      font-weight: 600;
+      color: $placeholder-color;
+      background: transparent;
+      pointer-events: none;
+    }
+  }
 
-        .ivu-input {
-            height: vh(40);
-            background: $bg-gray;
-            border: none;
-            border-radius: vw(2);
-            padding: 0 vw(60) 0 vw(20);
-            font-size: vw(16);
-            font-weight: 600;
-            color: $font-dark;
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: vw(10);
 
-            &::placeholder {
-                color: $placeholder-color;
-                font-weight: 600;
-            }
-
-            &:focus {
-                background: $bg-gray;
-                box-shadow: none;
-            }
-        }
-
-        .ivu-input-word-count{
-            right: vw(20);
-            font-size: vw(16);
-            font-weight: 600;
-            color: $placeholder-color;
-            background: transparent;
-            pointer-events: none;
-        }
+    button {
+      padding: vh(10) vw(20);
+      border-radius: vw(2);
+      font-size: vw(12);
+      font-weight: 600;
+      line-height: vh(12);
+      cursor: pointer;
+      border: none;
+      outline: none;
     }
 
-    .modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: vw(10);
+    .btn-cancel {
+      background: $white;
+      color: $theme-color;
+      border: vw(1) solid $theme-color;
 
-        button {
-            padding: vh(10) vw(20);
-            border-radius: vw(2);
-            font-size: vw(12);
-            font-weight: 600;
-            line-height: vh(12);
-            cursor: pointer;
-            border: none;
-            outline: none;
-        }
-
-        .btn-cancel {
-            background: $white;
-            color: $theme-color;
-            border: vw(1) solid $theme-color;
-
-            &:hover {
-                opacity: 0.8;
-            }
-        }
-
-        .btn-confirm {
-            background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
-            color: $white;
-
-            &:hover {
-                opacity: 0.9;
-            }
-        }
+      &:hover {
+        opacity: 0.8;
+      }
     }
+
+    .btn-confirm {
+      background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
+      color: $white;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+  }
 }
 </style>
 
@@ -621,22 +623,22 @@ onMounted(() => {
   cursor: pointer;
   color: $font-middle;
   font-size: vw(14);
-    user-select: none;
+  user-select: none;
 
 
   &.active {
     background: linear-gradient(90deg, $hover-color 0%, $hover-color 100%);
     color: $theme-color;
 
-      :deep(.icon > use) {
-          fill: $theme-color;
-      }
+    :deep(.icon > use) {
+      fill: $theme-color;
+    }
   }
 }
 
 .module-dropdown {
   /* position由JS动态设置 */
-    filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.10));
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.10));
 }
 
 .module-manager {
@@ -650,31 +652,32 @@ onMounted(() => {
   position: relative;
   background: transparent;
   filter: drop-shadow(0 0 vw(6) rgba(0, 0, 0, 0.10));
+
   &.available {
     background: $white;
     border-left: none;
 
-      .module-list{
-          padding-bottom: vw(10);
-      }
+    .module-list {
+      padding-bottom: vw(10);
+    }
   }
 }
 
 .module-list {
   max-height: vh(268);
-    padding: vw(10);
-    padding-bottom: 0;
-    background: $white;
+  padding: vw(10);
+  padding-bottom: 0;
+  background: $white;
   overflow-y: auto;
 
-    &.empty{
-        padding: 0;
-    }
+  &.empty {
+    padding: 0;
+  }
 }
 
 .module-item {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
   height: vh(32);
   padding: 0 vw(10);
   background: $white;
@@ -683,36 +686,37 @@ onMounted(() => {
   color: $font-dark;
 
   border-radius: vw(4);
-    font-family: "PingFangSCBold";
+  font-family: "PingFangSCBold";
 
-    &:not(:last-child){
-        margin-bottom: vh(4);
-    }
+  &:not(:last-child) {
+    margin-bottom: vh(4);
+  }
 
   &.hover {
     background: linear-gradient(90deg, $hover-color 0%, $hover-color 100%);
   }
 
-    .name-wrapper{
-        flex: 1;
-        display: flex;
-        align-items: center;
-        line-height: normal;
-  .icon-drag {
-    flex-shrink: 0;
-    color: $font-middle;
-    cursor: move;
-  }
+  .name-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    line-height: normal;
+
+    .icon-drag {
+      flex-shrink: 0;
+      color: $font-middle;
+      cursor: move;
     }
+  }
 
   .icon-delete {
     flex-shrink: 0;
   }
 
   :deep(.icon-delete):hover {
-      >use{
+    > use {
       fill: $theme-color;
-      }
+    }
   }
 
   &.disabled {
@@ -722,9 +726,10 @@ onMounted(() => {
     }
 
     :deep(.icon-drag) {
-        >use{
-            fill: #EAECEE;
-        }
+      > use {
+        fill: #EAECEE;
+      }
+
       cursor: not-allowed;
     }
   }
@@ -747,22 +752,23 @@ onMounted(() => {
   color: $theme-color;
   font-size: vw(14);
   cursor: pointer;
-    background: $white;
+  background: $white;
 }
 
 .module-actions {
   display: flex;
   align-items: center;
   height: vh(42);
-    padding: 0 vw(32);
+  padding: 0 vw(32);
   border-top: 1px solid $border-default;
   font-size: vw(14);
   color: $font-middle;
-    background: $white;
+  background: $white;
 
   .action-btn {
     cursor: pointer;
-                   flex-shrink: 0;
+    flex-shrink: 0;
+
     &:hover {
       color: $theme-color;
     }
@@ -771,7 +777,7 @@ onMounted(() => {
   .divider {
     width: vw(1);
     height: vh(14);
-      margin: 0 vw(29) 0 vw(30);
+    margin: 0 vw(29) 0 vw(30);
     background: $border-default;
   }
 }
@@ -786,10 +792,10 @@ onMounted(() => {
 .sortable-chosen {
   cursor: move;
 
-    .module-name{
-  opacity: 0.4 !important;
+  .module-name {
+    opacity: 0.4 !important;
 
-    }
+  }
 }
 
 :deep(.sortable-drag) {
@@ -797,10 +803,11 @@ onMounted(() => {
   background: $white !important;
   box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1) !important;
   border-radius: vw(4) !important;
+
   .icon-drag {
-      >use{
-        fill: $theme-color !important;
-      }
+    > use {
+      fill: $theme-color !important;
+    }
   }
 }
 </style>

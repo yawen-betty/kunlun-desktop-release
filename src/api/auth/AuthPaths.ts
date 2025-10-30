@@ -1,12 +1,21 @@
-import { Path } from "@/api/Path";
+import {Path} from "@/api/Path";
 
 export class AuthPaths {
-    /**
-     * 微信登录
-     */
-    static wechatLogin: Path = {
-        url: '/login/wechat',
-        method: 'POST',
-        prefix: 'auth'
-    };
+  /**
+   * 微信登录
+   */
+  static wechatLogin: Path = {
+    url: '/login/wechat',
+    method: 'POST',
+    prefix: 'auth'
+  }
+
+  /**
+   * 退出登录
+   */
+  static logout: Path = {
+    url: '/logout',
+    method: 'POST',
+    prefix: 'auth'
+  }
 }

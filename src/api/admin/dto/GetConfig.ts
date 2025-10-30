@@ -1,6 +1,7 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 
 export class GetConfigInDto extends BaseInDto {
+    // 无参数
 }
 
 export class GetConfigOutDto extends BaseOutDto {
@@ -25,7 +26,7 @@ export class GetConfigOutDto extends BaseOutDto {
     appChineseSlogan: string = '';
 
     /**
-     * 登录页图片URL
+     * 登录页背景图URL
      */
     loginPageImage: string = '';
 
@@ -35,7 +36,7 @@ export class GetConfigOutDto extends BaseOutDto {
     appEnglishSlogan: string = '';
 
     /**
-     * 登录页图片文件名
+     * 登录页背景图文件名
      */
     loginPageImageFileName: string = '';
 

@@ -37,13 +37,13 @@
 
 <script setup lang="ts">
 import {ref, reactive} from 'vue';
-import {Form, FormInstance} from 'view-ui-plus';
+import {Form} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import InitProfileForm from "@/components/initProfileForm/index.vue";
 import {validateEmail, validateMobile} from "@/utiles/validators.ts";
 import {InitProfileInDto} from "@/api/user/dto/InitProfile.ts";
 
-const formRef = ref<FormInstance>();
+const formRef = ref<any>(null);
 
 // 表单
 const formValidate = reactive<InitProfileInDto>(new InitProfileInDto());
@@ -96,7 +96,6 @@ const beforeAvatarUpload = (file: File) => {
 const handleSave = () => {
   formRef.value?.validate((valid: boolean) => {
     if (valid) {
-      console.log('表单数据', formData);
       // 提交表单数据
     }
   });

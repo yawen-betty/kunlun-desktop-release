@@ -5,7 +5,7 @@
         <Image
           src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimage109.360doc.com%2FDownloadImg%2F2025%2F04%2F0321%2F296122601_4_20250403090445718&refer=http%3A%2F%2Fimage109.360doc.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1763859057&t=66792e5ac87ee6fe103b9cd1865c808e"
           alt="Logo" class="logo mr-30"/>
-        <h1 class="app-name">{{SystemInfo.info.loginTitle}}</h1>
+        <h1 class="app-name">{{ SystemInfo.info.loginTitle }}</h1>
       </div>
 
       <div class="slogan-area">
@@ -62,7 +62,7 @@ const agreementType = ref<string>('1');
 
 
 // 打开隐私协议弹窗 隐私：'1' 服务 '2'
-const openAgreement = (type:string) => {
+const openAgreement = (type: string) => {
   showAgreement.value = true;
   agreementType.value = type;
 };
@@ -74,7 +74,7 @@ const closeModal = () => {
 
 const generateQRCode = async () => {
   try {
-    const res = {}
+    const res: any = {}
     const url = `https://open.weixin.qq.com/connect/qrconnect?appid=${res.appid}&scope=snsapi_login&redirect_uri=${res.redirect_uri}
     &state=${res.state}&login_type=jssdk&style=black&self_redirect=${true}&href=&id=ewm`
     qrCodeUrl.value = await QRCode.toDataURL(url, {

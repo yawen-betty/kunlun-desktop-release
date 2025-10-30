@@ -53,7 +53,6 @@
 <script setup lang="ts">
 import {ref, reactive, computed} from 'vue';
 import {Modal, Form, FormItem, Input, RadioGroup, Radio, Button, Icon, Message} from 'view-ui-plus';
-import type {FormInstance} from 'view-ui-plus';
 import SvgIcon from "@/components/svgIcon/index.vue";
 
 
@@ -64,7 +63,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const showApiKey = ref(false);
-const formRef = ref<FormInstance>();
+const formRef = ref<any>(null);
 
 const formData = reactive({
   model: 'zhipu',

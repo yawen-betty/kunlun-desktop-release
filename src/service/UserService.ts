@@ -1,13 +1,12 @@
-import { UserPaths } from '@/api/user/UserPaths';
-import HttpClient, { EmptyOutDto } from '@/api/HttpClient';
-import { inject } from 'vue';
-import { InitProfileInDto, InitProfileOutDto } from '@/api/user/dto/InitProfile';
-import { GetProfileInDto, GetProfileOutDto } from '@/api/user/dto/GetProfile';
-import { UpdateProfileInDto, UpdateProfileOutDto } from '@/api/user/dto/UpdateProfile';
-import { UploadAvatarInDto, UploadAvatarOutDto } from '@/api/user/dto/UploadAvatar';
-import { GetModelAccountInDto, GetModelAccountOutDto } from '@/api/user/dto/GetModelAccount';
-import { SaveModelAccountInDto, SaveModelAccountOutDto } from '@/api/user/dto/SaveModelAccount';
-import { Result } from '@/api/BaseDto';
+import { UserPaths } from '@/api/user/UserPaths'
+import HttpClient, { EmptyOutDto } from '@/api/HttpClient'
+import { inject } from 'vue'
+import { InitProfileInDto } from '@/api/user/dto/InitProfile'
+import { GetProfileInDto, GetProfileOutDto } from '@/api/user/dto/GetProfile'
+import { UpdateProfileInDto, UpdateProfileOutDto } from '@/api/user/dto/UpdateProfile'
+import { GetModelAccountInDto, GetModelAccountOutDto } from '@/api/user/dto/GetModelAccount'
+import { SaveModelAccountInDto } from '@/api/user/dto/SaveModelAccount'
+import { Result } from '@/api/BaseDto'
 
 export class UserService {
     private http: HttpClient;
@@ -43,15 +42,8 @@ export class UserService {
     /**
      * 更新当前用户信息
      */
-    public async updateProfile(params: UpdateProfileInDto): Promise<EmptyOutDto> {
-        return await this.http.request<EmptyOutDto>(UserPaths.updateProfile, params);
-    }
-    
-    /**
-     * 上传头像
-     */
-    public async uploadAvatar(params: UploadAvatarInDto): Promise<Result<UploadAvatarOutDto>> {
-        return await this.http.request<Result<UploadAvatarOutDto>>(UserPaths.uploadAvatar, params);
+    public async updateProfile(params: UpdateProfileInDto): Promise<Result<UpdateProfileOutDto>> {
+        return await this.http.request<Result<UpdateProfileOutDto>>(UserPaths.updateProfile, params);
     }
     
     /**

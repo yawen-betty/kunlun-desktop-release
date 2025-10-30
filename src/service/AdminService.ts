@@ -2,7 +2,7 @@ import { AdminPaths } from '@/api/admin/AdminPaths';
 import HttpClient from '@/api/HttpClient';
 import { inject } from 'vue';
 import { GetConfigInDto, GetConfigOutDto } from '@/api/admin/dto/GetConfig';
-import { GetAgreementInDto, GetAgreementOutDto } from '@/api/admin/dto/GetAgreement';
+import { GetAgreementsInDto, GetAgreementsOutDto } from '@/api/admin/dto/GetAgreements';
 import { Result } from '@/api/BaseDto';
 
 export class AdminService {
@@ -32,11 +32,11 @@ export class AdminService {
     /**
      * 获取协议内容
      */
-    public async getAgreements(type: number): Promise<Result<GetAgreementOutDto>> {
+    public async getAgreements(params: GetAgreementsInDto): Promise<Result<GetAgreementsOutDto>> {
         const path = {
             ...AdminPaths.getAgreements,
-            url: `/agreements/${type}`
+            url: `/agreements/${params.type}`
         };
-        return await this.http.request<Result<GetAgreementOutDto>>(path, {});
+        return await this.http.request<Result<GetAgreementsOutDto>>(path, params);
     }
 }

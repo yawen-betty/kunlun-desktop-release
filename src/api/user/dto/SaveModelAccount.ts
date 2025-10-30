@@ -2,10 +2,11 @@ import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 
 export class SaveModelAccountInDto extends BaseInDto {
     /**
-     * API密钥
+     * 完整的智谱AI API Key
      */
     apiKey: string = '';
 }
 
 export class SaveModelAccountOutDto extends BaseOutDto {
+    // 返回空对象
 }

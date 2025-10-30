@@ -1,5 +1,4 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
-import { UserInfoBean } from "@/api/auth/dto/bean/UserInfoBean";
 
 export class WechatLoginInDto extends BaseInDto {
     /**
@@ -10,12 +9,7 @@ export class WechatLoginInDto extends BaseInDto {
 
 export class WechatLoginOutDto extends BaseOutDto {
     /**
-     * JWT令牌
+     * JWT，用于后续接口的身份认证
      */
     token: string = '';
-
-    /**
-     * 用户信息
-     */
-    userInfo: UserInfoBean = new UserInfoBean();
 }

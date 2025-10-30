@@ -3,19 +3,19 @@
     v-model="visible"
     :mask-closable="false"
     :closable="false"
-    width="46%"
     footer-hide
     class="model-usage-modal"
   >
+    <!--    width="46%"-->
     <div class="modal-content">
-      <Icon type="md-close" class="close-icon" @click="handleClose" />
+      <Icon type="md-close" class="close-icon" @click="handleClose"/>
 
       <h3 class="modal-title mb-40">免费模型次数已用完</h3>
 
       <p class="description mb-20">您可以注册、配置自己的模型账号，免费使用AI撰写功能！</p>
 
       <div class="tutorial-link mb-40">
-        <Icon type="md-help-circle" />
+        <Icon type="md-help-circle"/>
         <span>如何注册智谱账号</span>
       </div>
 
@@ -43,19 +43,18 @@
         @click="handleSave"
         class="save-btn"
       >
-        <img src="../../../assets/svg/icon-resume.svg" class="save-icon" alt="" />
+        <img src="../../../assets/svg/icon-resume.svg" class="save-icon" alt=""/>
         <span>保存</span>
       </Button>
 
-      <img src="../../../assets/images/ai.png" class="decoration-img" alt="" />
+      <img src="../../../assets/images/ai.png" class="decoration-img" alt=""/>
     </div>
   </Modal>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
-import { Modal, Form, FormItem, Input, RadioGroup, Radio, Button, Icon, Message } from 'view-ui-plus';
-import type { FormInstance } from 'view-ui-plus';
+import {ref, reactive, computed} from 'vue';
+import {Modal, Form, FormItem, Input, RadioGroup, Radio, Button, Icon, Message} from 'view-ui-plus';
 
 interface Props {
   modelValue: boolean;
@@ -63,6 +62,7 @@ interface Props {
 
 interface Emits {
   (e: 'update:modelValue', value: boolean): void;
+
   (e: 'save', data: { model: string; apiKey: string }): void;
 }
 
@@ -78,7 +78,7 @@ const visible = computed({
 });
 
 const showApiKey = ref(false);
-const formRef = ref<FormInstance>();
+const formRef = ref<any>(null);
 
 const formData = reactive({
   model: 'zhipu',
@@ -87,7 +87,7 @@ const formData = reactive({
 
 const rules = {
   apiKey: [
-    { required: true, message: '请输入API Key', trigger: 'blur' },
+    {required: true, message: '请输入API Key', trigger: 'blur'},
   ],
 };
 
@@ -270,33 +270,33 @@ const handleSave = async () => {
         //}
       }
 
-        //:deep(.ivu-input-suffix){
-        //    height: 100%;
-        //    top: 0;
-        //
-        //  .eye-icon-wrapper {
-        //    display: flex;
-        //    align-items: center;
-        //    height: 100%;
-        //    cursor: pointer;
-        //
-        //    .eye-icon {
-        //      font-size: vw(14);
-        //    }
-        //  }
-        //}
+      //:deep(.ivu-input-suffix){
+      //    height: 100%;
+      //    top: 0;
+      //
+      //  .eye-icon-wrapper {
+      //    display: flex;
+      //    align-items: center;
+      //    height: 100%;
+      //    cursor: pointer;
+      //
+      //    .eye-icon {
+      //      font-size: vw(14);
+      //    }
+      //  }
+      //}
     }
   }
 }
 
 .save-btn {
-    width: vw(82);
- height: vh(32);
+  width: vw(82);
+  height: vh(32);
   background-color: $theme-color;
   border: none;
   border-radius: vw(2);
   cursor: pointer;
-    padding: 0;
+  padding: 0;
 
   &:hover {
     background-color: $theme-color;
@@ -313,14 +313,15 @@ const handleSave = async () => {
     }
   }
 
-  :deep(> span){
+  :deep(> span) {
     display: flex;
-      justify-content: center;
+    justify-content: center;
     align-items: center;
     gap: vw(6);
-      color: $white;
-      font-size: vw(12);
-      font-weight: 600;
+    color: $white;
+    font-size: vw(12);
+    font-weight: 600;
+
     .save-icon {
       width: vw(12);
       height: vw(12);
