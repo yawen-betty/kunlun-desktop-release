@@ -28,18 +28,20 @@ pub async fn http_request(req: HttpRequest) -> Result<HttpResponse, String> {
     if url.is_empty() {
         return Err("URL不能为空".to_string());
     }
-    
+
     // 验证URL是否是有效的HTTP/HTTPS URL
     if !url.starts_with("http://") && !url.starts_with("https://") {
         return Err(format!("无效的URL协议: {}", url));
     }
-    
+
     // 创建客户端
-    let client = match reqwest::Client::builder().build() {
+    let client = match reqwest::Client::builder()
+        .danger_accept_invalid_certs(true) // <--- 禁用所有证书验证
+        .build(){
         Ok(client) => client,
         Err(e) => return Err(format!("创建HTTP客户端失败: {}", e)),
     };
-    
+
     // 根据方法创建请求构建器
     let request_builder = match req.method.to_uppercase().as_str() {
         "GET" => client.get(url),
@@ -68,7 +70,7 @@ pub async fn http_request(req: HttpRequest) -> Result<HttpResponse, String> {
     if req.file_path.is_some() {
         return Err("文件上传功能正在开发中".to_string());
     }
-    
+
     // 处理普通请求体
     if let Some(body) = req.body {
         match body {
@@ -98,7 +100,7 @@ pub async fn http_request(req: HttpRequest) -> Result<HttpResponse, String> {
         Err(e) => {
             // 获取错误信息
             let error_msg = e.to_string();
-            
+
             // 根据错误信息内容返回更友好的错误提示
             if error_msg.contains("URL") || error_msg.contains("url") {
                 return Err(format!("无效的URL格式: {}", url));
