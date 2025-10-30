@@ -29,7 +29,7 @@ const onlyHeader = function (meta: any) {
 const all = [
     {
         path: '/',
-        redirect: '/initProfile'
+        redirect: '/personalInfo'
     },
     {
         // 登录
@@ -38,7 +38,7 @@ const all = [
             title: '登录',
             component: () => import('@/views/login/index.vue')
         }),
-        
+
         // 基本信息收集
         ...onlyHeader({
             path: '/initProfile',
@@ -53,6 +53,13 @@ const all = [
             title: '简历制作',
             icon: 'menu-resume',
             component: () => import('@/views/resume/index.vue')
+        }),
+
+        // 个人信息
+        ...layout({
+            path: '/personalInfo',
+            title: '个人信息',
+            component: () => import('@/views/personalInfo/index.vue')
         })
     }
 ]

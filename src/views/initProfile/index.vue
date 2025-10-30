@@ -34,53 +34,15 @@ import {useRouter} from 'vue-router';
 import {SystemInfo} from "@/utiles/systemInfo.ts";
 import InitProfileForm from '@/components/initProfileForm/index.vue'
 import SvgIcon from "@/components/svgIcon/index.vue";
+import {validateMobile, validateEmail} from '@/utiles/validators.ts';
 
 const router = useRouter();
 const userService = UserService.getInstance();
 
 const formValidateRef = ref<any>(null);
 // 表单数据
-const formValidate = reactive<InitProfileInDto>({
-  ...new InitProfileInDto(),
-  birthDate: '1996-01'
-});
+const formValidate = reactive<InitProfileInDto>(new InitProfileInDto());
 
-// 手机号校验
-const validateMobile = (rule: any, value: string, callback: any) => {
-
-  if (value.length !== 11) {
-    callback(new Error('手机号格式有误'));
-    return;
-  }
-  if (!value.startsWith('1')) {
-    callback(new Error('手机号格式有误'));
-    return;
-  }
-  if (new Set(value).size === 1) {
-    callback(new Error('手机号格式有误'));
-    return;
-  }
-  callback();
-};
-
-// 邮箱校验
-const validateEmail = (rule: any, value: string, callback: any) => {
-  const atCount = (value.match(/@/g) || []).length;
-  if (atCount !== 1) {
-    callback(new Error('邮箱格式有误'));
-    return;
-  }
-  const [local, domain] = value.split('@');
-  if (!local || !domain) {
-    callback(new Error('邮箱格式有误'));
-    return;
-  }
-  if (!domain.includes('.') || domain.startsWith('.') || domain.endsWith('.') || domain.includes('..')) {
-    callback(new Error('邮箱格式有误'));
-    return;
-  }
-  callback();
-};
 
 // 校验
 const ruleValidate = {
@@ -182,7 +144,6 @@ const handleSubmit = async () => {
         font-size: vw(12);
         font-style: normal;
         font-weight: 600;
-        line-height: vw(12);
       }
     }
 
