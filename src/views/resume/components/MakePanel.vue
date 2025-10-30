@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {Message, RadioGroup} from "view-ui-plus";
+import SvgIcon from "@/components/svgIcon/index.vue";
 
 // 输入框提示词列表
 const placeholderList = [
@@ -65,14 +66,28 @@ onMounted(() => {
                 </FormItem>
                 <FormItem>
                     <p class="tip">已有简历，上传后帮你润色</p>
-                    <Upload action="//jsonplaceholder.typicode.com/posts/">
+                    <Upload action="//jsonplaceholder.typicode.com/posts/" :show-upload-list="false">
                         <Button class="upload-btn">
+                            <SvgIcon class="mr-5" name="icon-daoru" size="16" />
                             上传简历
                         </Button>
                     </Upload>
+                    <div class="file-box mt-10 pl-20 pr-15 flex-column align-between">
+                        <div class="file-name flex-column">
+                            <SvgIcon name="icon-pdf" size="24"/>
+                            <div class="file-status ml-20">
+                                <p class="mb-10 name">行政专员-聘小方.pdf</p>
+                                <p class="status">上传中...<span class="ml-5 mr-5"></span>196KB</p>
+                            </div>
+                        </div>
+                        <SvgIcon class="pointer" name="icon-bufuhe" size="20" color="#FC8719"/>
+                    </div>
                 </FormItem>
             </Form>
-            <div class="submit-btn" @click="submit">立即制作</div>
+            <div class="submit-btn" @click="submit">
+                <SvgIcon class="mr-5" name="icon-bianji" size="10" />
+                立即制作
+            </div>
         </div>
         <div class="prod-right">
             <div class="big-title mb-55">
@@ -94,17 +109,17 @@ onMounted(() => {
     display: flex;
     height: 100%;
     padding: vh(40) 0;
-    background: #fff;
+    background: $white;
 
     .prod-left {
         width: vw(600);
         height: 100%;
         padding: vh(138) vw(120) 0 vw(80);
-        border-right: vw(2) #E1E6EC solid;
+        border-right: vw(2) $border-default solid;
 
         .title {
             margin-bottom: vh(50);
-            color: #515A6D;
+            color: $font-dark;
             font-family: 'YouSheBiaoTiHei';
             font-size: vw(38);
             font-style: normal;
@@ -116,8 +131,39 @@ onMounted(() => {
 
             :deep(.job-name){
                 .ivu-input{
-                    background-color: #fff;
+                    background-color: $white;
                     border:vw(1) solid $theme-color !important;
+                }
+            }
+
+            .file-box{
+                height: vh(70);
+                padding-top: vh(16);
+                padding-bottom: vh(16);
+                border-radius: vw(2);
+                background: $bg-gray;
+                line-height: normal;
+
+                .name{
+                    color: $font-dark;
+                    font-family: Inter;
+                    font-size: vw(14);
+                    font-weight: 500;
+                }
+
+                .status{
+                    display: flex;
+                    align-items: center;
+                    color: #B0B7C6;
+                    font-family: Inter;
+                    font-size: vw(12);
+                    font-weight: 500;
+
+                    span{
+                        width: vw(1);
+                        height: vh(12);
+                       background: #B0B7C6;
+                    }
                 }
             }
         }
@@ -133,17 +179,18 @@ onMounted(() => {
 
         .tip {
             margin-bottom: vh(10);
-            color: #515A6D;
+            color: $font-dark;
             font-family: "PingFangSCBold";
             font-size: vw(14);
             line-height: vh(16); /* 114.286% */
         }
 
         .upload-btn {
+
             width: vw(400);
             height: vh(50);
             border-radius: vw(2);
-            border: vw(1.5) dashed #E1E6EC;
+            border: vw(1.5) dashed $border-default;
             color: #9499A4;
             font-family: "PingFangSCBold";
             font-size: vw(16);
@@ -151,8 +198,14 @@ onMounted(() => {
             line-height: vh(16); /* 100% */
 
             &:hover {
-                color: #FC8719;
-                border-color: #FC8719;
+                color: $theme-color;
+                border-color: $theme-color;
+            }
+
+            :deep(>span){
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
         }
 
@@ -165,11 +218,12 @@ onMounted(() => {
             padding: vh(10) vw(20);
             border-radius: vw(2);
             background: linear-gradient(90deg, #FFB32C 0%, #FC8919 100%);
-            color: #FFF;
+            color: $white;
             font-family: "PingFangSCBold";
             font-size: vw(12);
             font-weight: 600;
             cursor: pointer;
+            white-space: nowrap;
         }
     }
 
@@ -178,7 +232,7 @@ onMounted(() => {
         padding: vh(122) vw(91) vh(106) vw(75);
 
         .big-title {
-            color: #515A6D;
+            color: $font-dark;
             font-family: 'YouSheBiaoTiHei';
             font-size: vw(36);
             line-height: vh(66); /* 183.333% */
@@ -206,7 +260,6 @@ onMounted(() => {
                         margin-right: vw(5);
                     }
                 }
-
             }
 
             img {

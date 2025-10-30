@@ -1,6 +1,6 @@
 [package]
 name = "kunlun"
-version = "0.1.0"
+version = "1.0.0"
 description = "昆仑桌面端"
 authors = ["fzxs"]
 edition = "2021"
@@ -26,6 +26,7 @@ tauri-plugin-http = "2.5.2"
 reqwest = { version = "0.12", features = ["json", "multipart"] }
 tauri-plugin-store = "2.4.0"
 tauri-plugin-os = "2.3.1"
+tauri-plugin-updater = "2.9.0"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.
@@ -36,3 +37,6 @@ lto = true # Enables link-time-optimizations.
 opt-level = "s" # Prioritizes small binary size. Use `3` if you prefer speed.
 panic = "abort" # Higher performance by disabling panic handlers.
 strip = true # Ensures debug symbols are removed.
+
+[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-updater = "2.9.0"

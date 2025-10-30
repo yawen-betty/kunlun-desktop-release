@@ -320,6 +320,7 @@ fieldset[disabled] .ivu-input,
   right: 0;
   left: 0;
   text-align: right;
+  font-size: vw(14);
 }
 
 .ivu-form-item-required .ivu-form-item-label:before {
@@ -448,4 +449,25 @@ fieldset[disabled] .ivu-input,
 // 输入框字号重写
 .ivu-input {
   font-size: vw(14);
+}
+
+// label在上样式重写
+.ivu-form-label-top .ivu-form-item-label{
+  padding: 0 0 vh(14) 0;
+}
+
+// 密码样式重写
+.ivu-input-type-password{
+  .ivu-input-suffix{
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    width: vw(20);
+    height: 100%;
+    .ivu-icon{
+      line-height: 1;
+      font-size: vw(16);
+    }
+  }
 }
