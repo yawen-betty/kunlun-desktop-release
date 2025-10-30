@@ -39,7 +39,7 @@
   <!-- 服务协议弹窗 -->
   <AgreementModal
     :visible="showAgreement"
-    title="用户协议"
+    :title="agreementType === '1' ? '隐私协议' : '服务协议'"
     @close="closeModal"
     :agreementType="agreementType"
   />
@@ -52,6 +52,7 @@ import {Image} from "view-ui-plus";
 import {Config} from "@/Config.ts";
 import AgreementModal from '@/views/login/components/AgreementModal.vue';
 import {SystemInfo} from "@/utiles/systemInfo.ts";
+import {AdminService} from "@/service/AdminService.ts";
 
 const qrCodeUrl = ref<string>('');
 
@@ -90,8 +91,15 @@ const generateQRCode = async () => {
   }
 }
 
+const getConfigInfo = () => {
+  AdminService.getInstance().getConfig().then(res => {
+    console.log(res)
+  })
+}
+
 onMounted(() => {
-  generateQRCode()
+  // generateQRCode()
+  getConfigInfo();
 });
 </script>
 

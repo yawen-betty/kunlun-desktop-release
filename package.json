@@ -18,7 +18,7 @@
       "name": "kunlun"
     },
     "dev": {
-      "baseUrl": "http://mgt.crm.dev.pangu.cc/",
+      "baseUrl": "https://crm.dev.lingxizhifu.cn/",
       "basePath": "/"
     },
     "test": {

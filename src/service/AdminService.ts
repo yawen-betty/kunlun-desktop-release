@@ -25,8 +25,8 @@ export class AdminService {
     /**
      * 获取公共应用配置
      */
-    public async getConfig(params: GetConfigInDto): Promise<Result<GetConfigOutDto>> {
-        return await this.http.request<Result<GetConfigOutDto>>(AdminPaths.getConfig, params);
+    public async getConfig(): Promise<Result<GetConfigOutDto>> {
+        return await this.http.request<Result<GetConfigOutDto>>(AdminPaths.getConfig);
     }
     
     /**
