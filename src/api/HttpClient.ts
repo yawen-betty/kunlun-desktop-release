@@ -60,7 +60,7 @@ export default class HttpClient {
 
         // 添加api路径段
         urlParts.push('api');
-        urlParts.push('kunlun-jobseeker');
+        urlParts.push('kunlun');
 
         // 添加prefix（如果有）
         if (path.prefix) {

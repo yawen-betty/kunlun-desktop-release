@@ -53,6 +53,7 @@ import {Config} from "@/Config.ts";
 import AgreementModal from '@/views/login/components/AgreementModal.vue';
 import {SystemInfo} from "@/utiles/systemInfo.ts";
 import {AdminService} from "@/service/AdminService.ts";
+import {GetConfigOutDto} from "@/api/admin/dto/GetConfig.ts";
 
 const qrCodeUrl = ref<string>('');
 
@@ -73,11 +74,22 @@ const closeModal = () => {
   showAgreement.value = false;
 };
 
-const generateQRCode = async () => {
+const generateQRCode = async (res: GetConfigOutDto) => {
   try {
-    const res: any = {}
-    const url = `https://open.weixin.qq.com/connect/qrconnect?appid=${res.appid}&scope=snsapi_login&redirect_uri=${res.redirect_uri}
-    &state=${res.state}&login_type=jssdk&style=black&self_redirect=${true}&href=&id=ewm`
+    const redirect_uri = encodeURIComponent(Config.baseUrl + '/api/kunlun/auth/login/wechat')
+
+    const list = [] as string[];
+
+    // let state = ''
+    // const hexRef = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '-'];
+    //
+    // for (let n = 0; n < 36; n++) {
+    //   list.push(hexRef[Math.floor(Math.random() * 16)]);
+    //   state = list.join('');
+    // }
+
+    const url = `https://open.weixin.qq.com/connect/qrconnect?appid=${res.id}&scope=snsapi_login&redirect_uri=${redirect_uri}
+    &state=&login_type=jssdk&style=black&self_redirect=${true}&href=&id=ewm`
     qrCodeUrl.value = await QRCode.toDataURL(url, {
       width: 1920 * 0.16666666666666666,
       margin: 2,
@@ -94,6 +106,9 @@ const generateQRCode = async () => {
 const getConfigInfo = () => {
   AdminService.getInstance().getConfig().then(res => {
     console.log(res)
+    if (res.code === 200) {
+      generateQRCode(res.data)
+    }
   })
 }
 
