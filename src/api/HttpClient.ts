@@ -3,6 +3,8 @@ import {Config} from "@/Config.ts";
 import {UserInfo} from "@/utiles/userInfo.ts";
 import {invoke} from '@tauri-apps/api/core';
 import type {Path} from "@/api/Path.ts";
+import {message} from "@/utiles/Message.ts";
+import {Message} from "view-ui-plus";
 
 // 定义请求参数接口
 interface HttpRequestParams {
@@ -82,12 +84,25 @@ export default class HttpClient {
             fullUrl = `http://${fullUrl}`;
         }
 
-        // 针对 GET 请求处理查询参数
+        // 处理路径参数和查询参数
         if (path.method === 'GET' && data && Object.keys(data).length > 0) {
-            // 简单处理，URLSearchParams 接受对象
-            const params = new URLSearchParams(data).toString();
-            // 如果 URL 中已有 ?, 则使用 & 拼接，否则使用 ?
-            fullUrl += fullUrl.includes('?') ? `&${params}` : `?${params}`;
+            const remainingData = {...data};
+
+            // 先处理路径参数 (如 /agreements/{type})
+            fullUrl = fullUrl.replace(/\{([^}]+)\}/g, (match, key) => {
+                if (remainingData[key] !== undefined) {
+                    const value = remainingData[key];
+                    delete remainingData[key]; // 从剩余数据中移除已使用的参数
+                    return encodeURIComponent(value);
+                }
+                return match; // 如果没有对应参数，保持原样
+            });
+
+            // 再处理剩余的查询参数
+            if (Object.keys(remainingData).length > 0) {
+                const params = new URLSearchParams(remainingData).toString();
+                fullUrl += fullUrl.includes('?') ? `&${params}` : `?${params}`;
+            }
         }
         return fullUrl;
     }
@@ -111,7 +126,7 @@ export default class HttpClient {
         console.log('开始请求:', path);
         console.log('请求数据:', data);
 
-        // 对于GET请求，传递data参数用于构建查询字符串
+        // 对于GET请求，传递data参数用于构建URL（包括路径参数和查询参数）
         const fullUrl = HttpClient.fixUrl(path, path.method === 'GET' ? data : undefined);
         console.log('构建的URL:', fullUrl);
 
@@ -159,6 +174,8 @@ export default class HttpClient {
 
                 // 检查HTTP状态码
                 if (response.status >= 200 && response.status < 300) {
+                    // 处理特殊业务 code
+                    HttpClient.handleSpecialCode(response.body);
                     // 返回响应体
                     resolve(response.body as T);
                 } else {
@@ -189,4 +206,27 @@ export default class HttpClient {
             file_field_name
         });
     }
+
+    // 在 HttpClient 类中添加一个私有方法来处理特殊 code
+    private static handleSpecialCode(responseBody: any): void {
+        // 检查响应体是否包含 code 字段
+        if (responseBody && typeof responseBody === 'object' && 'code' in responseBody) {
+            const code = responseBody.code;
+
+            switch (code) {
+                case 2108:
+                    message.error(Message, ' 账号已在其他设备登录！');
+                    UserInfo.logout();
+                    break;
+
+                default:
+                    // 其他错误码的通用处理
+                    if (code !== 200 && code !== 0) {
+                        const message = responseBody.message || responseBody.msg || '请求失败';
+                        throw new Error(message);
+                    }
+            }
+        }
+    }
+
 }

@@ -19,6 +19,8 @@ app.use(HttpClient.create())
 
 app.component('SvgIcon', SvgIcon)
 
+// TODO 取已有token 的时候需要判断是否需要跳转填写个人信息页面
+
 
 Object.keys(directive).forEach(key => {
     app.directive(key, (directive as Record<string, any>)[key]);

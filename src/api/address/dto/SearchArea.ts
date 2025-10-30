@@ -6,12 +6,12 @@ export class SearchAreaInDto extends BaseInDto {
      * 范围类型 (null或不传:所有, 1:中国, 2:海外)
      */
     rangeType?: string;
-
+    
     /**
      * 查询最深层级
      */
     maxLevel?: number;
-
+    
     /**
      * 搜索关键词
      */

@@ -7,14 +7,12 @@ import { Result } from '@/api/BaseDto'
 
 export class AddressService {
     private http: HttpClient;
-    // 静态属性，用于存储类的唯一实例
     private static instance: AddressService;
     
     constructor() {
         this.http = inject('$http') as HttpClient;
     }
 
-    // 静态方法，用于获取类的唯一实例
     public static getInstance(): AddressService {
         if (!AddressService.instance) {
             AddressService.instance = new AddressService();

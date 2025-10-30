@@ -1,4 +1,4 @@
-import {Path} from "@/api/Path";
+import {Path} from "@/api/Path.ts";
 
 export class FilePaths {
   /**

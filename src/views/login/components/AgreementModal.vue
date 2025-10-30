@@ -9,41 +9,53 @@
 
       <!-- 内容区域 -->
       <div class="modal-content mt-40">
-          {{ content }}
-        </div>
+        <iframe :src="agreementFileUrl" class="agreement-iframe" scrolling="no" frameborder="0"></iframe>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, watch, ref} from 'vue';
+import {defineEmits, defineProps, ref, watch} from 'vue';
 import SvgIcon from '@/components/svgIcon/index.vue'
+import {AdminService} from "@/service/AdminService.ts";
+import {GetAgreementInDto} from "@/api/admin/dto/GetAgreement.ts";
 
 // 定义组件属性
 const props = defineProps<{
   visible: boolean;  // 显示
   title: string; // 标题
-  agreementType:string // 类型
+  agreementType: number // 类型
 }>();
 
-// 协议内容
-const content = ref<string>('')
+const emit = defineEmits(['update:visible']);
 
-// 定义组件事件
-const emit = defineEmits<{
-  close: [];
-}>();
+// 协议地址
+const agreementFileUrl = ref<string>('')
 
-watch(()=>props.visible,(newVal:boolean)=>{
-  if (newVal){
-    // 调用接口
-
+watch(() => props.visible, (newVal: boolean) => {
+  if (newVal) {
+    getAgreement();
   }
 })
 
+// 获取协议
+const getAgreement = () => {
+  const params: GetAgreementInDto = {
+    type: props.agreementType
+  }
+
+  AdminService.getInstance().getAgreements(params).then(res => {
+    if (res.code === 200) {
+      // 添加参数隐藏PDF工具栏
+      agreementFileUrl.value = res.data.agreementFileUrl + '#toolbar=0&navpanes=0&scrollbar=0'
+    }
+  })
+}
+
 // 处理关闭弹窗
 const handleClose = () => {
-  emit('close');
+  emit('update:visible', false)
 };
 </script>
 
@@ -65,15 +77,15 @@ const handleClose = () => {
   height: vh(800);
   border-radius: vw(2);
   background: $white;
-  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.10) inset;
   padding: vw(40) vw(40) vh(76);
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
-  .cha{
+
+  .cha {
     position: absolute;
     right: vw(20);
     top: vh(20);
@@ -87,12 +99,12 @@ const handleClose = () => {
 }
 
 .modal-title {
-  color:$font-dark;
+  color: $font-dark;
   font-size: vw(28);
   font-style: normal;
   font-weight: 400;
   line-height: vw(28);
-  font-family: 'YouSheBiaoTiHei',serif;
+  font-family: 'YouSheBiaoTiHei', serif;
 }
 
 /* 内容区域 */
@@ -104,25 +116,30 @@ const handleClose = () => {
   font-weight: 500;
   line-height: vw(22);
   word-break: break-all;
+  position: relative;
+  overflow: hidden;
+  border-radius: vw(2);
 
-  /* 自定义滚动条 */
+  .agreement-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    border-radius: vw(2);
+    overflow: hidden;
+    scrolling: no;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  /* 隐藏滚动条 */
   &::-webkit-scrollbar {
-    width: 8px;
+    display: none;
   }
-
-  &::-webkit-scrollbar-track {
-    background: #F6F8FA;
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #E1E6EC;
-    border-radius: 4px;
-    transition: background 0.3s ease;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: #CBD0D8;
-  }
+  
+  /* 隐藏Firefox滚动条 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 </style>

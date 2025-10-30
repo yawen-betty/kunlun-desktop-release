@@ -6,14 +6,12 @@ import { Result } from '@/api/BaseDto'
 
 export class FileService {
     private http: HttpClient;
-    // 静态属性，用于存储类的唯一实例
     private static instance: FileService;
     
     constructor() {
         this.http = inject('$http') as HttpClient;
     }
 
-    // 静态方法，用于获取类的唯一实例
     public static getInstance(): FileService {
         if (!FileService.instance) {
             FileService.instance = new FileService();

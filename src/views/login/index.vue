@@ -2,16 +2,13 @@
   <div class="login-page">
     <div class="left-section">
       <div class="brand-area">
-        <Image
-          src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimage109.360doc.com%2FDownloadImg%2F2025%2F04%2F0321%2F296122601_4_20250403090445718&refer=http%3A%2F%2Fimage109.360doc.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1763859057&t=66792e5ac87ee6fe103b9cd1865c808e"
-          alt="Logo" class="logo mr-30"/>
+        <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30"/>
         <h1 class="app-name">{{ SystemInfo.info.loginTitle }}</h1>
       </div>
 
       <div class="slogan-area">
-        <p class="slogan-cn">求职不用“硬扛”，你的求职竞争力，从此“次方”增涨！</p>
-        <p class="slogan-en">No more struggling through job hunting – with AI PinCifang, your job-hunting
-          competitiveness grows exponentially!</p>
+        <p class="slogan-cn">{{ configInfo.appChineseSlogan }}</p>
+        <p class="slogan-en">{{ configInfo.appEnglishSlogan }}</p>
       </div>
 
       <div class="illustration-area">
@@ -22,24 +19,22 @@
     <div class="right-section">
       <div class="login-box">
         <h2 class="login-title">微信扫码登录/注册</h2>
-        <img :src="qrCodeUrl" alt="QR Code" class="qrcode">
-
+        <img :src="qrCodeUrl" alt="QR Code" class="qrcode pointer" @click="generateQRCode">
 
         <div class="agreement-text">
           登录即同意
-          <span class="agreement-link pointer" @click="openAgreement('2')">《服务协议》</span>、
-          <span class="agreement-link pointer" @click="openAgreement('1')">《隐私协议》</span>
+          <span class="agreement-link pointer" @click="openAgreement(2)">《服务协议》</span>、
+          <span class="agreement-link pointer" @click="openAgreement(1)">《隐私协议》</span>
         </div>
       </div>
     </div>
 
-    <div class="version-info">{{ Config.version }}{{ Config.env !== 'prod' && Config.env }}</div>
+    <div class="version-info">{{ Config.version }} - {{ Config.env !== 'prod' && Config.env }}</div>
   </div>
 
-  <!-- 服务协议弹窗 -->
   <AgreementModal
-    :visible="showAgreement"
-    :title="agreementType === '1' ? '隐私协议' : '服务协议'"
+    v-model:visible="showAgreement"
+    :title="agreementType === 1 ? '隐私协议' : '服务协议'"
     @close="closeModal"
     :agreementType="agreementType"
   />
@@ -47,51 +42,59 @@
 
 <script setup lang="ts">
 import QRCode from 'qrcode'
-import {onMounted, ref} from 'vue';
-import {Image} from "view-ui-plus";
+import {onBeforeUnmount, onMounted, reactive, ref} from 'vue';
+import {Image, Message} from "view-ui-plus";
 import {Config} from "@/Config.ts";
 import AgreementModal from '@/views/login/components/AgreementModal.vue';
 import {SystemInfo} from "@/utiles/systemInfo.ts";
 import {AdminService} from "@/service/AdminService.ts";
-import {GetConfigOutDto} from "@/api/admin/dto/GetConfig.ts";
+import {GetConfigInDto, GetConfigOutDto} from "@/api/admin/dto/GetConfig.ts";
+import {AuthService} from "@/service/AuthService.ts";
+import {GetTokenInDto} from "@/api/auth/dto/GetToken.ts";
+import {UserInfo} from "@/utiles/userInfo.ts";
+import {UserService} from "@/service/UserService.ts";
+import {GetProfileInDto} from "@/api/user/dto/GetProfile.ts";
+import {auth} from "@/utiles/tauriCommonds.ts";
+import {useRouter} from "vue-router";
+import {message} from "@/utiles/Message.ts";
 
 const qrCodeUrl = ref<string>('');
-
-// 协议弹窗管理
 const showAgreement = ref<boolean>(false);
-// 类型
-const agreementType = ref<string>('1');
+const agreementType = ref<number>(1);
+const configInfo = reactive<GetConfigOutDto>(new GetConfigOutDto)
+const state = ref<string>('');
+const inter = ref();
+const router = useRouter();
 
+// 在setup中创建service实例，避免在定时器中丢失Vue上下文
+const authService = new AuthService();
+const adminService = new AdminService();
+const userService = new UserService();
 
-// 打开隐私协议弹窗 隐私：'1' 服务 '2'
-const openAgreement = (type: string) => {
+const openAgreement = (type: number) => {
   showAgreement.value = true;
   agreementType.value = type;
 };
 
-// 关闭弹窗
 const closeModal = () => {
   showAgreement.value = false;
 };
 
-const generateQRCode = async (res: GetConfigOutDto) => {
+const generateQRCode = async () => {
   try {
-    const redirect_uri = encodeURIComponent(Config.baseUrl + '/api/kunlun/auth/login/wechat')
-
+    const redirect_uri = encodeURIComponent('https://hr-stu.dev.lingxizhifu.net/api/kunlun/auth/wechat/callback')
+    const hexRef = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '-'];
     const list = [] as string[];
 
-    // let state = ''
-    // const hexRef = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '-'];
-    //
-    // for (let n = 0; n < 36; n++) {
-    //   list.push(hexRef[Math.floor(Math.random() * 16)]);
-    //   state = list.join('');
-    // }
+    for (let n = 0; n < 36; n++) {
+      list.push(hexRef[Math.floor(Math.random() * 16)]);
+    }
+    state.value = list.join('');
 
-    const url = `https://open.weixin.qq.com/connect/qrconnect?appid=${res.id}&scope=snsapi_login&redirect_uri=${redirect_uri}
-    &state=&login_type=jssdk&style=black&self_redirect=${true}&href=&id=ewm`
+    const url = `https://open.weixin.qq.com/connect/qrconnect?appid=wxb1fa1b36925f5f61&redirect_uri=${redirect_uri}&response_type=code&scope=snsapi_login&state=${state.value}#wechat_redirect`
+
     qrCodeUrl.value = await QRCode.toDataURL(url, {
-      width: 1920 * 0.16666666666666666,
+      width: 320,
       margin: 2,
       color: {
         dark: '#000000',
@@ -104,20 +107,62 @@ const generateQRCode = async (res: GetConfigOutDto) => {
 }
 
 const getConfigInfo = () => {
-  AdminService.getInstance().getConfig().then(res => {
-    console.log(res)
+  adminService.getConfig(new GetConfigInDto()).then(res => {
     if (res.code === 200) {
-      generateQRCode(res.data)
+      Object.assign(configInfo, res.data);
+      SystemInfo.info.loginTitle = res.data.appName
+      SystemInfo.info.loginBg = res.data.loginPageImage
+      generateQRCode()
     }
   })
 }
 
+const getStatus = () => {
+  const data: GetTokenInDto = {
+    state: state.value
+  }
+
+  authService.getToken(data).then(res => {
+    if (res.code === 200) {
+      clearInterval(inter.value);
+      UserInfo.info.token = res.data.token;
+      auth.saveToken(res.data.token);
+      message.success(Message, '登录成功！')
+      getUserInfo();
+    }
+  })
+};
+
+const getUserInfo = () => {
+  userService.getProfile(new GetProfileInDto()).then(res => {
+    if (res.code === 200) {
+      UserInfo.info.avatar = res.data.avatarUrl!;
+      UserInfo.info.userName = res.data.name;
+
+      if (res.data.profileCompleteFlag === '1') {
+        router.push('/personalInfo')
+      } else {
+        router.push('/initProfile')
+      }
+    }
+  })
+}
+
+const open = () => {
+  inter.value = setInterval(() => {
+    getStatus();
+  }, 1000);
+};
+
+onBeforeUnmount(() => {
+  clearInterval(inter.value);
+});
+
 onMounted(() => {
-  // generateQRCode()
   getConfigInfo();
+  open();
 });
 </script>
-
 
 <style scoped lang="scss">
 .login-page {
@@ -130,6 +175,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     padding: vh(80) 0 0 vw(110);
+    width: vw(1006);
 
     .brand-area {
       display: flex;
@@ -185,7 +231,6 @@ onMounted(() => {
       }
     }
   }
-
 
   .right-section {
     padding: vh(185) vw(260) 0 vw(94);

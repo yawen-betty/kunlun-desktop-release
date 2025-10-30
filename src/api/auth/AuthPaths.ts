@@ -1,21 +1,15 @@
-import {Path} from "@/api/Path";
+import {Path} from "@/api/Path.ts";
 
 export class AuthPaths {
-  /**
-   * 微信登录
-   */
-  static wechatLogin: Path = {
-    url: '/login/wechat',
-    method: 'POST',
-    prefix: 'auth'
-  }
-
-  /**
-   * 退出登录
-   */
-  static logout: Path = {
-    url: '/logout',
-    method: 'POST',
-    prefix: 'auth'
-  }
+  /** 微信登录 */
+  static wechatLogin: Path = { url: '/login/wechat', method: 'POST', prefix: 'auth' }
+  
+  /** 退出登录 */
+  static logout: Path = { url: '/logout', method: 'POST', prefix: 'auth' }
+  
+  /** 微信登录回调 */
+  static wechatCallback: Path = { url: '/wechat/callback', method: 'GET', prefix: 'auth' }
+  
+  /** 获取登录Token */
+  static getToken: Path = { url: '/token/{state}', method: 'GET', prefix: 'auth' }
 }

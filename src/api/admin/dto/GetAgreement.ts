@@ -1,4 +1,4 @@
-import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
+import {BaseInDto, BaseOutDto} from "@/api/BaseDto";
 
 export class GetAgreementInDto extends BaseInDto {
     /**
@@ -9,15 +9,20 @@ export class GetAgreementInDto extends BaseInDto {
 
 export class GetAgreementOutDto extends BaseOutDto {
     /**
+     * 协议地址
+     */
+    agreementFileUrl: string = '';
+
+    /**
      * 协议类型
      */
     agreementType: number = 0;
 
     /**
-     * 协议内容
+     * 协议名字
      */
-    content: string = '';
-
+    name: string = '';
+    
     /**
      * 更新时间 (时间戳)
      */

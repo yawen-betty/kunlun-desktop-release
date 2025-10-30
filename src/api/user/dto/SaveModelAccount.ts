@@ -8,5 +8,4 @@ export class SaveModelAccountInDto extends BaseInDto {
 }
 
 export class SaveModelAccountOutDto extends BaseOutDto {
-    // 返回空对象
 }

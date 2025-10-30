@@ -1,10 +1,15 @@
-import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
+import {BaseInDto, BaseOutDto} from "@/api/BaseDto";
 
 export class GetConfigInDto extends BaseInDto {
     // 无参数
 }
 
 export class GetConfigOutDto extends BaseOutDto {
+    /**
+     * 微信appId
+     */
+    appId: string = '';
+
     /**
      * 配置ID
      */
