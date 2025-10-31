@@ -22,7 +22,8 @@
 
   <div class="form-row">
     <FormItem label="手机号码" prop="mobile">
-      <Input v-model="formData.mobile" placeholder="请输入" clearable @input="handleMobileInput"></Input>
+      <Input v-model="formData.mobile" placeholder="请输入" clearable @input="handleMobileInput"
+             :maxlength="11"></Input>
     </FormItem>
     <FormItem label="个人邮箱" prop="email">
       <Input v-model="formData.email" placeholder="请输入" :maxlength="30" clearable @input="handleEmailInput"></Input>
@@ -75,10 +76,13 @@ const handleChange = () => {
 <style scoped lang="scss">
 .form-row {
   display: flex;
-  justify-content: space-between;
 
   :deep(.ivu-form-item) {
     width: vw(400);
+  }
+
+  & > div:nth-of-type(1) {
+    margin-right: vw(143)
   }
 }
 </style>

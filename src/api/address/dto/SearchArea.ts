@@ -22,5 +22,5 @@ export class SearchAreaOutDto extends BaseOutDto {
     /**
      * 地区列表
      */
-    areaList: AreaInfoBean[] = [];
+    list: AreaInfoBean[] = [];
 }

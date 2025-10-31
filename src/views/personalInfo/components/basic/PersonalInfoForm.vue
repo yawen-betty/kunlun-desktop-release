@@ -22,7 +22,7 @@
         </div>
       </div>
 
-      <InitProfileForm :form-data="formValidate"/>
+      <InitProfileForm :form-data="formValidate" :form-validate-ref="formRef"/>
 
       <!-- 保存按钮 -->
       <div class="form-actions">
@@ -54,13 +54,13 @@ const ruleValidate = {
     {required: true, message: '请输入姓名', trigger: 'blur'}
   ],
   gender: [
-    {required: true, message: '请选择性别', trigger: 'change'},
+    {required: true, message: '请选择性别', trigger: 'change', type: 'number'},
   ],
   birthDate: [
-    {required: true, message: '请选择出生年月', trigger: 'change'},
+    {required: true, message: '请选择出生年月', trigger: 'change', type: 'date',},
   ],
-  city: [
-    {required: true, message: '请选择居住城市', trigger: 'change', type: 'array'},
+  areaInfoBeanList: [
+    {required: true, message: '请选择居住城市', trigger: 'change', type: 'array', mix: 1},
   ],
   mobile: [
     {required: true, message: '请输入手机号码', trigger: 'blur'},
@@ -71,6 +71,7 @@ const ruleValidate = {
     {validator: validateEmail, trigger: 'blur'},
   ],
 }
+
 
 const handleAvatarSuccess = (response: any) => {
   // 处理头像上传成功

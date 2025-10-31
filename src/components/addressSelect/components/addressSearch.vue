@@ -108,7 +108,7 @@ const handleSearchCityList = () => {
 
   addressService.searchArea(inDto).then(res => {
     if (res.code === 200) {
-      searchList.value = res.data.areaList.filter(
+      searchList.value = res.data.list.filter(
         // 直辖市去除全部 北京110000 天津120000 上海310000 重庆500000
         (item: AreaInfoBean) => item.id !== '110000' && item.id !== '120000' && item.id !== '310000' && item.id !== '500000'
       );
