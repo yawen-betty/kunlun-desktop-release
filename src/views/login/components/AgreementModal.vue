@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineEmits, defineProps, ref, watch} from 'vue';
+import {ref, watch} from 'vue';
 import SvgIcon from '@/components/svgIcon/index.vue'
 import {AdminService} from "@/service/AdminService.ts";
 import {GetAgreementInDto} from "@/api/admin/dto/GetAgreement.ts";
