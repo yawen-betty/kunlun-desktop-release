@@ -6,16 +6,15 @@
     footer-hide
     class="model-usage-modal"
   >
-    <!--    width="46%"-->
     <div class="modal-content">
-      <Icon type="md-close" class="close-icon" @click="handleClose"/>
+      <Icon type="md-close" class="close-icon" @click="handleClose" />
 
       <h3 class="modal-title mb-40">免费模型次数已用完</h3>
 
       <p class="description mb-20">您可以注册、配置自己的模型账号，免费使用AI撰写功能！</p>
 
-      <div class="tutorial-link mb-40">
-        <Icon type="md-help-circle"/>
+      <div class="tutorial-link mb-40" @click="handleShowTutorial">
+        <Icon type="md-help-circle" />
         <span>如何注册智谱账号</span>
       </div>
 
@@ -39,22 +38,36 @@
       </Form>
 
       <Button
-        :disabled="!formData.apiKey"
         @click="handleSave"
         class="save-btn"
       >
-        <img src="../../../assets/svg/icon-resume.svg" class="save-icon" alt=""/>
+        <SvgIcon name="icon-baocun" size="12"/>
         <span>保存</span>
       </Button>
 
-      <img src="../../../assets/images/ai.png" class="decoration-img" alt=""/>
+      <img src="../../../assets/images/ai.png" class="decoration-img" alt="" />
+    </div>
+  </Modal>
+
+  <Modal
+    v-model="tutorialVisible"
+    :mask-closable="false"
+    :closable="false"
+    footer-hide
+    class="tutorial-modal"
+  >
+    <div class="tutorial-content">
+      <Icon type="md-close" class="tutorial-close-icon" @click="handleCloseTutorial" />
+      <h3 class="tutorial-title mb-20">如何注册智谱账号</h3>
+      <div class="tutorial-html pt-20" v-html="tutorialContent"></div>
     </div>
   </Modal>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, computed} from 'vue';
-import {Modal, Form, FormItem, Input, RadioGroup, Radio, Button, Icon, Message} from 'view-ui-plus';
+import { ref, reactive, computed } from 'vue';
+import { Modal, Form, FormItem, Input, RadioGroup, Radio, Button, Icon, Message } from 'view-ui-plus';
+import SvgIcon from "@/components/svgIcon/index.vue";
 
 interface Props {
   modelValue: boolean;
@@ -77,8 +90,11 @@ const visible = computed({
   set: (value) => emit('update:modelValue', value),
 });
 
+const tutorialVisible = ref(false);
 const showApiKey = ref(false);
 const formRef = ref<any>(null);
+
+const tutorialContent = '<h3>我是标题</h3><p>第二步：我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程</p><p>第三步：我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程</p><p>第四步：我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程我是教程</p>';
 
 const formData = reactive({
   model: 'zhipu',
@@ -87,7 +103,7 @@ const formData = reactive({
 
 const rules = {
   apiKey: [
-    {required: true, message: '请输入API Key', trigger: 'blur'},
+    { required: true, message: '请输入API Key', trigger: 'blur' },
   ],
 };
 
@@ -97,6 +113,14 @@ const toggleApiKeyVisibility = () => {
 
 const handleClose = () => {
   visible.value = false;
+};
+
+const handleShowTutorial = () => {
+  tutorialVisible.value = true;
+};
+
+const handleCloseTutorial = () => {
+  tutorialVisible.value = false;
 };
 
 const handleSave = async () => {
@@ -116,6 +140,20 @@ const handleSave = async () => {
   }
 };
 </script>
+
+<style lang="scss">
+.model-usage-modal{
+    width:vw(900) !important;
+}
+
+.tutorial-modal{
+    width:vw(1200) !important;
+
+    .ivu-modal-body{
+        padding-bottom: vh(40);
+    }
+}
+</style>
 
 <style scoped lang="scss">
 .model-usage-modal {
@@ -141,7 +179,6 @@ const handleSave = async () => {
   width: 100%;
   min-height: vh(510);
   background-color: $white;
-  //position: relative;
   padding: vh(15) 0 0;
 }
 
@@ -245,47 +282,6 @@ const handleSave = async () => {
       color: $remind-error;
       margin-left: vw(4);
     }
-
-    .api-key-input {
-      :deep(.ivu-input) {
-        //height: vh(40);
-        //background-color: $bg-gray;
-        //border: none;
-        //border-radius: vw(2);
-        //padding: 0 vw(20);
-        //font-size: vw(16);
-        //color: $font-dark;
-        //
-        //&::placeholder {
-        //  color: $placeholder-color;
-        //    font-family: "PingFangSCBold",serif;
-        //    font-size: vw(16);
-        //    font-weight: 600;
-        //    line-height: 1.5; /* 100% */
-        //}
-        //
-        //&:focus {
-        //  box-shadow: none;
-        //  background-color: $bg-gray;
-        //}
-      }
-
-      //:deep(.ivu-input-suffix){
-      //    height: 100%;
-      //    top: 0;
-      //
-      //  .eye-icon-wrapper {
-      //    display: flex;
-      //    align-items: center;
-      //    height: 100%;
-      //    cursor: pointer;
-      //
-      //    .eye-icon {
-      //      font-size: vw(14);
-      //    }
-      //  }
-      //}
-    }
   }
 }
 
@@ -303,25 +299,20 @@ const handleSave = async () => {
     opacity: 0.9;
   }
 
-  &:disabled {
-    background-color: #EAECEE;
-    color: #B0B7C6;
-    cursor: not-allowed;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  :deep(> span) {
+  :deep(> span){
     display: flex;
     justify-content: center;
     align-items: center;
+    line-height: normal;
+    height: 100%;
     gap: vw(6);
     color: $white;
     font-size: vw(12);
     font-weight: 600;
 
+    svg{
+      margin-top: 1px;
+    }
     .save-icon {
       width: vw(12);
       height: vw(12);
@@ -337,5 +328,90 @@ const handleSave = async () => {
   width: vw(287);
   height: vh(235);
   pointer-events: none;
+}
+
+.tutorial-modal {
+  :deep(.ivu-modal) {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  :deep(.ivu-modal-content) {
+    border-radius: vw(2);
+  }
+
+  :deep(.ivu-modal-body) {
+    padding: 0;
+  }
+
+    :deep(.ivu-modal-footer) {
+        display: none;
+    }
+}
+
+.tutorial-content {
+  width: 100%;
+  min-height: vh(600);
+  background-color: $white;
+    padding: vh(15) 0 0;
+}
+
+.tutorial-close-icon {
+  position: absolute;
+  right: vw(20);
+  top: vh(18);
+  font-size: vw(20);
+  cursor: pointer;
+  color: $font-middle;
+
+  &:hover {
+    color: $font-dark;
+  }
+}
+
+.tutorial-title {
+  font-family: 'YouSheBiaoTiHei', 'PingFang SC', sans-serif;
+  font-size: vw(28);
+  line-height: vh(28);
+  color: $font-dark;
+  font-weight: 400;
+}
+
+.tutorial-html {
+  color: $font-dark;
+  font-size: vw(16);
+  font-weight: 600;
+  line-height: vh(22);
+  width: vw(1120);
+  height: vh(672);
+  overflow-y: auto;
+
+  :deep(h3) {
+    font-size: vw(20);
+    line-height: vh(22);
+    margin-bottom: vh(16);
+    color: $font-dark;
+  }
+
+  :deep(p) {
+    font-size: vw(16);
+    line-height: vh(22);
+    margin-bottom: vh(22);
+    color: $font-dark;
+  }
+
+  :deep(a) {
+    color: $theme-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  :deep(strong) {
+    font-weight: 600;
+    color: $font-dark;
+  }
 }
 </style>
