@@ -47,7 +47,7 @@ const all = [
     layout({
         path: '/resume',
         title: '简历制作',
-        icon: 'menu-resume',
+        icon: 'icon-resume',
         component: () => import('@/views/resume/index.vue')
     }),
     // 个人信息
