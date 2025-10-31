@@ -1,5 +1,5 @@
-@forward "@/assets/styles/compute.scss";
-@forward "@/assets/styles/variable.scss";
+@forward "./compute.scss";
+@forward "./variable.scss";
 
 @use './base.scss';
 @use './constant.scss';

@@ -37,6 +37,8 @@ const visible = ref(true)
 </template>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .resume-cont {
     height: 100%;
     padding: vh(40);

@@ -72,6 +72,8 @@ defineExpose({ show });
 </template>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .update-content {
   padding: 20px 0;
 

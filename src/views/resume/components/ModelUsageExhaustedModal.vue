@@ -142,6 +142,8 @@ const handleSave = async () => {
 </script>
 
 <style lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .model-usage-modal{
     width:vw(900) !important;
 }
@@ -156,6 +158,8 @@ const handleSave = async () => {
 </style>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .model-usage-modal {
   :deep(.ivu-modal) {
     top: 50%;

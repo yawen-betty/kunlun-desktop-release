@@ -104,6 +104,8 @@ const handleSave = () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .personal-info-form {
   width: vw(1279);
   height: vh(940);

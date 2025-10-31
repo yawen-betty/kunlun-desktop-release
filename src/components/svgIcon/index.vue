@@ -31,7 +31,9 @@ const symbolId = computed(() => `#${props.prefix}-${props.name}`);
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .svg-icon {
   overflow: hidden;
   fill: currentColor;

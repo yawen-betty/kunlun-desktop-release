@@ -34,6 +34,8 @@ const handleLogout = () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .basic {
   display: flex;
   gap: vw(40);

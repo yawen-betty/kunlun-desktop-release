@@ -89,6 +89,8 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .init-profile-container {
   width: 100vw;
   height: 100vh;

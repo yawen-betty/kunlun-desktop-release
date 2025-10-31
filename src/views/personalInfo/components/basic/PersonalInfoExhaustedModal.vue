@@ -99,6 +99,8 @@ const handleSave = async () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .modal-content {
   width: 100%;
   height: 100%;

@@ -47,6 +47,8 @@ const handleLogout = () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .personal-info-sidebar {
   width: vw(360);
   height: vh(570);

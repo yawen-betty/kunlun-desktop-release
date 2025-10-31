@@ -14,6 +14,8 @@ import Header from '@/layouts/components/header.vue';
 </template>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .layout{
   height: 100vh;
 }

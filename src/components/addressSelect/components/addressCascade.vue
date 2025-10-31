@@ -180,7 +180,9 @@ watch(() => props.optionsList, async (newValue) => {
 }, {immediate: true, deep: true});
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .address-cascade-wrapper {
   display: flex;
   flex: 1;

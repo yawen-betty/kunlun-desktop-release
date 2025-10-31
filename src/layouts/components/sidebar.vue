@@ -85,6 +85,9 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
+
 .left-menu{
   width: 160px;
   height: 100vh;

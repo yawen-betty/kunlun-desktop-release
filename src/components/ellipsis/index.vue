@@ -104,6 +104,8 @@ onMounted(() => {
 }
 </style>
 <style lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .ivu-tooltip-inner:has(.custom-tool-tip-content) {
     white-space: unset;
     word-wrap: break-word;

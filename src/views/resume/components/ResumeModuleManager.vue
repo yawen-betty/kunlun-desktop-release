@@ -412,7 +412,9 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .delete-confirm-modal.ivu-modal-wrap {
   .ivu-modal-content {
     border-radius: vw(2);

@@ -209,6 +209,8 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 
 .search-filter .icon-close {
   width: 0 !important;;

@@ -45,6 +45,8 @@ const isMax = ref(false);
 </template>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .titlebar {
   height: 28px;
   background: transparent;

@@ -26,6 +26,8 @@ const handleTabClick = (name: string) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .personal-info-tabs {
   border-bottom: 1px solid $border-default;
 

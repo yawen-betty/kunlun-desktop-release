@@ -173,6 +173,8 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .login-page {
   display: flex;
   width: 100%;

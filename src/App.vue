@@ -43,12 +43,13 @@ const manualCheckUpdate = async () => {
   </main>
   <UpdateDialog ref="updateDialogRef" />
 </template>
-<style lang="scss">
-@use "@/assets/styles/variable.scss";
+<style scoped lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 .container {
   height: 100vh;
   margin: 0;
   padding: 0;
-  background: variable.$bg-gray;
+  background: $bg-gray;
 }
 </style>
