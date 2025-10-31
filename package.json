@@ -11,7 +11,8 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "generate-latest": "tsx build/generate-latest.mts"
   },
   "config": {
     "build": {
@@ -19,15 +20,18 @@
     },
     "dev": {
       "baseUrl": "https://crm.dev.lingxizhifu.cn/",
-      "basePath": "/"
+      "basePath": "/",
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
     },
     "test": {
       "baseUrl": "https://test.liangjiyuren.cn/",
-      "basePath": "/"
+      "basePath": "/",
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
     },
     "prod": {
       "baseUrl": "",
-      "basePath": "/"
+      "basePath": "/",
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
     }
   },
   "dependencies": {

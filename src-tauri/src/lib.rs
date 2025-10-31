@@ -23,7 +23,9 @@ pub fn run() {
         ])
         .setup(|app| {
             #[cfg(desktop)]
-            app.handle().plugin(tauri_plugin_updater::Builder::new().build());
+             if let Err(e) = app.handle().plugin(tauri_plugin_updater::Builder::new().build()) {
+               eprintln!("Failed to initialize updater plugin: {}", e);
+             }
             Ok(())
         })
         .run(tauri::generate_context!())

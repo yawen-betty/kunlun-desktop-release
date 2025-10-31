@@ -10,7 +10,7 @@ pub struct HttpRequest {
     headers: Option<HashMap<String, String>>,
     body: Option<serde_json::Value>,
     file_path: Option<String>,
-    file_field_name: Option<String>,
+//     file_field_name: Option<String>,
 }
 
 // 响应结构体

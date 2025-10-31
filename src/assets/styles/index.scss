@@ -1,5 +1,8 @@
-@import './base.scss';
-@import './constant.scss';
-@import './form.scss';
-@import './poptip.scss';
-@import './modal.scss';
+@forward "@/assets/styles/compute.scss";
+@forward "@/assets/styles/variable.scss";
+
+@use './base.scss';
+@use './constant.scss';
+@use './form.scss';
+@use './poptip.scss';
+@use './modal.scss';

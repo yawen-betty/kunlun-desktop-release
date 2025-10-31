@@ -28,11 +28,12 @@ class AppConfig {
 
     /**
      * 配置 package.json中 config部分.
-     * @type {{[p: string]: {baseUrl: string, basePath: string, debug: boolean}}}
+     * @type {{[p: string]: {baseUrl: string, basePath: string, downloadUrl: string}}}
      */
     config: {
         'baseUrl': string,
-        'basePath': string
+        'basePath': string,
+        'downloadUrl': string
     };
 
     build: {
@@ -52,6 +53,7 @@ class AppConfig {
         //= =============================================================
         console.info('$baseUrl=>', this.config.baseUrl);
         console.info('$basePath=>', this.config.basePath);
+        console.info('$downloadUrl=>', this.config.downloadUrl)
 
         //= ===============================================
         const now = new Date(this.timestamp);
@@ -67,6 +69,7 @@ export class Config {
   static readonly timestamp: number = ${this.timestamp};
   static readonly baseUrl = '${this.config.baseUrl}';
   static readonly basePath = '${this.config.basePath}';
+  static readonly downloadUrl = '${this.config.downloadUrl}';
   static readonly env : 'dev' | 'test' | 'prod' | 'local' = '${this.env}';
   static readonly buildVersion: string = '${buildVersion}';
   static readonly buildName: string = '${this.build.name}';

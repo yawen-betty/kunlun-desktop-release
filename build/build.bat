@@ -1,0 +1,5 @@
+@echo off
+set TAURI_SIGNING_PRIVATE_KEY=YOUR_PRIVATE_KEY_HERE
+set TAURI_SIGNING_PRIVATE_KEY_PASSWORD=YOUR_PASSWORD_HERE
+npm run tauri build
+npm run generate-latest
