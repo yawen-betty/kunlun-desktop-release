@@ -118,19 +118,27 @@ const getConfigInfo = () => {
 }
 
 const getStatus = () => {
-  const data: GetTokenInDto = {
-    state: state.value
+  // const data: GetTokenInDto = {
+  //   state: state.value
+  // }
+
+  const res = {
+    data: {
+      token: '8e7336a23071472f96811f9d8a9cde4f'
+    }
   }
 
-  authService.getToken(data).then(res => {
-    if (res.code === 200) {
-      clearInterval(inter.value);
-      UserInfo.info.token = res.data.token;
-      auth.saveToken(res.data.token);
-      message.success(Message, '登录成功！')
-      getUserInfo();
-    }
-  })
+  // authService.getToken(data).then(res => {
+  //   if (res.code === 200) {
+  clearInterval(inter.value);
+  UserInfo.info.token = res.data.token;
+  auth.saveToken(res.data.token)
+  message.success(Message, '登录成功！')
+  getUserInfo();
+  // } else if (res.code === 2107) {
+  //   message.error(Message, '该账号已被管理员停用，无法登陆！')
+  // }
+  // })
 };
 
 const getUserInfo = () => {
@@ -270,6 +278,7 @@ onMounted(() => {
     font-style: normal;
     font-weight: 400;
     line-height: vw(24);
+    text-align: center;
 
     .agreement-link {
       color: $theme-color;

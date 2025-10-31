@@ -444,6 +444,10 @@ fieldset[disabled] .ivu-input,
       background: $hover-color
     }
   }
+
+  .ivu-date-picker-cells-month .ivu-date-picker-cells-cell-focused, .ivu-date-picker-cells-year .ivu-date-picker-cells-cell-focused {
+    background: $white;
+  }
 }
 
 // 输入框字号重写
@@ -452,20 +456,21 @@ fieldset[disabled] .ivu-input,
 }
 
 // label在上样式重写
-.ivu-form-label-top .ivu-form-item-label{
+.ivu-form-label-top .ivu-form-item-label {
   padding: 0 0 vh(14) 0;
 }
 
 // 密码样式重写
-.ivu-input-type-password{
-  .ivu-input-suffix{
+.ivu-input-type-password {
+  .ivu-input-suffix {
     top: 0;
     display: flex;
     align-items: center;
     justify-content: end;
     width: vw(20);
     height: 100%;
-    .ivu-icon{
+
+    .ivu-icon {
       line-height: 1;
       font-size: vw(16);
     }

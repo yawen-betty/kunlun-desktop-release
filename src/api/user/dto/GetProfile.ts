@@ -1,62 +1,59 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
-import { AreaBean } from "@/api/user/dto/bean/AreaBean";
+import { AreaInfoBean } from "@/api/user/dto/bean/AreaInfoBean";
 
+/**
+ * 获取当前用户信息请求DTO
+ */
 export class GetProfileInDto extends BaseInDto {
+    // 无请求参数
 }
 
+/**
+ * 获取当前用户信息响应DTO
+ */
 export class GetProfileOutDto extends BaseOutDto {
     /**
-     * 微信 Union ID
+     * 用户ID
      */
-    unionId: string = '';
+    uuid: string = '';
     
     /**
-     * 微信 Open ID
+     * 用户姓名
      */
-    openId: string = '';
+    name?: string;
     
     /**
-     * 姓名
+     * 性别 (0:未知, 1:男, 2:女)
      */
-    name: string = '';
+    gender?: number;
     
     /**
-     * 性别 (1:男, 2:女, 0:未知)
+     * 出生年月 (时间戳)
      */
-    gender: number = 0;
+    birthDate?: number;
     
     /**
-     * 出生日期 (时间戳字符串)
+     * 地点Bean列表
      */
-    birthDate: string = '';
+    areaInfoBeanList?: AreaInfoBean[];
     
     /**
-     * 城市编码
+     * 手机号码
      */
-    city: string = '';
+    mobile?: string;
     
     /**
-     * 城市地区详细信息
+     * 个人邮箱
      */
-    areaBean: AreaBean = new AreaBean();
+    email?: string;
     
     /**
-     * 手机号
-     */
-    mobile: string = '';
-    
-    /**
-     * 电子邮箱
-     */
-    email: string = '';
-    
-    /**
-     * 头像URL
+     * 头像链接
      */
     avatarUrl?: string;
     
     /**
-     * 个人资料是否补全 (1:是, 0:否)
+     * 个人信息是否已补全 (0:否, 1:是)
      */
     profileCompleteFlag: string = '';
 }

@@ -37,7 +37,11 @@ export default class HttpClient {
     };
 
     static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
-    static token: string | undefined = UserInfo.info?.token;
+
+    // 动态获取token，确保每次请求都使用最新的token
+    static get token(): string | undefined {
+        return UserInfo.info?.token;
+    }
 
     // 接口URL拼接
     private static fixUrl(path: Path, data?: any): string {
@@ -136,8 +140,9 @@ export default class HttpClient {
             'Accept': 'application/json',
             'version': Config.version
         };
+
         if (HttpClient.token) {
-            defaultHeaders['Admin-Token'] = `Bearer ${HttpClient.token}`;
+            defaultHeaders['Admin-Token'] = HttpClient.token;
         }
         console.log('请求头:', defaultHeaders);
 

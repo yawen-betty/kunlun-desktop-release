@@ -1,6 +1,6 @@
 import {reactive} from "vue";
 import {auth} from "@/utiles/tauriCommonds.ts";
-import {useRouter} from "vue-router";
+import router from "@/router/index.ts";
 
 export class UserInfo {
 
@@ -17,6 +17,6 @@ export class UserInfo {
         UserInfo.info.userId = '';
         UserInfo.info.avatar = '';
         await auth.saveToken('');
-        await useRouter().replace('/login');
+        await router.replace('/login');
     }
 }

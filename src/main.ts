@@ -11,6 +11,8 @@ import SvgIcon from '@/components/svgIcon/index.vue';
 
 // 导入Tauri API
 import {invoke} from '@tauri-apps/api/core';
+import {UserInfo} from "@/utiles/userInfo.ts";
+import {auth} from "@/utiles/tauriCommonds.ts";
 
 const app = createApp(App);
 app.use(router).mount('#app');
@@ -21,6 +23,9 @@ app.component('SvgIcon', SvgIcon)
 
 // TODO 取已有token 的时候需要判断是否需要跳转填写个人信息页面
 
+auth.getToken().then((token) => {
+    UserInfo.info.token = token;
+})
 
 Object.keys(directive).forEach(key => {
     app.directive(key, (directive as Record<string, any>)[key]);

@@ -1,23 +1,19 @@
-import { UserPaths } from '@/api/user/UserPaths'
-import HttpClient, { EmptyOutDto } from '@/api/HttpClient'
-import { inject } from 'vue'
-import { InitProfileInDto } from '@/api/user/dto/InitProfile'
-import { GetProfileInDto, GetProfileOutDto } from '@/api/user/dto/GetProfile'
-import { UpdateProfileInDto, UpdateProfileOutDto } from '@/api/user/dto/UpdateProfile'
-import { GetModelAccountInDto, GetModelAccountOutDto } from '@/api/user/dto/GetModelAccount'
-import { SaveModelAccountInDto } from '@/api/user/dto/SaveModelAccount'
-import { Result } from '@/api/BaseDto'
+import { UserPaths } from '@/api/user/UserPaths';
+import HttpClient from '@/api/HttpClient';
+import { inject } from 'vue';
+import { InitProfileInDto, InitProfileOutDto } from '@/api/user/dto/InitProfile';
+import { GetProfileInDto, GetProfileOutDto } from '@/api/user/dto/GetProfile';
+import { Result } from '@/api/BaseDto';
+import { EmptyOutDto } from '@/api/HttpClient';
 
 export class UserService {
     private http: HttpClient;
-    // 静态属性，用于存储类的唯一实例
     private static instance: UserService;
     
     constructor() {
         this.http = inject('$http') as HttpClient;
     }
 
-    // 静态方法，用于获取类的唯一实例
     public static getInstance(): UserService {
         if (!UserService.instance) {
             UserService.instance = new UserService();
@@ -42,21 +38,21 @@ export class UserService {
     /**
      * 更新当前用户信息
      */
-    public async updateProfile(params: UpdateProfileInDto): Promise<Result<UpdateProfileOutDto>> {
-        return await this.http.request<Result<UpdateProfileOutDto>>(UserPaths.updateProfile, params);
+    public async updateProfile(params: InitProfileInDto): Promise<Result<GetProfileOutDto>> {
+        return await this.http.request<Result<GetProfileOutDto>>(UserPaths.updateProfile, params);
     }
     
     /**
      * 获取模型账号配置
      */
-    public async getModelAccount(params: GetModelAccountInDto): Promise<Result<GetModelAccountOutDto>> {
-        return await this.http.request<Result<GetModelAccountOutDto>>(UserPaths.getModelAccount, params);
+    public async getModelAccount(): Promise<Result<any>> {
+        return await this.http.request<Result<any>>(UserPaths.getModelAccount, {});
     }
     
     /**
      * 保存模型账号配置
      */
-    public async saveModelAccount(params: SaveModelAccountInDto): Promise<EmptyOutDto> {
+    public async saveModelAccount(params: { apiKey: string }): Promise<EmptyOutDto> {
         return await this.http.request<EmptyOutDto>(UserPaths.saveModelAccount, params);
     }
 }

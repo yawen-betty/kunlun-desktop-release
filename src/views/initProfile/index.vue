@@ -10,7 +10,7 @@
       <h3 class="form-title">Hello！请完善您的基本信息</h3>
 
       <Form ref="formValidateRef" :model="formValidate" :rules="ruleValidate" class="form-validate">
-        <InitProfileForm :form-data="formValidate"/>
+        <InitProfileForm :form-data="formValidate" :formValidateRef="formValidateRef"/>
       </Form>
 
 
@@ -26,8 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from 'vue';
-import {Image, Form, Button} from 'view-ui-plus';
+import {onMounted, reactive, ref} from 'vue';
+import {Image, Form, Button, Message} from 'view-ui-plus';
 import {InitProfileInDto} from '@/api/user/dto/InitProfile.ts';
 import {UserService} from '@/service/UserService.ts';
 import {useRouter} from 'vue-router';
@@ -35,14 +35,14 @@ import {SystemInfo} from "@/utiles/systemInfo.ts";
 import InitProfileForm from '@/components/initProfileForm/index.vue'
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {validateMobile, validateEmail} from '@/utiles/validators.ts';
+import {message} from "@/utiles/Message.ts";
 
 const router = useRouter();
-const userService = UserService.getInstance();
+const userService = new UserService();
 
 const formValidateRef = ref<any>(null);
 // 表单数据
 const formValidate = reactive<InitProfileInDto>(new InitProfileInDto());
-
 
 // 校验
 const ruleValidate = {
@@ -50,13 +50,13 @@ const ruleValidate = {
     {required: true, message: '请输入姓名', trigger: 'blur'}
   ],
   gender: [
-    {required: true, message: '请选择性别', trigger: 'change'},
+    {required: true, message: '请选择性别', trigger: 'change', type: 'number'},
   ],
   birthDate: [
-    {required: true, message: '请选择出生年月', trigger: 'change'},
+    {required: true, message: '请选择出生年月', trigger: 'change', type: 'date',},
   ],
-  city: [
-    {required: true, message: '请选择居住城市', trigger: 'change', type: 'array'},
+  areaInfoBeanList: [
+    {required: true, message: '请选择居住城市', trigger: 'change', type: 'array', mix: 1},
   ],
   mobile: [
     {required: true, message: '请输入手机号码', trigger: 'blur'},
@@ -71,6 +71,18 @@ const ruleValidate = {
 // 提交表单
 const handleSubmit = async () => {
   formValidateRef.value.validate((valid: boolean) => {
+    if (valid) {
+      const data: InitProfileInDto = {
+        ...formValidate,
+        birthDate: new Date(formValidate.birthDate).getTime()
+      }
+
+      userService.initProfile(data).then(() => {
+        router.push('/resume');
+      })
+    } else {
+      message.error(Message, '请完善必填项！')
+    }
 
   })
 };
