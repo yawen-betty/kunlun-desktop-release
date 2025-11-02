@@ -37,9 +37,10 @@ import {InitProfileInDto} from '@/api/user/dto/InitProfile.ts';
 import {sex} from "@/enums/enumDict.ts";
 import AddressSelect from '@/components/addressSelect/index.vue';
 import {ref} from 'vue';
+import {UpdateProfileInDto} from "@/api/user/dto/UpdateProfile.ts";
 
 interface Props {
-  formData: InitProfileInDto;
+  formData: InitProfileInDto | UpdateProfileInDto;
   formValidateRef: any
 }
 
@@ -76,6 +77,7 @@ const handleChange = () => {
 <style scoped lang="scss">
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
 .form-row {
   display: flex;
 

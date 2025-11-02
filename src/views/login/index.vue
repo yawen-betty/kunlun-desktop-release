@@ -124,7 +124,7 @@ const getStatus = () => {
 
   const res = {
     data: {
-      token: '8e7336a23071472f96811f9d8a9cde4f'
+      token: 'ca002d6cc8b04c4999c8f5faba059bd1'
     }
   }
 
@@ -145,7 +145,7 @@ const getUserInfo = () => {
   userService.getProfile(new GetProfileInDto()).then(res => {
     if (res.code === 200) {
       UserInfo.info.avatar = res.data.avatarUrl!;
-      UserInfo.info.userName = res.data.name;
+      UserInfo.info.userName = res.data.name!;
 
       if (res.data.profileCompleteFlag === '1') {
         router.push('/personalInfo')
@@ -175,6 +175,7 @@ onMounted(() => {
 <style scoped lang="scss">
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
 .login-page {
   display: flex;
   width: 100%;

@@ -63,7 +63,6 @@
 import {computed, nextTick, onMounted, PropType, provide, ref, useSlots, watch} from 'vue';
 import AddressSearch from '@/components/addressSelect/components/addressSearch.vue';
 import AddressCascade from '@/components/addressSelect/components/addressCascade.vue';
-import {AddressQueryAreaInDto} from '@/api/system/dto/AddressQueryArea.ts'
 
 import {useCommon} from "@/utiles/useCommon.ts";
 import {AddressService} from "@/service/AddressService.ts";

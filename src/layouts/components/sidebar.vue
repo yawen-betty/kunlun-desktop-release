@@ -6,6 +6,7 @@ import routes from '@/router/routers.ts';
 import {useRoute, useRouter} from "vue-router";
 import SvgIcon from '@/components/svgIcon/index.vue';
 import {Col, Image} from "view-ui-plus";
+import {hasChineseCharacters} from "@/utiles/validators.ts";
 
 /**
  * 监听窗口大小,调整尺寸 开始
@@ -18,20 +19,7 @@ const listenerResize = () => {
  * 监听窗口大小,调整尺寸 结束
  */
 
-/**
- * 处理用户名 开始
- */
 
-// 使用正则表达式匹配中文字符
-const chinesePattern = /[\u4e00-\u9fa5]/;
-const hasChineseCharacters = (str: string) => {
-  // 检查字符串中是否包含中文字符
-  if (chinesePattern.test(str)) {
-    return str && str.length && str.length >= 2 ? str.substring(str?.length - 2) : str.substring(str?.length - 1);
-  }else {
-    return str.substring(0, 1);
-  }
-};
 /**
  * 处理用户名 结束
  */
@@ -65,7 +53,7 @@ onMounted(() => {
   <div class="left-menu" :class="{ minibar: minSize}">
     <div class="user">
       <img v-if="UserInfo.info.avatar" :src="UserInfo.info.avatar" class="user-avatar mr-10"/>
-      <div class="user-circle" v-else>{{hasChineseCharacters(UserInfo.info.userName)}}</div>
+      <div class="user-circle" v-else>{{ hasChineseCharacters(UserInfo.info.userName || '') }}</div>
       <div v-if="!minSize" class="user-text">
         <Ellipsis
           :content="UserInfo.info.userName"
@@ -77,7 +65,7 @@ onMounted(() => {
       <template v-for="item in routes" :key="item.path">
         <MenuItem :name="item.path" v-if="item.show">
           <SvgIcon :name="item.meta.icon" :size="minSize ? '20px' : '16px'"/>
-          {{item.meta.title}}
+          {{ item.meta.title }}
         </MenuItem>
       </template>
     </Menu>
@@ -88,25 +76,25 @@ onMounted(() => {
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
 
-.left-menu{
+.left-menu {
   width: 160px;
   height: 100vh;
   background: #fff;
   border-right: 1px solid $border-default;
   box-sizing: content-box;
 
-  .user{
+  .user {
     display: flex;
     align-items: center;
     padding: 60px 20px 20px;
 
-    .user-avatar{
+    .user-avatar {
       width: 30px;
       height: 30px;
       border-radius: 50%;
     }
 
-    .user-circle{
+    .user-circle {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -121,7 +109,7 @@ onMounted(() => {
       color: #fff;
     }
 
-    .user-text{
+    .user-text {
       width: 80px;
       font-size: 16px;
       font-weight: bold;
@@ -129,15 +117,15 @@ onMounted(() => {
     }
   }
 
-  :deep(.ivu-menu){
+  :deep(.ivu-menu) {
     width: 160px !important;
 
-    &:after{
+    &:after {
       display: none;
     }
   }
 
-  :deep(.ivu-menu-item){
+  :deep(.ivu-menu-item) {
     display: flex;
     align-items: center;
     margin: 10px;
@@ -149,38 +137,38 @@ onMounted(() => {
     font-weight: bold;
     color: $font-dark;
 
-    &:hover{
+    &:hover {
       background: $hover-color;
     }
 
-    .svg-icon{
+    .svg-icon {
       margin-right: 10px;
       color: $font-dark;
     }
   }
 
-  .ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu){
+  .ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
     background: $theme-color;
     color: #fff;
 
-    .svg-icon{
+    .svg-icon {
       color: #fff;
     }
 
-    &:after{
+    &:after {
       display: none;
     }
   }
 }
 
-.minibar{
+.minibar {
   width: 74px;
 
-  .user{
+  .user {
     padding: 55px 0 15px;
     justify-content: center;
 
-    .user-circle{
+    .user-circle {
       width: 40px;
       height: 40px;
       margin-right: 0;
@@ -188,11 +176,11 @@ onMounted(() => {
     }
   }
 
-  :deep(.ivu-menu){
+  :deep(.ivu-menu) {
     width: 74px !important;
   }
 
-  :deep(.ivu-menu-item){
+  :deep(.ivu-menu-item) {
     flex-direction: column;
     justify-content: center;
     width: 54px;
@@ -200,7 +188,7 @@ onMounted(() => {
     padding: 0;
     font-size: 10px;
 
-    .svg-icon{
+    .svg-icon {
       margin-right: 0;
       margin-bottom: 6px;
     }

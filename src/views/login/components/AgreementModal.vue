@@ -30,6 +30,8 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:visible']);
 
+const adminService = new AdminService()
+
 // 协议地址
 const agreementFileUrl = ref<string>('')
 
@@ -45,7 +47,7 @@ const getAgreement = () => {
     type: props.agreementType
   }
 
-  AdminService.getInstance().getAgreements(params).then(res => {
+  adminService.getAgreements(params).then(res => {
     if (res.code === 200) {
       // 添加参数隐藏PDF工具栏
       agreementFileUrl.value = res.data.agreementFileUrl + '#toolbar=0&navpanes=0&scrollbar=0'

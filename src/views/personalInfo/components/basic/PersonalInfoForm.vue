@@ -5,8 +5,8 @@
     <Form ref="formRef" :model="formValidate" :rules="ruleValidate" class="form-validate">
       <!-- 头像上传 -->
       <div class="form-section">
-        <div class="form-label">头像</div>
-        <div class="avatar-upload">
+        <div class="form-label mb-20">头像</div>
+        <div class="avatar-upload pointer">
           <Upload
             :show-upload-list="false"
             :on-success="handleAvatarSuccess"
@@ -15,8 +15,12 @@
           >
             <div class="avatar-container">
               <div class="avatar-circle">
-                <span class="avatar-text">小方</span>
+                <span class="avatar-text">{{ hasChineseCharacters(UserInfo.info.userName || '') }}</span>
               </div>
+            </div>
+
+            <div class="avatar-modal">
+              <SvgIcon name="icon-bianji-xian" size="20" color="#fff"/>
             </div>
           </Upload>
         </div>
@@ -36,17 +40,23 @@
 </template>
 
 <script setup lang="ts">
-import {ref, reactive} from 'vue';
-import {Form} from 'view-ui-plus';
+import {onMounted, reactive, ref} from 'vue';
+import {Form, Message} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import InitProfileForm from "@/components/initProfileForm/index.vue";
-import {validateEmail, validateMobile} from "@/utiles/validators.ts";
-import {InitProfileInDto} from "@/api/user/dto/InitProfile.ts";
+import {hasChineseCharacters, validateEmail, validateMobile} from "@/utiles/validators.ts";
+import {GetProfileInDto} from "@/api/user/dto/GetProfile.ts";
+import {UserInfo} from "@/utiles/userInfo.ts";
+import {message} from "@/utiles/Message.ts";
+import {UserService} from "@/service/UserService.ts";
+import {UpdateProfileInDto} from "@/api/user/dto/UpdateProfile.ts";
 
 const formRef = ref<any>(null);
 
 // 表单
-const formValidate = reactive<InitProfileInDto>(new InitProfileInDto());
+const formValidate = reactive<UpdateProfileInDto>(new UpdateProfileInDto());
+
+const userService = new UserService();
 
 // 校验
 const ruleValidate = {
@@ -95,17 +105,46 @@ const beforeAvatarUpload = (file: File) => {
 };
 
 const handleSave = () => {
-  formRef.value?.validate((valid: boolean) => {
+  formRef.value.validate((valid: boolean) => {
     if (valid) {
-      // 提交表单数据
+      const data: UpdateProfileInDto = {
+        ...formValidate,
+        birthDate: new Date(formValidate.birthDate as any).getTime()
+      }
+
+      userService.updateProfile(data).then(res => {
+        if (res.code === 200) {
+          message.success(Message, '保存成功！')
+          UserInfo.info.avatar = res.data.avatarUrl!;
+          UserInfo.info.userName = res.data.name!;
+        }
+      })
+    } else {
+      message.error(Message, '请完善必填项！')
     }
-  });
+  })
 };
+
+const getUserInfo = () => {
+  userService.getProfile(new GetProfileInDto()).then(res => {
+    if (res.code === 200) {
+      Object.assign(formValidate, {
+        ...res.data,
+        birthDate: new Date(res.data.birthDate as any)
+      })
+    }
+  })
+}
+
+onMounted(() => {
+  getUserInfo();
+})
 </script>
 
 <style scoped lang="scss">
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
 .personal-info-form {
   width: vw(1279);
   height: vh(940);
@@ -118,15 +157,46 @@ const handleSave = () => {
     font-size: vw(28);
     color: $font-dark;
     font-weight: 400;
-    margin-bottom: vh(68);
+    margin-bottom: vh(40);
   }
 
   .form-section {
     margin-bottom: vh(40);
+
+    .form-label {
+      color: $font-middle;
+      font-size: vw(16);
+      font-style: normal;
+      font-weight: 600;
+      line-height: vw(16);
+    }
   }
 
 
   .avatar-upload {
+    position: relative;
+
+    .avatar-modal {
+      display: none;
+    }
+
+    &:hover {
+      .avatar-modal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 10;
+        width: vw(80);
+        height: vw(80);
+        border-radius: 50px;
+        background: rgba(0, 0, 0, 0.50);
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+    }
+
     .avatar-container {
       cursor: pointer;
     }

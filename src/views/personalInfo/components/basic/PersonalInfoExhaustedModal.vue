@@ -12,13 +12,13 @@
 
     <div class="tutorial-link mb-40">
       <Icon type="md-help-circle"/>
-      <span>如何注册智谱账号</span>
+      <span @click="handleTutorial(true)">如何注册智谱账号</span>
     </div>
 
     <Form ref="formRef" :model="formData" :rules="rules" class="config-form mb-60" label-position="top">
       <FormItem label="模型" prop="model" class="model-item">
-        <RadioGroup v-model="formData.model" class="model-radio-group">
-          <Radio label="zhipu">智谱</Radio>
+        <RadioGroup v-model="formData.provider" class="model-radio-group">
+          <Radio :label="info.key" v-for="info in aiModal" :key="info.key">{{ info.value }}</Radio>
         </RadioGroup>
       </FormItem>
 
@@ -28,6 +28,7 @@
           :type="showApiKey ? 'text' : 'password'"
           placeholder="请输入"
           class="api-key-input"
+          :maxlength="100"
         >
           <template #suffix>
             <div class="eye-icon-wrapper" @click="toggleApiKeyVisibility">
@@ -46,61 +47,99 @@
       保存
     </Button>
 
-    <img src="../../../../assets/images/ai.png" class="decoration-img" alt=""/>
+    <img src="@/assets/images/ai.png" class="decoration-img" alt=""/>
   </div>
+
+  <Modal
+    v-model="tutorialVisible"
+    :mask-closable="false"
+    :closable="false"
+    footer-hide
+    class="tutorial-modal"
+  >
+    <div class="tutorial-content">
+      <Icon type="md-close" class="tutorial-close-icon" @click="handleTutorial(false)"/>
+      <h3 class="tutorial-title mb-20">如何注册智谱账号</h3>
+      <div class="tutorial-html pt-20" v-html="tutorialContent"></div>
+    </div>
+  </Modal>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, computed} from 'vue';
-import {Modal, Form, FormItem, Input, RadioGroup, Radio, Button, Icon, Message} from 'view-ui-plus';
+import {ref, reactive, onMounted} from 'vue';
+import {Form, FormItem, Input, RadioGroup, Radio, Button, Icon, Message, Modal} from 'view-ui-plus';
 import SvgIcon from "@/components/svgIcon/index.vue";
-
-
-interface Emits {
-  (e: 'save', data: { model: string; apiKey: string }): void;
-}
-
-const emit = defineEmits<Emits>();
+import {UserService} from "@/service/UserService.ts";
+import {message} from "@/utiles/Message.ts";
+import {SaveModelAccountInDto} from "@/api/user/dto/SaveModelAccount.ts";
+import {aiModal} from "@/enums/enumDict.ts";
 
 const showApiKey = ref(false);
 const formRef = ref<any>(null);
 
-const formData = reactive({
-  model: 'zhipu',
-  apiKey: '',
-});
+const userService = new UserService();
 
+// form
+const formData = reactive<SaveModelAccountInDto>(new SaveModelAccountInDto());
+
+// 校验
 const rules = {
   apiKey: [
     {required: true, message: '请输入API Key', trigger: 'blur'},
   ],
 };
 
+// 弹窗状态
+const tutorialVisible = ref<boolean>(false);
+// html 内容
+const tutorialContent = ref<string>('')
+
+
+// 是否开启隐藏key
 const toggleApiKeyVisibility = () => {
   showApiKey.value = !showApiKey.value;
 };
 
+// 弹窗状态切换
+const handleTutorial = (state: boolean) => {
+  tutorialVisible.value = state
+}
 
+
+// 保存模型key
 const handleSave = async () => {
-  try {
-    const valid = await formRef.value?.validate();
-    if (!valid) return;
+  const valid = await formRef.value?.validate();
 
-    emit('save', {
-      model: formData.model,
-      apiKey: formData.apiKey,
-    });
-
-    Message.success('配置保存成功');
-  } catch (error) {
-    Message.error('保存失败，请稍后重试');
+  if (valid) {
+    userService.saveModelAccount(formData).then(res => {
+      if (res.code === 200) {
+        message.success(Message, '配置保存成功！')
+      }
+    })
+  } else {
+    message.error(Message, '请完善必填项！')
   }
 };
+
+
+// 获取app key
+const getAppKey = () => {
+  userService.getModelAccount().then(res => {
+    if (res.code === 200) {
+      Object.assign(formData, res.data)
+    }
+  })
+}
+
+onMounted(() => {
+  getAppKey()
+});
 </script>
 
 <style scoped lang="scss">
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
 .modal-content {
   width: 100%;
   height: 100%;
@@ -299,4 +338,91 @@ const handleSave = async () => {
   aspect-ratio: 50/41;
   pointer-events: none;
 }
+
+.tutorial-modal {
+  :deep(.ivu-modal) {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  :deep(.ivu-modal-content) {
+    border-radius: vw(2);
+  }
+
+  :deep(.ivu-modal-body) {
+    padding: 0;
+  }
+
+  :deep(.ivu-modal-footer) {
+    display: none;
+  }
+}
+
+
+.tutorial-content {
+  width: 100%;
+  min-height: vh(600);
+  background-color: $white;
+  padding: vh(15) 0 0;
+}
+
+.tutorial-close-icon {
+  position: absolute;
+  right: vw(20);
+  top: vh(18);
+  font-size: vw(20);
+  cursor: pointer;
+  color: $font-middle;
+
+  &:hover {
+    color: $font-dark;
+  }
+}
+
+.tutorial-title {
+  font-family: 'YouSheBiaoTiHei', 'PingFang SC', sans-serif;
+  font-size: vw(28);
+  line-height: vh(28);
+  color: $font-dark;
+  font-weight: 400;
+}
+
+.tutorial-html {
+  color: $font-dark;
+  font-size: vw(16);
+  font-weight: 600;
+  line-height: vh(22);
+  width: vw(1120);
+  height: vh(672);
+  overflow-y: auto;
+
+  :deep(h3) {
+    font-size: vw(20);
+    line-height: vh(22);
+    margin-bottom: vh(16);
+    color: $font-dark;
+  }
+
+  :deep(p) {
+    font-size: vw(16);
+    line-height: vh(22);
+    margin-bottom: vh(22);
+    color: $font-dark;
+  }
+
+  :deep(a) {
+    color: $theme-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  :deep(strong) {
+    font-weight: 600;
+    color: $font-dark;
+  }
+}
+
 </style>

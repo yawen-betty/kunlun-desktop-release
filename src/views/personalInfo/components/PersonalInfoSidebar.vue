@@ -6,15 +6,40 @@
       </MenuItem>
     </Menu>
 
-    <div class="logout-btn" @click="handleLogout">
+    <div class="logout-btn" @click="logoutState = true">
       <SvgIcon name="icon-tuichu-mian" size="14" color="#B0B7C7"/>
       <span class="logout-text">退出登录</span>
     </div>
   </div>
+
+  <Modal
+    v-model="logoutState"
+    :mask-closable="false"
+    :closable="false"
+    footer-hide
+    class="logout-modal"
+  >
+    <div class="logout-box">
+      <div class="logout-content">
+        <Icon type="md-close" class="logout-close-icon" @click="logoutState = false"/>
+        <h3 class="logout-title mb-40">提示</h3>
+        <div class="logout-html">退出登录后，下次需使用微信扫码登录；确认是否退出？</div>
+      </div>
+
+      <div class="logout-footer">
+        <Button class="mr-10 cancel btn" @click="logoutState = false">取消</Button>
+        <Button type="primary" class="submit btn" @click="handleSubmitLogout">确定</Button>
+      </div>
+    </div>
+  </Modal>
 </template>
 
 <script setup lang="ts">
 import SvgIcon from '@/components/svgIcon/index.vue';
+import {ref} from "vue";
+import {Button, Icon, Modal} from "view-ui-plus";
+import {AuthService} from "@/service/AuthService.ts";
+import {UserInfo} from "@/utiles/userInfo.ts";
 
 interface Props {
   modelValue: string;
@@ -26,6 +51,11 @@ interface Emits {
 
 defineProps<Props>();
 const emit = defineEmits<Emits>();
+
+// 退出登录弹窗
+const logoutState = ref<boolean>(false);
+
+const authService = new AuthService();
 
 const menuItems = [
   {name: 'personal', label: '个人信息'},
@@ -42,13 +72,19 @@ const handleSelect = (name: string) => {
   emit('update:modelValue', name);
 };
 
-const handleLogout = () => {
+// 退出登录
+const handleSubmitLogout = () => {
+  authService.logout().then(() => {
+    UserInfo.logout();
+  })
 };
+
 </script>
 
 <style scoped lang="scss">
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
 .personal-info-sidebar {
   width: vw(360);
   height: vh(570);
@@ -151,4 +187,107 @@ const handleLogout = () => {
     }
   }
 }
+</style>
+
+<style lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
+
+.logout-modal {
+  width: vw(460) !important;
+  height: vh(260) !important;
+
+  .ivu-modal {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .ivu-modal-content {
+    border-radius: vw(2);
+    height: 100%;
+
+    .ivu-modal-body {
+      padding: vh(15) vw(20);
+      height: 100%;
+    }
+  }
+
+  .logout-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+
+
+    .logout-content {
+      width: 100%;
+      background-color: $white;
+
+
+      .logout-close-icon {
+        position: absolute;
+        right: vw(20);
+        top: vh(18);
+        font-size: vw(20);
+        cursor: pointer;
+        color: $font-middle;
+
+        &:hover {
+          color: $font-dark;
+        }
+      }
+
+      .logout-title {
+        color: $font-dark;
+        text-align: justify;
+        font-size: vw(14);
+        font-style: normal;
+        font-weight: 500;
+        line-height: vw(22)
+      }
+
+      .logout-html {
+        color: $font-dark;
+        text-align: justify;
+        font-size: vw(14);
+        font-style: normal;
+        font-weight: 400;
+        line-height: vw(20)
+      }
+    }
+  }
+
+  .logout-footer {
+    display: flex;
+    justify-content: flex-end;
+
+    .btn {
+      width: vw(64);
+      height: vh(32);
+      padding: vh(10) 0;
+      color: var(--, var(--, #E8EAEC));
+      font-size: vw(12);
+      font-style: normal;
+      font-weight: 500;
+      line-height: vw(12);
+      text-align: center;
+      box-shadow: none;
+      border: 0;
+      outline: none;
+
+      &.cancel {
+        border: 1px solid $theme-color;
+        color: $theme-color;
+        background: $white;
+      }
+
+      &.submit {
+        border: 0;
+        background: $theme-color;
+        color: $white;
+      }
+    }
+  }
+}
+
 </style>

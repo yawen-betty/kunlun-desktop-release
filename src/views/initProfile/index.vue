@@ -36,6 +36,7 @@ import InitProfileForm from '@/components/initProfileForm/index.vue'
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {validateMobile, validateEmail} from '@/utiles/validators.ts';
 import {message} from "@/utiles/Message.ts";
+import {UserInfo} from "@/utiles/userInfo.ts";
 
 const router = useRouter();
 const userService = new UserService();
@@ -78,12 +79,12 @@ const handleSubmit = async () => {
       }
 
       userService.initProfile(data).then(() => {
+        UserInfo.info.userName = data.name!;
         router.push('/resume');
       })
     } else {
       message.error(Message, '请完善必填项！')
     }
-
   })
 };
 </script>
@@ -91,6 +92,7 @@ const handleSubmit = async () => {
 <style scoped lang="scss">
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
 .init-profile-container {
   width: 100vw;
   height: 100vh;
