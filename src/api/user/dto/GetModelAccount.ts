@@ -5,12 +5,12 @@ export class GetModelAccountInDto extends BaseInDto {
 
 export class GetModelAccountOutDto extends BaseOutDto {
     /**
-     * 模型提供商，当前固定为 "zhipu"
+     * 模型类型（1-智谱AI）
      */
-    provider: string = '';
+    modelType: string = '';
     
     /**
-     * 部分打码的API Key
+     * API Key，如果未配置则为null
      */
-    apiKey: string = '';
+    apiKey?: string;
 }

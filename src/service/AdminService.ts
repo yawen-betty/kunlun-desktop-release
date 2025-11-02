@@ -2,7 +2,8 @@ import {AdminPaths} from '@/api/admin/AdminPaths'
 import HttpClient from '@/api/HttpClient'
 import {inject} from 'vue'
 import {GetConfigInDto, GetConfigOutDto} from '@/api/admin/dto/GetConfig'
-import {GetAgreementInDto, GetAgreementOutDto} from '@/api/admin/dto/GetAgreement'
+import {GetAgreementInDto, GetAgreementOutDto} from '@/api/admin/dto/GetAgreement.ts'
+import {GetAiRegisterGuideInDto, GetAiRegisterGuideOutDto} from '@/api/admin/dto/GetAiRegisterGuide'
 import {Result} from '@/api/BaseDto'
 
 export class AdminService {
@@ -32,5 +33,12 @@ export class AdminService {
      */
     public async getAgreements(params: GetAgreementInDto): Promise<Result<GetAgreementOutDto>> {
         return await this.http.request<Result<GetAgreementOutDto>>(AdminPaths.getAgreements, params);
+    }
+
+    /**
+     * 获取AI注册引导
+     */
+    public async getAiRegisterGuide(params: GetAiRegisterGuideInDto): Promise<Result<GetAiRegisterGuideOutDto>> {
+        return await this.http.request<Result<GetAiRegisterGuideOutDto>>(AdminPaths.getAiRegisterGuide, params);
     }
 }

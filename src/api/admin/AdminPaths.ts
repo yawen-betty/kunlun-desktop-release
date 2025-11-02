@@ -18,4 +18,13 @@ export class AdminPaths {
     method: 'GET',
     prefix: 'admin'
   }
+
+  /**
+   * 获取AI注册引导
+   */
+  static getAiRegisterGuide: Path = {
+    url: '/ai-register-guide',
+    method: 'GET',
+    prefix: 'admin'
+  }
 }

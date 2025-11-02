@@ -73,11 +73,14 @@ import {UserService} from "@/service/UserService.ts";
 import {message} from "@/utiles/Message.ts";
 import {SaveModelAccountInDto} from "@/api/user/dto/SaveModelAccount.ts";
 import {aiModal} from "@/enums/enumDict.ts";
+import {AdminService} from "@/service/AdminService.ts";
+import {GetAiRegisterGuideInDto} from "@/api/admin/dto/GetAiRegisterGuide.ts";
 
 const showApiKey = ref(false);
 const formRef = ref<any>(null);
 
 const userService = new UserService();
+const adminService = new AdminService()
 
 // form
 const formData = reactive<SaveModelAccountInDto>(new SaveModelAccountInDto());
@@ -131,8 +134,21 @@ const getAppKey = () => {
   })
 }
 
+// 获取简介
+const getAiRegisterGuide = () => {
+  const data: GetAiRegisterGuideInDto = {
+    modelType: '1'
+  }
+  adminService.getAiRegisterGuide(data).then(res => {
+    if (res.code === 200) {
+      tutorialContent.value = res.data.content
+    }
+  })
+}
+
 onMounted(() => {
-  getAppKey()
+  getAppKey();
+  getAiRegisterGuide();
 });
 </script>
 

@@ -49,4 +49,9 @@ export class GetConfigOutDto extends BaseOutDto {
      * 应用图标文件名
      */
     appIconFileName: string = '';
+    
+    /**
+     * 微信应用ID
+     */
+    appId: string = '';
 }
