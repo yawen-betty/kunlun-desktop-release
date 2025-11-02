@@ -17,7 +17,7 @@
 
     <Form ref="formRef" :model="formData" :rules="rules" class="config-form mb-60" label-position="top">
       <FormItem label="模型" prop="model" class="model-item">
-        <RadioGroup v-model="formData.provider" class="model-radio-group">
+        <RadioGroup v-model="formData.modelType" class="model-radio-group">
           <Radio :label="info.key" v-for="info in aiModal" :key="info.key">{{ info.value }}</Radio>
         </RadioGroup>
       </FormItem>
@@ -75,6 +75,7 @@ import {SaveModelAccountInDto} from "@/api/user/dto/SaveModelAccount.ts";
 import {aiModal} from "@/enums/enumDict.ts";
 import {AdminService} from "@/service/AdminService.ts";
 import {GetAiRegisterGuideInDto} from "@/api/admin/dto/GetAiRegisterGuide.ts";
+import {GetModelAccountInDto} from "@/api/user/dto/GetModelAccount.ts";
 
 const showApiKey = ref(false);
 const formRef = ref<any>(null);
@@ -115,6 +116,8 @@ const handleSave = async () => {
 
   if (valid) {
     userService.saveModelAccount(formData).then(res => {
+
+      console.log(res, '111111111111')
       if (res.code === 200) {
         message.success(Message, '配置保存成功！')
       }
@@ -127,7 +130,11 @@ const handleSave = async () => {
 
 // 获取app key
 const getAppKey = () => {
-  userService.getModelAccount().then(res => {
+  const data: GetModelAccountInDto = {
+    modelType: '1'
+  }
+
+  userService.getModelAccount(data).then(res => {
     if (res.code === 200) {
       Object.assign(formData, res.data)
     }

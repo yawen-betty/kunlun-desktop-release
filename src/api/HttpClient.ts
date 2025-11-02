@@ -169,27 +169,30 @@ export default class HttpClient {
         }
 
         return new Promise<T>(async (resolve, reject) => {
-            try {
-                // 调用后端的http_request命令
-                const response: HttpResponse = await invoke('http_request', {
-                    req: requestParams
-                });
+            // try {
+            // 调用后端的http_request命令
+            const response: HttpResponse = await invoke('http_request', {
+                req: requestParams
+            });
 
-                console.info('HTTP请求响应:', response);
+            console.info('HTTP请求响应:', response);
 
-                // 检查HTTP状态码
-                if (response.status >= 200 && response.status < 300) {
-                    // 处理特殊业务 code
-                    HttpClient.handleSpecialCode(response.body);
-                    // 返回响应体
-                    resolve(response.body as T);
-                } else {
-                    reject(new Error(`请求失败: ${response.status} ${JSON.stringify(response.body)}`));
-                }
-            } catch (error) {
-                console.error('HTTP请求错误:', error);
-                reject(error);
+            // 检查HTTP状态码
+            if (response.status >= 200 && response.status < 300) {
+                // 返回响应体
+
+                HttpClient.handleSpecialCode(response.body);
+                resolve(response.body as T);
+            } else {
+
+                reject(new Error(`请求失败: ${response.status} ${JSON.stringify(response.body)}`));
             }
+            // } catch (error) {
+            //     // 处理特殊业务 code
+            //     HttpClient.handleSpecialCode(response.body);
+            //     console.error('HTTP请求错误:', error);
+            //     reject(error);
+            // }
         });
     }
 
@@ -226,9 +229,12 @@ export default class HttpClient {
 
                 default:
                     // 其他错误码的通用处理
-                    if (code !== 200 && code !== 0) {
-                        const message = responseBody.message || responseBody.msg || '请求失败';
-                        throw new Error(message);
+                    // TODO 白名单
+                    if (code !== 200) {
+                        console.log(responseBody, 'responseBodyresponseBody')
+                        const msg = responseBody.msg || '请求失败';
+                        message.error(Message, msg);
+                        throw new Error(msg);
                     }
             }
         }
