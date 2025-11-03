@@ -217,9 +217,9 @@ export default class HttpClient {
             'Accept': 'application/json',
             'version': Config.version
         };
-        // if (HttpClient.token) {
-            headers['Admin-Token'] = 'd4012af12a9443439ae452320c8c3e1d';
-        // }
+        if (HttpClient.token) {
+            headers['Admin-Token'] = HttpClient.token;
+        }
         console.log('上传请求头:', headers);
 
         // 3. 将 File 对象转换为字节数组 (Uint8Array)
