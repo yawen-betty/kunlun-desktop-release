@@ -199,19 +199,57 @@ export default class HttpClient {
     /**
      * 上传文件的便捷方法
      * @param path Path对象
-     * @param file_path 文件路径
-     * @param file_field_name 文件字段名
-     * @param other_data 其他表单数据
+     * @param file File文件
      */
     public async uploadFile<T>(
         path: Path,
-        file_path: string,
-        file_field_name: string,
-        other_data?: any
+        file: File
     ): Promise<T> {
-        return this.request<T>(path, other_data, {
-            file_path,
-            file_field_name
+        console.log('HttpClient.uploadFile 开始处理:', file.name);
+
+        // 1. 生成目标服务器 URL
+        const fullUrl = HttpClient.fixUrl(path);
+        console.log('目标上传 URL:', fullUrl);
+
+        // 2. 准备请求头
+        const headers: Record<string, string> = {
+            'Content-Type': 'multipart/form-data',
+            'Accept': 'application/json',
+            'version': Config.version
+        };
+        // if (HttpClient.token) {
+            headers['Admin-Token'] = 'd4012af12a9443439ae452320c8c3e1d';
+        // }
+        console.log('上传请求头:', headers);
+
+        // 3. 将 File 对象转换为字节数组 (Uint8Array)
+        const buffer = await file.arrayBuffer();
+        const fileBytes = Array.from(new Uint8Array(buffer));
+
+        return new Promise<T>(async (resolve, reject) => {
+            try {
+                const response: HttpResponse = await invoke('upload_request', {
+                  url: fullUrl,
+                  headers,
+                  fieldName: 'file', // 根据您的要求，字段名固定为 'file'
+                  fileName: file.name,
+                  fileBytes,
+                });
+
+                console.info('文件上传响应:', response);
+
+                if (response.status >= 200 && response.status < 300) {
+                    HttpClient.handleSpecialCode(response.body);
+                    resolve(response.body as T);
+                } else {
+                    const errorMsg = `上传失败: ${response.status} ${JSON.stringify(response.body)}`;
+                    console.error(errorMsg);
+                    reject(new Error(errorMsg));
+                }
+            } catch (error) {
+                console.error('调用 upload_request 命令时出错:', error);
+                reject(error);
+            }
         });
     }
 

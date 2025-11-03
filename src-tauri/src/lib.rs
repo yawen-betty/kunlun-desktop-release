@@ -6,7 +6,7 @@ fn greet(name: &str) -> String {
 
 // 导入commands模块中的命令
 mod commands;
-use commands::{save_token, get_token, http_request};
+use commands::{save_token, get_token, http_request, upload_request};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -19,7 +19,8 @@ pub fn run() {
             greet,
             save_token,
             get_token,
-            http_request
+            http_request,
+            upload_request
         ])
         .setup(|app| {
             #[cfg(desktop)]

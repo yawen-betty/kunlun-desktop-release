@@ -7,7 +7,7 @@ import { Result } from '@/api/BaseDto'
 export class FileService {
     private http: HttpClient;
     private static instance: FileService;
-    
+
     constructor() {
         this.http = inject('$http') as HttpClient;
     }
@@ -18,11 +18,11 @@ export class FileService {
         }
         return FileService.instance;
     }
-    
+
     /**
      * 上传文件
      */
-    public async upload(params: UploadInDto): Promise<Result<UploadOutDto>> {
-        return await this.http.request<Result<UploadOutDto>>(FilePaths.upload, params);
+    public async upload(file: File): Promise<Result<UploadOutDto>> {
+        return await this.http.uploadFile<Result<UploadOutDto>>(FilePaths.upload, file);
     }
 }

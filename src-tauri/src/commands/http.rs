@@ -8,9 +8,7 @@ pub struct HttpRequest {
     url: String,
     method: String,
     headers: Option<HashMap<String, String>>,
-    body: Option<serde_json::Value>,
-    file_path: Option<String>,
-//     file_field_name: Option<String>,
+    body: Option<serde_json::Value>
 }
 
 // 响应结构体
@@ -21,6 +19,7 @@ pub struct HttpResponse {
     body: serde_json::Value,
 }
 
+// 接口请求
 #[command]
 pub async fn http_request(req: HttpRequest) -> Result<HttpResponse, String> {
     // 验证和清理URL
@@ -64,11 +63,6 @@ pub async fn http_request(req: HttpRequest) -> Result<HttpResponse, String> {
                 request_builder = request_builder.header(trimmed_key, trimmed_value);
             }
         }
-    }
-
-    // 处理文件上传（简化版）
-    if req.file_path.is_some() {
-        return Err("文件上传功能正在开发中".to_string());
     }
 
     // 处理普通请求体
@@ -138,6 +132,64 @@ pub async fn http_request(req: HttpRequest) -> Result<HttpResponse, String> {
     };
 
     // 返回响应
+    Ok(HttpResponse {
+        status,
+        headers: response_headers,
+        body: response_body,
+    })
+}
+
+// 上传接口
+#[command]
+pub async fn upload_request(
+    url: String,
+    headers: Option<HashMap<String, String>>,
+    field_name: String,
+    file_name: String,
+    file_bytes: Vec<u8>,
+ ) -> Result<HttpResponse, String> {
+//     let client = reqwest::Client::new();
+    let client = match reqwest::Client::builder()
+        .danger_accept_invalid_certs(true)
+        .build() {
+        Ok(client) => client,
+            Err(e) => return Err(format!("创建HTTP客户端失败: {}", e)),
+    };
+
+    // 1. 创建 multipart/form-data 表单
+    let part = reqwest::multipart::Part::bytes(file_bytes)
+        .file_name(file_name)
+        .mime_str("application/json")
+        .map_err(|e| format!("创建文件部分失败: {}", e))?;
+
+    let form = reqwest::multipart::Form::new().part(field_name, part);
+
+    // 2. 构建请求
+    let mut request_builder = client.post(url).multipart(form);
+
+    // 3. 添加请求头
+    if let Some(h) = headers {
+        for (key, value) in h {
+            request_builder = request_builder.header(&key, &value);
+        }
+    }
+
+    // 4. 发送请求
+    let response = request_builder.send().await.map_err(|e| format!("请求发送失败: {}", e))?;
+
+    // 5. 处理并返回响应 (与您现有的 http_request 函数逻辑类似)
+    let status = response.status().as_u16();
+    let mut response_headers = HashMap::new();
+        for (key, value) in response.headers() {
+            if let Ok(value_str) = value.to_str() {
+                response_headers.insert(key.to_string(), value_str.to_string());
+            }
+        }
+        let response_body = match response.text().await {
+            Ok(body) => serde_json::from_str(&body).unwrap_or_else(|_| serde_json::Value::String(body)),
+            Err(e) => return Err(format!("读取响应失败: {}", e)),
+        };
+
     Ok(HttpResponse {
         status,
         headers: response_headers,

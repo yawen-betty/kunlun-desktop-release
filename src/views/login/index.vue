@@ -26,6 +26,15 @@
           <span class="agreement-link pointer" @click="openAgreement(2)">《服务协议》</span>、
           <span class="agreement-link pointer" @click="openAgreement(1)">《隐私协议》</span>
         </div>
+
+        <Upload
+          :before-upload="handleUpload"
+          action=""
+        >
+          <Button icon="ios-cloud-upload-outline">上传简历</Button>
+        </Upload>
+
+<!--        <input type="upload" />-->
       </div>
     </div>
 
@@ -57,6 +66,7 @@ import {GetProfileInDto} from "@/api/user/dto/GetProfile.ts";
 import {auth} from "@/utiles/tauriCommonds.ts";
 import {useRouter} from "vue-router";
 import {message} from "@/utiles/Message.ts";
+import {FileService} from "@/service/FileService.ts";
 
 const qrCodeUrl = ref<string>('');
 const showAgreement = ref<boolean>(false);
@@ -170,6 +180,29 @@ onMounted(() => {
   getConfigInfo();
   open();
 });
+
+const fileService = new FileService();
+const handleUpload = async (file: File): Promise<boolean> => {
+  try {
+    // 直接调用 Service 层的方法
+    const response = await fileService.upload(file);
+
+    if (response.code === 200) {
+      Message.success('上传成功！');
+      // 在这里可以处理成功后的逻辑，比如更新页面数据
+      console.log('上传结果:', response.data);
+    } else {
+      // Service/HttpClient 中已经有统一的错误消息提示，这里可以不重复提示
+      // Message.error(response.msg || '上传失败');
+    }
+  } catch (error) {
+    // Service/HttpClient 中已经有统一的错误消息提示
+    console.error('处理上传时发生错误:', error);
+  }
+
+  // 阻止组件的默认上传行为
+  return false;
+ };
 </script>
 
 <style scoped lang="scss">
