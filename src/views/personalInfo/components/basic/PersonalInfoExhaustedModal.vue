@@ -25,20 +25,11 @@
       <FormItem label="API Key" prop="apiKey" class="api-key-item">
         <Input
           v-model="formData.apiKey"
-          :type="showApiKey ? 'text' : 'password'"
+          type="password"
+          password
           placeholder="请输入"
           class="api-key-input"
-          :maxlength="100"
-        >
-          <template #suffix>
-            <div class="eye-icon-wrapper" @click="toggleApiKeyVisibility">
-              <Icon
-                :type="showApiKey ? 'md-eye' : 'md-eye-off'"
-                class="eye-icon"
-              />
-            </div>
-          </template>
-        </Input>
+        ></Input>
       </FormItem>
     </Form>
 
@@ -77,7 +68,6 @@ import {AdminService} from "@/service/AdminService.ts";
 import {GetAiRegisterGuideInDto} from "@/api/admin/dto/GetAiRegisterGuide.ts";
 import {GetModelAccountInDto} from "@/api/user/dto/GetModelAccount.ts";
 
-const showApiKey = ref(false);
 const formRef = ref<any>(null);
 
 const userService = new UserService();
@@ -98,12 +88,6 @@ const tutorialVisible = ref<boolean>(false);
 // html 内容
 const tutorialContent = ref<string>('')
 
-
-// 是否开启隐藏key
-const toggleApiKeyVisibility = () => {
-  showApiKey.value = !showApiKey.value;
-};
-
 // 弹窗状态切换
 const handleTutorial = (state: boolean) => {
   tutorialVisible.value = state
@@ -116,8 +100,6 @@ const handleSave = async () => {
 
   if (valid) {
     userService.saveModelAccount(formData).then(res => {
-
-      console.log(res, '111111111111')
       if (res.code === 200) {
         message.success(Message, '配置保存成功！')
       }
@@ -289,22 +271,6 @@ onMounted(() => {
         &:focus {
           box-shadow: none;
           background-color: $bg-gray;
-        }
-      }
-
-      :deep(.ivu-input-suffix) {
-        height: 100%;
-        top: 0;
-
-        .eye-icon-wrapper {
-          display: flex;
-          align-items: center;
-          height: 100%;
-          cursor: pointer;
-
-          .eye-icon {
-            font-size: vw(14);
-          }
         }
       }
     }
