@@ -54,6 +54,7 @@ const all = [
     layout({
         path: '/personalInfo',
         title: '个人信息',
+        icon: 'icon-gerenzhongxin',
         component: () => import('@/views/personalInfo/index.vue')
     })
 ]
