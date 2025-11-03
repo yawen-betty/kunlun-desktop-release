@@ -127,7 +127,7 @@ const handleSave = () => {
         if (res.code === 200) {
           message.success(Message, '保存成功！')
           UserInfo.info.avatar = filePreviewUrl.value
-          UserInfo.info.userName = formValidate.name
+          UserInfo.info.userName = formValidate.name!
         }
       })
     } else {
