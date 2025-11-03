@@ -11,10 +11,9 @@
             :show-upload-list="false"
             :before-upload="beforeAvatarUpload"
           >
-            <!--            :on-success="handleAvatarSuccess"-->
-            <!--            :action="Config.baseUrl + `api/kunlun/${FilePaths.upload.prefix}${FilePaths.upload.url}`"-->
             <div class="avatar-container">
-              <div class="avatar-circle">
+              <img :src="filePreviewUrl" v-if="filePreviewUrl" class="avatar-img"/>
+              <div class="avatar-circle" v-else>
                 <span class="avatar-text">{{ hasChineseCharacters(UserInfo.info.userName || '') }}</span>
               </div>
             </div>
@@ -41,7 +40,7 @@
 
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue';
-import {Form, Message} from 'view-ui-plus';
+import {Form, Image, Message} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import InitProfileForm from "@/components/initProfileForm/index.vue";
 import {hasChineseCharacters, validateEmail, validateMobile} from "@/utiles/validators.ts";
@@ -50,11 +49,7 @@ import {UserInfo} from "@/utiles/userInfo.ts";
 import {message} from "@/utiles/Message.ts";
 import {UserService} from "@/service/UserService.ts";
 import {UpdateProfileInDto} from "@/api/user/dto/UpdateProfile.ts";
-import {Config} from "@/Config.ts";
-import {FilePaths} from "@/api/file/FilePaths.ts";
 import {FileService} from "@/service/FileService.ts";
-import {useCommon} from "@/utiles/useCommon.ts";
-import {Path} from "@/api/Path.ts";
 
 const formRef = ref<any>(null);
 
@@ -62,9 +57,9 @@ const formRef = ref<any>(null);
 const formValidate = reactive<UpdateProfileInDto>(new UpdateProfileInDto());
 
 const userService = new UserService();
-// const fileService = new FileService();
-
-const {http} = useCommon()
+const fileService = new FileService();
+// 预览地址
+const filePreviewUrl = ref<string>('');
 
 // 校验
 const ruleValidate = {
@@ -90,12 +85,6 @@ const ruleValidate = {
   ],
 }
 
-
-const handleAvatarSuccess = (response: any) => {
-  // 处理头像上传成功
-  console.log('头像上传成功', response);
-};
-
 const beforeAvatarUpload = (file: File) => {
   // 头像上传前验证
   const allowedTypes = ['image/jpg', 'image/jpeg', 'image/png'];
@@ -110,15 +99,22 @@ const beforeAvatarUpload = (file: File) => {
     message.error(Message, '图片大小不得超过1M！')
     return false;
   }
+
+  handleUploadFile(file);
   return false;
 };
 
 // 上传文件
-const handleUploadFile = () => {
-  // fileService.uploadFile()
-  // http.uploadFile(FilePaths.Path,)
+const handleUploadFile = (file: File) => {
+  fileService.upload(file).then(res => {
+    if (res.code === 200) {
+      formValidate.avatarUrl = res.data.filePath;
+      filePreviewUrl.value = res.data.fileHost + res.data.filePath;
+    }
+  })
 }
 
+// 保存
 const handleSave = () => {
   formRef.value.validate((valid: boolean) => {
     if (valid) {
@@ -140,6 +136,8 @@ const handleSave = () => {
   })
 };
 
+
+// 获取用户信息
 const getUserInfo = () => {
   userService.getProfile(new GetProfileInDto()).then(res => {
     if (res.code === 200) {
@@ -147,6 +145,8 @@ const getUserInfo = () => {
         ...res.data,
         birthDate: new Date(res.data.birthDate as any)
       })
+
+      filePreviewUrl.value = res.data.avatarUrl!;
     }
   })
 }
@@ -216,6 +216,13 @@ onMounted(() => {
       cursor: pointer;
     }
 
+    .avatar-img {
+      width: vw(80);
+      height: vw(80);
+      border-radius: 50%;
+
+    }
+
     .avatar-circle {
       width: vw(80);
       height: vw(80);
@@ -245,6 +252,9 @@ onMounted(() => {
       padding: vh(10) vw(20);
       font-size: vw(12);
       font-weight: 500;
+      box-shadow: none;
+      border: 0;
+      outline: none;
     }
 
     :deep(.ivu-btn span) {
