@@ -24,7 +24,7 @@
       "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
     },
     "test": {
-      "baseUrl": "https://test.liangjiyuren.cn/",
+      "baseUrl": "https://crm.test.lingxizhifu.cn//",
       "basePath": "/",
       "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
     },

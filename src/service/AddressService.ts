@@ -3,7 +3,6 @@ import HttpClient from '@/api/HttpClient';
 import {inject} from 'vue';
 import {QueryAreaInDto, QueryAreaOutDto} from '@/api/address/dto/QueryArea';
 import {Result} from '@/api/BaseDto';
-import {AreaInfoBean} from '@/api/user/dto/bean/AreaInfoBean';
 import {SearchAreaOutDto} from "@/api/address/dto/SearchArea.ts";
 
 export class AddressService {
