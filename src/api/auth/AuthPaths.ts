@@ -1,4 +1,4 @@
-import { Path } from "@/api/Path.ts";
+import {Path} from "@/api/Path.ts";
 
 export class AuthPaths {
     /**
@@ -32,7 +32,7 @@ export class AuthPaths {
      * 获取登录Token
      */
     static getToken: Path = {
-        url: '/token',
+        url: '/token/{state}',
         method: 'GET',
         prefix: 'auth'
     };

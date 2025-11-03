@@ -64,7 +64,6 @@ import {computed, nextTick, onMounted, PropType, provide, ref, useSlots, watch} 
 import AddressSearch from '@/components/addressSelect/components/addressSearch.vue';
 import AddressCascade from '@/components/addressSelect/components/addressCascade.vue';
 
-import {useCommon} from "@/utiles/useCommon.ts";
 import {AddressService} from "@/service/AddressService.ts";
 import {QueryAreaInDto} from "@/api/address/dto/QueryArea.ts";
 import {AreaInfoBean} from "@/api/user/dto/bean/AreaInfoBean.ts";
@@ -108,7 +107,6 @@ const props = defineProps({
   }
 });
 
-const {http} = useCommon();
 // 输出方法
 const emits = defineEmits(['update:modelValue', 'change']);
 // 下拉框展开状态

@@ -11,7 +11,7 @@ export class AdminService {
     private static instance: AdminService;
 
     constructor() {
-        this.http = inject('$http') as HttpClient;
+        this.http = new HttpClient();
     }
 
     public static getInstance(): AdminService {

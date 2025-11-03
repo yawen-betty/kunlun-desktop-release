@@ -14,7 +14,7 @@ export class UserService {
     private static instance: UserService;
 
     constructor() {
-        this.http = inject('$http') as HttpClient;
+        this.http = new HttpClient();
     }
 
     public static getInstance(): UserService {

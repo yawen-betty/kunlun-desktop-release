@@ -9,10 +9,10 @@
         <div class="avatar-upload pointer">
           <Upload
             :show-upload-list="false"
-            :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
-            action="/api/upload"
           >
+            <!--            :on-success="handleAvatarSuccess"-->
+            <!--            :action="Config.baseUrl + `api/kunlun/${FilePaths.upload.prefix}${FilePaths.upload.url}`"-->
             <div class="avatar-container">
               <div class="avatar-circle">
                 <span class="avatar-text">{{ hasChineseCharacters(UserInfo.info.userName || '') }}</span>
@@ -50,6 +50,11 @@ import {UserInfo} from "@/utiles/userInfo.ts";
 import {message} from "@/utiles/Message.ts";
 import {UserService} from "@/service/UserService.ts";
 import {UpdateProfileInDto} from "@/api/user/dto/UpdateProfile.ts";
+import {Config} from "@/Config.ts";
+import {FilePaths} from "@/api/file/FilePaths.ts";
+import {FileService} from "@/service/FileService.ts";
+import {useCommon} from "@/utiles/useCommon.ts";
+import {Path} from "@/api/Path.ts";
 
 const formRef = ref<any>(null);
 
@@ -57,6 +62,9 @@ const formRef = ref<any>(null);
 const formValidate = reactive<UpdateProfileInDto>(new UpdateProfileInDto());
 
 const userService = new UserService();
+// const fileService = new FileService();
+
+const {http} = useCommon()
 
 // 校验
 const ruleValidate = {
@@ -90,19 +98,26 @@ const handleAvatarSuccess = (response: any) => {
 
 const beforeAvatarUpload = (file: File) => {
   // 头像上传前验证
-  const isImage = file.type.indexOf('image/') === 0;
-  const isLt2M = file.size / 1024 / 1024 < 2;
+  const allowedTypes = ['image/jpg', 'image/jpeg', 'image/png'];
+  const isValidFormat = allowedTypes.includes(file.type);
+  const isLt1M = file.size / 1024 / 1024 < 1;
 
-  if (!isImage) {
-    console.error('请上传图片格式文件');
+  if (!isValidFormat) {
+    message.error(Message, '图片格式有误，仅支持jpg、jpeg、png！')
     return false;
   }
-  if (!isLt2M) {
-    console.error('图片大小不能超过2MB');
+  if (!isLt1M) {
+    message.error(Message, '图片大小不得超过1M！')
     return false;
   }
-  return true;
+  return false;
 };
+
+// 上传文件
+const handleUploadFile = () => {
+  // fileService.uploadFile()
+  // http.uploadFile(FilePaths.Path,)
+}
 
 const handleSave = () => {
   formRef.value.validate((valid: boolean) => {

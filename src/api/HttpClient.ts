@@ -222,6 +222,11 @@ export default class HttpClient {
             const code = responseBody.code;
 
             switch (code) {
+                case 302:
+                    message.error(Message, responseBody.msg);
+                    UserInfo.logout();
+                    break;
+
                 case 2108:
                     message.error(Message, ' 账号已在其他设备登录！');
                     UserInfo.logout();
