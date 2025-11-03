@@ -1,0 +1,81 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+      - test
+      - dev
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  build-tauri:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Generate config file based on branch
+        run: |
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            npm run config:prod
+          elif [[ "${{ github.ref_name }}" == "test" ]]; then
+            npm run config:test
+          elif [[ "${{ github.ref_name }}" == "dev" ]]; then
+            npm run config:dev
+          fi
+
+      - name: Build and create draft release
+        id: tauri_build # Give the step an ID
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}-build-${{ github.run_number }}
+          releaseName: 'Build for ${{ github.ref_name }} #${{ github.run_number }}'
+          releaseBody: 'CI build from branch ${{ github.ref_name }}.'
+          releaseDraft: true
+          prerelease: true
+
+  generate-and-upload-json:
+    name: Generate and Upload Latest JSON
+    needs: build-tauri # This job runs after build-tauri matrix is complete
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate complete latest.json
+        run: npm run generate-latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.ref_name }}-build-${{ github.run_number }}
+          REPO_SLUG: ${{ github.repository }}
+
+      - name: Upload latest.json to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}-build-${{ github.run_number }}
+          files: latest.json
