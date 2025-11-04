@@ -1,0 +1,54 @@
+@font-face {
+    font-family: 'PingFangSCBold';
+    src: url('../fonts/PingFangSCBold/PingFangSCBold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'YouSheBiaoTiHei';
+    src: url('../fonts/YouSheBiaoTiHei/YouSheBiaoTiHei-2.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+ul,li{
+    list-style: none;
+}
+:root {
+    --app-bg: transparent;
+    --app-border-radius: 15px;
+}
+html,body{
+    background: transparent !important;
+}
+
+#app {
+    width: 100%;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* 滚动条样式 */
+* {
+    ::-webkit-scrollbar {
+        width: vw(6);
+        height: vh(6);
+        box-shadow: 0 0 vw(5) #e7eaea;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #c1c1c0;
+        border-radius: vw(3);
+    }
+
+    ::-webkit-scrollbar-track {
+        border-radius: vw(3);
+    }
+}
+.ivu-layout{
+    background-color: transparent;
+}

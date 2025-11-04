@@ -1,0 +1,44 @@
+import {AdminPaths} from '@/api/admin/AdminPaths'
+import HttpClient from '@/api/HttpClient'
+import {inject} from 'vue'
+import {GetConfigInDto, GetConfigOutDto} from '@/api/admin/dto/GetConfig'
+import {GetAgreementInDto, GetAgreementOutDto} from '@/api/admin/dto/GetAgreement.ts'
+import {GetAiRegisterGuideInDto, GetAiRegisterGuideOutDto} from '@/api/admin/dto/GetAiRegisterGuide'
+import {Result} from '@/api/BaseDto'
+
+export class AdminService {
+    private http: HttpClient;
+    private static instance: AdminService;
+
+    constructor() {
+        this.http = new HttpClient();
+    }
+
+    public static getInstance(): AdminService {
+        if (!AdminService.instance) {
+            AdminService.instance = new AdminService();
+        }
+        return AdminService.instance;
+    }
+
+    /**
+     * 获取公共应用配置
+     */
+    public async getConfig(params: GetConfigInDto): Promise<Result<GetConfigOutDto>> {
+        return await this.http.request<Result<GetConfigOutDto>>(AdminPaths.getConfig, params);
+    }
+
+    /**
+     * 获取协议内容
+     */
+    public async getAgreements(params: GetAgreementInDto): Promise<Result<GetAgreementOutDto>> {
+        return await this.http.request<Result<GetAgreementOutDto>>(AdminPaths.getAgreements, params);
+    }
+
+    /**
+     * 获取AI注册引导
+     */
+    public async getAiRegisterGuide(params: GetAiRegisterGuideInDto): Promise<Result<GetAiRegisterGuideOutDto>> {
+        return await this.http.request<Result<GetAiRegisterGuideOutDto>>(AdminPaths.getAiRegisterGuide, params);
+    }
+}

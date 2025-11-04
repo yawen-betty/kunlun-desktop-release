@@ -1,0 +1,37 @@
+/* 正文(深) */
+$font-dark: var(--font-dark, #515A6D);
+/* 正文(中) */
+$font-middle: var(--font-middle, #9499A5);
+/* 正文(浅) */
+$font-light: var(--font-light, #B0B7C7);
+/* 主题色 */
+$theme-color: var(--theme-color, #FC8719);
+/* 悬浮(蓝) */
+$hover-color: var(--theme-color, #FFF8F2);
+/* 校验提醒(红) */
+$remind-red: var(--remind-red, #ED6A5E);
+/* 成功提示(绿) */
+$remind-green: var(--remind-green, #51C419);
+/* 失败提示(红) */
+$remind-error: var(--font-state-error, #F5222D);
+/* 引导文案颜色 */
+$placeholder-color: var(--placeholder-color, #C5C8CE);
+/* 纯白 */
+$white: var(--white, #FFF);
+
+/* 透明遮罩(黑) */
+$bg-shade-black: var(--bg-shade-blacks, rgba(0, 0, 0, 0.15));
+/* 背景(灰) */
+$bg-gray: var(--bg-gray, #F6F8FA);
+/* 线框(灰) */
+$border-default: var(--border-default, #E1E6EC);
+/* 输入框仅用色(灰) */
+$form-bg-disabled: var(--form-bg-disabled, #F7F7F7);
+/* 关键词高亮（黄） */
+$text-high-light: var(--text-high-light, #F6CD00);
+/* 标签回显（灰) */
+$tag-bg: var(--tag-bg, #E9EDF1);
+/* 图标（灰）*/
+$icon-gray: var(--icon-gray, #9499A5);
+/* 正文行高 */
+$text-line-height: var(--text-line-height, vh(20));

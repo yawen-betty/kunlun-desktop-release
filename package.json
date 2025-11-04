@@ -1,0 +1,63 @@
+{
+  "name": "tauri_test",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "config": "tsx AppConf.mts",
+    "config:dev": "cross-env APP_ENV=dev npm run config",
+    "config:test": "cross-env APP_ENV=test npm run config",
+    "config:prod": "cross-env APP_ENV=prod npm run config",
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "generate-latest": "tsx build/generate-latest.mts"
+  },
+  "config": {
+    "build": {
+      "name": "kunlun"
+    },
+    "dev": {
+      "baseUrl": "https://crm.dev.lingxizhifu.cn/",
+      "basePath": "/",
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
+    },
+    "test": {
+      "baseUrl": "https://crm.test.lingxizhifu.cn//",
+      "basePath": "/",
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
+    },
+    "prod": {
+      "baseUrl": "",
+      "basePath": "/",
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
+    }
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.9.0",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-os": "^2.3.1",
+    "@tauri-apps/plugin-process": "^2.3.1",
+    "@tauri-apps/plugin-updater": "^2.9.0",
+    "sortablejs": "^1.15.6",
+    "view-ui-plus": "^1.3.21",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.9.0",
+    "@types/sortablejs": "^1.15.9",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "cross-env": "^10.1.0",
+    "fast-glob": "^3.3.3",
+    "sass": "^1.93.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.3",
+    "vite-plugin-svg-icons": "^2.0.1",
+    "vite-plugin-vue-setup-extend": "^0.4.0",
+    "vue-tsc": "^2.1.10"
+  }
+}
