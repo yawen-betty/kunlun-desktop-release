@@ -27,21 +27,19 @@ interface LatestJson {
 }
 
 // Helper function to fetch from GitHub API
-async function fetchGitHubAPI<T>(url: string, token: string, accept = 'application/vnd.github.v3+json'): Promise<T> {
+async function fetchGitHubAPI<T>(url: string, token: string, accept = 'application/vnd.github.v3+json'): Promise<{ response: Response; data: T }> {
   const response = await fetch(url, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Accept': accept,
     },
   });
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`GitHub API request to ${url} failed: ${response.statusText}. Body: ${errorBody}`);
-  }
   if (accept === 'application/octet-stream') {
-    return response.text() as Promise<T>;
+    // For binary content, we handle it differently
+    return { response, data: (await response.text()) as T };
   }
-  return response.json() as Promise<T>;
+  const data = await response.json();
+  return { response, data: data as T };
 }
 
 function getPlatformIdentifier(fileName: string): string | null {
@@ -62,7 +60,28 @@ async function main() {
   console.log(`Fetching release with tag: ${RELEASE_TAG} from repo: ${REPO_SLUG}`);
 
   const releaseUrl = `https://api.github.com/repos/${REPO_SLUG}/releases/tags/${RELEASE_TAG}`;
-  const releaseData = await fetchGitHubAPI<{ assets: ReleaseAsset[], pub_date: string, body: string }>(releaseUrl, GITHUB_TOKEN);
+  
+  let releaseData: { assets: ReleaseAsset[], pub_date: string, body: string } | null = null;
+  const maxRetries = 5;
+  const retryDelay = 10000; // 10 seconds
+
+  for (let i = 0; i < maxRetries; i++) {
+    const { response, data } = await fetchGitHubAPI<{ assets: ReleaseAsset[], pub_date: string, body: string }>(releaseUrl, GITHUB_TOKEN);
+    if (response.ok) {
+      releaseData = data;
+      console.log(`Successfully fetched release on attempt ${i + 1}`);
+      break;
+    } else if (response.status === 404) {
+      console.log(`Attempt ${i + 1} of ${maxRetries}: Release not found. Retrying in ${retryDelay / 1000} seconds...`);
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    } else {
+      throw new Error(`GitHub API request failed with status ${response.status}: ${response.statusText}. Body: ${JSON.stringify(data)}`);
+    }
+  }
+
+  if (!releaseData) {
+    throw new Error(`Failed to fetch release with tag ${RELEASE_TAG} after ${maxRetries} attempts.`);
+  }
 
   const assets = releaseData.assets;
   console.log('Found release assets:', assets.map(a => a.name));
@@ -83,7 +102,7 @@ async function main() {
     }
 
     console.log(`Processing platform: ${platformId} for installer ${installer.name}`);
-    const signatureContent = await fetchGitHubAPI<string>(signatureAsset.url, GITHUB_TOKEN, 'application/octet-stream');
+    const { data: signatureContent } = await fetchGitHubAPI<string>(signatureAsset.url, GITHUB_TOKEN, 'application/octet-stream');
 
     platforms[platformId] = {
       signature: signatureContent.trim(),
