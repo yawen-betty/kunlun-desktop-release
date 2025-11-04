@@ -48,7 +48,12 @@ class LatestGenerator {
       return null;
     }
     const buffer = fs.readFileSync(filePath);
-    const signatureBuffer = fs.readFileSync(`${filePath}.sig`);
+    const sigFilePath = `${filePath}.sig`;
+    if (!fs.existsSync(sigFilePath)) {
+      console.warn(`Signature file not found for: ${filePath}`);
+      return null; // Return null if signature is missing
+    }
+    const signatureBuffer = fs.readFileSync(sigFilePath);
     return {
       signature: signatureBuffer.toString().trim(),
       size: buffer.length,
@@ -64,15 +69,8 @@ class LatestGenerator {
       return platforms;
     }
 
-    // macOS
-    const macosDmg = path.join(bundleDir, 'dmg', `Kunlun_${this.package.version}_aarch64.dmg`);
-    const macosApp = path.join(bundleDir, 'macos', `Kunlun.app`);
+    // macOS: Prioritize .app.tar.gz for updater
     const macosAppTar = path.join(bundleDir, 'macos', `Kunlun.app.tar.gz`);
-
-    const dmgInfo = this.getFileInfo(macosDmg);
-    if (dmgInfo) {
-      platforms['darwin-aarch64'] = { ...dmgInfo, url: `${this.downloadUrl}/${path.basename(macosDmg)}` };
-    }
     const appTarInfo = this.getFileInfo(macosAppTar);
     if (appTarInfo) {
         platforms['darwin-x86_64'] = { ...appTarInfo, url: `${this.downloadUrl}/${path.basename(macosAppTar)}` };
