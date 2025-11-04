@@ -48,6 +48,16 @@ jobs:
           fi
         shell: bash
 
+      - name: Check for Apple ID
+        if: matrix.platform == 'macos-latest'
+        run: |
+          if [ -z "${{ secrets.APPLE_ID }}" ]; then
+            echo "APPLE_ID secret is not set. Skipping notarization."
+            exit 1
+          else
+            echo "APPLE_ID is set."
+          fi
+
       - name: Import Apple Certificate
         if: matrix.platform == 'macos-latest'
         uses: apple-actions/import-codesign-certs@v2
