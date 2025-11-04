@@ -6,7 +6,7 @@ on:
       - master
       - test
       - dev
-  workflow_dispatch: # 允许手动触发
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -48,23 +48,21 @@ jobs:
           fi
         shell: bash
 
-      - name: Build and create draft release
-        id: tauri_build # Give the step an ID
-        uses: tauri-apps/tauri-action@v0
+      - name: Build the application
+        run: npm run tauri build
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        with:
-          tagName: ${{ github.ref_name }}-build-${{ github.run_number }}
-          releaseName: 'Build for ${{ github.ref_name }} #${{ github.run_number }}'
-          releaseBody: 'CI build from branch ${{ github.ref_name }}.'
-          releaseDraft: true
-          prerelease: true
 
-  generate-and-upload-json:
-    name: Generate and Upload Latest JSON
-    needs: build-tauri # This job runs after build-tauri matrix is complete
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-${{ matrix.platform }}
+          path: src-tauri/target/release/bundle
+
+  create-release:
+    name: Create Release
+    needs: build-tauri
     runs-on: ubuntu-latest
 
     steps:
@@ -75,19 +73,40 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
+      
       - name: Install dependencies
         run: npm install
 
-      - name: Generate complete latest.json
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Move artifacts to bundle directory
+        run: |
+          mkdir -p src-tauri/target/release/bundle
+          shopt -s dotglob
+          if [ -d "artifacts/bundle-macos-latest" ]; then cp -r artifacts/bundle-macos-latest/* src-tauri/target/release/bundle/; fi
+          if [ -d "artifacts/bundle-windows-latest" ]; then cp -r artifacts/bundle-windows-latest/* src-tauri/target/release/bundle/; fi
+          if [ -d "artifacts/bundle-ubuntu-latest" ]; then cp -r artifacts/bundle-ubuntu-latest/* src-tauri/target/release/bundle/; fi
+
+      - name: List files for debugging
+        run: ls -R src-tauri/target/release/bundle
+
+      - name: Generate latest.json
         run: npm run generate-latest
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ github.ref_name }}-build-${{ github.run_number }}
-          REPO_SLUG: ${{ github.repository }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
-      - name: Upload latest.json to release
+      - name: Create and publish release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}-build-${{ github.run_number }}
-          files: latest.json
+          name: Build for ${{ github.ref_name }} #${{ github.run_number }}
+          body: CI build from branch ${{ github.ref_name }}.
+          draft: true
+          prerelease: true
+          files: |
+            src-tauri/target/release/bundle/**/*
+            latest.json
