@@ -84,7 +84,7 @@ class LatestGenerator {
     }
 
     // Linux
-    const linuxAppImage = path.join(bundleDir, 'appimage', `kunlun_${this.package.version}_amd64.AppImage`);
+    const linuxAppImage = path.join(bundleDir, 'appimage', `Kunlun_${this.package.version}_amd64.AppImage`);
     const appImageInfo = this.getFileInfo(linuxAppImage);
     if (appImageInfo) {
       platforms['linux-x86_64'] = { ...appImageInfo, url: `${this.downloadUrl}/${path.basename(linuxAppImage)}` };
