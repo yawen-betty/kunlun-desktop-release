@@ -21,17 +21,17 @@
     "dev": {
       "baseUrl": "https://crm.dev.lingxizhifu.cn/",
       "basePath": "/",
-      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/dev"
     },
     "test": {
       "baseUrl": "https://crm.test.lingxizhifu.cn//",
       "basePath": "/",
-      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/test"
     },
     "prod": {
       "baseUrl": "",
       "basePath": "/",
-      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/master"
     }
   },
   "dependencies": {

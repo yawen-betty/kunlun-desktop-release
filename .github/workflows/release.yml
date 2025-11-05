@@ -82,7 +82,7 @@ jobs:
         with:
           path: artifacts
 
-      - name: Move artifacts to bundle directory
+      - - name: Move artifacts to bundle directory
         run: |
           mkdir -p src-tauri/target/release/bundle
           shopt -s dotglob
@@ -92,6 +92,16 @@ jobs:
 
       - name: List files for debugging
         run: ls -R src-tauri/target/release/bundle
+
+      - name: Set Environment Variables for Branch
+        run: |
+          # Construct the full remote path based on the branch name
+          FULL_REMOTE_PATH="${{ secrets.SERVER_WEB_ROOT }}/${{ secrets.UPDATE_SUB_PATH }}/${{ github.ref_name }}"
+
+          echo "REMOTE_PATH=${FULL_REMOTE_PATH}" >> $GITHUB_ENV
+
+          echo "Remote Path: ${FULL_REMOTE_PATH}"
+        shell: bash
 
       - name: Generate latest.json
         run: npm run generate-latest
@@ -122,3 +132,13 @@ jobs:
             src-tauri/target/release/bundle/appimage/*.sig
             # Manifest
             latest.json
+
+      - name: Upload artifacts to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOSTNAME }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "src-tauri/target/release/bundle/dmg/*,src-tauri/target/release/bundle/macos/*,src-tauri/target/release/bundle/msi/*,src-tauri/target/release/bundle/nsis/*,src-tauri/target/release/bundle/appimage/*,latest.json"
+          target: ${{ env.REMOTE_PATH }}
+          strip_components: 4

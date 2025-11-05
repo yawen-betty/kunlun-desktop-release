@@ -36,11 +36,12 @@ class LatestGenerator {
     this.package = JSON.parse(packageData);
     this.bundlePath = path.join('src-tauri', 'target', 'release', 'bundle');
 
-    // Construct a base URL for downloads. This part is tricky without the live request context.
-    // We will assume a generic structure based on the repo and tag.
-    const repo = process.env.GITHUB_REPOSITORY || 'owner/repo';
-    const tag = process.env.RELEASE_TAG || 'v0.0.0';
-    this.downloadUrl = `https://github.com/${repo}/releases/download/${tag}`;
+    const env = process.env.APP_ENV || 'dev';
+    this.downloadUrl = this.package.config[env].downloadUrl;
+    if (!this.downloadUrl) {
+      console.error(`Error: downloadUrl is not defined in package.json for the "${env}" environment.`);
+      process.exit(1);
+    }
   }
 
   private getFileInfo(filePath: string): FileInfo | null {
