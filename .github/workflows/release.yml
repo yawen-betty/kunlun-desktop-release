@@ -82,7 +82,7 @@ jobs:
         with:
           path: artifacts
 
-      - - name: Move artifacts to bundle directory
+      - name: Move artifacts to bundle directory
         run: |
           mkdir -p src-tauri/target/release/bundle
           shopt -s dotglob
