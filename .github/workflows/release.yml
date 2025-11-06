@@ -147,13 +147,19 @@ jobs:
           chmod 600 debug_ssh_key
           ssh -v -i debug_ssh_key -p 40024 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOSTNAME }} 'echo "SSH connection successful"'
 
+      - name: Add known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
       - name: Upload artifacts to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_HOSTNAME }}
           username: ${{ secrets.SERVER_USERNAME }}
           port: 40024
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           source: "staging/*"
           target: ${{ env.REMOTE_PATH }}
           strip_components: 1
