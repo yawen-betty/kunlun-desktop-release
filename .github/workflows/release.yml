@@ -73,7 +73,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      
+
       - name: Install dependencies
         run: npm install
 
@@ -136,10 +136,16 @@ jobs:
       - name: Prepare artifacts for upload
         run: |
           mkdir -p staging
-          find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.sig" -o -name "*.exe" \) -exec cp {} staging/ \;
+          find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.sig" -o -name "*.exe" -o -name "*.deb" -o -name "*.rpm" \) -exec cp {} staging/ \;
           cp latest.json staging/
           echo "--- Staging directory contents ---"
           ls -l staging
+
+      - name: Debug SSH Connection
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > debug_ssh_key
+          chmod 600 debug_ssh_key
+          ssh -v -i debug_ssh_key -p 40024 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOSTNAME }} 'echo "SSH connection successful"'
 
       - name: Upload artifacts to server
         uses: appleboy/scp-action@master
