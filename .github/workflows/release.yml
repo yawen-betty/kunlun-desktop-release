@@ -133,6 +133,17 @@ jobs:
             # Manifest
             latest.json
 
+      - name: Prepare artifacts for upload
+        run: |
+          mkdir -p staging
+          cp src-tauri/target/release/bundle/dmg/* staging/
+          cp src-tauri/target/release/bundle/msi/* staging/
+          cp src-tauri/target/release/bundle/appimage/* staging/
+          cp src-tauri/target/release/bundle/macos/* staging/
+          cp latest.json staging/
+          echo "--- Staging directory contents ---"
+          ls -l staging
+
       - name: Upload artifacts to server
         uses: appleboy/scp-action@master
         with:
@@ -140,6 +151,6 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           port: 40024
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "src-tauri/target/release/bundle/dmg/*,src-tauri/target/release/bundle/msi/*,src-tauri/target/release/bundle/appimage/*,src-tauri/target/release/bundle/macos/*,latest.json"
+          source: "staging/*"
           target: ${{ env.REMOTE_PATH }}
-          strip_components: 4
+          strip_components: 1
