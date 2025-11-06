@@ -141,12 +141,6 @@ jobs:
           echo "--- Staging directory contents ---"
           ls -l staging
 
-      - name: Debug SSH Connection
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > debug_ssh_key
-          chmod 600 debug_ssh_key
-          ssh -v -i debug_ssh_key -p 40024 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOSTNAME }} 'echo "SSH connection successful"'
-
       - name: Add known hosts
         run: |
           mkdir -p ~/.ssh
