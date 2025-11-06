@@ -147,13 +147,7 @@ jobs:
           echo "${{ secrets.KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      - name: Upload artifacts to server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SERVER_HOSTNAME }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          port: 40024
-          password: ${{ secrets.SERVER_PASSWORD }}
-          source: "staging/*"
-          target: ${{ env.REMOTE_PATH }}
-          strip_components: 1
+      - name: Advanced SSH Debug (Password & Path Test)
+        run: |
+          sudo apt-get update && sudo apt-get install -y sshpass
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -v -p 40024 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOSTNAME }} "ls -ld ${{ env.REMOTE_PATH }}"
