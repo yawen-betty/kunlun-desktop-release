@@ -136,10 +136,7 @@ jobs:
       - name: Prepare artifacts for upload
         run: |
           mkdir -p staging
-          cp src-tauri/target/release/bundle/dmg/* staging/
-          cp src-tauri/target/release/bundle/msi/* staging/
-          cp src-tauri/target/release/bundle/appimage/* staging/
-          cp src-tauri/target/release/bundle/macos/* staging/
+          find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.sig" -o -name "*.exe" \) -exec cp {} staging/ \;
           cp latest.json staging/
           echo "--- Staging directory contents ---"
           ls -l staging
