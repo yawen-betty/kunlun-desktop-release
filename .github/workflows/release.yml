@@ -113,7 +113,8 @@ jobs:
       - name: Final SCP Debug
         run: |
           sudo apt-get update && sudo apt-get install -y sshpass
-          # Create a dummy file to upload
+          # Create a dummy staging directory and file
+          mkdir -p staging
           echo "test content" > staging/test_file.txt
           echo "--- Staging directory contents ---"
           ls -l staging
