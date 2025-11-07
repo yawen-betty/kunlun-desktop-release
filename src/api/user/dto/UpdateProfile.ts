@@ -1,96 +1,92 @@
-import {BaseInDto, BaseOutDto} from "@/api/BaseDto";
-import {AreaInfoBean} from "@/api/user/dto/bean/AreaInfoBean.ts";
+import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
+import { AreaInfoBean } from "@/api/user/dto/bean/AreaInfoBean";
 
+/**
+ * 更新当前用户信息请求DTO
+ */
 export class UpdateProfileInDto extends BaseInDto {
     /**
      * 姓名
      */
     name?: string;
-
+    
     /**
-     * 性别 (1:男, 2:女, 0:未知)
+     * 性别 (0:未知, 1:男, 2:女)
      */
     gender?: number;
-
+    
     /**
-     * 出生日期 (时间戳字符串)
+     * 出生日期
      */
     birthDate?: number;
-
+    
     /**
-     * 城市编码
+     * 地点Bean列表
      */
-    areaInfoBeanList: AreaInfoBean[] = [];
-
+    areaInfoBeanList?: AreaInfoBean[];
+    
     /**
      * 手机号
      */
     mobile?: string;
-
+    
     /**
      * 电子邮箱
      */
     email?: string;
-
+    
     /**
-     * 头像URL
+     * 头像URL (通过文件上传接口获取)
      */
     avatarUrl?: string;
 }
 
+/**
+ * 更新当前用户信息响应DTO
+ */
 export class UpdateProfileOutDto extends BaseOutDto {
     /**
-     * 微信 Union ID
+     * 用户ID
      */
-    unionId: string = '';
-
+    uuid: string = '';
+    
     /**
-     * 微信 Open ID
+     * 用户姓名
      */
-    openId: string = '';
-
+    name?: string;
+    
     /**
-     * 姓名
+     * 性别 (0:未知, 1:男, 2:女)
      */
-    name: string = '';
-
+    gender?: number;
+    
     /**
-     * 性别 (1:男, 2:女, 0:未知)
+     * 出生年月
      */
-    gender: number = 0;
-
+    birthDate?: number;
+    
     /**
-     * 出生日期 (时间戳字符串)
+     * 地点Bean列表
      */
-    birthDate: string = '';
-
+    areaInfoBeanList?: AreaInfoBean[];
+    
     /**
-     * 城市编码
+     * 手机号码
      */
-    city: string = '';
-
+    mobile?: string;
+    
     /**
-     * 城市地区详细信息
+     * 个人邮箱
      */
-    areaInfoBeanList: AreaInfoBean[] = [];
-
+    email?: string;
+    
     /**
-     * 手机号
-     */
-    mobile: string = '';
-
-    /**
-     * 电子邮箱
-     */
-    email: string = '';
-
-    /**
-     * 头像URL
+     * 头像链接
      */
     avatarUrl?: string;
-
+    
     /**
-     * 个人资料是否补全 (1:是, 0:否)
+     * 个人信息是否已补全 (0:否, 1:是)
      */
     profileCompleteFlag: string = '';
 }

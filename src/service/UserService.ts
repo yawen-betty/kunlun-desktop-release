@@ -48,14 +48,14 @@ export class UserService {
     /**
      * 获取模型账号配置
      */
-    public async getModelAccount(params: GetModelAccountInDto): Promise<Result<GetModelAccountInDto>> {
+    public async getModelAccount(params: GetModelAccountInDto): Promise<Result<GetModelAccountOutDto>> {
         return await this.http.request<Result<GetModelAccountOutDto>>(UserPaths.getModelAccount, params);
     }
 
     /**
      * 保存模型账号配置
      */
-    public async saveModelAccount(params: SaveModelAccountInDto): Promise<Result<SaveModelAccountOutDto>> {
-        return await this.http.request<Result<SaveModelAccountOutDto>>(UserPaths.saveModelAccount, params);
+    public async saveModelAccount(params: SaveModelAccountInDto): Promise<EmptyOutDto> {
+        return await this.http.request<EmptyOutDto>(UserPaths.saveModelAccount, params);
     }
 }

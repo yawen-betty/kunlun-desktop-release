@@ -1,5 +1,8 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 
+/**
+ * 上传文件请求DTO
+ */
 export class UploadInDto extends BaseInDto {
     /**
      * 要上传的文件对象
@@ -12,6 +15,9 @@ export class UploadInDto extends BaseInDto {
     folderPath?: string;
 }
 
+/**
+ * 上传文件响应DTO
+ */
 export class UploadOutDto extends BaseOutDto {
     /**
      * 文件服务器域名
