@@ -112,7 +112,9 @@ jobs:
       - name: Package all artifacts
         run: |
           mkdir -p staging
-          find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.sig" -o -name "*.exe" \) -exec cp {} staging/ \;
+          find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.exe" \) -exec cp {} staging/ \;
+          find src-tauri/target/release/bundle/macos -type f -name "*.tar.gz" -exec cp {} staging/ \; 2>/dev/null || true
+          find src-tauri/target/release/bundle -type f -name "*.sig" ! -name "*deb.sig" ! -name "*rpm.sig" -exec cp {} staging/ \;
           cp latest.json staging/
           echo "--- Files to package ---"
           ls -lh staging
