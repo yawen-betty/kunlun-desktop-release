@@ -136,16 +136,31 @@ jobs:
       - name: Prepare artifacts for upload
         run: |
           mkdir -p staging
-          find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.sig" -o -name "*.exe" -o -name "*.deb" -o -name "*.rpm" \) -exec cp {} staging/ \;
+          find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.sig" -o -name "*.exe" \) -exec cp {} staging/ \;
           cp latest.json staging/
           echo "--- Staging directory contents ---"
-          ls -l staging
+          ls -lh staging
+          echo "--- Original size ---"
+          du -sh staging
+          
+          echo "--- Compressing files ---"
+          tar -czf artifacts.tar.gz -C staging .
+          echo "--- Compressed size ---"
+          ls -lh artifacts.tar.gz
 
       - name: Install sshpass
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: Setup SSH and upload to server
+      - name: Upload and extract on server
+        timeout-minutes: 30
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p 40024 -H ${{ secrets.SERVER_HOSTNAME }} >> ~/.ssh/known_hosts
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -O -r -P 40024 staging/* ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOSTNAME }}:${{ env.REMOTE_PATH }}/
+          
+          echo "Uploading compressed archive..."
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -P 40024 artifacts.tar.gz ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOSTNAME }}:/tmp/
+          
+          echo "Extracting on server..."
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -p 40024 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOSTNAME }} "tar -xzf /tmp/artifacts.tar.gz -C ${{ env.REMOTE_PATH }}/ && rm /tmp/artifacts.tar.gz"
+          
+          echo "Upload completed!"
