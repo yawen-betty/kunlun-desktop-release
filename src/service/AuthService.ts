@@ -5,7 +5,7 @@ import {WechatLoginInDto, WechatLoginOutDto} from '@/api/auth/dto/WechatLogin';
 import {GenerateQrcodeInDto, GenerateQrcodeOutDto} from '@/api/auth/dto/GenerateQrcode';
 import {Result} from '@/api/BaseDto';
 import {EmptyOutDto} from '@/api/HttpClient';
-import {GetTokenInDto, GetTokenOutDto} from "@/api/auth/dto/GetToken.ts";
+import {GetTokenOutDto} from "@/api/auth/dto/GetToken.ts";
 
 export class AuthService {
     private http: HttpClient;
@@ -46,7 +46,8 @@ export class AuthService {
     /**
      * 获取登录Token
      */
-    public async getToken(params: GetTokenInDto): Promise<Result<GetTokenOutDto>> {
-        return await this.http.request<Result<GetTokenOutDto>>(AuthPaths.getToken, params);
+    public async getToken(state: string): Promise<Result<GetTokenOutDto>> {
+        const path = { ...AuthPaths.getToken, url: `${AuthPaths.getToken.url}/${state}` };
+        return await this.http.request<Result<GetTokenOutDto>>(path, {});
     }
 }

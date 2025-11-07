@@ -1,5 +1,9 @@
 import {Path} from "@/api/Path.ts";
 
+/**
+ * 认证相关接口路径定义
+ * 包含微信登录、退出登录、二维码生成等接口路径
+ */
 export class AuthPaths {
     /**
      * 微信登录
@@ -32,7 +36,7 @@ export class AuthPaths {
      * 获取登录Token
      */
     static getToken: Path = {
-        url: '/token/{state}',
+        url: '/token',
         method: 'GET',
         prefix: 'auth'
     };

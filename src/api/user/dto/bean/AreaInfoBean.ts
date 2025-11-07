@@ -1,3 +1,7 @@
+/**
+ * 地区信息Bean
+ * 用于封装地区相关信息，包含地区ID、名称、拼音等
+ */
 export class AreaInfoBean {
     /**
      * 地区ID
@@ -30,7 +34,7 @@ export class AreaInfoBean {
     level: number = 0;
     
     /**
-     * 子地区列表
+     * 子地区列表 (递归结构)
      */
     children?: AreaInfoBean[];
 }
