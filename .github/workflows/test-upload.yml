@@ -1,0 +1,36 @@
+name: Test Upload
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-upload:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create test file
+        run: |
+          mkdir -p test-staging
+          echo "Test upload at $(date)" > test-staging/test.txt
+          echo "Branch: ${{ github.ref_name }}" >> test-staging/test.txt
+
+      - name: Set remote path
+        run: |
+          FULL_REMOTE_PATH="${{ secrets.SERVER_WEB_ROOT }}/${{ secrets.UPDATE_SUB_PATH }}/${{ github.ref_name }}"
+          echo "REMOTE_PATH=${FULL_REMOTE_PATH}" >> $GITHUB_ENV
+          echo "Remote Path: ${FULL_REMOTE_PATH}"
+
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Setup SSH and upload to server
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 40024 -H ${{ secrets.SERVER_HOSTNAME }} >> ~/.ssh/known_hosts
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -r -P 40024 test-staging/* ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOSTNAME }}:${{ env.REMOTE_PATH }}/
+
+      - name: Verify upload
+        run: echo "Upload completed successfully!"
