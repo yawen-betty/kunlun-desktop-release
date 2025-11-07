@@ -55,7 +55,7 @@ export class UserService {
     /**
      * 保存模型账号配置
      */
-    public async saveModelAccount(params: SaveModelAccountInDto): Promise<EmptyOutDto> {
-        return await this.http.request<EmptyOutDto>(UserPaths.saveModelAccount, params);
+    public async saveModelAccount(params: SaveModelAccountInDto): Promise<Result<SaveModelAccountOutDto>> {
+        return await this.http.request<Result<SaveModelAccountOutDto>>(UserPaths.saveModelAccount, params);
     }
 }

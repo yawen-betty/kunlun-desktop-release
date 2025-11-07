@@ -15,7 +15,7 @@
             <template #content>
               <div class="select-list">
                 <div :class="['select-item', 'pointer',info.key === 'delete' && 'select-delete']"
-                     v-for="info in selectList" :key="info.key" @click="handleClick(info.key)">
+                     v-for="info in selectList" :key="info.key" @click="handleClick(resume,info.key)">
                   <SvgIcon :name="info.icon" size="12" color="#9499A5" class="select-icon mr-10"/>
                   <span class="select-name">{{ info.name }}</span>
                 </div>
@@ -28,19 +28,19 @@
     </div>
   </div>
 
-  <!--  <Modal-->
-  <!--    v-model="tutorialVisible"-->
-  <!--    :mask-closable="false"-->
-  <!--    :closable="false"-->
-  <!--    footer-hide-->
-  <!--    class="tutorial-modal"-->
-  <!--  >-->
-  <!--    <div class="tutorial-content">-->
-  <!--      <Icon type="md-close" class="tutorial-close-icon" @click="handleTutorial(false)"/>-->
-  <!--      <h3 class="tutorial-title mb-20">如何注册智谱账号</h3>-->
-  <!--      <div class="tutorial-html pt-20" v-html="tutorialContent"></div>-->
-  <!--    </div>-->
-  <!--  </Modal>-->
+  <Modal
+    v-model="previewVisible"
+    :mask-closable="false"
+    :closable="false"
+    footer-hide
+    class="preview-modal"
+  >
+    <div class="preview-header">
+      <Icon type="md-close" class="preview-close-icon" @click="previewVisible = false"/>
+      <h3 class="preview-title mb-20">预览</h3>
+    </div>
+    <div class="preview-content pt-20"></div>
+  </Modal>
 </template>
 
 <script setup lang="ts">
@@ -51,6 +51,7 @@ import {Icon, Modal} from "view-ui-plus";
 interface ResumeItem {
   name: string;
   time: string;
+  id?: string
 }
 
 interface SelectItem {
@@ -58,6 +59,11 @@ interface SelectItem {
   icon: string;
   key: string
 }
+
+// 预览弹窗状态
+const previewVisible = ref<boolean>(false);
+// 预览简历id
+const previewResumeId = ref<string>('');
 
 const resumeList = ref<ResumeItem[]>([
   {name: '简历模板1', time: '2024-01-15'},
@@ -74,10 +80,12 @@ const selectList = ref<SelectItem[]>([
 ])
 
 // 处理点击事件
-const handleClick = (key: string) => {
+const handleClick = (resume: ResumeItem, key: string) => {
   switch (key) {
     case 'preview':
       console.log('预览');
+      previewResumeId.value = resume.id!
+      previewVisible.value = true;
       break;
     case 'edit':
       console.log('编辑');
@@ -187,6 +195,17 @@ const handleClick = (key: string) => {
       fill: #EC6B62;
     }
 
+  }
+}
+
+.preview-modal {
+  :deep(.ivu-modal-body) {
+    padding: 0 !important;
+  }
+
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
   }
 }
 </style>
