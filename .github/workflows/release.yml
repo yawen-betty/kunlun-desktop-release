@@ -114,10 +114,17 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}-build-${{ github.run_number }}
           name: Build for ${{ github.ref_name }} #${{ github.run_number }}
-          body: CI build from branch ${{ github.ref_name }}.
+          body: |
+            CI build from branch ${{ github.ref_name }}.
+            
+            **下载说明：**
+            - 下载 `all-artifacts-${{ github.ref_name }}.tar.gz` 获取所有平台的安装包和更新文件
+            - 或单独下载所需平台的安装包
           draft: true
           prerelease: true
           files: |
+            # 完整压缩包（包含所有文件）
+            all-artifacts-${{ github.ref_name }}.tar.gz
             # macOS
             src-tauri/target/release/bundle/dmg/*.dmg
             src-tauri/target/release/bundle/macos/*.tar.gz
@@ -133,34 +140,17 @@ jobs:
             # Manifest
             latest.json
 
-      - name: Prepare artifacts for upload
+      - name: Package all artifacts
         run: |
           mkdir -p staging
           find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.sig" -o -name "*.exe" \) -exec cp {} staging/ \;
           cp latest.json staging/
-          echo "--- Staging directory contents ---"
+          echo "--- Files to package ---"
           ls -lh staging
-          echo "--- Original size ---"
+          echo "--- Total size ---"
           du -sh staging
           
-          echo "--- Compressing files ---"
-          tar -czf artifacts.tar.gz -C staging .
-          echo "--- Compressed size ---"
-          ls -lh artifacts.tar.gz
-
-      - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
-
-      - name: Upload and extract on server
-        timeout-minutes: 30
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p 40024 -H ${{ secrets.SERVER_HOSTNAME }} >> ~/.ssh/known_hosts
-          
-          echo "Uploading compressed archive..."
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -P 40024 artifacts.tar.gz ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOSTNAME }}:/tmp/
-          
-          echo "Extracting on server..."
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -p 40024 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOSTNAME }} "tar -xzf /tmp/artifacts.tar.gz -C ${{ env.REMOTE_PATH }}/ && rm /tmp/artifacts.tar.gz"
-          
-          echo "Upload completed!"
+          echo "--- Creating compressed archive ---"
+          tar -czf all-artifacts-${{ github.ref_name }}.tar.gz -C staging .
+          echo "--- Compressed archive ---"
+          ls -lh all-artifacts-${{ github.ref_name }}.tar.gz
