@@ -1,12 +1,12 @@
-import { FilePaths } from '@/api/file/FilePaths'
+import {FilePaths} from '@/api/file/FilePaths'
 import HttpClient from '@/api/HttpClient'
-import { inject } from 'vue'
-import { UploadInDto, UploadOutDto } from '@/api/file/dto/Upload'
-import { Result } from '@/api/BaseDto'
+import {inject} from 'vue'
+import {UploadInDto, UploadOutDto} from '@/api/file/dto/Upload'
+import {Result} from '@/api/BaseDto'
 
 export class FileService {
-    private http: HttpClient;
     private static instance: FileService;
+    private http: HttpClient;
 
     constructor() {
         this.http = inject('$http') as HttpClient;
@@ -22,7 +22,7 @@ export class FileService {
     /**
      * 上传文件
      */
-    public async upload(file: File): Promise<Result<UploadOutDto>> {
-        return await this.http.uploadFile<Result<UploadOutDto>>(FilePaths.upload, file);
+    public async upload(file: File, extraFields?: Map<string, any>): Promise<Result<UploadOutDto>> {
+        return await this.http.uploadFile<Result<UploadOutDto>>(FilePaths.upload, file, extraFields);
     }
 }

@@ -29,6 +29,13 @@ export interface EmptyOutDto {
 }
 
 export default class HttpClient {
+    static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
+
+    // 动态获取token，确保每次请求都使用最新的token
+    static get token(): string | undefined {
+        return UserInfo.info?.token;
+    }
+
     static create(): any {
         return {
             install: (app: App) => {
@@ -36,13 +43,6 @@ export default class HttpClient {
             }
         }
     };
-
-    static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
-
-    // 动态获取token，确保每次请求都使用最新的token
-    static get token(): string | undefined {
-        return UserInfo.info?.token;
-    }
 
     // 接口URL拼接
     private static fixUrl(path: Path, data?: any): string {
@@ -110,6 +110,41 @@ export default class HttpClient {
             }
         }
         return fullUrl;
+    }
+
+    // 在 HttpClient 类中添加一个私有方法来处理特殊 code
+    private static handleSpecialCode(responseBody: any): void {
+        // 检查响应体是否包含 code 字段
+        if (responseBody && typeof responseBody === 'object' && 'code' in responseBody) {
+            const code = responseBody.code;
+
+            switch (code) {
+                case 302:
+                    message.error(Message, responseBody.msg);
+                    UserInfo.logout();
+                    break;
+
+                case 2108:
+                    message.error(Message, ' 账号已在其他设备登录！');
+                    UserInfo.logout();
+                    break;
+
+                // 简历数量已达上限
+                case 2305:
+                    message.error(Message, responseBody.msg);
+                    break;
+
+                default:
+                    // 其他错误码的通用处理
+                    // TODO 白名单
+                    if (code !== 200) {
+                        console.log(responseBody, 'responseBodyresponseBody')
+                        const msg = responseBody.msg || '请求失败';
+                        message.error(Message, msg);
+                        throw new Error(msg);
+                    }
+            }
+        }
     }
 
     /**
@@ -206,7 +241,7 @@ export default class HttpClient {
     public async uploadFile<T>(
         path: Path,
         file: File,
-        extraFields?: Map<string,any>
+        extraFields?: Map<string, any>
     ): Promise<T> {
         console.log('HttpClient.uploadFile 开始处理:', file.name);
 
@@ -232,12 +267,12 @@ export default class HttpClient {
         return new Promise<T>(async (resolve, reject) => {
             try {
                 const response: HttpResponse = await invoke('upload_request', {
-                  url: fullUrl,
-                  headers,
-                  fieldName: 'file', // 根据您的要求，字段名固定为 'file'
-                  fileName: file.name,
-                  fileBytes,
-                  extraFields
+                    url: fullUrl,
+                    headers,
+                    fieldName: 'file', // 根据您的要求，字段名固定为 'file'
+                    fileName: file.name,
+                    fileBytes,
+                    extraFields
                 });
 
                 console.info('文件上传响应:', response);
@@ -327,36 +362,6 @@ export default class HttpClient {
             unlistenComplete();
             if (onError) {
                 onError(error);
-            }
-        }
-    }
-
-    // 在 HttpClient 类中添加一个私有方法来处理特殊 code
-    private static handleSpecialCode(responseBody: any): void {
-        // 检查响应体是否包含 code 字段
-        if (responseBody && typeof responseBody === 'object' && 'code' in responseBody) {
-            const code = responseBody.code;
-
-            switch (code) {
-                case 302:
-                    message.error(Message, responseBody.msg);
-                    UserInfo.logout();
-                    break;
-
-                case 2108:
-                    message.error(Message, ' 账号已在其他设备登录！');
-                    UserInfo.logout();
-                    break;
-
-                default:
-                    // 其他错误码的通用处理
-                    // TODO 白名单
-                    if (code !== 200) {
-                        console.log(responseBody, 'responseBodyresponseBody')
-                        const msg = responseBody.msg || '请求失败';
-                        message.error(Message, msg);
-                        throw new Error(msg);
-                    }
             }
         }
     }

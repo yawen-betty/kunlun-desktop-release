@@ -29,13 +29,12 @@ export class ResumeService {
         return ResumeService.instance;
     }
 
-    // /**
-    //  * 初始化简历创建流程
-    //  */
-    // public async initResume(params: InitResumeInDto): Promise<Result<InitResumeOutDto>> {
-    //     console.log(1)
-    //     return await this.http.uploadFormData<Result<InitResumeOutDto>>(ResumePaths.initResume, params);
-    // }
+    /**
+     * 初始化简历创建流程
+     */
+    public async initResume(params: InitResumeInDto): Promise<Result<InitResumeOutDto>> {
+        return await this.http.request<Result<InitResumeOutDto>>(ResumePaths.initResume, params);
+    }
 
     /**
      * 保存简历内容
