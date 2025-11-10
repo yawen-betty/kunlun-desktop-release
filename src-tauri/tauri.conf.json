@@ -50,6 +50,11 @@
     },
     "process": {
       "relaunch": true
+    },
+    "fs": {
+      "scope": [
+        "$LOG/*"
+      ]
     }
   }
 }
