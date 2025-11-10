@@ -1,4 +1,4 @@
-import { FieldDefinitionBean } from './FieldDefinitionBean';
+import { FieldDefinitionBean } from "./FieldDefinitionBean";
 
 export class ModuleDefinitionBean {
     /**

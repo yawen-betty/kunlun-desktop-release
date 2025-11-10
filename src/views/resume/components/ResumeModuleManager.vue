@@ -281,17 +281,13 @@ const addModule = (id: string) => {
     }
 
     if (!module) return;
-
-    // 如果是禁用拖拽的模块，插入到对应位置
+    console.log(module, 'module')
+    console.log(props.disabledDragIds, 'props.disabledDragIds')
+    // 如果是禁用拖拽的模块，插入到禁用项的对应位置
     if (props.disabledDragIds.includes(id)) {
         const disabledIndex = props.disabledDragIds.indexOf(id);
-        let insertIndex = 0;
-        for (let i = 0; i < disabledIndex; i++) {
-            if (selectedModules.value.find(m => m.id === props.disabledDragIds[i])) {
-                insertIndex++;
-            }
-        }
-        selectedModules.value.splice(insertIndex, 0, {...module});
+        console.log(disabledIndex, 'index')
+        selectedModules.value.splice(disabledIndex, 0, {...module});
     } else {
         selectedModules.value.push({...module});
     }
@@ -337,7 +333,6 @@ const handleCancel = () => {
 
 const handleApply = () => {
     emit('on-apply', [...selectedModules.value]);
-    Message.success('应用成功');
     showAvailableList.value = false;
     visible.value = false;
 };
