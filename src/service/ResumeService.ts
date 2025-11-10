@@ -40,10 +40,10 @@ export class ResumeService {
     /**
      * 保存简历内容
      */
-    public async saveResume(params: SaveResumeInDto): Promise<EmptyOutDto> {
+    public async saveResume(resumeId: string, params: SaveResumeInDto): Promise<EmptyOutDto> {
         const path = {
             ...ResumePaths.saveResume,
-            url: ResumePaths.saveResume.url.replace('{resumeId}', params.resumeId)
+            url: ResumePaths.saveResume.url.replace('{resumeId}', resumeId)
         };
         return await this.http.request<EmptyOutDto>(path, params);
     }
@@ -51,10 +51,10 @@ export class ResumeService {
     /**
      * 重命名简历
      */
-    public async renameResume(params: RenameResumeInDto): Promise<EmptyOutDto> {
+    public async renameResume(resumeId: string, params: RenameResumeInDto): Promise<EmptyOutDto> {
         const path = {
             ...ResumePaths.renameResume,
-            url: ResumePaths.renameResume.url.replace('{resumeId}', params.resumeId)
+            url: ResumePaths.renameResume.url.replace('{resumeId}', resumeId)
         };
         return await this.http.request<EmptyOutDto>(path, params);
     }
@@ -62,10 +62,10 @@ export class ResumeService {
     /**
      * 获取简历详情
      */
-    public async getResumeDetail(params: GetResumeDetailInDto): Promise<Result<GetResumeDetailOutDto>> {
+    public async getResumeDetail(resumeId: string, params: GetResumeDetailInDto): Promise<Result<GetResumeDetailOutDto>> {
         const path = {
             ...ResumePaths.getResumeDetail,
-            url: ResumePaths.getResumeDetail.url.replace('{resumeId}', params.resumeId)
+            url: ResumePaths.getResumeDetail.url.replace('{resumeId}', resumeId)
         };
         return await this.http.request<Result<GetResumeDetailOutDto>>(path, params);
     }
@@ -73,21 +73,25 @@ export class ResumeService {
     /**
      * 下载简历
      */
-    public async downloadResume(params: DownloadResumeInDto): Promise<Result<DownloadResumeOutDto>> {
+    public async downloadResume(resumeId: string, format: string, style: string, watermark?: string): Promise<Blob> {
+        const queryParams = new URLSearchParams({ format, style });
+        if (watermark) {
+            queryParams.append('watermark', watermark);
+        }
         const path = {
             ...ResumePaths.downloadResume,
-            url: ResumePaths.downloadResume.url.replace('{resumeId}', params.resumeId)
+            url: ResumePaths.downloadResume.url.replace('{resumeId}', resumeId) + '?' + queryParams.toString()
         };
-        return await this.http.request<Result<DownloadResumeOutDto>>(path, params);
+        return await this.http.request<Blob>(path, new DownloadResumeInDto());
     }
 
     /**
      * 更新简历模块
      */
-    public async updateModules(params: UpdateModulesInDto): Promise<EmptyOutDto> {
+    public async updateModules(resumeId: string, params: UpdateModulesInDto): Promise<EmptyOutDto> {
         const path = {
             ...ResumePaths.updateModules,
-            url: ResumePaths.updateModules.url.replace('{resumeId}', params.resumeId)
+            url: ResumePaths.updateModules.url.replace('{resumeId}', resumeId)
         };
         return await this.http.request<EmptyOutDto>(path, params);
     }
@@ -102,10 +106,10 @@ export class ResumeService {
     /**
      * 获取系统模块字段
      */
-    public async getModuleFields(params: GetModuleFieldsInDto): Promise<Result<GetModuleFieldsOutDto>> {
+    public async getModuleFields(moduleDefinitionId: string, params: GetModuleFieldsInDto): Promise<Result<GetModuleFieldsOutDto>> {
         const path = {
             ...ResumePaths.getModuleFields,
-            url: ResumePaths.getModuleFields.url.replace('{moduleDefinitionId}', params.moduleDefinitionId)
+            url: ResumePaths.getModuleFields.url.replace('{moduleDefinitionId}', moduleDefinitionId)
         };
         return await this.http.request<Result<GetModuleFieldsOutDto>>(path, params);
     }
@@ -113,10 +117,10 @@ export class ResumeService {
     /**
      * 更新模块字段
      */
-    public async updateModuleFields(params: UpdateModuleFieldsInDto): Promise<EmptyOutDto> {
+    public async updateModuleFields(resumeId: string, moduleId: string, params: UpdateModuleFieldsInDto): Promise<EmptyOutDto> {
         const path = {
             ...ResumePaths.updateModuleFields,
-            url: ResumePaths.updateModuleFields.url.replace('{resumeId}', params.resumeId).replace('{moduleId}', params.moduleId)
+            url: ResumePaths.updateModuleFields.url.replace('{resumeId}', resumeId).replace('{moduleId}', moduleId)
         };
         return await this.http.request<EmptyOutDto>(path, params);
     }
@@ -124,10 +128,10 @@ export class ResumeService {
     /**
      * 更新模块条目
      */
-    public async updateModuleEntries(params: UpdateModuleEntriesInDto): Promise<EmptyOutDto> {
+    public async updateModuleEntries(resumeId: string, moduleId: string, params: UpdateModuleEntriesInDto): Promise<EmptyOutDto> {
         const path = {
             ...ResumePaths.updateModuleEntries,
-            url: ResumePaths.updateModuleEntries.url.replace('{resumeId}', params.resumeId).replace('{moduleId}', params.moduleId)
+            url: ResumePaths.updateModuleEntries.url.replace('{resumeId}', resumeId).replace('{moduleId}', moduleId)
         };
         return await this.http.request<EmptyOutDto>(path, params);
     }

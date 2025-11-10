@@ -45,4 +45,22 @@ export class AiPaths {
         method: 'POST',
         prefix: 'ai'
     }
+
+    /**
+     * 保存AI会话记录
+     */
+    static saveConversation: Path = {
+        url: '/conversation/save',
+        method: 'POST',
+        prefix: 'ai'
+    }
+
+    /**
+     * 查询AI会话记录
+     */
+    static queryConversation: Path = {
+        url: '/conversation/query',
+        method: 'POST',
+        prefix: 'ai'
+    }
 }
