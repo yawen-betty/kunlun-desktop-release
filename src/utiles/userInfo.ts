@@ -5,7 +5,7 @@ import router from "@/router/index.ts";
 export class UserInfo {
 
     static info = reactive({
-        token: '', // token
+        token: '8cbf95bc95f440978bbeb7759839a2f0', // token
         userName: '', // 用户名
         userId: '', // 用户ID
         avatar: '',  // 头像
