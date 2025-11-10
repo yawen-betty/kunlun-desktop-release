@@ -1980,6 +1980,7 @@ dependencies = [
 name = "kunlun"
 version = "1.0.1"
 dependencies = [
+ "futures-util",
  "reqwest",
  "serde",
  "serde_json",

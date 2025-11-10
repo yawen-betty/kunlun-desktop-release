@@ -2,6 +2,7 @@ import type {App} from "vue";
 import {Config} from "@/Config.ts";
 import {UserInfo} from "@/utiles/userInfo.ts";
 import {invoke} from '@tauri-apps/api/core';
+import {listen} from '@tauri-apps/api/event';
 import type {Path} from "@/api/Path.ts";
 import {message} from "@/utiles/Message.ts";
 import {Message} from "view-ui-plus";
@@ -254,6 +255,80 @@ export default class HttpClient {
                 reject(error);
             }
         });
+    }
+
+    /**
+     * SSE 流式请求方法
+     * @param path Path对象
+     * @param data 请求体数据
+     * @param onMessage 接收到消息时的回调
+     * @param onError 发生错误时的回调
+     * @param onComplete 完成时的回调
+     */
+    public async sseRequest(
+        path: Path,
+        data?: any,
+        onMessage?: (data: string) => void,
+        onError?: (error: any) => void,
+        onComplete?: () => void
+    ): Promise<void> {
+        const fullUrl = HttpClient.fixUrl(path);
+        const eventId = `sse-${Date.now()}-${Math.random()}`;
+
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+            'Accept': 'text/event-stream',
+            'version': Config.version
+        };
+
+        if (HttpClient.token) {
+            headers['Admin-Token'] = HttpClient.token;
+        }
+
+        // 监听消息
+        const unlistenMessage = await listen(`sse-message-${eventId}`, (event) => {
+            if (onMessage) {
+                onMessage(event.payload as string);
+            }
+        });
+
+        // 监听错误
+        const unlistenError = await listen(`sse-error-${eventId}`, (event) => {
+            if (onError) {
+                onError(event.payload);
+            }
+            unlistenMessage();
+            unlistenError();
+            unlistenComplete();
+        });
+
+        // 监听完成
+        const unlistenComplete = await listen(`sse-complete-${eventId}`, () => {
+            if (onComplete) {
+                onComplete();
+            }
+            unlistenMessage();
+            unlistenError();
+            unlistenComplete();
+        });
+
+        // 发起 SSE 请求
+        try {
+            await invoke('sse_request', {
+                url: fullUrl,
+                headers,
+                body: data,
+                eventId
+            });
+        } catch (error) {
+            console.error('SSE 请求失败:', error);
+            unlistenMessage();
+            unlistenError();
+            unlistenComplete();
+            if (onError) {
+                onError(error);
+            }
+        }
     }
 
     // 在 HttpClient 类中添加一个私有方法来处理特殊 code
