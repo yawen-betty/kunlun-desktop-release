@@ -766,13 +766,13 @@ const handleModulesApply = async (modules: any[]) => {
             basicBean,
             ...modules.map((module, index) => {
                 const bean = new ModuleUpdateBean();
+                bean.moduleDefinitionUuid = module.id.includes('custom') ? undefined : module.id;
                 bean.sortOrder = index + 2;
                 const existingModule = props.resumeData.modules.find((m: any) => m.moduleDefinitionUuid === module.id);
+                console.log(bean, 'bean')
                 bean.uuid = existingModule?.uuid || undefined;
                 if (!bean.uuid) {
                     bean.moduleName = module.name;
-                } else {
-                    bean.moduleDefinitionUuid = module.id;
                 }
                 return bean;
             })
