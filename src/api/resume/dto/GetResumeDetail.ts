@@ -2,10 +2,6 @@ import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 import { ResumeModuleBean } from "./bean/ResumeModuleBean";
 
 export class GetResumeDetailInDto extends BaseInDto {
-    /**
-     * 简历ID
-     */
-    resumeId: string = '';
 }
 
 export class GetResumeDetailOutDto extends BaseOutDto {
@@ -29,6 +25,11 @@ export class GetResumeDetailOutDto extends BaseOutDto {
      */
     identity?: number;
 
+    /**
+     * 简历分数
+     */
+    score?: number;
+    
     /**
      * 模块列表
      */

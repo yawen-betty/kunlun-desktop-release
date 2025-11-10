@@ -3,9 +3,14 @@ import { QuestionBean } from "@/api/ai/dto/bean/QuestionBean";
 
 export class DiagnoseInDto extends BaseInDto {
     /**
-     * 当前简历的完整JSON对象
+     * 简历ID
      */
-    resumeContent: any = {};
+    resumeId: string = '';
+    
+    /**
+     * AI回复消息
+     */
+    assistantMessage: string = '';
 }
 
 export class DiagnoseOutDto extends BaseOutDto {

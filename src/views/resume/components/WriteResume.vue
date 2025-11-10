@@ -38,7 +38,7 @@
                 <div class="right-header mb-20">
                     <div v-if="showScoreAndMode && currentMode === 'ai'" class="score-wrapper flex flex-column">
                         <div class="score-text">当前简历分数：{{ resumeScore }}</div>
-                        <Poptip class="questions-pop" placement="bottom" trigger="hover">
+                        <Poptip class="questions-pop flex-column" placement="bottom" trigger="hover">
                             <SvgIcon class="tip" color="#FC8919" name="icon-tishi"/>
                             <template #content>
                                 <ul class="problem-list">
@@ -88,7 +88,8 @@
                 </div>
                 <!-- 聊天区 -->
                 <Transition name="slide-right">
-                    <ResumeChat v-if="currentMode === 'ai'"/>
+                    <ResumeChat v-if="currentMode === 'ai'" :hasAttachment="uploadedFile" :resumeUuid="resumeId"
+                                @update-data="handleUpdateData"/>
                 </Transition>
             </div>
         </div>
@@ -171,6 +172,12 @@ import {ResumeService} from "@/service/ResumeService";
 import {GetResumeDetailInDto} from "@/api/resume/dto/GetResumeDetail";
 import {SaveResumeInDto} from "@/api/resume/dto/SaveResume";
 
+const props = defineProps<{
+    resumeId?: string;
+    resumeName?: string;
+    uploadedFile?: File | null;
+}>();
+
 const resumeData = ref<any>({modules: []});
 
 const previewRef = useCompRef(ResumePreview);
@@ -249,12 +256,15 @@ const fetchResumeDetail = async (resumeId: string) => {
 };
 
 onMounted(async () => {
-    const resumeId = 'bf30084ef89849f8a6398a5f9511ad6b';
-    if (!resumeId) {
+    const id = props.resumeId || '34470ebfe1694816ad5e2efe27ae3504';
+    if (!id) {
         Message.error('简历ID不存在');
         return;
     }
-    await fetchResumeDetail(resumeId);
+    if (props.resumeName) {
+        resumeName.value = props.resumeName;
+    }
+    await fetchResumeDetail(id);
 });
 
 
@@ -306,6 +316,13 @@ const toggleMode = debounce(() => {
     }
 }, 300);
 
+/**
+ * 填充左侧模板 | 流式回填简历字段
+ */
+const handleUpdateData = () => {
+
+}
+
 // 确认切换模式
 const confirmModeSwitch = () => {
     currentMode.value = 'manual';
@@ -355,45 +372,9 @@ const handleDataChange = (updatedData: any) => {
 };
 
 // 更新模块顺序
-const handleUpdateModules = (modules: any[]) => {
-    if (!resumeData.value.modules) return;
-
-    const basicInfoModule = resumeData.value.modules.find((m: any) => m.moduleKey === 'basic_info');
-    const startOrder = basicInfoModule ? basicInfoModule.sortOrder + 1 : 2;
-
-    modules.forEach((module, index) => {
-        let targetModule = resumeData.value.modules.find((m: any) => m.uuid === module.id);
-
-        // 如果是自定义模块且不存在，则创建
-        if (!targetModule && module.isCustom) {
-            const newModule = {
-                uuid: module.id,
-                moduleDefinitionUuid: `custom_module_${Date.now()}`,
-                moduleKey: `custom_${Date.now()}`,
-                moduleName: module.name,
-                sortOrder: startOrder + index,
-                entries: [
-                    {
-                        entryUuid: `entry_custom_${Date.now()}`,
-                        entrySortOrder: 1,
-                        fields: [
-                            {
-                                uuid: `field_custom_${Date.now()}`,
-                                fieldDefinitionUuid: `custom_field_${Date.now()}`,
-                                fieldKey: 'custom_content',
-                                fieldName: module.name,
-                                fieldSortOrder: 1,
-                                fieldValue: ''
-                            }
-                        ]
-                    }
-                ]
-            };
-            resumeData.value.modules.push(newModule);
-        } else if (targetModule) {
-            targetModule.sortOrder = startOrder + index;
-        }
-    });
+const handleUpdateModules = async () => {
+    if (!resumeData.value?.uuid) return;
+    await fetchResumeDetail(resumeData.value.uuid);
 };
 </script>
 
@@ -541,7 +522,7 @@ const handleUpdateModules = (modules: any[]) => {
     font-family: 'PingFangSCBold', sans-serif;
     font-weight: 600;
     font-size: vw(16);
-    line-height: vh(16);
+    //line-height: vh(16);
     background: linear-gradient(90deg, #FFB32C 0%, #FC8919 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -549,8 +530,7 @@ const handleUpdateModules = (modules: any[]) => {
 }
 
 .questions-pop {
-    height: vw(14);
-
+    height: 100%;
 
     .tip {
         width: vw(14) !important;

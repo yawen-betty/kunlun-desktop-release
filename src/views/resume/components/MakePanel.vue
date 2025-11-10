@@ -1,7 +1,7 @@
 <!-- 简历制作默认页 | 采集求职岗位丶身份 -->
 <script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue'
-import {Button, Form, FormItem, Input, Message, Radio, RadioGroup, Upload} from "view-ui-plus";
+import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {ResumeService} from "@/service/ResumeService";
 import {InitResumeInDto} from "@/api/resume/dto/InitResume";
@@ -33,7 +33,10 @@ const formRules = {
     jobPosition: [{required: true, message: '请输入求职岗位！', trigger: 'submit'}],
     identity: [{type: 'number', required: true, message: '请选择身份！', trigger: 'submit'}],
 }
-const formData = reactive(new InitResumeInDto())
+const formData = reactive({
+    jobPosition: '',
+    identity: 0
+})
 
 const uploadFile = ref<{
     name: string;
@@ -42,34 +45,53 @@ const uploadFile = ref<{
     file: File;
 } | null>(null);
 const resumeService = new ResumeService();
+const showLimitModal = ref(false);
+const emit = defineEmits<{
+    'resume-created': [data: { resumeId: string; resumeName: string; uploadedFile: File | null }]
+}>();
 
 const submit = async () => {
     if (!formData.jobPosition.trim()) return Message.error('请输入求职岗位！')
     if (!formData.identity) return Message.error('请选择身份！')
 
-    // try {
-    //
-    //     const params = new InitResumeInDto();
-    //     params.jobPosition = formData.jobPosition;
-    //     params.identity = formData.identity as number;
-    //     params.file = uploadFile.value?.file;
-    //
-    //     const result = await resumeService.initResume(params);
-    //     console.log(result, 'result')
-    //     if (result.success) {
-    //         Message.success('简历创建成功！');
-    //         console.log('简历ID:', result.data.resumeId);
-    //         // TODO: 跳转到简历编辑页面
-    //     } else {
-    //         Message.error(result.msg || '简历创建失败！');
-    //     }
-    // } catch (error) {
-    //     Message.error('简历创建失败！');
-    //     console.error(error);
-    // }
+    try {
+        const result = await resumeService.initResume(formData);
+        console.log(result, 'result')
+        if (result.code === 200 && result.data) {
+            Message.success('简历创建成功！');
+            emit('resume-created', {
+                resumeId: result.data.resumeId,
+                resumeName: result.data.resumeName,
+                uploadedFile: uploadFile.value?.file || null
+            });
+        } else if (result.code === 2305) {
+            showLimitModal.value = true;
+        } else {
+            Message.error(result.msg || '简历创建失败！');
+        }
+    } catch (error) {
+        Message.error('简历创建失败！');
+        console.error(error);
+    }
 }
 
 const handleUploadChange = (file: File) => {
+    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const validExtensions = ['.pdf', '.doc', '.docx'];
+    const fileName = file.name.toLowerCase();
+    const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+
+    if (!validTypes.includes(file.type) && !hasValidExtension) {
+        Message.error('文件格式有误，仅支持PDF、Word格式！');
+        return false;
+    }
+
+    const maxSize = 1024 * 1024;
+    if (file.size > maxSize) {
+        Message.error('文件大小不得超过1M！');
+        return false;
+    }
+
     const sizeInKB = Math.round(file.size / 1024);
     uploadFile.value = {
         name: file.name,
@@ -84,6 +106,10 @@ const handleUploadChange = (file: File) => {
 const handleRemoveFile = () => {
     uploadFile.value = null;
 };
+
+const handleToDelete = () => {
+    showLimitModal.value = false;
+}
 
 onMounted(() => {
     setInterval(() => {
@@ -153,6 +179,30 @@ onMounted(() => {
                 <img alt="" src="../../../assets/images/resume.png">
             </div>
         </div>
+
+        <!-- 简历数量达上限弹框 -->
+        <Modal
+            v-model="showLimitModal"
+            :closable="true"
+            :footer-hide="true"
+            :mask-closable="false"
+            class-name="delete-confirm-modal"
+        >
+            <div class="delete-modal-content">
+                <div class="modal-header">
+                    <span class="modal-title">提示</span>
+                </div>
+                <div class="modal-body">
+                    <p>简历数量已达上限，无法继续创建！</p>
+                </div>
+                <div class="modal-footer mb-5">
+                    <div class="btn-delete pointer" @click="handleToDelete">
+                        <SvgIcon color="#fff" name="icon-lajitong-mian" size="12"/>
+                        <span style="margin-top: 1px">去删除</span>
+                    </div>
+                </div>
+            </div>
+        </Modal>
     </div>
 </template>
 
@@ -241,7 +291,7 @@ onMounted(() => {
         }
 
         .upload-btn {
-
+            box-shadow: none;
             width: vw(400);
             height: vh(50);
             border-radius: vw(2);
@@ -261,6 +311,11 @@ onMounted(() => {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+
+                svg {
+                    width: vw(16) !important;
+                    height: vw(16) !important;
+                }
             }
         }
 
@@ -321,6 +376,35 @@ onMounted(() => {
                 width: vw(459);
                 height: vh(375);
             }
+        }
+    }
+}
+
+.modal-footer {
+    justify-content: center;
+
+    .btn-delete {
+        display: flex;
+        height: vh(32);
+        padding: 0 vw(20);
+        justify-content: center;
+        align-items: center;
+        gap: vw(6);
+        border-radius: vw(2);
+        background: linear-gradient(0deg, #FC8719 0%, #FC8719 100%);
+        color: $white;
+        font-family: "PingFangSCBold";
+        font-size: vw(12);
+        font-weight: 600;
+
+        :deep(svg) {
+            width: vw(12) !important;
+            height: vw(12) !important;
+            margin-top: 0.5px;
+        }
+
+        span {
+            line-height: normal;
         }
     }
 }

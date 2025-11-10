@@ -6,7 +6,10 @@ import { ParseAttachmentInDto, ParseAttachmentOutDto } from '@/api/ai/dto/ParseA
 import { DiagnoseInDto, DiagnoseOutDto } from '@/api/ai/dto/Diagnose';
 import { WriteInDto, WriteOutDto } from '@/api/ai/dto/Write';
 import { PolishInDto, PolishOutDto } from '@/api/ai/dto/Polish';
+import { SaveConversationInDto, SaveConversationOutDto } from '@/api/ai/dto/SaveConversation';
+import { QueryConversationInDto, QueryConversationOutDto } from '@/api/ai/dto/QueryConversation';
 import { Result } from '@/api/BaseDto';
+import { EmptyOutDto } from '@/api/HttpClient';
 
 export class AiService {
     private http: HttpClient;
@@ -56,5 +59,19 @@ export class AiService {
      */
     public async polish(params: PolishInDto): Promise<Result<PolishOutDto>> {
         return await this.http.request<Result<PolishOutDto>>(AiPaths.polish, params);
+    }
+
+    /**
+     * 保存AI会话记录
+     */
+    public async saveConversation(params: SaveConversationInDto): Promise<EmptyOutDto> {
+        return await this.http.request<EmptyOutDto>(AiPaths.saveConversation, params);
+    }
+
+    /**
+     * 查询AI会话记录
+     */
+    public async queryConversation(params: QueryConversationInDto): Promise<Result<QueryConversationOutDto>> {
+        return await this.http.request<Result<QueryConversationOutDto>>(AiPaths.queryConversation, params);
     }
 }

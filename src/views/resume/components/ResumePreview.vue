@@ -11,6 +11,7 @@
                     @on-apply="handleModulesApply"
                 />
             </div>
+
             <!-- 个人信息区 -->
             <div v-if="basicInfoModule" class="personal-info align-between">
                 <div class="info-left">
@@ -50,8 +51,12 @@
                         {{ getTopField('email')?.fieldName }}：{{ getStreamValue(getTopField('email')?.uuid) }}
                     </div>
                 </div>
-                <div class="photo-area flex-center mr-40">
-                    <SvgIcon color="#9499A4" name="icon-xinzeng" size="20"/>
+                <div v-if="getTopField('personal_image')?.uuid" class="photo-area flex-center mr-40 pointer"
+                     @click="handlePhotoClick">
+                    <input ref="photoInput" accept="image/jpg,image/jpeg,image/png" style="display: none" type="file"
+                           @change="handlePhotoChange"/>
+                    <img v-if="photoUrl" :src="photoUrl" alt="照片" class="photo-img"/>
+                    <SvgIcon v-else color="#9499A4" name="icon-xinzeng" size="20"/>
                 </div>
             </div>
 
@@ -642,11 +647,16 @@ import SvgIcon from '@/components/svgIcon/index.vue';
 import ResumeModuleManager, {ItemType} from './ResumeModuleManager.vue';
 import {computed, onMounted, ref, watch, withDefaults} from 'vue';
 import {Input, Message} from 'view-ui-plus';
+import {FileService} from '@/service/FileService';
 import {ResumeService} from '@/service/ResumeService';
 import {GetSystemModulesInDto} from '@/api/resume/dto/GetSystemModules';
 import {GetModuleFieldsInDto} from '@/api/resume/dto/GetModuleFields';
 import {UpdateModulesInDto} from '@/api/resume/dto/UpdateModules';
 import {ModuleUpdateBean} from '@/api/resume/dto/bean/ModuleUpdateBean';
+import {UpdateModuleFieldsInDto} from '@/api/resume/dto/UpdateModuleFields';
+import {FieldUpdateBean} from '@/api/resume/dto/bean/FieldUpdateBean';
+import {UpdateModuleEntriesInDto} from '@/api/resume/dto/UpdateModuleEntries';
+import {EntryUpdateBean} from '@/api/resume/dto/bean/EntryUpdateBean';
 
 const props = withDefaults(defineProps<{
     isGenerating?: boolean;
@@ -660,7 +670,7 @@ const emit = defineEmits<{
     'manual-add': [];
     'module-manage': [];
     'section-manage': [uuid: string];
-    'update-modules': [modules: any[]];
+    'update-modules': [];
     'section-save': [data: any];
     'data-change': [data: any];
 }>();
@@ -678,6 +688,8 @@ const entryEditData = ref<any>({}); // 经历条目编辑数据
 const allAvailableModules = ref<any[]>([]); // 所有可用模块列表
 const allAvailableFields = ref<any[]>([]); // 所有可用字段列表
 const resumeService = new ResumeService();
+const photoInput = ref<HTMLInputElement>();
+const photoUrl = ref<string>('');
 
 // 模块管理数据
 const appliedModules = computed(() => {
@@ -743,20 +755,32 @@ const handleModulesApply = async (modules: any[]) => {
     try {
         const params = new UpdateModulesInDto();
         params.resumeId = props.resumeData.uuid || '';
-        params.modules = modules.map((module, index) => {
-            const bean = new ModuleUpdateBean();
-            bean.moduleDefinitionUuid = module.id;
-            bean.sortOrder = index + 1;
-            
-            const existingModule = props.resumeData.modules.find((m: any) => m.moduleDefinitionUuid === module.id);
-            bean.uuid = existingModule?.uuid || undefined;
-            
-            return bean;
-        });
+
+        const basicInfo = basicInfoModule.value;
+        const basicBean = new ModuleUpdateBean();
+        basicBean.moduleDefinitionUuid = basicInfo.moduleDefinitionUuid;
+        basicBean.sortOrder = 1;
+        basicBean.uuid = basicInfo.uuid;
+
+        params.modules = [
+            basicBean,
+            ...modules.map((module, index) => {
+                const bean = new ModuleUpdateBean();
+                bean.sortOrder = index + 2;
+                const existingModule = props.resumeData.modules.find((m: any) => m.moduleDefinitionUuid === module.id);
+                bean.uuid = existingModule?.uuid || undefined;
+                if (!bean.uuid) {
+                    bean.moduleName = module.name;
+                } else {
+                    bean.moduleDefinitionUuid = module.id;
+                }
+                return bean;
+            })
+        ];
 
         await resumeService.updateModules(params);
         Message.success('模块更新成功');
-        emit('update-modules', modules);
+        emit('update-modules');
     } catch (error) {
         Message.error('模块更新失败');
         console.error(error);
@@ -770,7 +794,18 @@ const basicInfoModule = computed(() => {
 const topFields = ['name', 'job_position', 'mobile', 'email', 'personal_image'];
 
 const getTopField = (fieldKey: string) => {
-    return basicInfoModule.value?.entries?.[0]?.fields?.find((f: any) => f.fieldKey === fieldKey);
+    const currentField = basicInfoModule.value?.entries?.[0]?.fields?.find((f: any) => f.fieldKey === fieldKey);
+    if (currentField) return currentField;
+
+    const fieldNameMap: Record<string, string> = {
+        name: '姓名',
+        job_position: '求职岗位',
+        mobile: '手机',
+        email: '邮箱',
+        personal_image: '照片'
+    };
+    const fieldName = fieldNameMap[fieldKey] || '';
+    return {fieldName, uuid: '', fieldKey};
 };
 
 const getBasicInfoFields = computed(() => {
@@ -786,10 +821,10 @@ const appliedFields = computed(() => {
 });
 
 const disabledFieldIds = computed(() => {
-    const avatar = getTopField('personal_image');
-    const mobile = getTopField('mobile');
-    const email = getTopField('email');
-    return [avatar?.fieldDefinitionUuid, mobile?.fieldDefinitionUuid, email?.fieldDefinitionUuid].filter(Boolean) as string[];
+    const fieldNames = ['个人形象', '手机号码', '个人邮箱'];
+    return fieldNames
+        .map(name => allAvailableFields.value.find(f => f.name === name)?.id)
+        .filter(Boolean) as string[];
 });
 
 const getAppliedEntries = (moduleUuid: string) => {
@@ -803,52 +838,68 @@ const getAppliedEntries = (moduleUuid: string) => {
     });
 };
 
-const handleEntriesApply = (moduleUuid: string, entries: any[]) => {
-    const module = props.resumeData?.modules?.find((m: any) => m.uuid === moduleUuid);
-    if (!module?.entries) return;
+const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
+    try {
+        const params = new UpdateModuleEntriesInDto();
+        params.resumeId = props.resumeData.uuid || '';
+        params.moduleId = moduleUuid;
+        params.entries = entries.map((entry, index) => {
+            const bean = new EntryUpdateBean();
+            bean.entryUuid = entry.id;
+            bean.entrySortOrder = index + 1;
+            return bean;
+        });
 
-    const appliedEntryIds = entries.map(e => e.id);
-
-    module.entries = module.entries.filter((e: any) => appliedEntryIds.includes(e.entryUuid));
-
-    entries.forEach((entry, index) => {
-        const targetEntry = module.entries.find((e: any) => e.entryUuid === entry.id);
-        if (targetEntry) {
-            targetEntry.entrySortOrder = index + 1;
-        }
-    });
-
-    module.entries.sort((a: any, b: any) => a.entrySortOrder - b.entrySortOrder);
+        await resumeService.updateModuleEntries(params);
+        Message.success('条目更新成功');
+        emit('update-modules');
+    } catch (error) {
+        Message.error('条目更新失败');
+        console.error(error);
+    }
 };
 
-const handleFieldsApply = (fields: any[]) => {
+const handleFieldsApply = async (fields: any[]) => {
     if (!basicInfoModule.value?.entries?.[0]) return;
+    try {
+        const params = new UpdateModuleFieldsInDto();
+        params.resumeId = props.resumeData.uuid || '';
+        params.moduleId = basicInfoModule.value.uuid;
 
-    const allFields = basicInfoModule.value.entries[0].fields;
-    const topFieldsData = allFields.filter((f: any) => topFields.includes(f.fieldKey));
-    const appliedFieldIds = fields.map(f => f.id);
+        const topFieldsData = basicInfoModule.value.entries[0].fields
+            .filter((f: any) => topFields.includes(f.fieldKey))
+            .filter((f: any) => !fields.find(field => field.id === f.fieldDefinitionUuid));
 
-    basicInfoModule.value.entries[0].fields = allFields.filter((f: any) =>
-        topFields.includes(f.fieldKey) || appliedFieldIds.includes(f.uuid)
-    );
-
-    fields.forEach((field, index) => {
-        let targetField = basicInfoModule.value.entries[0].fields.find((f: any) => f.uuid === field.id);
-
-        if (!targetField && field.isCustom) {
-            const newField = {
-                uuid: field.id,
-                fieldDefinitionUuid: `custom_field_def_${Date.now()}`,
-                fieldKey: `custom_${Date.now()}`,
-                fieldName: field.name,
-                fieldSortOrder: topFieldsData.length + index + 1,
-                fieldValue: ''
-            };
-            basicInfoModule.value.entries[0].fields.push(newField);
-        } else if (targetField) {
-            targetField.fieldSortOrder = topFieldsData.length + index + 1;
-        }
-    });
+        params.fields = [
+            ...topFieldsData.map((f: any, index: number) => {
+                const bean = new FieldUpdateBean();
+                bean.uuid = f.uuid;
+                bean.fieldDefinitionUuid = f.fieldDefinitionUuid;
+                bean.sortOrder = index + 1;
+                return bean;
+            }),
+            ...fields.map((field, index) => {
+                const bean = new FieldUpdateBean();
+                const existingField = basicInfoModule.value.entries[0].fields.find((f: any) => f.fieldDefinitionUuid === field.id);
+                if (existingField) {
+                    bean.uuid = existingField.uuid;
+                    bean.fieldDefinitionUuid = field.id;
+                } else if (field.isCustom) {
+                    bean.fieldName = field.name;
+                } else {
+                    bean.fieldDefinitionUuid = field.id;
+                }
+                bean.sortOrder = topFieldsData.length + index + 1;
+                return bean;
+            })
+        ];
+        await resumeService.updateModuleFields(params);
+        Message.success('字段更新成功');
+        emit('update-modules');
+    } catch (error) {
+        Message.error('字段更新失败');
+        console.error(error);
+    }
 };
 
 const sortedModules = computed(() => {
@@ -1014,6 +1065,61 @@ const handleAddEntry = (module: any) => {
     console.log(props.resumeData, 'data')
 };
 
+const handlePhotoClick = () => {
+    if (props.mode !== 'manual') return;
+    photoInput.value?.click();
+};
+const fileService = new FileService();
+const handlePhotoChange = async (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+        Message.error('图片格式有误，仅支持jpg、jpeg、png！');
+        target.value = '';
+        return;
+    }
+
+    const maxSize = 1024 * 1024;
+    if (file.size > maxSize) {
+        Message.error('图片大小不得超过1M！');
+        target.value = '';
+        return;
+    }
+
+    try {
+        const extraFields = new Map<string, any>();
+        extraFields.set('folderPath', 'kunlun-pc/personal-image');
+        const result = await fileService.upload(file, extraFields);
+
+        if (result.code === 200 && result.data) {
+            const imageUrl = result.data.fileHost + result.data.filePath;
+            photoUrl.value = imageUrl;
+
+            const personalImageField = getTopField('personal_image');
+            if (personalImageField?.uuid) {
+                streamValues.value.set(personalImageField.uuid, imageUrl);
+                const field = basicInfoModule.value?.entries?.[0]?.fields?.find((f: any) => f.fieldKey === 'personal_image');
+                if (field) {
+                    field.fieldValue = imageUrl;
+                }
+            }
+
+            emit('data-change', props.resumeData);
+            Message.success('上传成功');
+        } else {
+            Message.error('上传失败');
+        }
+    } catch (error) {
+        Message.error('上传失败');
+        console.error(error);
+    }
+
+    target.value = '';
+};
+
 const initFieldValues = () => {
     if (!props.resumeData?.modules) return;
 
@@ -1022,6 +1128,9 @@ const initFieldValues = () => {
             entry.fields?.forEach((field: any) => {
                 if (field.fieldValue) {
                     streamValues.value.set(field.uuid, field.fieldValue);
+                    if (field.fieldKey === 'personal_image') {
+                        photoUrl.value = field.fieldValue;
+                    }
                 }
             });
         });
@@ -1117,6 +1226,19 @@ defineExpose({
     height: vh(130);
     background: $bg-gray;
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+
+    .photo-img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
 }
 
 .section-spec {
@@ -1311,9 +1433,6 @@ defineExpose({
     width: 100%;
     height: 100%;
     background: rgba(255, 255, 255, 0.7);
-}
-
-.loading-content {
 }
 
 .loading-icon {

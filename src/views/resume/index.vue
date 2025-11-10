@@ -1,16 +1,25 @@
 <script lang="ts" setup>
+import {ref} from 'vue';
 import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
 
+const showMakePanel = ref(false);
+const resumeId = ref('9389e826fa6a4bd4976a47b283ef2a6a');
+const resumeName = ref('');
+const uploadedFile = ref<File | null>(null);
 
+const handleResumeCreated = (data: { resumeId: string; resumeName: string; uploadedFile: File | null }) => {
+    resumeId.value = data.resumeId;
+    resumeName.value = data.resumeName;
+    uploadedFile.value = data.uploadedFile;
+    showMakePanel.value = false;
+};
 </script>
 
 <template>
     <div class="resume-cont">
-        <!--        <MakePanel/>-->
-
-        <!--        <ModelUsageExhaustedModal v-model="visible"/>-->
-        <WriteResume/>
+        <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
+        <WriteResume v-else :resume-id="resumeId" :resume-name="resumeName" :uploaded-file="uploadedFile"/>
     </div>
 </template>
 

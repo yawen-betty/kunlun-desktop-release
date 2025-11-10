@@ -3,14 +3,9 @@ import { ModuleUpdateBean } from "./bean/ModuleUpdateBean";
 
 export class UpdateModulesInDto extends BaseInDto {
     /**
-     * 简历ID
-     */
-    resumeId: string = '';
-
-    /**
      * 模块列表
      */
-    modules: ModuleUpdateBean[] = [];
+    modules?: ModuleUpdateBean[];
 }
 
 export class UpdateModulesOutDto extends BaseOutDto {

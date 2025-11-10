@@ -2,14 +2,19 @@ import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 
 export class GenerateTemplateInDto extends BaseInDto {
     /**
-     * 求职岗位
+     * 简历ID
      */
-    jobPosition: string = '';
-
+    resumeId: string = '';
+    
     /**
-     * 身份 (1:职场人 2:在校/应届生)
+     * 是否上传了简历附件 0-未上传附件 1-已上传附件
      */
-    identity: number = 0;
+    hasAttachment?: string;
+    
+    /**
+     * AI回复消息
+     */
+    assistantMessage: string = '';
 }
 
 export class GenerateTemplateOutDto extends BaseOutDto {
