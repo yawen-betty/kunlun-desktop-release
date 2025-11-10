@@ -15,7 +15,7 @@ export class MessagesBean {
     thinking?: string;
 
     /**
-     * 深度思考完成状态: 0-未完成, 1-已完成， 2-思考中
+     * 深度思考完成状态: 0-未完成, 1-已完成, 2-思考中
      */
     thinkingStatus?: string;
 

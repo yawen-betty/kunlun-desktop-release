@@ -2,9 +2,19 @@ import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 
 export class ParseAttachmentInDto extends BaseInDto {
     /**
+     * 简历ID
+     */
+    resumeId: string = '';
+    
+    /**
      * 上传的简历文件
      */
-    attachmentFile: File | null = null;
+    file: File | null = null;
+    
+    /**
+     * AI回复消息
+     */
+    assistantMessage: string = '';
 }
 
 export class ParseAttachmentOutDto extends BaseOutDto {

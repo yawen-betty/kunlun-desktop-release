@@ -2,19 +2,24 @@ import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 
 export class WriteInDto extends BaseInDto {
     /**
-     * 当前简历的上下文
+     * 简历ID
      */
-    resumeContext: any = {};
-
+    resumeId: string = '';
+    
     /**
-     * 当前的对话历史
+     * 提问问题话术
      */
-    conversation: any[] = [];
-
+    question: string = '';
+    
     /**
-     * 用户的最新回答
+     * 用户回答内容
      */
     userResponse: string = '';
+    
+    /**
+     * AI回复消息
+     */
+    assistantMessage: string = '';
 }
 
 export class WriteOutDto extends BaseOutDto {

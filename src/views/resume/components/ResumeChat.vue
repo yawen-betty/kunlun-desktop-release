@@ -53,7 +53,7 @@ import {Input} from "view-ui-plus";
 import {onMounted, ref} from "vue";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {MessagesBean} from "@/api/ai/dto/bean/MessagesBean.ts";
-import {QueryConversationInDto, QueryConversationOutDto} from "@/api/ai/dto/QueryConversation.ts";
+import {QueryConversationInDto} from "@/api/ai/dto/QueryConversation.ts";
 import {AiService} from "@/service/AiService.ts";
 import {SaveConversationInDto} from "@/api/ai/dto/SaveConversation.ts";
 import {GenerateTemplateInDto} from "@/api/ai/dto/GenerateTemplate.ts";
@@ -71,18 +71,10 @@ class CustomMessagesBean extends MessagesBean {
 
 const aiService = new AiService();
 
-const props = defineProps({
-  // 是否有简历附件
-  hasAttachment: {
-    type: File,
-    default: () => null
-  },
-  // 简历id
-  resumeUuid: {
-    type: String,
-    default: () => ''
-  }
-})
+const props = defineProps<{
+  resumeUuid?: string;   // 简历id
+  hasAttachment?: File | null; // 简历附件
+}>();
 
 const {http} = useCommon();
 
@@ -129,12 +121,13 @@ const queryChatList = () => {
 
       // ai回复 （生成模板）
       setTimeout(() => {
+        const msg: string = '正在帮您生成简历模板，请稍后！'
         chatList.value.push({
           role: 'assistant',
-          content: '正在帮您生成简历模板，请稍后！',
+          content: msg,
           thinkingStatus: '2'
         });
-        generateTemplate()
+        generateTemplate(msg)
       }, 500)
     }
   })
@@ -152,10 +145,11 @@ const saveConversation = (type: string, role: string, content: string) => {
 }
 
 // 生成模板
-const generateTemplate = () => {
+const generateTemplate = (msg: string) => {
   const data: GenerateTemplateInDto = {
     resumeId: props.resumeUuid,
-    hasAttachment: !!props.hasAttachment
+    hasAttachment: props.hasAttachment ? '1' : '0',
+    assistantMessage: msg
   }
 
   http.sseRequest(

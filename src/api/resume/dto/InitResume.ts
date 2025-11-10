@@ -14,12 +14,12 @@ export class InitResumeInDto extends BaseInDto {
 
 export class InitResumeOutDto extends BaseOutDto {
     /**
-     * 新创建简历的草稿ID
+     * 新创建简历的ID
      */
-    resumeId: string = '';
+    resumeId?: string;
 
     /**
-     * 简历名称
+     * 新创建简历的名称
      */
-    resumeName: string = '';
+    resumeName?: string;
 }
