@@ -1,7 +1,10 @@
-<script setup lang="ts">
+<!-- 简历制作默认页 | 采集求职岗位丶身份 -->
+<script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue'
-import {Message, RadioGroup} from "view-ui-plus";
+import {Button, Form, FormItem, Input, Message, Radio, RadioGroup, Upload} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
+import {ResumeService} from "@/service/ResumeService";
+import {InitResumeInDto} from "@/api/resume/dto/InitResume";
 
 // 输入框提示词列表
 const placeholderList = [
@@ -27,18 +30,60 @@ const infoList = [
 const placeholderIdx = ref<number>(0)
 const formRef = ref();
 const formRules = {
-    resumeName: [{ required: true, message: '请输入求职岗位！', trigger: 'submit'}],
-    identity: [{ required: true, message: '请选择身份！', trigger: 'submit'}],
+    jobPosition: [{required: true, message: '请输入求职岗位！', trigger: 'submit'}],
+    identity: [{type: 'number', required: true, message: '请选择身份！', trigger: 'submit'}],
 }
-const formData = reactive({
-    identity: '',
-    resumeName: ''
-})
+const formData = reactive(new InitResumeInDto())
 
-const submit = () => {
-    if(!formData.resumeName.trim())return Message.error('请输入求职岗位！')
-    if(!formData.identity)return Message.error('请选择身份！')
+const uploadFile = ref<{
+    name: string;
+    size: string;
+    uploading: boolean;
+    file: File;
+} | null>(null);
+const resumeService = new ResumeService();
+
+const submit = async () => {
+    if (!formData.jobPosition.trim()) return Message.error('请输入求职岗位！')
+    if (!formData.identity) return Message.error('请选择身份！')
+
+    // try {
+    //
+    //     const params = new InitResumeInDto();
+    //     params.jobPosition = formData.jobPosition;
+    //     params.identity = formData.identity as number;
+    //     params.file = uploadFile.value?.file;
+    //
+    //     const result = await resumeService.initResume(params);
+    //     console.log(result, 'result')
+    //     if (result.success) {
+    //         Message.success('简历创建成功！');
+    //         console.log('简历ID:', result.data.resumeId);
+    //         // TODO: 跳转到简历编辑页面
+    //     } else {
+    //         Message.error(result.msg || '简历创建失败！');
+    //     }
+    // } catch (error) {
+    //     Message.error('简历创建失败！');
+    //     console.error(error);
+    // }
 }
+
+const handleUploadChange = (file: File) => {
+    const sizeInKB = Math.round(file.size / 1024);
+    uploadFile.value = {
+        name: file.name,
+        size: `${sizeInKB}KB`,
+        uploading: false,
+        file: file
+    };
+
+    return false;
+};
+
+const handleRemoveFile = () => {
+    uploadFile.value = null;
+};
 
 onMounted(() => {
     setInterval(() => {
@@ -54,38 +99,45 @@ onMounted(() => {
     <div class="resume-prod-cont">
         <div class="prod-left">
             <div class="title">简历制作</div>
-            <Form ref="formRef" class="custom-form" :model="formData" :rules="formRules">
-                <FormItem prop="resumeName">
-                    <Input v-model="formData.resumeName" class="job-name" :placeholder="placeholderList[placeholderIdx]" :max-length="20"/>
+            <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form">
+                <FormItem prop="jobPosition">
+                    <Input v-model="formData.jobPosition" :max-length="20"
+                           :placeholder="placeholderList[placeholderIdx]"
+                           class="job-name"/>
                 </FormItem>
                 <FormItem class="custom-form-item" prop="identity">
                     <RadioGroup v-model="formData.identity" class="custom-radio">
-                        <Radio label="0">职场人</Radio>
-                        <Radio label="1">在校/应届生</Radio>
+                        <Radio :label="1">职场人</Radio>
+                        <Radio :label="2">在校/应届生</Radio>
                     </RadioGroup>
                 </FormItem>
                 <FormItem>
                     <p class="tip">已有简历，上传后帮你润色</p>
-                    <Upload action="//jsonplaceholder.typicode.com/posts/" :show-upload-list="false">
+                    <Upload :before-upload="handleUploadChange" :show-upload-list="false" accept=".pdf,.doc,.docx">
                         <Button class="upload-btn">
-                            <SvgIcon class="mr-5" name="icon-daoru" size="16" />
+                            <SvgIcon class="mr-5" name="icon-daoru" size="16"/>
                             上传简历
                         </Button>
                     </Upload>
-                    <div class="file-box mt-10 pl-20 pr-15 flex-column align-between">
+                    <div v-if="uploadFile" class="file-box mt-10 pl-20 pr-15 flex-column align-between">
                         <div class="file-name flex-column">
                             <SvgIcon name="icon-pdf" size="24"/>
                             <div class="file-status ml-20">
-                                <p class="mb-10 name">行政专员-聘小方.pdf</p>
-                                <p class="status">上传中...<span class="ml-5 mr-5"></span>196KB</p>
+                                <p class="mb-10 name">{{ uploadFile.name }}</p>
+                                <p class="status">
+                                    {{ uploadFile.uploading ? '上传中...' : '上传完成' }}
+                                    <span class="ml-5 mr-5"></span>
+                                    {{ uploadFile.size }}
+                                </p>
                             </div>
                         </div>
-                        <SvgIcon class="pointer" name="icon-bufuhe" size="20" color="#FC8719"/>
+                        <SvgIcon class="pointer" color="#FC8719" name="icon-bufuhe" size="20"
+                                 @click="handleRemoveFile"/>
                     </div>
                 </FormItem>
             </Form>
             <div class="submit-btn" @click="submit">
-                <SvgIcon class="mr-5" name="icon-bianji" size="10" />
+                <SvgIcon class="mr-5" name="icon-bianji" size="10"/>
                 立即制作
             </div>
         </div>
@@ -98,15 +150,16 @@ onMounted(() => {
                 <ul class="info-ul">
                     <li v-for="item in infoList" :key="item"><span>·</span>{{ item }}</li>
                 </ul>
-                <img src="../../../assets/images/resume.png" alt="">
+                <img alt="" src="../../../assets/images/resume.png">
             </div>
         </div>
     </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
 .resume-prod-cont {
     display: flex;
     height: 100%;
@@ -131,14 +184,14 @@ onMounted(() => {
         .custom-form {
             width: vw(400);
 
-            :deep(.job-name){
-                .ivu-input{
+            :deep(.job-name) {
+                .ivu-input {
                     background-color: $white;
-                    border:vw(1) solid $theme-color !important;
+                    border: vw(1) solid $theme-color !important;
                 }
             }
 
-            .file-box{
+            .file-box {
                 height: vh(70);
                 padding-top: vh(16);
                 padding-bottom: vh(16);
@@ -146,14 +199,14 @@ onMounted(() => {
                 background: $bg-gray;
                 line-height: normal;
 
-                .name{
+                .name {
                     color: $font-dark;
                     font-family: Inter;
                     font-size: vw(14);
                     font-weight: 500;
                 }
 
-                .status{
+                .status {
                     display: flex;
                     align-items: center;
                     color: #B0B7C6;
@@ -161,10 +214,10 @@ onMounted(() => {
                     font-size: vw(12);
                     font-weight: 500;
 
-                    span{
+                    span {
                         width: vw(1);
                         height: vh(12);
-                       background: #B0B7C6;
+                        background: #B0B7C6;
                     }
                 }
             }
@@ -204,7 +257,7 @@ onMounted(() => {
                 border-color: $theme-color;
             }
 
-            :deep(>span){
+            :deep(>span) {
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -247,7 +300,7 @@ onMounted(() => {
         .info {
             display: flex;
             align-items: flex-end;
-            height: calc(100% - vh(180));
+            height: vh(512);
 
             .info-ul {
                 height: 100%;

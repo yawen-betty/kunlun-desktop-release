@@ -33,20 +33,46 @@
     :mask-closable="false"
     :closable="false"
     footer-hide
-    class="preview-modal"
+    :width="1200"
+    class="resume-preview-modal"
   >
     <div class="preview-header">
-      <Icon type="md-close" class="preview-close-icon" @click="previewVisible = false"/>
-      <h3 class="preview-title mb-20">预览</h3>
+      <div class="preview-title">预览</div>
+      <SvgIcon name="icon-cha" size="20" class="cha pointer" @click="previewVisible = false" color="#9499A4"></SvgIcon>
     </div>
     <div class="preview-content pt-20"></div>
+  </Modal>
+
+
+  <Modal
+    v-model="deleteVisible"
+    :mask-closable="false"
+    :closable="false"
+    footer-hide
+    class="resume-delete-modal"
+  >
+    <div class="delete-box">
+      <div class="delete-content">
+        <div class="delete-header">
+          <h3 class="delete-title mb-40">提示</h3>
+          <SvgIcon name="icon-cha" size="20" class="cha pointer" @click="deleteVisible = false"
+                   color="#9499A4"></SvgIcon>
+        </div>
+        <div class="delete-html">删除后将无法恢复，确认是否删除？</div>
+      </div>
+
+      <div class="delete-footer">
+        <Button class="mr-10 cancel btn" @click="deleteVisible = false">取消</Button>
+        <Button type="primary" class="submit btn" @click="handleDeleteResume">确定</Button>
+      </div>
+    </div>
   </Modal>
 </template>
 
 <script setup lang="ts">
 import {ref} from 'vue';
 import SvgIcon from "@/components/svgIcon/index.vue";
-import {Icon, Modal} from "view-ui-plus";
+import {Button, Icon, Modal} from "view-ui-plus";
 
 interface ResumeItem {
   name: string;
@@ -64,6 +90,8 @@ interface SelectItem {
 const previewVisible = ref<boolean>(false);
 // 预览简历id
 const previewResumeId = ref<string>('');
+// 删除弹窗状态
+const deleteVisible = ref<boolean>(false);
 
 const resumeList = ref<ResumeItem[]>([
   {name: '简历模板1', time: '2024-01-15'},
@@ -83,7 +111,6 @@ const selectList = ref<SelectItem[]>([
 const handleClick = (resume: ResumeItem, key: string) => {
   switch (key) {
     case 'preview':
-      console.log('预览');
       previewResumeId.value = resume.id!
       previewVisible.value = true;
       break;
@@ -97,12 +124,17 @@ const handleClick = (resume: ResumeItem, key: string) => {
       console.log('下载');
       break;
     case 'delete':
-      console.log('删除');
+      deleteVisible.value = true;
       break;
     default:
       break;
   }
   console.log(key)
+}
+
+// 删除
+const handleDeleteResume = () => {
+
 }
 
 </script>
@@ -198,14 +230,136 @@ const handleClick = (resume: ResumeItem, key: string) => {
   }
 }
 
-.preview-modal {
-  :deep(.ivu-modal-body) {
+</style>
+
+<style lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
+
+.resume-preview-modal {
+  .ivu-modal-body {
     padding: 0 !important;
+    border-radius: vw(2);
+    height: vh(1000);
   }
 
   .preview-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: vw(20);
+    box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.10);
+
+    .preview-title {
+      color: $font-dark;
+      font-size: vw(24);
+      font-style: normal;
+      font-weight: 600;
+      line-height: vw(24);
+    }
   }
 }
+
+.resume-delete-modal {
+  width: vw(460) !important;
+  height: vh(260) !important;
+
+  .ivu-modal {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .ivu-modal-content {
+    border-radius: vw(2);
+    height: 100%;
+
+    .ivu-modal-body {
+      padding: vh(15) vw(20);
+      height: 100%;
+    }
+  }
+
+  .delete-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+
+
+    .delete-content {
+      width: 100%;
+      background-color: $white;
+
+      .delete-header {
+        display: flex;
+        justify-content: space-between;
+      }
+
+
+      .delete-close-icon {
+        position: absolute;
+        right: vw(20);
+        top: vh(18);
+        font-size: vw(20);
+        cursor: pointer;
+        color: $font-middle;
+
+        &:hover {
+          color: $font-dark;
+        }
+      }
+
+      .delete-title {
+        color: $font-dark;
+        text-align: justify;
+        font-size: vw(14);
+        font-style: normal;
+        font-weight: 500;
+        line-height: vw(22)
+      }
+
+      .delete-html {
+        color: $font-dark;
+        text-align: justify;
+        font-size: vw(14);
+        font-style: normal;
+        font-weight: 400;
+        line-height: vw(20)
+      }
+    }
+  }
+
+  .delete-footer {
+    display: flex;
+    justify-content: flex-end;
+
+    .btn {
+      width: vw(64);
+      height: vh(32);
+      padding: vh(10) 0;
+      color: var(--, var(--, #E8EAEC));
+      font-size: vw(12);
+      font-style: normal;
+      font-weight: 500;
+      line-height: vw(12);
+      text-align: center;
+      box-shadow: none;
+      border: 0;
+      outline: none;
+
+      &.cancel {
+        border: 1px solid $theme-color;
+        color: $theme-color;
+        background: $white;
+      }
+
+      &.submit {
+        border: 0;
+        background: $theme-color;
+        color: $white;
+      }
+    }
+  }
+}
+
 </style>

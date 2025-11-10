@@ -1,54 +1,258 @@
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
-.ivu-modal-wrap{
+
+.ivu-modal-wrap {
     display: flex;
     align-items: center;
     justify-content: center;
 
-    .ivu-modal{
+    .ivu-modal {
         top: 0;
     }
 }
-.ivu-modal-content{
+
+.ivu-modal-content {
     border-radius: 0;
 }
-.ivu-modal-header{
+
+.ivu-modal-header {
     padding: vh(15) vw(20);
     border-bottom: none;
 }
+
 .ivu-modal-header p,
-.ivu-modal-header-inner{
+.ivu-modal-header-inner {
     font-size: vw(14);
     color: $font-dark;
     line-height: vh(22);
     font-weight: bold;
 }
 
-.ivu-modal-close{
+.ivu-modal-close {
     top: vh(18);
     right: vw(20);
 }
-.ivu-modal-close .ivu-icon.ivu-icon-ios-close{
+
+.ivu-modal-close .ivu-icon.ivu-icon-ios-close {
     width: vw(16);
     height: vw(16);
 }
 
-.ivu-modal-body{
+.ivu-modal-body {
     padding: vh(25) vw(40) vh(100);
     color: $font-dark;
     line-height: vh(20);
 }
 
-.ivu-modal-footer{
+.ivu-modal-footer {
     border-top: none;
     padding: 0 vw(20) vh(15) 0;
 
-    .ivu-btn.ivu-btn-text{
+    .ivu-btn.ivu-btn-text {
         height: vh(32);
         border: vw(1) solid $theme-color;
         padding: 0 vw(20);
     }
 }
-.ivu-modal-footer button+button{
+
+.ivu-modal-footer button + button {
     margin-left: vw(10);
+}
+
+/**
+    删除二次确认框
+ */
+.delete-confirm-modal.ivu-modal-wrap {
+    .ivu-modal-content {
+        border-radius: vw(2);
+        box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .ivu-modal-body {
+        padding: 0;
+    }
+}
+
+.delete-modal-content {
+    padding: vh(15) vw(20);
+
+    .modal-header {
+        margin-bottom: vh(40);
+
+        .modal-title {
+            font-size: vw(14);
+            font-weight: 600;
+            color: $font-dark;
+            line-height: vh(22);
+        }
+    }
+
+    .modal-body {
+        padding: 0 vw(20);
+        height: vh(126);
+
+        p {
+            font-size: vw(14);
+            color: $font-dark;
+            line-height: vh(20);
+            margin: 0;
+        }
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: vw(10);
+
+        button {
+            padding: vh(10) vw(20);
+            border-radius: vw(2);
+            font-size: vw(12);
+            font-weight: 600;
+            line-height: vh(12);
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        .btn-cancel {
+            background: $white;
+            color: $theme-color;
+            border: vw(1) solid $theme-color;
+
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+
+        .btn-confirm {
+            background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
+            color: $white;
+
+            &:hover {
+                opacity: 0.9;
+            }
+        }
+    }
+}
+
+/**
+    带单行输入框的弹窗
+ */
+.custom-module-modal.ivu-modal-wrap {
+    .ivu-modal-content {
+        border-radius: vw(2);
+        box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .ivu-modal-body {
+        padding: 0;
+    }
+}
+
+.custom-modal-content {
+    padding: vh(15) vw(20);
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: vh(40);
+
+        .modal-title {
+            font-size: vw(14);
+            font-weight: 600;
+            color: $font-dark;
+            line-height: vh(22);
+        }
+
+        .icon-close {
+            cursor: pointer;
+            color: $font-middle;
+            flex-shrink: 0;
+
+            &:hover {
+                color: $theme-color;
+            }
+        }
+    }
+
+    .ivu-form {
+        padding: 0 vw(20);
+        height: vh(126);
+    }
+
+    .ivu-form-item {
+        margin-bottom: 0;
+    }
+
+    .input-wrapper {
+        position: relative;
+        margin-bottom: vh(40);
+
+        .ivu-input {
+            height: vh(40);
+            background: $bg-gray;
+            border: none;
+            border-radius: vw(2);
+            padding: 0 vw(60) 0 vw(20);
+            font-size: vw(16);
+            font-weight: 600;
+            color: $font-dark;
+
+            &::placeholder {
+                color: $placeholder-color;
+            }
+
+            &:focus {
+                background: $bg-gray;
+                box-shadow: none;
+            }
+        }
+
+        .ivu-input-word-count {
+            right: vw(20);
+            font-size: vw(16);
+            font-weight: 600;
+            color: $placeholder-color;
+            background: transparent;
+            pointer-events: none;
+        }
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: vw(10);
+
+        button {
+            padding: vh(10) vw(20);
+            border-radius: vw(2);
+            font-size: vw(12);
+            font-weight: 600;
+            line-height: vh(12);
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        .btn-cancel {
+            background: $white;
+            color: $theme-color;
+            border: vw(1) solid $theme-color;
+
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+
+        .btn-confirm {
+            background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
+            color: $white;
+
+            &:hover {
+                opacity: 0.9;
+            }
+        }
+    }
 }

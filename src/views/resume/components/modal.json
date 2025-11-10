@@ -1,0 +1,688 @@
+{
+  "code": 200,
+  "errCode": null,
+  "msg": "",
+  "rn": "58221138574483966369792",
+  "data": {
+    "uuid": "bf30084ef89849f8a6398a5f9511ad6b",
+    "name": "未命名20251106113028",
+    "jobPosition": "产品经理",
+    "identity": 1,
+    "modules": [
+      {
+        "uuid": "aa3cebe24bf346e78f16d1f616e8a13a",
+        "moduleDefinitionUuid": "basic_info_module_001",
+        "moduleKey": "basic_info",
+        "moduleName": "基本信息",
+        "sortOrder": 1,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "20c8b5b888d34bfc9ebae142d9548d5e",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "e3d3ad5badc444b5b5995e0f34679341",
+                "fieldDefinitionUuid": "basic_field_001",
+                "fieldKey": "name",
+                "fieldName": "姓名",
+                "fieldSortOrder": 1,
+                "fieldValue": "ccc",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "ea2202d7a6e14b22928458ef76872c00",
+                "fieldDefinitionUuid": "basic_field_002",
+                "fieldKey": "job_position",
+                "fieldName": "求职岗位",
+                "fieldSortOrder": 2,
+                "fieldValue": "产品经理",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "f99991a899d347e68c321e78d6543210",
+                "fieldDefinitionUuid": "basic_field_003",
+                "fieldKey": "personal_image",
+                "fieldName": "个人形象",
+                "fieldSortOrder": 3,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "1b7b0fff0aa44a2987a7d6f294b6002d",
+                "fieldDefinitionUuid": "basic_field_004",
+                "fieldKey": "mobile",
+                "fieldName": "手机号码",
+                "fieldSortOrder": 4,
+                "fieldValue": "15040522401",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "6ca768cbec694fe890754675e9407902",
+                "fieldDefinitionUuid": "basic_field_005",
+                "fieldKey": "email",
+                "fieldName": "个人邮箱",
+                "fieldSortOrder": 5,
+                "fieldValue": "ccc@163.com",
+                "isCustom": 0,
+                "maxLength": 30
+              },
+              {
+                "uuid": "a1b2c3d4e5f64321890a76543210fedc",
+                "fieldDefinitionUuid": "basic_field_006",
+                "fieldKey": "nationality",
+                "fieldName": "国籍",
+                "fieldSortOrder": 6,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "b2c3d4e5f6a74432901b87654321edcb",
+                "fieldDefinitionUuid": "basic_field_007",
+                "fieldKey": "ethnicity",
+                "fieldName": "民族",
+                "fieldSortOrder": 7,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "c3d4e5f6a7b84543912c98765432fedc",
+                "fieldDefinitionUuid": "basic_field_008",
+                "fieldKey": "political_status",
+                "fieldName": "政治面貌",
+                "fieldSortOrder": 8,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "63216873e1ee451fb4aa8a0dc0e4c5f8",
+                "fieldDefinitionUuid": "basic_field_009",
+                "fieldKey": "gender",
+                "fieldName": "性别",
+                "fieldSortOrder": 9,
+                "fieldValue": "男",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "b59a7739784a4d23bba81d2fe5ba2ea0",
+                "fieldDefinitionUuid": "basic_field_010",
+                "fieldKey": "birth_date",
+                "fieldName": "出生日期",
+                "fieldSortOrder": 10,
+                "fieldValue": "1996.07",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "d4e5f6a7b8c94654923d098765432fed",
+                "fieldDefinitionUuid": "basic_field_011",
+                "fieldKey": "constellation",
+                "fieldName": "星座",
+                "fieldSortOrder": 11,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "e5f6a7b8c9d04765934e109876543fed",
+                "fieldDefinitionUuid": "basic_field_012",
+                "fieldKey": "blood_type",
+                "fieldName": "血型",
+                "fieldSortOrder": 12,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "f6a7b8c9d0e14876945f2109876543fe",
+                "fieldDefinitionUuid": "basic_field_013",
+                "fieldKey": "height_cm",
+                "fieldName": "身高",
+                "fieldSortOrder": 13,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "a7b8c9d0e1f24987956a32109876543f",
+                "fieldDefinitionUuid": "basic_field_014",
+                "fieldKey": "height",
+                "fieldName": "体重",
+                "fieldSortOrder": 14,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "b8c9d0e1f2a34098967b432109876543",
+                "fieldDefinitionUuid": "basic_field_015",
+                "fieldKey": "physical_condition",
+                "fieldName": "视力情况",
+                "fieldSortOrder": 15,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "c9d0e1f2a3b44109978c543210987654",
+                "fieldDefinitionUuid": "basic_field_016",
+                "fieldKey": "marital_status",
+                "fieldName": "婚姻状况",
+                "fieldSortOrder": 16,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "d0e1f2a3b4c54210989d654321098765",
+                "fieldDefinitionUuid": "basic_field_017",
+                "fieldKey": "native_place",
+                "fieldName": "籍贯",
+                "fieldSortOrder": 17,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "de3e3eb2e4894574a933c83be2b13147",
+                "fieldDefinitionUuid": "basic_field_018",
+                "fieldKey": "current_city",
+                "fieldName": "居住城市",
+                "fieldSortOrder": 18,
+                "fieldValue": "大连市",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "d07b1c5887434beab2bcc9901ddbef26",
+                "fieldDefinitionUuid": "basic_field_019",
+                "fieldKey": "expected_city",
+                "fieldName": "期望城市",
+                "fieldSortOrder": 19,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "e1f2a3b4c5d64321990e765432109876",
+                "fieldDefinitionUuid": "basic_field_020",
+                "fieldKey": "current_salary",
+                "fieldName": "目前薪资",
+                "fieldSortOrder": 20,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "1eacaa9813ad480d9aa2c20f9b961159",
+                "fieldDefinitionUuid": "basic_field_021",
+                "fieldKey": "expected_salary",
+                "fieldName": "期望薪资",
+                "fieldSortOrder": 21,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "6b63733ef5a1421b8e6ff9ca5b77352f",
+                "fieldDefinitionUuid": "basic_field_022",
+                "fieldKey": "work_experience",
+                "fieldName": "工作经验",
+                "fieldSortOrder": 22,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "f2a3b4c5d6e74432991f876543210987",
+                "fieldDefinitionUuid": "basic_field_023",
+                "fieldKey": "expected_industry",
+                "fieldName": "所属行业",
+                "fieldSortOrder": 23,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "01069975215a485b9b60653e789e1cd8",
+                "fieldDefinitionUuid": "basic_field_024",
+                "fieldKey": "arrival_time",
+                "fieldName": "到岗时间",
+                "fieldSortOrder": 24,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "a3b4c5d6e7f845439920987654321098",
+                "fieldDefinitionUuid": "basic_field_025",
+                "fieldKey": "wechat",
+                "fieldName": "微信号",
+                "fieldSortOrder": 25,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "43edd91f39d54c75a19a9d1843406f15",
+        "moduleDefinitionUuid": "education_module_001",
+        "moduleKey": "education_history",
+        "moduleName": "教育经历",
+        "sortOrder": 2,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "8c51b4d2d4884e63b67ec058b2f79110",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "921f6f36e6924c1a87627a1c45c72449",
+                "fieldDefinitionUuid": "education_field_001",
+                "fieldKey": "school_name",
+                "fieldName": "毕业院校",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 30
+              },
+              {
+                "uuid": "9828d1accc774c45aac1397c51a68574",
+                "fieldDefinitionUuid": "education_field_002",
+                "fieldKey": "major",
+                "fieldName": "专业",
+                "fieldSortOrder": 2,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "3cbd75790bb4404ea6d506ab275b8392",
+                "fieldDefinitionUuid": "education_field_003",
+                "fieldKey": "degree",
+                "fieldName": "学历",
+                "fieldSortOrder": 3,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "982e0b317d0d487c819e03cb34959123",
+                "fieldDefinitionUuid": "education_field_004",
+                "fieldKey": "end_time",
+                "fieldName": "起止时间",
+                "fieldSortOrder": 4,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "64da8173ba304dcd86afc4ba2e747995",
+                "fieldDefinitionUuid": "education_field_005",
+                "fieldKey": "description",
+                "fieldName": "在校经历",
+                "fieldSortOrder": 5,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 2000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "7a8b9c0d1e2f467890ab1234567890cd",
+        "moduleDefinitionUuid": "internship_module_001",
+        "moduleKey": "internship_history",
+        "moduleName": "实习经历",
+        "sortOrder": 3,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "8d9e0f1a2b3c478901bc234567890dea",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "1f2e3d4c5b6a489012cd34567890efab",
+                "fieldDefinitionUuid": "internship_field_001",
+                "fieldKey": "company_name",
+                "fieldName": "实习公司",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 30
+              },
+              {
+                "uuid": "2d3c4b5a6f7e490123dc4567890feab1",
+                "fieldDefinitionUuid": "internship_field_002",
+                "fieldKey": "position_name",
+                "fieldName": "职位名称",
+                "fieldSortOrder": 2,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "3c4b5a6f7e8d401234cd567890feab12",
+                "fieldDefinitionUuid": "internship_field_003",
+                "fieldKey": "end_time",
+                "fieldName": "起止时间",
+                "fieldSortOrder": 3,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "4b5a6f7e8d9c412345dc67890feab123",
+                "fieldDefinitionUuid": "internship_field_004",
+                "fieldKey": "description",
+                "fieldName": "实习描述",
+                "fieldSortOrder": 4,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 2000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "e70b65095f174a3c9b07a46d786400c6",
+        "moduleDefinitionUuid": "work_module_001",
+        "moduleKey": "work_history",
+        "moduleName": "工作经历",
+        "sortOrder": 4,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "a9c6502bfc334cb893fd4d07a8021e04",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "ce8f9e6416704c73b4c3bd4e240acff8",
+                "fieldDefinitionUuid": "work_field_001",
+                "fieldKey": "company_name",
+                "fieldName": "就职公司",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 30
+              },
+              {
+                "uuid": "e4ca2a0f81964760b7f6dc68ca8cf70c",
+                "fieldDefinitionUuid": "work_field_002",
+                "fieldKey": "position_name",
+                "fieldName": "职位名称",
+                "fieldSortOrder": 2,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "03f8564434e34fb6b8f5e41ac4d8aa55",
+                "fieldDefinitionUuid": "work_field_003",
+                "fieldKey": "end_time",
+                "fieldName": "起止时间",
+                "fieldSortOrder": 3,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "01789c45e2064b5099b89d067cb25a62",
+                "fieldDefinitionUuid": "work_field_004",
+                "fieldKey": "description",
+                "fieldName": "工作描述",
+                "fieldSortOrder": 4,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 2000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "8c7d29781760462e97653ba405e77e2a",
+        "moduleDefinitionUuid": "project_module_001",
+        "moduleKey": "project_history",
+        "moduleName": "项目经历",
+        "sortOrder": 5,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "8c22d14c06b943a0ad9020d0176dd819",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "b8ad1152daf64f67a1a09fc4d7460d26",
+                "fieldDefinitionUuid": "project_field_001",
+                "fieldKey": "project_name",
+                "fieldName": "项目名称",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 30
+              },
+              {
+                "uuid": "19b3f158de424a2199c37472eb225f00",
+                "fieldDefinitionUuid": "project_field_002",
+                "fieldKey": "end_time",
+                "fieldName": "起止时间",
+                "fieldSortOrder": 2,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "d13ee70d62044e5584b7752a8e3a39ce",
+                "fieldDefinitionUuid": "project_field_003",
+                "fieldKey": "description",
+                "fieldName": "项目描述",
+                "fieldSortOrder": 3,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 2000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "9d0e1f2a3b4c489012de34567890fab1",
+        "moduleDefinitionUuid": "training_module_001",
+        "moduleKey": "training_history",
+        "moduleName": "培训情况",
+        "sortOrder": 6,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "0e1f2a3b4c5d490123ef4567890fab12",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "5a6b7c8d9e0f401234fg567890fab123",
+                "fieldDefinitionUuid": "training_field_001",
+                "fieldKey": "training_info",
+                "fieldName": "培训情况",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 1000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "77d7ddde0ce74508baff2ed4cef7b168",
+        "moduleDefinitionUuid": "skill_module_001",
+        "moduleKey": "professional_skills",
+        "moduleName": "专业技能",
+        "sortOrder": 7,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "bc2bf243e9994fd19989fc331b8b1c64",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "7c239522dde94af2aa98b48517f1ae09",
+                "fieldDefinitionUuid": "skill_field_001",
+                "fieldKey": "skills",
+                "fieldName": "专业技能",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 1000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "0f1a2b3c4d5e412345fg67890fab1234",
+        "moduleDefinitionUuid": "language_module_001",
+        "moduleKey": "language_ability",
+        "moduleName": "语言能力",
+        "sortOrder": 8,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "1a2b3c4d5e6f423456gh7890fab12345",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "6b7c8d9e0f1a434567hi890fab123456",
+                "fieldDefinitionUuid": "language_field_001",
+                "fieldKey": "languages",
+                "fieldName": "语言能力",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 1000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "2b3c4d5e6f7a445678ij90fab1234567",
+        "moduleDefinitionUuid": "patent_module_001",
+        "moduleKey": "patent_achievement",
+        "moduleName": "专利/学术成果",
+        "sortOrder": 9,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "3c4d5e6f7a8b456789jk0fab12345678",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "7c8d9e0f1a2b467890kl1fab12345678",
+                "fieldDefinitionUuid": "patent_field_001",
+                "fieldKey": "achievements",
+                "fieldName": "专利/学术成果",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 1000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "d1f3f72b371e491ea6bf68e002034ea3",
+        "moduleDefinitionUuid": "certificate_module_001",
+        "moduleKey": "awards_certificates",
+        "moduleName": "奖项证书",
+        "sortOrder": 10,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "5fce19fb151b4ce28091d5061caf0b04",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "cf299a17415042d08f5f08d5bd538985",
+                "fieldDefinitionUuid": "certificate_field_001",
+                "fieldKey": "certificates",
+                "fieldName": "奖项证书",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 1000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "3d4e5f6a7b8c478901mn234567890fab",
+        "moduleDefinitionUuid": "hobby_module_001",
+        "moduleKey": "hobbies",
+        "moduleName": "兴趣爱好",
+        "sortOrder": 11,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "4e5f6a7b8c9d489012no34567890fab1",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "8d9e0f1a2b3c490123pq4567890fab12",
+                "fieldDefinitionUuid": "hobby_field_001",
+                "fieldKey": "hobbies",
+                "fieldName": "兴趣爱好",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 1000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "31e3d1ce72a9460b9f451a7ddf7d27a2",
+        "moduleDefinitionUuid": "self_eval_module_001",
+        "moduleKey": "self_evaluation",
+        "moduleName": "自我评价",
+        "sortOrder": 12,
+        "isCustom": 0,
+        "entries": [
+          {
+            "entryUuid": "70ea0e9a6bb34f06a86aa8ea89892670",
+            "entrySortOrder": 1,
+            "fields": [
+              {
+                "uuid": "66bcdb48595347bd8d9d97bcb2d872a4",
+                "fieldDefinitionUuid": "self_eval_field_001",
+                "fieldKey": "evaluation",
+                "fieldName": "自我评价",
+                "fieldSortOrder": 1,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 1000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "page": null,
+  "ok": true
+}

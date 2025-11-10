@@ -1,23 +1,30 @@
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
 .relative {
     position: relative;
 }
+
 .fr {
     float: right;
 }
+
 .fl {
     float: left;
 }
+
 .block {
     display: block;
 }
+
 .inline-block {
     display: inline-block;
 }
+
 .pointer {
     cursor: pointer;
 }
+
 .pt-5 {
     padding-top: vh(5);
 }
@@ -212,6 +219,7 @@
 .pl-60 {
     padding-left: vw(60);
 }
+
 .pt-65 {
     padding-top: vh(65);
 }
@@ -227,6 +235,7 @@
 .pl-65 {
     padding-left: vw(65);
 }
+
 .pt-70 {
     padding-top: vh(70);
 }
@@ -242,6 +251,7 @@
 .pl-70 {
     padding-left: vw(70);
 }
+
 .pt-75 {
     padding-top: vh(75);
 }
@@ -257,6 +267,7 @@
 .pl-75 {
     padding-left: vw(75);
 }
+
 .pt-80 {
     padding-top: vh(80);
 }
@@ -272,6 +283,7 @@
 .pl-80 {
     padding-left: vw(80);
 }
+
 .p5 {
     padding: vw(5);
 }
@@ -319,18 +331,23 @@
 .p60 {
     padding: vw(60);
 }
+
 .p65 {
     padding: vw(65);
 }
+
 .p70 {
     padding: vw(70);
 }
+
 .p75 {
     padding: vw(75);
 }
+
 .p80 {
     padding: vw(80);
 }
+
 .m5 {
     margin: vw(5);
 }
@@ -378,6 +395,7 @@
 .m60 {
     margin: vw(60);
 }
+
 .m65 {
     margin: vw(65);
 }
@@ -694,6 +712,7 @@
     white-space: nowrap;
     overflow: hidden;
 }
+
 /* 文字加粗 */
 .bold {
     font-weight: bold;
