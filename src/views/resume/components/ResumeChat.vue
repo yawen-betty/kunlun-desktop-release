@@ -13,7 +13,7 @@
             <div class="ai-chat">
               <div class="ai-chat-text">{{ info.content }}</div>
               <div class="is-think mt-10" v-if="['1','2'].includes(info.thinkingStatus || '0')">
-                <div class="think-text mr-5">{{ thinkingText[info.thinking!] }}</div>
+                <div class="think-text mr-5">{{ thinkingText[info.thinkingStatus!] }}</div>
                 <SvgIcon name="icon-zhankai" color="#9499A4" size="12" class="pointer"
                          @click="info.isExpand = true"></SvgIcon>
               </div>
@@ -72,7 +72,7 @@ class CustomMessagesBean extends MessagesBean {
 const aiService = new AiService();
 
 const props = defineProps<{
-  resumeUuid?: string;   // 简历id
+  resumeUuid: string;   // 简历id
   hasAttachment?: File | null; // 简历附件
 }>();
 
@@ -125,7 +125,8 @@ const queryChatList = () => {
         chatList.value.push({
           role: 'assistant',
           content: msg,
-          thinkingStatus: '2'
+          thinkingStatus: '2',
+          isExpand: true
         });
         generateTemplate(msg)
       }, 500)
