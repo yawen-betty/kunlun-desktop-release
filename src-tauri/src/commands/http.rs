@@ -147,8 +147,8 @@ pub async fn upload_request(
     field_name: String,
     file_name: String,
     file_bytes: Vec<u8>,
+    extra_fields: Option<HashMap<String, String>>
  ) -> Result<HttpResponse, String> {
-//     let client = reqwest::Client::new();
     let client = match reqwest::Client::builder()
         .danger_accept_invalid_certs(true)
         .build() {
@@ -162,22 +162,29 @@ pub async fn upload_request(
         .mime_str("application/json")
         .map_err(|e| format!("创建文件部分失败: {}", e))?;
 
-    let form = reqwest::multipart::Form::new().part(field_name, part);
+    let mut form = reqwest::multipart::Form::new().part(field_name, part);
 
-    // 2. 构建请求
+    // 2. 添加额外的表单字段（如果有）
+    if let Some(fields) = extra_fields {
+        for (key, value) in fields {
+            form = form.text(key, value);
+        }
+    }
+
+    // 3. 构建请求
     let mut request_builder = client.post(url).multipart(form);
 
-    // 3. 添加请求头
+    // 4. 添加请求头
     if let Some(h) = headers {
         for (key, value) in h {
             request_builder = request_builder.header(&key, &value);
         }
     }
 
-    // 4. 发送请求
+    // 5. 发送请求
     let response = request_builder.send().await.map_err(|e| format!("请求发送失败: {}", e))?;
 
-    // 5. 处理并返回响应 (与您现有的 http_request 函数逻辑类似)
+    // 6. 处理并返回响应
     let status = response.status().as_u16();
     let mut response_headers = HashMap::new();
         for (key, value) in response.headers() {

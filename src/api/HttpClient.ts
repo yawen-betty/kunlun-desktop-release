@@ -200,10 +200,12 @@ export default class HttpClient {
      * 上传文件的便捷方法
      * @param path Path对象
      * @param file File文件
+     * @param extraFields 文件参数外的普通表单字段
      */
     public async uploadFile<T>(
         path: Path,
-        file: File
+        file: File,
+        extraFields?: Map<string,any>
     ): Promise<T> {
         console.log('HttpClient.uploadFile 开始处理:', file.name);
 
@@ -234,6 +236,7 @@ export default class HttpClient {
                   fieldName: 'file', // 根据您的要求，字段名固定为 'file'
                   fileName: file.name,
                   fileBytes,
+                  extraFields
                 });
 
                 console.info('文件上传响应:', response);
