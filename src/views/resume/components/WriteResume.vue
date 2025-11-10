@@ -38,7 +38,7 @@
                 <div class="right-header mb-20">
                     <div v-if="showScoreAndMode && currentMode === 'ai'" class="score-wrapper flex flex-column">
                         <div class="score-text">当前简历分数：{{ resumeScore }}</div>
-                        <Poptip class="questions-pop" placement="bottom" trigger="hover">
+                        <Poptip class="questions-pop flex-column" placement="bottom" trigger="hover">
                             <SvgIcon class="tip" color="#FC8919" name="icon-tishi"/>
                             <template #content>
                                 <ul class="problem-list">
@@ -88,7 +88,8 @@
                 </div>
                 <!-- 聊天区 -->
                 <Transition name="slide-right">
-                    <ResumeChat v-if="currentMode === 'ai'"/>
+                    <ResumeChat v-if="currentMode === 'ai'" :hasAttachment="uploadedFile" :resumeUuid="resumeId"
+                                @update-data="handleUpdateData"/>
                 </Transition>
             </div>
         </div>
@@ -315,6 +316,13 @@ const toggleMode = debounce(() => {
     }
 }, 300);
 
+/**
+ * 填充左侧模板 | 流式回填简历字段
+ */
+const handleUpdateData = () => {
+
+}
+
 // 确认切换模式
 const confirmModeSwitch = () => {
     currentMode.value = 'manual';
@@ -514,7 +522,7 @@ const handleUpdateModules = async () => {
     font-family: 'PingFangSCBold', sans-serif;
     font-weight: 600;
     font-size: vw(16);
-    line-height: vh(16);
+    //line-height: vh(16);
     background: linear-gradient(90deg, #FFB32C 0%, #FC8919 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -522,8 +530,7 @@ const handleUpdateModules = async () => {
 }
 
 .questions-pop {
-    height: vw(14);
-
+    height: 100%;
 
     .tip {
         width: vw(14) !important;

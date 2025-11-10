@@ -3,8 +3,8 @@ import {ref} from 'vue';
 import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
 
-const showMakePanel = ref(true);
-const resumeId = ref('');
+const showMakePanel = ref(false);
+const resumeId = ref('9389e826fa6a4bd4976a47b283ef2a6a');
 const resumeName = ref('');
 const uploadedFile = ref<File | null>(null);
 

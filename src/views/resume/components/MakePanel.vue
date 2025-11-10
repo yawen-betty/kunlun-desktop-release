@@ -311,6 +311,11 @@ onMounted(() => {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+
+                svg {
+                    width: vw(16) !important;
+                    height: vw(16) !important;
+                }
             }
         }
 
