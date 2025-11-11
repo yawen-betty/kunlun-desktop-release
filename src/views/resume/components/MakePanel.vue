@@ -5,6 +5,7 @@ import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {ResumeService} from "@/service/ResumeService";
 import {InitResumeInDto} from "@/api/resume/dto/InitResume";
+import {debounce} from "@/utiles/debounce";
 
 // 输入框提示词列表
 const placeholderList = [
@@ -50,7 +51,7 @@ const emit = defineEmits<{
     'resume-created': [data: { resumeId: string; resumeName: string; uploadedFile: File | null }]
 }>();
 
-const submit = async () => {
+const submit = debounce(async () => {
     if (!formData.jobPosition.trim()) return Message.error('请输入求职岗位！')
     if (!formData.identity) return Message.error('请选择身份！')
 
@@ -73,7 +74,7 @@ const submit = async () => {
         Message.error('简历创建失败！');
         console.error(error);
     }
-}
+}, 300)
 
 const handleUploadChange = (file: File) => {
     const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
