@@ -84,7 +84,7 @@
                 <!-- 聊天区 -->
                 <Transition name="slide-right">
                     <ResumeChat v-if="currentMode === 'ai'" :hasAttachment="uploadedFile" :resumeUuid="resumeId"
-                                @update-data="handleUpdateData"/>
+                                @sendTemplate="sendTemplate" @update-data="handleUpdateData"/>
                 </Transition>
             </div>
         </div>
@@ -274,7 +274,7 @@ const handleConfirm = async () => {
             const params = new RenameResumeInDto();
             params.resumeId = resumeData.value.uuid || '';
             params.name = formData.resumeName;
-            
+
             await resumeService.renameResume(params);
             resumeName.value = formData.resumeName;
             showRenameModal.value = false;
@@ -337,6 +337,13 @@ const toggleMode = debounce(() => {
  */
 const handleUpdateData = () => {
 
+}
+
+// 第一步传递的模板数据
+const sendTemplate = (templateData: string) => {
+    isGenerating.value = true;
+    resumeData.value = JSON.parse(templateData)
+    isGenerating.value = false;
 }
 
 // 确认切换模式
