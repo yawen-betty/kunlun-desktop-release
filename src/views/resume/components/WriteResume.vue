@@ -22,11 +22,6 @@
                     :is-generating="isGenerating"
                     :mode="currentMode"
                     :resume-data="resumeData"
-                    @manual-add="handleManualAdd"
-                    @module-manage="handleModuleManage"
-                    @section-manage="handleSectionManage"
-                    @section-edit="handleSectionEdit"
-                    @add-entry="handleAddEntry"
                     @update-modules="handleUpdateModules"
                     @data-change="handleDataChange"
                 />
@@ -171,13 +166,17 @@ import {useCompRef} from "@/hooks/useComponent";
 import {ResumeService} from "@/service/ResumeService";
 import {GetResumeDetailInDto} from "@/api/resume/dto/GetResumeDetail";
 import {SaveResumeInDto} from "@/api/resume/dto/SaveResume";
+import {RenameResumeInDto} from "@/api/resume/dto/RenameResume";
 
 const props = defineProps<{
-    resumeId?: string;
+    resumeId: string;
     resumeName?: string;
     uploadedFile?: File | null;
 }>();
 
+const emit = defineEmits<{
+    'back-to-make': [];
+}>();
 const resumeData = ref<any>({modules: []});
 
 const previewRef = useCompRef(ResumePreview);
@@ -202,9 +201,6 @@ const scoreProblems = ref<string[]>([
 ]);
 const resumeService = new ResumeService();
 
-const isProblemOverflow = (text: string) => {
-    return text.length > 20;
-};
 const formData = reactive({
     resumeName: ''
 })
@@ -257,31 +253,40 @@ const fetchResumeDetail = async (resumeId: string) => {
 };
 
 onMounted(async () => {
-    const id = props.resumeId || '34470ebfe1694816ad5e2efe27ae3504';
-    if (!id) {
+    if (!props.resumeId) {
         Message.error('简历ID不存在');
         return;
     }
     if (props.resumeName) {
         resumeName.value = props.resumeName;
     }
-    await fetchResumeDetail(id);
+    await fetchResumeDetail(props.resumeId);
 });
 
-
 // 确认重命名
-const handleConfirm = () => {
-    formRef.value.validate((valid: boolean) => {
+const handleConfirm = async () => {
+    formRef.value.validate(async (valid: boolean) => {
         if (!valid) {
             Message.warning('请完善必填项！');
             return;
         }
-        resumeName.value = formData.resumeName;
-        showRenameModal.value = false;
+        try {
+            const params = new RenameResumeInDto();
+            params.resumeId = resumeData.value.uuid || '';
+            params.name = formData.resumeName;
+            
+            await resumeService.renameResume(params);
+            resumeName.value = formData.resumeName;
+            showRenameModal.value = false;
+            Message.success('重命名成功');
+        } catch (error) {
+            Message.error('重命名失败');
+            console.error(error);
+        }
     });
 };
 
-// 更多菜单操作
+// 保存操作
 const handleSave = async () => {
     try {
         const params = new SaveResumeInDto();
@@ -297,12 +302,22 @@ const handleSave = async () => {
 };
 
 const handleDownload = () => {
-    console.log('下载');
     Message.info('开始下载');
 };
 
+const isEditing = computed(() => {
+    const preview = previewRef.value;
+    if (!preview) return false;
+    return preview.isEditingBasicInfo || !!preview.editingEntryUuid || !!preview.editingModuleUuid;
+});
+
 const handleExit = () => {
-    console.log('退出');
+    if (isEditing.value) {
+        Message.warning('当前处于编辑中,请保存后再操作!');
+        return;
+    }
+    // TODO 需要判断当前简历是否创建，如果创建，需要调用保存接口
+    emit('back-to-make');
 };
 
 const toggleMode = debounce(() => {
@@ -335,41 +350,9 @@ const toggleScoreDisplay = (show: boolean) => {
     showScoreAndMode.value = show;
 };
 
-// 手动添加处理
-const handleManualAdd = () => {
-    console.log('点击了手动添加');
-    Message.info('手动添加功能待实现');
-};
-
-// 模块管理
-const handleModuleManage = () => {
-    console.log('点击了模块管理');
-    Message.info('模块管理功能待实现');
-};
-
-// 模块管理按钮
-const handleSectionManage = (uuid: string) => {
-    console.log('点击了模块管理按钮', uuid);
-    Message.info('模块管理功能待实现');
-};
-
-// 模块编辑按钮
-const handleSectionEdit = (uuid: string) => {
-    console.log('点击了模块编辑按钮', uuid);
-    Message.info('模块编辑功能待实现');
-};
-
-// 增加新的经历
-const handleAddEntry = (moduleKey: string) => {
-    console.log('点击了增加新的经历', moduleKey);
-    Message.info('增加新的经历功能待实现');
-};
-
 // 数据变更处理
 const handleDataChange = (updatedData: any) => {
     resumeData.value = updatedData;
-    console.log('简历数据已更新', resumeData.value);
-    // 这里可以添加其他逻辑，例如：标记为未保存状态
 };
 
 // 更新模块顺序

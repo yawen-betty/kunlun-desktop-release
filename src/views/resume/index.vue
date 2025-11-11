@@ -17,16 +17,20 @@ const handleResumeCreated = (data: { resumeId: string; resumeName: string; uploa
     showMakePanel.value = false;
 };
 
+const exit = () => {
+    showMakePanel.value = true;
+    resumeName.value = '';
+    resumeId.value = '';
+    uploadedFile.value = null;
+}
+
 </script>
 
 <template>
     <div class="resume-cont">
         <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
-        <WriteResume v-else :resume-id="resumeId" :resume-name="resumeName" :uploaded-file="uploadedFile"/>
-
-        <!--        <div style="width: 1200px;height: 900px;">-->
-        <!--            <ResumePreviewCard :resume-data="resumeData" :scrollable="false" size="small"/>-->
-        <!--        </div>-->
+        <WriteResume v-else :resume-id="resumeId" :resume-name="resumeName" :uploaded-file="uploadedFile"
+                     @back-to-make="exit"/>
     </div>
 </template>
 

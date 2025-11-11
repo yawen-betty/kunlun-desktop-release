@@ -36,7 +36,8 @@
                     </div>
                     <div v-if="mode === 'manual' && isEditingBasicInfo" class="contact-field flex-column">
                         <span class="field-prefix">{{ getTopField('mobile')?.fieldName }}</span>
-                        <Input v-model="editFormData.mobile" :maxlength="getTopField('mobile')?.maxLength || 0" class="contact-input" placeholder="请输入"/>
+                        <Input v-model="editFormData.mobile" :maxlength="getTopField('mobile')?.maxLength || 0"
+                               class="contact-input" placeholder="请输入"/>
                     </div>
                     <div v-else
                          :class="{ 'streaming-highlight': currentStreamingField === getTopField('mobile')?.uuid }"
@@ -45,7 +46,8 @@
                     </div>
                     <div v-if="mode === 'manual' && isEditingBasicInfo" class="contact-field flex-column">
                         <span class="field-prefix">{{ getTopField('email')?.fieldName }}</span>
-                        <Input v-model="editFormData.email" :maxlength="getTopField('email')?.maxLength || 0" class="contact-input" placeholder="请输入"/>
+                        <Input v-model="editFormData.email" :maxlength="getTopField('email')?.maxLength || 0"
+                               class="contact-input" placeholder="请输入"/>
                     </div>
                     <div v-else
                          :class="{ 'streaming-highlight': currentStreamingField === getTopField('email')?.uuid }"
@@ -107,7 +109,8 @@
                         <div v-for="field in getBasicInfoFields" v-if="mode === 'manual' && isEditingBasicInfo"
                              :key="field.uuid" class="info-field flex-column">
                             <span class="field-prefix">{{ field.fieldName }}</span>
-                            <Input v-model="editFormData[field.fieldKey]" :maxlength="field.maxLength || 0" class="info-input"/>
+                            <Input v-model="editFormData[field.fieldKey]" :maxlength="field.maxLength || 0"
+                                   class="info-input"/>
                         </div>
                         <div v-for="field in getBasicInfoFields" v-else
                              :class="{ 'streaming-highlight': currentStreamingField === field.uuid }"
@@ -172,7 +175,10 @@
                                        :maxlength="getFieldMaxLength(entry, 'description')"
                                        :placeholder="getFieldName(entry, 'description')"
                                        :rows="5" class="entry-textarea" type="textarea"/>
-                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/{{ getFieldMaxLength(entry, 'description') }}</div>
+                                <div class="char-count">{{
+                                        entryEditData.description?.length || 0
+                                    }}/{{ getFieldMaxLength(entry, 'description') }}
+                                </div>
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
@@ -294,7 +300,10 @@
                                        :maxlength="getFieldMaxLength(entry, 'description')"
                                        :placeholder="getFieldName(entry, 'description')"
                                        :rows="5" class="entry-textarea" type="textarea"/>
-                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/{{ getFieldMaxLength(entry, 'description') }}</div>
+                                <div class="char-count">{{
+                                        entryEditData.description?.length || 0
+                                    }}/{{ getFieldMaxLength(entry, 'description') }}
+                                </div>
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
@@ -413,7 +422,10 @@
                                        :maxlength="getFieldMaxLength(entry, 'description')"
                                        :placeholder="getFieldName(entry, 'description')"
                                        :rows="5" class="entry-textarea" type="textarea"/>
-                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/{{ getFieldMaxLength(entry, 'description') }}</div>
+                                <div class="char-count">{{
+                                        entryEditData.description?.length || 0
+                                    }}/{{ getFieldMaxLength(entry, 'description') }}
+                                </div>
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
@@ -525,7 +537,10 @@
                                        :placeholder="getFieldName(entry, 'description')"
                                        :rows="5" class="entry-textarea"
                                        type="textarea"/>
-                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/{{ getFieldMaxLength(entry, 'description') }}</div>
+                                <div class="char-count">{{
+                                        entryEditData.description?.length || 0
+                                    }}/{{ getFieldMaxLength(entry, 'description') }}
+                                </div>
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
@@ -607,7 +622,10 @@
                                 class="text-edit-area"
                                 type="textarea"
                             />
-                            <div class="char-count">{{ editTextContent.length }}/{{ getTextModuleMaxLength(module) }}</div>
+                            <div class="char-count">{{ editTextContent.length }}/{{
+                                    getTextModuleMaxLength(module)
+                                }}
+                            </div>
                         </div>
                         <div class="text-edit-footer align-between flex-center">
                             <div class="ai-actions flex-column flex">
@@ -693,11 +711,7 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-    'manual-add': [];
-    'module-manage': [];
-    'section-manage': [uuid: string];
     'update-modules': [];
-    'section-save': [data: any];
     'data-change': [data: any];
 }>();
 
@@ -1182,7 +1196,10 @@ onMounted(async () => {
 
 defineExpose({
     streamWrite,
-    isStreaming
+    isStreaming,
+    isEditingBasicInfo,
+    editingEntryUuid,
+    editingModuleUuid
 });
 </script>
 
