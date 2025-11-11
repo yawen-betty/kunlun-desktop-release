@@ -2,8 +2,6 @@
 import {ref} from 'vue';
 import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
-import ResumePreviewCard from "@/views/resume/components/ResumePreviewCard.vue";
-import {GetResumeDetailOutDto} from "@/api/resume/dto/GetResumeDetail.ts";
 
 const showMakePanel = ref(false);
 const resumeId = ref('ac29cb2832224e2898c50fea4379baa7');

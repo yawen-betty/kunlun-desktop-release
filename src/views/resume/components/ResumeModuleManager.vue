@@ -264,15 +264,13 @@ const confirmDelete = () => {
         selectedModules.value.splice(index, 1);
     }
     showDeleteModal.value = false;
-};
+}
 
 const addModule = (id: string) => {
-    // 检查是否已存在
     if (selectedModules.value.find(m => m.id === id)) {
         return;
     }
 
-    // 从可用列表或全部模块中查找
     let module: ModuleItem | undefined;
     if (props.availableModulesList && props.availableModulesList.length > 0) {
         module = props.availableModulesList.find(m => m.id === id);
@@ -281,17 +279,21 @@ const addModule = (id: string) => {
     }
 
     if (!module) return;
-    console.log(module, 'module')
-    console.log(props.disabledDragIds, 'props.disabledDragIds')
-    // 如果是禁用拖拽的模块，插入到禁用项的对应位置
+
     if (props.disabledDragIds.includes(id)) {
-        const disabledIndex = props.disabledDragIds.indexOf(id);
-        console.log(disabledIndex, 'index')
-        selectedModules.value.splice(disabledIndex, 0, {...module});
+        const existingDisabledIds = selectedModules.value
+            .filter(m => props.disabledDragIds.includes(m.id))
+            .map(m => m.id);
+        
+        const allDisabledIds = [...existingDisabledIds, id];
+        const sortedDisabledIds = props.disabledDragIds.filter(did => allDisabledIds.includes(did));
+        const insertIndex = sortedDisabledIds.indexOf(id);
+        
+        selectedModules.value.splice(insertIndex, 0, {...module});
     } else {
         selectedModules.value.push({...module});
     }
-};
+}
 
 const showCustomModuleModal = () => {
     formData.value.name = '';
