@@ -28,4 +28,14 @@ export class ResumeFieldBean {
      * 字段值
      */
     fieldValue?: string;
+
+    /**
+     * 是否为自定义 (1:是 0:否)
+     */
+    isCustom?: number;
+
+    /**
+     * 字段字符限制大小 (0表示无限制)
+     */
+    maxLength?: number;
 }

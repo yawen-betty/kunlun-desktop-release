@@ -16,6 +16,7 @@
             <div v-if="basicInfoModule" class="personal-info align-between">
                 <div class="info-left">
                     <Input v-if="mode === 'manual' && isEditingBasicInfo" v-model="editFormData.name"
+                           :maxlength="getTopField('name')?.maxLength || 0"
                            :placeholder="getTopField('name')?.fieldName"
                            class="name-input"/>
                     <div v-else
@@ -24,6 +25,7 @@
                         {{ getStreamValue(getTopField('name')?.uuid) || getTopField('name')?.fieldName }}
                     </div>
                     <Input v-if="mode === 'manual' && isEditingBasicInfo" v-model="editFormData.job_position"
+                           :maxlength="getTopField('job_position')?.maxLength || 0"
                            :placeholder="getTopField('job_position')?.fieldName" class="job-input"/>
                     <div v-else
                          :class="{ 'streaming-highlight': currentStreamingField === getTopField('job_position')?.uuid, 'placeholder': !getStreamValue(getTopField('job_position')?.uuid) }"
@@ -34,7 +36,7 @@
                     </div>
                     <div v-if="mode === 'manual' && isEditingBasicInfo" class="contact-field flex-column">
                         <span class="field-prefix">{{ getTopField('mobile')?.fieldName }}</span>
-                        <Input v-model="editFormData.mobile" class="contact-input" placeholder="请输入"/>
+                        <Input v-model="editFormData.mobile" :maxlength="getTopField('mobile')?.maxLength || 0" class="contact-input" placeholder="请输入"/>
                     </div>
                     <div v-else
                          :class="{ 'streaming-highlight': currentStreamingField === getTopField('mobile')?.uuid }"
@@ -43,7 +45,7 @@
                     </div>
                     <div v-if="mode === 'manual' && isEditingBasicInfo" class="contact-field flex-column">
                         <span class="field-prefix">{{ getTopField('email')?.fieldName }}</span>
-                        <Input v-model="editFormData.email" class="contact-input" placeholder="请输入"/>
+                        <Input v-model="editFormData.email" :maxlength="getTopField('email')?.maxLength || 0" class="contact-input" placeholder="请输入"/>
                     </div>
                     <div v-else
                          :class="{ 'streaming-highlight': currentStreamingField === getTopField('email')?.uuid }"
@@ -105,7 +107,7 @@
                         <div v-for="field in getBasicInfoFields" v-if="mode === 'manual' && isEditingBasicInfo"
                              :key="field.uuid" class="info-field flex-column">
                             <span class="field-prefix">{{ field.fieldName }}</span>
-                            <Input v-model="editFormData[field.fieldKey]" :maxlength="20" class="info-input"/>
+                            <Input v-model="editFormData[field.fieldKey]" :maxlength="field.maxLength || 0" class="info-input"/>
                         </div>
                         <div v-for="field in getBasicInfoFields" v-else
                              :class="{ 'streaming-highlight': currentStreamingField === field.uuid }"
@@ -140,29 +142,37 @@
                              class="entry-edit-wrapper full-width">
                             <div class="entry-fields flex-column">
                                 <Input v-model="entryEditData.school_name"
+                                       :maxlength="getFieldMaxLength(entry, 'school_name')"
                                        :placeholder="getFieldName(entry, 'school_name')"
                                        class="field-input field-input-half"/>
-                                <Input v-model="entryEditData.major" :placeholder="getFieldName(entry, 'major')"
+                                <Input v-model="entryEditData.major"
+                                       :maxlength="getFieldMaxLength(entry, 'major')"
+                                       :placeholder="getFieldName(entry, 'major')"
                                        class="field-input field-input-half"/>
                             </div>
                             <div class="entry-fields flex-column mt-10">
-                                <Input v-model="entryEditData.degree" :placeholder="getFieldName(entry, 'degree')"
+                                <Input v-model="entryEditData.degree"
+                                       :maxlength="getFieldMaxLength(entry, 'degree')"
+                                       :placeholder="getFieldName(entry, 'degree')"
                                        class="field-input field-input-half"/>
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
+                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
                                            class="field-input field-input-time"
                                            placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
                                     <Input v-model="entryEditData.end_time"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time"
                                            placeholder="结束时间"/>
                                 </div>
                             </div>
                             <div class="entry-textarea-wrapper mt-10">
-                                <Input v-model="entryEditData.description" :maxlength="2000"
+                                <Input v-model="entryEditData.description"
+                                       :maxlength="getFieldMaxLength(entry, 'description')"
                                        :placeholder="getFieldName(entry, 'description')"
                                        :rows="5" class="entry-textarea" type="textarea"/>
-                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/2000</div>
+                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/{{ getFieldMaxLength(entry, 'description') }}</div>
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
@@ -260,26 +270,31 @@
                              class="entry-edit-wrapper full-width">
                             <div class="entry-fields flex-column">
                                 <Input v-model="entryEditData.company_name"
+                                       :maxlength="getFieldMaxLength(entry, 'company_name')"
                                        :placeholder="getFieldName(entry, 'company_name')"
                                        class="field-input field-input-half"/>
                                 <Input v-model="entryEditData.position_name"
+                                       :maxlength="getFieldMaxLength(entry, 'position_name')"
                                        :placeholder="getFieldName(entry, 'position_name')"
                                        class="field-input field-input-half ml-10"/>
                             </div>
                             <div class="entry-fields flex-column mt-10">
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
+                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
                                            class="field-input field-input-time" placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
                                     <Input v-model="entryEditData.end_time"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time" placeholder="结束时间"/>
                                 </div>
                             </div>
                             <div class="entry-textarea-wrapper mt-10">
-                                <Input v-model="entryEditData.description" :maxlength="2000"
+                                <Input v-model="entryEditData.description"
+                                       :maxlength="getFieldMaxLength(entry, 'description')"
                                        :placeholder="getFieldName(entry, 'description')"
                                        :rows="5" class="entry-textarea" type="textarea"/>
-                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/2000</div>
+                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/{{ getFieldMaxLength(entry, 'description') }}</div>
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
@@ -372,26 +387,33 @@
                              class="entry-edit-wrapper full-width">
                             <div class="entry-fields flex-column">
                                 <Input v-model="entryEditData.company_name"
+                                       :maxlength="getFieldMaxLength(entry, 'company_name')"
                                        :placeholder="getFieldName(entry, 'company_name')"
                                        class="field-input field-input-half"/>
                                 <Input v-model="entryEditData.position_name"
+                                       :maxlength="getFieldMaxLength(entry, 'position_name')"
                                        :placeholder="getFieldName(entry, 'position_name')"
                                        class="field-input field-input-half ml-10"/>
                             </div>
                             <div class="entry-fields flex-column mt-10">
                                 <div class="time-fields flex-column">
-                                    <Input v-model="entryEditData.start_time" class="field-input field-input-time"
+                                    <Input v-model="entryEditData.start_time"
+                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
+                                           class="field-input field-input-time"
                                            placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
-                                    <Input v-model="entryEditData.end_time" class="field-input field-input-time"
+                                    <Input v-model="entryEditData.end_time"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
+                                           class="field-input field-input-time"
                                            placeholder="结束时间"/>
                                 </div>
                             </div>
                             <div class="entry-textarea-wrapper mt-10">
-                                <Input v-model="entryEditData.description" :maxlength="2000"
+                                <Input v-model="entryEditData.description"
+                                       :maxlength="getFieldMaxLength(entry, 'description')"
                                        :placeholder="getFieldName(entry, 'description')"
                                        :rows="5" class="entry-textarea" type="textarea"/>
-                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/2000</div>
+                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/{{ getFieldMaxLength(entry, 'description') }}</div>
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
@@ -484,22 +506,26 @@
                              class="entry-edit-wrapper full-width">
                             <div class="entry-fields flex-column">
                                 <Input v-model="entryEditData.project_name"
+                                       :maxlength="getFieldMaxLength(entry, 'project_name')"
                                        :placeholder="getFieldName(entry, 'project_name')"
                                        class="field-input field-input-half"/>
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
+                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
                                            class="field-input field-input-time" placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
                                     <Input v-model="entryEditData.end_time"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time" placeholder="结束时间"/>
                                 </div>
                             </div>
                             <div class="entry-textarea-wrapper mt-10">
-                                <Input v-model="entryEditData.description" :maxlength="2000"
+                                <Input v-model="entryEditData.description"
+                                       :maxlength="getFieldMaxLength(entry, 'description')"
                                        :placeholder="getFieldName(entry, 'description')"
                                        :rows="5" class="entry-textarea"
                                        type="textarea"/>
-                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/2000</div>
+                                <div class="char-count">{{ entryEditData.description?.length || 0 }}/{{ getFieldMaxLength(entry, 'description') }}</div>
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
@@ -575,13 +601,13 @@
                         <div class="text-edit-box">
                             <Input
                                 v-model="editTextContent"
-                                :maxlength="1000"
+                                :maxlength="getTextModuleMaxLength(module)"
                                 :placeholder="editPlaceholder"
                                 :rows="5"
                                 class="text-edit-area"
                                 type="textarea"
                             />
-                            <div class="char-count">{{ editTextContent.length }}/1000</div>
+                            <div class="char-count">{{ editTextContent.length }}/{{ getTextModuleMaxLength(module) }}</div>
                         </div>
                         <div class="text-edit-footer align-between flex-center">
                             <div class="ai-actions flex-column flex">
@@ -912,6 +938,15 @@ const hasEntries = (module: any) => module.entries?.length > 0;
 const getFieldName = (container: any, fieldKey: string) => {
     const fields = container.entries?.[0]?.fields || container.fields;
     return fields?.find((f: any) => f.fieldKey === fieldKey)?.fieldName || '';
+};
+
+const getFieldMaxLength = (container: any, fieldKey: string) => {
+    const fields = container.entries?.[0]?.fields || container.fields;
+    return fields?.find((f: any) => f.fieldKey === fieldKey)?.maxLength || 0;
+};
+
+const getTextModuleMaxLength = (module: any) => {
+    return module.entries?.[0]?.fields?.[0]?.maxLength || 0;
 };
 
 const getFieldUuid = (container: any, fieldKey: string) => {

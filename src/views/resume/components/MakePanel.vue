@@ -60,8 +60,8 @@ const submit = async () => {
         if (result.code === 200 && result.data) {
             Message.success('简历创建成功！');
             emit('resume-created', {
-                resumeId: result.data.resumeId,
-                resumeName: result.data.resumeName,
+                resumeId: result.data.resumeId!,
+                resumeName: result.data.resumeName!,
                 uploadedFile: uploadFile.value?.file || null
             });
         } else if (result.code === 2305) {

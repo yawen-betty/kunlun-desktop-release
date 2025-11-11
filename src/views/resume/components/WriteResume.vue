@@ -181,6 +181,7 @@ const props = defineProps<{
 const resumeData = ref<any>({modules: []});
 
 const previewRef = useCompRef(ResumePreview);
+// 左侧简历的loading状态
 const isGenerating = ref(false);
 
 // 重命名弹框 visible

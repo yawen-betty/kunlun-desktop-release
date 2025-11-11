@@ -1,4 +1,4 @@
-import { ResumeEntryBean } from './ResumeEntryBean';
+import {ResumeEntryBean} from './ResumeEntryBean';
 
 export class ResumeModuleBean {
     /**
@@ -30,4 +30,9 @@ export class ResumeModuleBean {
      * 经历条目列表
      */
     entries?: ResumeEntryBean[];
+
+    /**
+     * 是否为自定义 (1:是 0:否)
+     */
+    isCustom?: number;
 }

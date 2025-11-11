@@ -2,9 +2,11 @@
 import {ref} from 'vue';
 import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
+import ResumePreviewCard from "@/views/resume/components/ResumePreviewCard.vue";
+import {GetResumeDetailOutDto} from "@/api/resume/dto/GetResumeDetail.ts";
 
-const showMakePanel = ref(true);
-const resumeId = ref('');
+const showMakePanel = ref(false);
+const resumeId = ref('ac29cb2832224e2898c50fea4379baa7');
 const resumeName = ref('');
 const uploadedFile = ref<File | null>(null);
 
@@ -14,12 +16,17 @@ const handleResumeCreated = (data: { resumeId: string; resumeName: string; uploa
     uploadedFile.value = data.uploadedFile;
     showMakePanel.value = false;
 };
+
 </script>
 
 <template>
     <div class="resume-cont">
         <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
         <WriteResume v-else :resume-id="resumeId" :resume-name="resumeName" :uploaded-file="uploadedFile"/>
+
+        <!--        <div style="width: 1200px;height: 900px;">-->
+        <!--            <ResumePreviewCard :resume-data="resumeData" :scrollable="false" size="small"/>-->
+        <!--        </div>-->
     </div>
 </template>
 
