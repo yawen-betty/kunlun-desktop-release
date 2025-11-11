@@ -60,18 +60,14 @@ pub async fn sse_request(
                 let text = String::from_utf8_lossy(&bytes);
                 buffer.push_str(&text);
 
-                // 处理 SSE 数据
+                // 按 SSE 事件分割（双换行符）
                 while let Some(pos) = buffer.find("\n\n") {
-                    let event_data = buffer[..pos].to_string();
+                    let event_block = buffer[..pos].trim().to_string();
                     buffer = buffer[pos + 2..].to_string();
 
-                    // 解析 SSE 事件
-                    for line in event_data.lines() {
-                        if line.starts_with("data:") {
-                            let data = line[5..].trim();
-                            // 发送事件到前端
-                            app.emit(&format!("sse-message-{}", event_id), data).ok();
-                        }
+                    // 发送完整的 SSE 事件块
+                    if !event_block.is_empty() {
+                        app.emit(&format!("sse-message-{}", event_id), event_block).ok();
                     }
                 }
             }

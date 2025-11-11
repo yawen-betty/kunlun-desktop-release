@@ -308,7 +308,6 @@ export default class HttpClient {
         onComplete?: () => void
     ): Promise<void> {
         const fullUrl = HttpClient.fixUrl(path);
-        console.info('/////////////////',fullUrl);
         const eventId = `sse-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
 
         const headers: Record<string, string> = {
