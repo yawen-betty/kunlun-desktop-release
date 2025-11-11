@@ -34,22 +34,22 @@
                             getStreamValue(getTopField('job_position')?.uuid) || getTopField('job_position')?.fieldName
                         }}
                     </div>
-                    <div v-if="mode === 'manual' && isEditingBasicInfo" class="contact-field flex-column">
+                    <div v-if="getTopField('mobile')?.uuid && mode === 'manual' && isEditingBasicInfo" class="contact-field flex-column">
                         <span class="field-prefix">{{ getTopField('mobile')?.fieldName }}</span>
                         <Input v-model="editFormData.mobile" :maxlength="getTopField('mobile')?.maxLength || 0"
                                class="contact-input" placeholder="请输入"/>
                     </div>
-                    <div v-else
+                    <div v-else-if="getTopField('mobile')?.uuid"
                          :class="{ 'streaming-highlight': currentStreamingField === getTopField('mobile')?.uuid }"
                          class="contact-item phone">
                         {{ getTopField('mobile')?.fieldName }}：{{ getStreamValue(getTopField('mobile')?.uuid) }}
                     </div>
-                    <div v-if="mode === 'manual' && isEditingBasicInfo" class="contact-field flex-column">
+                    <div v-if="getTopField('email')?.uuid && mode === 'manual' && isEditingBasicInfo" class="contact-field flex-column">
                         <span class="field-prefix">{{ getTopField('email')?.fieldName }}</span>
                         <Input v-model="editFormData.email" :maxlength="getTopField('email')?.maxLength || 0"
                                class="contact-input" placeholder="请输入"/>
                     </div>
-                    <div v-else
+                    <div v-else-if="getTopField('email')?.uuid"
                          :class="{ 'streaming-highlight': currentStreamingField === getTopField('email')?.uuid }"
                          class="contact-item">
                         {{ getTopField('email')?.fieldName }}：{{ getStreamValue(getTopField('email')?.uuid) }}
@@ -832,6 +832,7 @@ const basicInfoModule = computed(() => {
 });
 
 const topFields = ['name', 'job_position', 'mobile', 'email', 'personal_image'];
+const topFixedFields = ['name', 'job_position'];
 
 const getTopField = (fieldKey: string) => {
     const currentField = basicInfoModule.value?.entries?.[0]?.fields?.find((f: any) => f.fieldKey === fieldKey);
@@ -900,6 +901,7 @@ const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
 };
 
 const handleFieldsApply = async (fields: any[]) => {
+    console.log(fields, 'fields')
     if (!basicInfoModule.value?.entries?.[0]) return;
     try {
         const params = new UpdateModuleFieldsInDto();
@@ -907,9 +909,8 @@ const handleFieldsApply = async (fields: any[]) => {
         params.moduleId = basicInfoModule.value.uuid;
 
         const topFieldsData = basicInfoModule.value.entries[0].fields
-            .filter((f: any) => topFields.includes(f.fieldKey))
-            .filter((f: any) => !fields.find(field => field.id === f.fieldDefinitionUuid));
-
+            .filter((f: any) => topFixedFields.includes(f.fieldKey))
+        console.log(topFieldsData, 'fieldData')
         params.fields = [
             ...topFieldsData.map((f: any, index: number) => {
                 const bean = new FieldUpdateBean();
@@ -980,7 +981,7 @@ const isEntryStreaming = (entry: any) => {
 
 interface StreamItem {
     fieldUuid: string;
-    content: string;
+    fieldValue: string;
 }
 
 const streamWrite = async (items: StreamItem[], speed: number = 50) => {
@@ -988,7 +989,7 @@ const streamWrite = async (items: StreamItem[], speed: number = 50) => {
     try {
         for (const item of items) {
             currentStreamingField.value = item.fieldUuid;
-            const chars = item.content.split('');
+            const chars = item.fieldValue.split('');
             let currentText = '';
 
             for (const char of chars) {
