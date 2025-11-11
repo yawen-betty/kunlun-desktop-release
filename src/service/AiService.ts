@@ -1,15 +1,14 @@
-import { AiPaths } from '@/api/ai/AiPaths';
+import {AiPaths} from '@/api/ai/AiPaths';
 import HttpClient from '@/api/HttpClient';
-import { inject } from 'vue';
-import { GenerateTemplateInDto, GenerateTemplateOutDto } from '@/api/ai/dto/GenerateTemplate';
-import { ParseAttachmentInDto, ParseAttachmentOutDto } from '@/api/ai/dto/ParseAttachment';
-import { DiagnoseInDto, DiagnoseOutDto } from '@/api/ai/dto/Diagnose';
-import { WriteInDto, WriteOutDto } from '@/api/ai/dto/Write';
-import { PolishInDto, PolishOutDto } from '@/api/ai/dto/Polish';
-import { SaveConversationInDto, SaveConversationOutDto } from '@/api/ai/dto/SaveConversation';
-import { QueryConversationInDto, QueryConversationOutDto } from '@/api/ai/dto/QueryConversation';
-import { Result } from '@/api/BaseDto';
-import { EmptyOutDto } from '@/api/HttpClient';
+import {inject} from 'vue';
+import {GenerateTemplateInDto} from '@/api/ai/dto/GenerateTemplate';
+import {DiagnoseInDto, DiagnoseOutDto} from '@/api/ai/dto/Diagnose';
+import {WriteInDto, WriteOutDto} from '@/api/ai/dto/Write';
+import {PolishInDto} from '@/api/ai/dto/Polish';
+import {SaveConversationInDto} from '@/api/ai/dto/SaveConversation';
+import {QueryConversationInDto, QueryConversationOutDto} from '@/api/ai/dto/QueryConversation';
+import {Result} from '@/api/BaseDto';
+import {EmptyOutDto} from '@/api/HttpClient';
 
 export class AiService {
     private http: HttpClient;
@@ -27,17 +26,44 @@ export class AiService {
     }
 
     /**
-     * 生成简历模板
+     * 生成简历模板（流式）
      */
-    public async generateTemplate(params: GenerateTemplateInDto): Promise<Result<GenerateTemplateOutDto>> {
-        return await this.http.request<Result<GenerateTemplateOutDto>>(AiPaths.generateTemplate, params);
+    public generateTemplateStream(
+        params: GenerateTemplateInDto,
+        onMessage: (data: any) => void,
+        onError: (error: any) => void,
+        onComplete: () => void
+    ): void {
+        this.http.sseRequest(
+            AiPaths.generateTemplate,
+            params,
+            onMessage,
+            onError,
+            onComplete
+        );
     }
 
     /**
      * 解析简历附件
      */
-    public async parseAttachment(params: ParseAttachmentInDto): Promise<Result<ParseAttachmentOutDto>> {
-        return await this.http.request<Result<ParseAttachmentOutDto>>(AiPaths.parseAttachment, params);
+    public parseAttachmentStream(
+        extraFields: Record<string, string>,
+        file: File,
+        onMessage: (data: any) => void,
+        onError: (error: any) => void,
+        onComplete: () => void
+    ): void {
+        this.http.sseRequest(
+            AiPaths.parseAttachment,
+            null,
+            onMessage,
+            onError,
+            onComplete,
+            {
+                file,
+                extraFields
+            }
+        );
     }
 
     /**
@@ -57,8 +83,19 @@ export class AiService {
     /**
      * 局部内容优化
      */
-    public async polish(params: PolishInDto): Promise<Result<PolishOutDto>> {
-        return await this.http.request<Result<PolishOutDto>>(AiPaths.polish, params);
+    public polishStream(
+        params: PolishInDto,
+        onMessage: (data: any) => void,
+        onError: (error: any) => void,
+        onComplete: () => void
+    ): void {
+        this.http.sseRequest(
+            AiPaths.polish,
+            params,
+            onMessage,
+            onError,
+            onComplete
+        );
     }
 
     /**

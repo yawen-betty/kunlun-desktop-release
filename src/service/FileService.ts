@@ -22,7 +22,7 @@ export class FileService {
     /**
      * 上传文件
      */
-    public async upload(file: File, extraFields?: Map<string, any>): Promise<Result<UploadOutDto>> {
-        return await this.http.uploadFile<Result<UploadOutDto>>(FilePaths.upload, file, extraFields);
+    public async upload(file: File, extraFields?: Record<string, string>): Promise<Result<UploadOutDto>> {
+        return await this.http.request<Result<UploadOutDto>>(FilePaths.upload, null, {file, extraFields});
     }
 }

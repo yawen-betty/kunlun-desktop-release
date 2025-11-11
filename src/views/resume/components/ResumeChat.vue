@@ -20,7 +20,7 @@
             </div>
           </div>
 
-          <div class="deep-thinking mt-10" v-if="info.isExpand">
+          <div class="deep-thinking mt-10 mb-20" v-if="info.isExpand">
             <SvgIcon name="icon-shouqi" color="#9499A4" size="12" class="pointer icon"
                      @click="info.isExpand = false"></SvgIcon>
 
@@ -38,11 +38,20 @@
     </div>
 
     <div class="send-message">
-      <Input v-model="sendContent" placeholder="请输入" :disabled="disabled" @on-enter="handleSendMessage"></Input>
-      <Button class="save-btn" :disabled="disabled" @click="handleSendMessage">
-        <SvgIcon name="icon-fasong" size="10" color="#C5C8CE"/>
+      <Input
+        v-model="sendContent"
+        type="textarea"
+        :maxlength="2000"
+        :rows="2"
+        :autosize="{ minRows: 2, maxRows: 5 }"
+        placeholder="请输入"
+        :disabled="disabled"
+        @on-enter="handleSendMessage"
+      ></Input>
+      <button class="save-btn" :disabled="disabled || !sendContent" @click="handleSendMessage">
+        <SvgIcon name="icon-fasong" size="10" :color="disabled || !sendContent ? '#C5C8CE' : '#fff'"/>
         完成
-      </Button>
+      </button>
     </div>
   </div>
 </template>
@@ -57,8 +66,7 @@ import {QueryConversationInDto} from "@/api/ai/dto/QueryConversation.ts";
 import {AiService} from "@/service/AiService.ts";
 import {SaveConversationInDto} from "@/api/ai/dto/SaveConversation.ts";
 import {GenerateTemplateInDto} from "@/api/ai/dto/GenerateTemplate.ts";
-import {useCommon} from "@/utiles/useCommon.ts";
-import {AiPaths} from "@/api/ai/AiPaths.ts";
+import {ParseAttachmentInDto} from "@/api/ai/dto/ParseAttachment.ts";
 
 type TextType = {
   [key: string]: string;
@@ -74,9 +82,12 @@ const aiService = new AiService();
 const props = defineProps<{
   resumeUuid: string;   // 简历id
   hasAttachment?: File | null; // 简历附件
+  streamWrite?: Function // 流式回填
 }>();
 
-const {http} = useCommon();
+const emits = defineEmits<{
+  sendTemplate: [template: string]
+}>()
 
 const thinkingText: TextType = {
   '1': '已完成思考',
@@ -85,7 +96,7 @@ const thinkingText: TextType = {
 // 输入内容
 const sendContent = ref<string>('');
 // 是否禁用输入框
-const disabled = ref<boolean>(true);
+const disabled = ref<boolean>(false);
 // 聊天列表
 const chatList = ref<CustomMessagesBean[]>([]);
 // 当前流程
@@ -111,26 +122,27 @@ const queryChatList = () => {
 
   aiService.queryConversation(data).then((res) => {
     chatList.value = res.data.messages!;
-    if (res.data.messages?.length === 0) {
-      const content: string = '请帮我制作一份求职简历！'
-      chatList.value.push({
-        role: 'user',
-        content,
-      })
-      saveConversation('1', 'user', content)
+    // if (res.data.messages?.length === 0) {
+    //   const content: string = '请帮我制作一份求职简历！'
+    //   chatList.value.push({
+    //     role: 'user',
+    //     content,
+    //   })
+    //   saveConversation('1', 'user', content)
 
-      // ai回复 （生成模板）
-      setTimeout(() => {
-        const msg: string = '正在帮您生成简历模板，请稍后！'
-        chatList.value.push({
-          role: 'assistant',
-          content: msg,
-          thinkingStatus: '2',
-          isExpand: true
-        });
-        generateTemplate(msg)
-      }, 500)
-    }
+    // ai回复 （生成模板）
+    // setTimeout(() => {
+    const msg: string = '正在帮您生成简历模板，请稍后！'
+    chatList.value.push({
+      role: 'assistant',
+      content: msg,
+      thinkingStatus: '2',
+      isExpand: true,
+      thinking: ''
+    });
+    generateTemplate(msg)
+    // }, 500)
+    // }
   })
 }
 
@@ -147,30 +159,106 @@ const saveConversation = (type: string, role: string, content: string) => {
 
 // 生成模板
 const generateTemplate = (msg: string) => {
-  const data: GenerateTemplateInDto = {
+  const params: GenerateTemplateInDto = {
     resumeId: props.resumeUuid,
     hasAttachment: props.hasAttachment ? '1' : '0',
     assistantMessage: msg
   }
 
-  http.sseRequest(
-    AiPaths.generateTemplate,
-    data,
-    // onMessage
+  aiService.generateTemplateStream(
+    params,
     (data) => {
-      console.log('收到消息:', data);
-      // 处理流式数据
+      if (data.includes('event:thinking')) {
+
+        const str: string = extractDataContent(data, 'event:thinking')
+        if (str) {
+          chatList.value[chatList.value.length - 1].thinking += str
+        }
+      } else {
+        const str: string = extractDataContent(data, 'event:content')
+
+        if (str) {
+          emits('sendTemplate', str);
+        }
+      }
+      // 更新UI显示流式数据
     },
-    // onError
     (error) => {
-      console.error('SSE 错误:', error);
+      console.error(error, 'error')
+      // 显示错误信息
     },
-    // onComplete
     () => {
-      console.log('SSE 完成');
+      chatList.value[chatList.value.length - 1].thinkingStatus = '1';
+
+      // 完成处理 查询是否存在附件，解析附件 || 分析简历
+      if (props.hasAttachment) {
+        // 解析模板
+        const msg: string = '正在解析附件内容，请稍后！'
+
+        chatList.value.push({
+          role: 'assistant',
+          content: msg,
+          thinkingStatus: '2',
+          isExpand: true,
+          thinking: ''
+        });
+
+        parseAttachment(msg);
+      } else {
+
+      }
     }
   );
 }
+
+// 解析简历附件
+const parseAttachment = (msg: string) => {
+  const params: ParseAttachmentInDto = {
+    resumeId: props.resumeUuid,
+    file: props.hasAttachment!,
+    assistantMessage: msg
+  }
+
+  // aiService.parseAttachmentStream(
+  //   params,
+  //   (data) => {
+  //     if (data.includes('event:thinking')) {
+  //
+  //       const str: string = extractDataContent(data, 'event:thinking')
+  //       if (str) {
+  //         chatList.value[chatList.value.length - 1].thinking += str
+  //       }
+  //     } else {
+  //       const str: string = extractDataContent(data, 'event:content')
+  //
+  //       if (str) {
+  //         emits('sendTemplate', str);
+  //       }
+  //     }
+  //   },
+  //   (error) => {
+  //     console.error(error, 'error')
+  //     // 显示错误信息
+  //   },
+  //   () => {
+  //     chatList.value[chatList.value.length - 1].thinkingStatus = '1';
+  //   }
+  // );
+}
+
+// 诊断简历
+const diagnoseResume = () => {
+
+}
+
+// 处理流式数据
+const extractDataContent = (data: string, type: string): string => {
+  const dataList: string[] = data.split(type)
+
+  const lastDataIndex: number = dataList[1].lastIndexOf('data:');
+  return lastDataIndex !== -1 ? dataList[1].substring(lastDataIndex + 5) : '';
+};
+
 
 onMounted(() => {
   queryChatList();
@@ -187,11 +275,16 @@ onMounted(() => {
   background: $white;
   border-radius: vw(2);
   box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
-
+  display: flex;
+  flex-direction: column;
 
   .chatting-records {
-    height: vh(800);
+    flex: 1;
     overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 0;
+    }
 
     .my-chat_box {
       display: flex;
@@ -248,7 +341,7 @@ onMounted(() => {
       width: 100%;
       padding: vh(10) vw(15);
       border-radius: vw(2);
-      border: 1px solid #C4A2FC;
+      border: 1px solid #AEBCFD;
       background: linear-gradient(92deg, rgba(196, 162, 252, 0.10) 3.76%, rgba(136, 233, 255, 0.10) 95.27%);
       position: relative;
 
@@ -288,25 +381,34 @@ onMounted(() => {
         overflow-y: auto;
         word-break: break-all;
         margin-top: vh(24);
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
       }
     }
   }
 
   .send-message {
     width: 100%;
-    height: vh(100);
     flex-shrink: 0;
     border-radius: vw(2);
     border: 1px solid $border-default;
-    padding: 0 vh(10) vh(15);
+    padding: vh(10) vw(15);
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     flex-direction: column;
     background: $form-bg-disabled;
+    gap: vh(12);
 
     :deep(.ivu-input) {
       padding: 0;
+      resize: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
 
     .save-btn {
@@ -318,13 +420,21 @@ onMounted(() => {
       justify-content: center;
       align-items: center;
       border: 0;
-      background: #EAECEE;
-      color: #C5C8CE;
-      font-size: vw(12);
       font-style: normal;
       font-weight: 500;
       line-height: vw(12);
       box-shadow: none;
+      background: linear-gradient(0deg, #FC8719 0%, #FC8719 100%), #E8EAEC;
+      color: $white;
+      font-size: vw(12);
+      cursor: pointer;
+      border-radius: vw(2);
+
+      &:disabled {
+        background: #EAECEE;
+        color: #C5C8CE;
+        cursor: no-drop;
+      }
     }
   }
 }

@@ -4,34 +4,39 @@ import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
 import ResumePreviewCard from "@/views/resume/components/ResumePreviewCard.vue";
 import {GetResumeDetailOutDto} from "@/api/resume/dto/GetResumeDetail.ts";
+import ResumeAiOptimize from "@/views/resume/components/ResumeAiOptimize.vue";
 
-const showMakePanel = ref(false);
-const resumeId = ref('ac29cb2832224e2898c50fea4379baa7');
+const showMakePanel = ref(true);
+const resumeId = ref('');
 const resumeName = ref('');
 const uploadedFile = ref<File | null>(null);
 
+const aaa = ref(true)
+
 const handleResumeCreated = (data: { resumeId: string; resumeName: string; uploadedFile: File | null }) => {
-    resumeId.value = data.resumeId;
-    resumeName.value = data.resumeName;
-    uploadedFile.value = data.uploadedFile;
-    showMakePanel.value = false;
+  resumeId.value = data.resumeId;
+  resumeName.value = data.resumeName;
+  uploadedFile.value = data.uploadedFile;
+  showMakePanel.value = false;
 };
 
 const exit = () => {
-    showMakePanel.value = true;
-    resumeName.value = '';
-    resumeId.value = '';
-    uploadedFile.value = null;
+  showMakePanel.value = true;
+  resumeName.value = '';
+  resumeId.value = '';
+  uploadedFile.value = null;
 }
 
 </script>
 
 <template>
-    <div class="resume-cont">
-        <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
-        <WriteResume v-else :resume-id="resumeId" :resume-name="resumeName" :uploaded-file="uploadedFile"
-                     @back-to-make="exit"/>
-    </div>
+  <div class="resume-cont">
+    <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
+    <WriteResume v-else :resume-id="resumeId" :resume-name="resumeName" :uploaded-file="uploadedFile"
+                 @back-to-make="exit"/>
+
+    <ResumeAiOptimize v-model:model-value="aaa" mode="1"/>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -39,57 +44,57 @@ const exit = () => {
 @use "@/assets/styles/compute.scss" as *;
 
 .resume-cont {
-    height: 100%;
-    padding: vh(40);
+  height: 100%;
+  padding: vh(40);
 }
 
 .test-drag-area {
-    position: fixed;
-    left: 300px;
-    top: 300px;
-    margin-top: 40px;
-    padding: 20px;
-    background: #f5f5f5;
-    border-radius: 8px;
+  position: fixed;
+  left: 300px;
+  top: 300px;
+  margin-top: 40px;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 8px;
 
-    h3 {
-        margin-bottom: 16px;
-    }
+  h3 {
+    margin-bottom: 16px;
+  }
 }
 
 .test-list {
-    width: vw(400);
-    max-height: vh(268);
-    padding: vw(10);
-    padding-bottom: 0;
-    background: $white;
-    overflow-y: auto;
-    -webkit-app-region: no-drag;
+  width: vw(400);
+  max-height: vh(268);
+  padding: vw(10);
+  padding-bottom: 0;
+  background: $white;
+  overflow-y: auto;
+  -webkit-app-region: no-drag;
 }
 
 .test-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    margin-bottom: 8px;
-    background: white;
-    border-radius: 4px;
-    cursor: move !important;
-    user-select: none;
-    -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: white;
+  border-radius: 4px;
+  cursor: move !important;
+  user-select: none;
+  -webkit-app-region: no-drag;
 
-    .drag-handle {
-        cursor: move !important;
-        font-size: 18px;
-        color: #999;
-    }
+  .drag-handle {
+    cursor: move !important;
+    font-size: 18px;
+    color: #999;
+  }
 }
 
 :deep(.sortable-fallback) {
-    opacity: 1 !important;
-    background: white !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    border-radius: 4px !important;
+  opacity: 1 !important;
+  background: white !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 4px !important;
 }
 </style>
