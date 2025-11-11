@@ -116,6 +116,13 @@
             </div>
         </Modal>
 
+        <!-- 下载弹窗 -->
+        <DownloadModal
+            v-model="showDownloadModal"
+            :resume-data="resumeData"
+            @download="handleDownloadConfirm"
+        />
+
         <!-- 重命名弹框 -->
         <Modal
             v-model="showRenameModal"
@@ -168,6 +175,7 @@ import {
 } from 'view-ui-plus';
 import ResumePreview from './ResumePreview.vue';
 import ResumeChat from './ResumeChat.vue';
+import DownloadModal from './DownloadModal.vue';
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {useCompRef} from "@/hooks/useComponent";
 import {ResumeService} from "@/service/ResumeService";
@@ -211,6 +219,7 @@ const showSaveSuccess = ref(false);
 const lottieContainer = ref<HTMLElement>();
 let lottieInstance: any = null;
 let hideTimer: number | null = null;
+const showDownloadModal = ref(false);
 
 const formData = reactive({
     resumeName: ''
@@ -396,8 +405,18 @@ const handleSave = debounce(async () => {
 }, 300);
 
 const handleDownload = debounce(() => {
-    Message.info('开始下载');
+    if (isEditing.value) {
+        Message.warning('当前处于编辑中,请保存后再操作!');
+        return;
+    }
+    showDownloadModal.value = true;
 }, 300);
+
+const handleDownloadConfirm = (config: { style: string; format: string; watermark: string }) => {
+    console.log('下载配置:', config);
+    Message.success('开始下载');
+    showDownloadModal.value = false;
+};
 
 const handleExit = debounce(async () => {
     if (isEditing.value) {

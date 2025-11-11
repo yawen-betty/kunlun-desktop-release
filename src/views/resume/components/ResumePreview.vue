@@ -900,6 +900,7 @@ const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
 };
 
 const handleFieldsApply = async (fields: any[]) => {
+    console.log(fields, 'fields')
     if (!basicInfoModule.value?.entries?.[0]) return;
     try {
         const params = new UpdateModuleFieldsInDto();
@@ -980,7 +981,7 @@ const isEntryStreaming = (entry: any) => {
 
 interface StreamItem {
     fieldUuid: string;
-    content: string;
+    fieldValue: string;
 }
 
 const streamWrite = async (items: StreamItem[], speed: number = 50) => {
@@ -988,7 +989,7 @@ const streamWrite = async (items: StreamItem[], speed: number = 50) => {
     try {
         for (const item of items) {
             currentStreamingField.value = item.fieldUuid;
-            const chars = item.content.split('');
+            const chars = item.fieldValue.split('');
             let currentText = '';
 
             for (const char of chars) {
