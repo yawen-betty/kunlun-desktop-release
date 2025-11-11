@@ -47,6 +47,11 @@
                     </div>
                     <div v-else></div>
                     <div class="right-actions">
+                        <!-- 保存成功状态 -->
+                        <div v-if="showSaveSuccess" class="save-success-status flex-column mr-20">
+                            <div ref="lottieContainer" class="lottie-icon"></div>
+                            <span class="success-text">保存成功</span>
+                        </div>
                         <Button v-if="showScoreAndMode" class="mode-btn" type="primary" @click="toggleMode">
                             <SvgIcon class="mr-5" color="#FFFFFF" name="icon-qiehuan" size="10"/>
                             <span>{{ currentMode === 'ai' ? '人工' : 'AI' }}撰写</span>
@@ -84,7 +89,7 @@
                 <!-- 聊天区 -->
                 <Transition name="slide-right">
                     <ResumeChat v-if="currentMode === 'ai'" :hasAttachment="uploadedFile" :resumeUuid="resumeId"
-                                @sendTemplate="sendTemplate" @update-data="handleUpdateData"/>
+                                @sendTemplate="sendTemplate"/>
                 </Transition>
             </div>
         </div>
@@ -145,7 +150,9 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, onMounted, reactive, ref, watch} from 'vue';
+import {computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch} from 'vue';
+import lottie from 'lottie-web';
+import successAnimation from '@/assets/json/对号.json';
 import {debounce} from '@/utiles/debounce';
 import {
     Button,
@@ -200,6 +207,10 @@ const scoreProblems = ref<string[]>([
     '问题七'
 ]);
 const resumeService = new ResumeService();
+const showSaveSuccess = ref(false);
+const lottieContainer = ref<HTMLElement>();
+let lottieInstance: any = null;
+let hideTimer: number | null = null;
 
 const formData = reactive({
     resumeName: ''
@@ -252,6 +263,30 @@ const fetchResumeDetail = async (resumeId: string) => {
     }
 };
 
+let autoSaveTimer: number | null = null;
+
+// 自动保存
+const startAutoSave = () => {
+    autoSaveTimer = window.setInterval(() => {
+        saveResume();
+    }, 120000);
+};
+
+const stopAutoSave = () => {
+    if (autoSaveTimer) {
+        clearInterval(autoSaveTimer);
+        autoSaveTimer = null;
+    }
+};
+
+// 快捷键保存
+const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        handleSave();
+    }
+};
+
 onMounted(async () => {
     if (!props.resumeId) {
         Message.error('简历ID不存在');
@@ -261,6 +296,13 @@ onMounted(async () => {
         resumeName.value = props.resumeName;
     }
     await fetchResumeDetail(props.resumeId);
+    startAutoSave();
+    window.addEventListener('keydown', handleKeyDown);
+});
+
+onBeforeUnmount(() => {
+    stopAutoSave();
+    window.removeEventListener('keydown', handleKeyDown);
 });
 
 // 确认重命名
@@ -287,22 +329,55 @@ const handleConfirm = async () => {
 };
 
 // 保存操作
-const handleSave = async () => {
+const saveResume = async () => {
     try {
         const params = new SaveResumeInDto();
         params.resumeId = resumeData.value.uuid || '';
         params.modules = resumeData.value.modules;
 
         await resumeService.saveResume(params);
-        Message.success('保存成功');
+        showSaveSuccessAnimation();
     } catch (error) {
         Message.error('保存失败');
         console.error(error);
     }
 };
 
-const handleDownload = () => {
-    Message.info('开始下载');
+const showSaveSuccessAnimation = async () => {
+    if (hideTimer) {
+        clearTimeout(hideTimer);
+        hideTimer = null;
+    }
+
+    if (lottieInstance) {
+        lottieInstance.destroy();
+        lottieInstance = null;
+    }
+
+    showSaveSuccess.value = true;
+    await nextTick();
+
+    if (lottieContainer.value) {
+        lottieContainer.value.innerHTML = '';
+        lottieInstance = lottie.loadAnimation({
+            container: lottieContainer.value,
+            renderer: 'svg',
+            loop: false,
+            autoplay: true,
+            animationData: successAnimation
+        });
+
+        lottieInstance.addEventListener('complete', () => {
+            hideTimer = window.setTimeout(() => {
+                showSaveSuccess.value = false;
+                if (lottieInstance) {
+                    lottieInstance.destroy();
+                    lottieInstance = null;
+                }
+                hideTimer = null;
+            }, 1000);
+        });
+    }
 };
 
 const isEditing = computed(() => {
@@ -311,14 +386,27 @@ const isEditing = computed(() => {
     return preview.isEditingBasicInfo || !!preview.editingEntryUuid || !!preview.editingModuleUuid;
 });
 
-const handleExit = () => {
+// 手动保存
+const handleSave = debounce(async () => {
     if (isEditing.value) {
         Message.warning('当前处于编辑中,请保存后再操作!');
         return;
     }
-    // TODO 需要判断当前简历是否创建，如果创建，需要调用保存接口
+    await saveResume();
+}, 300);
+
+const handleDownload = debounce(() => {
+    Message.info('开始下载');
+}, 300);
+
+const handleExit = debounce(async () => {
+    if (isEditing.value) {
+        Message.warning('当前处于编辑中,请保存后再操作!');
+        return;
+    }
+    await saveResume()
     emit('back-to-make');
-};
+}, 300);
 
 const toggleMode = debounce(() => {
     if (previewRef.value?.isStreaming) {
@@ -331,13 +419,6 @@ const toggleMode = debounce(() => {
         currentMode.value = 'ai';
     }
 }, 300);
-
-/**
- * 填充左侧模板 | 流式回填简历字段
- */
-const handleUpdateData = () => {
-
-}
 
 // 第一步传递的模板数据
 const sendTemplate = (templateData: string) => {
@@ -400,7 +481,7 @@ const handleUpdateModules = async () => {
 
 .left-header {
     display: flex;
-    align-items: end;
+    align-items: center;
     justify-content: space-between;
     padding-top: vh(11);
 }
@@ -500,12 +581,12 @@ const handleUpdateModules = async () => {
 .right-header {
     display: flex;
     justify-content: space-between;
-    align-items: end;
+    align-items: center;
     padding-top: vh(8);
 }
 
 .score-wrapper {
-    height: vh(27);
+    height: vh(24);
     gap: vw(5);
 }
 
@@ -513,7 +594,6 @@ const handleUpdateModules = async () => {
     font-family: 'PingFangSCBold', sans-serif;
     font-weight: 600;
     font-size: vw(16);
-    //line-height: vh(16);
     background: linear-gradient(90deg, #FFB32C 0%, #FC8919 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -653,8 +733,26 @@ const handleUpdateModules = async () => {
 .dropdown-item-content {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: vw(10);
     color: $font-dark;
     font-size: vw(14);
+}
+
+.save-success-status {
+    gap: vw(10);
+
+    .lottie-icon {
+        width: vw(15);
+        height: vw(15);
+    }
+
+    .success-text {
+        font-family: 'PingFangSCBold', sans-serif;
+        font-weight: 600;
+        font-size: vw(16);
+        line-height: vh(16);
+        color: $font-light;
+        white-space: nowrap;
+    }
 }
 </style>
