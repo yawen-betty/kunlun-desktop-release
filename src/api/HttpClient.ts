@@ -308,7 +308,8 @@ export default class HttpClient {
         onComplete?: () => void
     ): Promise<void> {
         const fullUrl = HttpClient.fixUrl(path);
-        const eventId = `sse-${Date.now()}-${Math.random()}`;
+        console.info('/////////////////',fullUrl);
+        const eventId = `sse-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
 
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
