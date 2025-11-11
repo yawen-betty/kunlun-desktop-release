@@ -13,8 +13,10 @@ interface HttpRequestParams {
     method: string;
     headers?: Record<string, string>;
     body?: any;
-    file_path?: string;
-    file_field_name?: string;
+    field_name?: string;
+    file_name?: string;
+    file_bytes?: number[];
+    extra_fields?: Record<string, string>;
 }
 
 // 定义响应接口
@@ -159,8 +161,8 @@ export default class HttpClient {
         path: Path,
         data?: any,
         options?: {
-            file_path?: string;
-            file_field_name?: string;
+            file?: File;
+            extraFields?: Record<string, string>;
         }
     ): Promise<T> {
         console.log('开始请求:', path);
@@ -189,19 +191,20 @@ export default class HttpClient {
             headers: defaultHeaders
         };
 
-        // 添加请求体 - 对于非GET请求
-        if (path.method !== 'GET' && data) {
-            // 对于POST请求，确保数据正确格式化为对象
+        // 添加请求体 - 判断是文件上传还是普通请求
+        if (options?.file) {
+            // 文件上传
+            const buffer = await options.file.arrayBuffer();
+            const fileBytes = Array.from(new Uint8Array(buffer));
+            requestParams.field_name = 'file';
+            requestParams.file_name = options.file.name;
+            requestParams.file_bytes = fileBytes;
+            requestParams.extra_fields = options.extraFields;
+            delete requestParams.headers?.['Content-Type'];
+        } else if (path.method !== 'GET' && data) {
+            // 普通 JSON 请求
             requestParams.body = data;
             console.log('请求体:', requestParams.body);
-        }
-
-        // 添加文件上传参数
-        if (options?.file_path && options?.file_field_name) {
-            requestParams.file_path = options.file_path;
-            requestParams.file_field_name = options.file_field_name;
-            // 文件上传时不需要设置Content-Type，由后端处理
-            delete requestParams.headers?.['Content-Type'];
         }
 
         return new Promise<T>(async (resolve, reject) => {
@@ -299,13 +302,18 @@ export default class HttpClient {
      * @param onMessage 接收到消息时的回调
      * @param onError 发生错误时的回调
      * @param onComplete 完成时的回调
+     * @param options formData请求参数
      */
     public async sseRequest(
         path: Path,
         data?: any,
         onMessage?: (data: string) => void,
         onError?: (error: any) => void,
-        onComplete?: () => void
+        onComplete?: () => void,
+        options?: {
+            file?: File;
+            extraFields?: Record<string, string>;
+        }
     ): Promise<void> {
         const fullUrl = HttpClient.fixUrl(path);
         const eventId = `sse-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
@@ -349,12 +357,26 @@ export default class HttpClient {
 
         // 发起 SSE 请求
         try {
-            await invoke('sse_request', {
+            const params: any = {
                 url: fullUrl,
                 headers,
-                body: data,
                 eventId
-            });
+            };
+
+            // 判断是文件上传还是 JSON
+            if (options?.file) {
+                const buffer = await options.file.arrayBuffer();
+                const fileBytes = Array.from(new Uint8Array(buffer));
+                params.fieldName = 'file';
+                params.fileName = options.file.name;
+                params.fileBytes = fileBytes;
+                params.extraFields = options.extraFields;
+                delete params.headers['Content-Type'];
+            } else {
+                params.body = data;
+            }
+
+            await invoke('sse_request', params);
         } catch (error) {
             console.error('SSE 请求失败:', error);
             unlistenMessage();

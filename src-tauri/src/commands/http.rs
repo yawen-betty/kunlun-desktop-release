@@ -8,7 +8,12 @@ pub struct HttpRequest {
     url: String,
     method: String,
     headers: Option<HashMap<String, String>>,
-    body: Option<serde_json::Value>
+    body: Option<serde_json::Value>,
+    // multipart 参数（可选）
+    field_name: Option<String>,
+    file_name: Option<String>,
+    file_bytes: Option<Vec<u8>>,
+    extra_fields: Option<HashMap<String, String>>
 }
 
 // 响应结构体
@@ -65,21 +70,35 @@ pub async fn http_request(req: HttpRequest) -> Result<HttpResponse, String> {
         }
     }
 
-    // 处理普通请求体
-    if let Some(body) = req.body {
+    // 处理请求体 - 判断是 multipart 还是 JSON
+    if let (Some(field), Some(name), Some(bytes)) = (req.field_name, req.file_name, req.file_bytes) {
+        // 使用 multipart/form-data 格式
+        let part = reqwest::multipart::Part::bytes(bytes)
+            .file_name(name)
+            .mime_str("application/json")
+            .map_err(|e| format!("创建文件部分失败: {}", e))?;
+
+        let mut form = reqwest::multipart::Form::new().part(field, part);
+
+        if let Some(fields) = req.extra_fields {
+            for (key, value) in fields {
+                form = form.text(key, value);
+            }
+        }
+
+        request_builder = request_builder.multipart(form);
+    } else if let Some(body) = req.body {
+        // 使用 JSON 格式
         match body {
-            // 对于对象类型，使用json方法
             serde_json::Value::Object(_) => {
                 match serde_json::to_string(&body) {
                     Ok(_) => request_builder = request_builder.json(&body),
                     Err(e) => return Err(format!("JSON序列化失败: {}", e)),
                 }
             },
-            // 对于字符串类型，使用body方法
             serde_json::Value::String(s) => {
                 request_builder = request_builder.body(s);
             },
-            // 对于其他类型，转换为JSON字符串
             _ => {
                 if let Ok(json_str) = serde_json::to_string(&body) {
                     request_builder = request_builder.body(json_str);

@@ -9,6 +9,10 @@ pub async fn sse_request(
     url: String,
     headers: Option<HashMap<String, String>>,
     body: Option<serde_json::Value>,
+    field_name: Option<String>,
+    file_name: Option<String>,
+    file_bytes: Option<Vec<u8>>,
+    extra_fields: Option<HashMap<String, String>>,
     event_id: String
 ) -> Result<(), String> {
     let client = reqwest::Client::builder()
@@ -25,8 +29,26 @@ pub async fn sse_request(
         }
     }
 
-    // 添加请求体
-    if let Some(b) = body {
+    // 添加请求体 - 判断是 multipart 还是 JSON
+    if let (Some(field), Some(name), Some(bytes)) = (field_name, file_name, file_bytes) {
+        // 使用 multipart/form-data 格式
+        let part = reqwest::multipart::Part::bytes(bytes)
+            .file_name(name)
+            .mime_str("application/json")
+            .map_err(|e| format!("创建文件部分失败: {}", e))?;
+
+        let mut form = reqwest::multipart::Form::new().part(field, part);
+
+        // 添加额外字段
+        if let Some(fields) = extra_fields {
+            for (key, value) in fields {
+                form = form.text(key, value);
+            }
+        }
+
+        request_builder = request_builder.multipart(form);
+    } else if let Some(b) = body {
+        // 使用 JSON 格式
         request_builder = request_builder.json(&b);
     }
 
