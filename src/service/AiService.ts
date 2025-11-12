@@ -69,9 +69,21 @@ export class AiService {
     /**
      * 诊断简历
      */
-    public async diagnose(params: DiagnoseInDto): Promise<Result<DiagnoseOutDto>> {
-        return await this.http.request<Result<DiagnoseOutDto>>(AiPaths.diagnose, params);
+    public diagnoseStream(
+        params: DiagnoseInDto,
+        onMessage: (data: any) => void,
+        onError: (error: any) => void,
+        onComplete: () => void
+    ): void {
+        this.http.sseRequest(
+            AiPaths.diagnose,
+            params,
+            onMessage,
+            onError,
+            onComplete
+        );
     }
+
 
     /**
      * 撰写简历内容

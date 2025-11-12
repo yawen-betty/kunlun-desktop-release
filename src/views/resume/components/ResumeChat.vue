@@ -64,9 +64,10 @@ import SvgIcon from "@/components/svgIcon/index.vue";
 import {MessagesBean} from "@/api/ai/dto/bean/MessagesBean.ts";
 import {QueryConversationInDto} from "@/api/ai/dto/QueryConversation.ts";
 import {AiService} from "@/service/AiService.ts";
-import {SaveConversationInDto} from "@/api/ai/dto/SaveConversation.ts";
 import {GenerateTemplateInDto} from "@/api/ai/dto/GenerateTemplate.ts";
 import {ParseAttachmentInDto} from "@/api/ai/dto/ParseAttachment.ts";
+import {DiagnoseInDto} from "@/api/ai/dto/Diagnose.ts";
+import {extractDataContent} from "@/utiles/processing.ts";
 
 type TextType = {
   [key: string]: string;
@@ -74,7 +75,7 @@ type TextType = {
 
 class CustomMessagesBean extends MessagesBean {
   // 是否展开收起深度思考
-  isExpand?: boolean = true;
+  isExpand?: boolean = false;
 }
 
 const aiService = new AiService();
@@ -122,39 +123,27 @@ const queryChatList = () => {
 
   aiService.queryConversation(data).then((res) => {
     chatList.value = res.data.messages!;
-    // if (res.data.messages?.length === 0) {
-    //   const content: string = '请帮我制作一份求职简历！'
-    //   chatList.value.push({
-    //     role: 'user',
-    //     content,
-    //   })
-    //   saveConversation('1', 'user', content)
+    if (res.data.messages?.length === 0) {
+      const content: string = '请帮我制作一份求职简历！'
+      chatList.value.push({
+        role: 'user',
+        content,
+        isExpand: true,
+      })
 
-    // ai回复 （生成模板）
-    // setTimeout(() => {
-    const msg: string = '正在帮您生成简历模板，请稍后！'
-    chatList.value.push({
-      role: 'assistant',
-      content: msg,
-      thinkingStatus: '2',
-      isExpand: true,
-      thinking: ''
-    });
-    generateTemplate(msg)
-    // }, 500)
-    // }
+      // ai回复 （生成模板）
+      const msg: string = '正在帮您生成简历模板，请稍后！'
+      chatList.value.push({
+        role: 'assistant',
+        content: msg,
+        thinkingStatus: '2',
+        isExpand: true,
+        thinking: ''
+      });
+      generateTemplate(msg)
+    }
+
   })
-}
-
-// 保存聊天记录
-const saveConversation = (type: string, role: string, content: string) => {
-  const data: SaveConversationInDto = {
-    resumeUuid: props.resumeUuid,
-    type,
-    role,
-    content
-  }
-  aiService.saveConversation(data)
 }
 
 // 生成模板
@@ -188,7 +177,7 @@ const generateTemplate = (msg: string) => {
       // 显示错误信息
     },
     () => {
-      chatList.value[chatList.value.length - 1].thinkingStatus = '1';
+      setThinkState();
 
       // 完成处理 查询是否存在附件，解析附件 || 分析简历
       if (props.hasAttachment) {
@@ -205,7 +194,7 @@ const generateTemplate = (msg: string) => {
 
         parseAttachment(msg);
       } else {
-
+        diagnoseResume()
       }
     }
   );
@@ -213,52 +202,95 @@ const generateTemplate = (msg: string) => {
 
 // 解析简历附件
 const parseAttachment = (msg: string) => {
-  const params: ParseAttachmentInDto = {
+  const params = {
     resumeId: props.resumeUuid,
-    file: props.hasAttachment!,
     assistantMessage: msg
   }
 
-  // aiService.parseAttachmentStream(
-  //   params,
-  //   (data) => {
-  //     if (data.includes('event:thinking')) {
-  //
-  //       const str: string = extractDataContent(data, 'event:thinking')
-  //       if (str) {
-  //         chatList.value[chatList.value.length - 1].thinking += str
-  //       }
-  //     } else {
-  //       const str: string = extractDataContent(data, 'event:content')
-  //
-  //       if (str) {
-  //         emits('sendTemplate', str);
-  //       }
-  //     }
-  //   },
-  //   (error) => {
-  //     console.error(error, 'error')
-  //     // 显示错误信息
-  //   },
-  //   () => {
-  //     chatList.value[chatList.value.length - 1].thinkingStatus = '1';
-  //   }
-  // );
+  aiService.parseAttachmentStream(
+    params,
+    props.hasAttachment!,
+    (data) => {
+
+      if (data.includes('event:thinking')) {
+
+        const str: string = extractDataContent(data, 'event:thinking')
+        if (str) {
+          chatList.value[chatList.value.length - 1].thinking += str
+        }
+      } else {
+        const str: string = extractDataContent(data, 'event:content')
+
+        if (str) {
+          emits('sendTemplate', str);
+        }
+      }
+    },
+    (error) => {
+      console.error(error, 'error')
+      // 显示错误信息
+    },
+    () => {
+      setThinkState();
+      diagnoseResume();
+    }
+  );
 }
 
 // 诊断简历
-const diagnoseResume = () => {
+const diagnoseResume = (message?: string) => {
+  // 解析模板
+  const msg: string = message || '接下来我会对简历进行诊断并询问一些问题。'
 
+  chatList.value.push({
+    role: 'assistant',
+    content: msg,
+    thinkingStatus: '2',
+    isExpand: true,
+    thinking: ''
+  });
+
+  const params: DiagnoseInDto = {
+    resumeId: props.resumeUuid,
+    assistantMessage: msg
+  }
+
+  aiService.diagnoseStream(
+    params,
+    (data) => {
+
+      console.log(data, '1111')
+      if (data.includes('event:thinking')) {
+
+        const str: string = extractDataContent(data, 'event:thinking')
+        if (str) {
+          chatList.value[chatList.value.length - 1].thinking += str
+        }
+      } else {
+        const str: string = extractDataContent(data, 'event:content')
+
+        if (str) {
+          emits('sendTemplate', str);
+        }
+      }
+    },
+    (error) => {
+      console.error(error, 'error')
+      // 显示错误信息
+    },
+    () => {
+      setThinkState();
+    }
+  );
 }
 
-// 处理流式数据
-const extractDataContent = (data: string, type: string): string => {
-  const dataList: string[] = data.split(type)
+// 关闭深度思考
+const setThinkState = () => {
+  const lastData = chatList.value[chatList.value.length - 1]
 
-  const lastDataIndex: number = dataList[1].lastIndexOf('data:');
-  return lastDataIndex !== -1 ? dataList[1].substring(lastDataIndex + 5) : '';
-};
-
+  lastData.thinkingStatus = '1';
+  lastData.isExpand = false;
+}
 
 onMounted(() => {
   queryChatList();

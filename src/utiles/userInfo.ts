@@ -17,7 +17,6 @@ export class UserInfo {
         UserInfo.info.userId = '';
         UserInfo.info.avatar = '';
         await auth.saveToken('');
-        console.log(router, 'routerrouter')
         await router.replace('/login');
     }
 }

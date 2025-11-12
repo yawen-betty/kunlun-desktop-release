@@ -22,30 +22,34 @@
           show-word-limit
           :autosize="{ minRows: 4, maxRows: 4 }"
           placeholder="请输入你的要求（非必填）"
+          :disabled="['2','3'].includes(state)"
         ></Input>
 
         <div class="ai-content">
           <div class="ai-content-think mt-20">
-            <div class="think-title">
+            <div class="think-title" v-if="['2','3'].includes(state)">
               <img src="@/assets/images/deep-logo.gif" class="think-title-icon"/>
-              <div class="think-text">深度思考中...</div>
+              <div class="think-text">{{ state === '2' ? '深度思考中...' : '生成中...' }}</div>
             </div>
 
-            <div class="think-content">{{ thinkContent }}</div>
+            <div v-else-if="state === '4'" class="hint">内容由AI生成，仅供参考</div>
+
+            <div class="think-content" v-if="state === '2'">{{ thinkContent }}</div>
+            <div class="content" v-if="['3','4'].includes(state)">{{ content }}</div>
           </div>
         </div>
       </div>
 
       <div class="optimize-footer">
-        <!--        <div>-->
-        <!--          <Button class="mr-10 cancel btn" @click="handleCancel">取消</Button>-->
-        <!--          <Button type="primary" class="submit btn">确定</Button>-->
-        <!--        </div>-->
-
         <button @click="handleSubmit" v-if="state === '1'" class="start-btn pointer">
           <SvgIcon name="icon-ai-xing" size="14" class="icon-ai" color="#fff"></SvgIcon>
           开始生成
         </button>
+
+        <div v-if="state === '4'" class="modal-footer">
+          <button class="mr-10 cancel btn" @click="handleSubmit">重新生成</button>
+          <button class="submit btn" @click="handleEmitData">使用此内容</button>
+        </div>
       </div>
     </div>
   </Modal>
@@ -58,6 +62,9 @@ import {Button, Input, Message, Modal} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {aiOptimize, enumEcho} from "@/enums/enumDict.ts";
 import {message} from "@/utiles/Message.ts";
+import {PolishInDto} from "@/api/ai/dto/Polish.ts";
+import {extractDataContent} from "@/utiles/processing.ts";
+import {AiService} from "@/service/AiService.ts";
 
 interface Props {
   modelValue: boolean; //弹窗状态
@@ -74,6 +81,8 @@ interface Emits {
   (e: 'submit', value: string): void
 }
 
+const aiService = new AiService();
+
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
@@ -83,15 +92,71 @@ const requirement = ref<string>('');
 const state = ref<string>('1');
 // 深度思考内容
 const thinkContent = ref<string>('');
+// 生成内容
+const content = ref<string>('');
+
 
 const handleCancel = () => {
-  emit('update:modelValue', false)
-  requirement.value = ''
+  emit('update:modelValue', false);
+  thinkContent.value = '';
+  content.value = '';
+  requirement.value = '';
+  state.value = '1'
 }
 
 // 开始ai 生成
 const handleSubmit = () => {
-  if (requirement.value.length < 20) return message.error(Message, '请至少填写20个字！')
+  // if (requirement.value.length < 20) return message.warning(Message, '请至少填写20个字！');
+
+  const params: PolishInDto = {
+    // resumeId: props.resumeId,
+    // fieldName: props.fieldName,
+    // maxLength: props.maxLength,
+    // mode: props.mode,
+    // text: props.text,
+    // requirement: requirement.value
+
+    "resumeId": "4f11769e52304077bea5de854ecc4305",
+    "text": "精通java \n 爱好篮球",
+    "fieldName": "项目经历",
+    "maxLength": 200,
+    "mode": "1",
+    "requirement": "帮我写好看一些"
+  }
+
+  aiService.polishStream(
+    params,
+    (data: string) => {
+
+      console.log(data)
+      // if (data.includes('event:thinking')) {
+      //
+      //   const str: string = extractDataContent(data, 'event:thinking')
+      //   if (str) {
+      //     // chatList.value[chatList.value.length - 1].thinking += str
+      //   }
+      // } else {
+      //   const str: string = extractDataContent(data, 'event:content')
+      //
+      //   if (str) {
+      //     // emits('sendTemplate', str);
+      //   }
+      // }
+      // 更新UI显示流式数据
+    },
+    (error: any) => {
+      console.error(error, 'error')
+      // 显示错误信息
+    },
+    () => {
+
+    }
+  )
+}
+
+// 抛出数据
+const handleEmitData = () => {
+  emit('submit', content.value);
 }
 </script>
 
@@ -133,6 +198,8 @@ const handleSubmit = () => {
     .optimize-content {
       flex: 1;
       margin-top: vw(17);
+      display: flex;
+      flex-direction: column;
 
       .ivu-input {
         height: vh(80);
@@ -149,12 +216,7 @@ const handleSubmit = () => {
       }
 
       .ai-content {
-        height: calc(100% - 110px);
-        overflow: auto;
-
-        &::-webkit-scrollbar {
-          display: none;
-        }
+        flex: 1;
 
         .ai-content-think {
           .think-title {
@@ -180,13 +242,38 @@ const handleSubmit = () => {
             }
           }
 
+          .hint {
+            color: $font-light;
+            font-size: vw(14);
+            font-style: normal;
+            font-weight: 400;
+            line-height: vw(22);
+          }
+
           .think-content {
-            margin-top: 13px;
-            padding: 10px 15px;
-            border-radius: 2px;
+            overflow-y: auto;
+            margin-top: vh(13);
+            padding: vh(10) vw(15);
+            border-radius: vw(2);
             border: 1px solid #C4A2FC;
             background: linear-gradient(92deg, rgba(196, 162, 252, 0.10) 3.76%, rgba(136, 233, 255, 0.10) 95.27%);
-            min-height: 50px;
+            max-height: vh(360);
+            word-break: break-all;
+
+            &::-webkit-scrollbar {
+              display: none;
+            }
+          }
+
+          .content {
+            height: vh(330);
+            word-break: break-all;
+            overflow-y: auto;
+            margin-top: vh(13);
+
+            &::-webkit-scrollbar {
+              display: none;
+            }
           }
         }
       }
@@ -213,6 +300,39 @@ const handleSubmit = () => {
         font-weight: 600;
         line-height: vw(12);
         border: 0;
+      }
+
+      .modal-footer {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+
+        .btn {
+          width: vw(100);
+          height: vh(32);
+          color: $white;
+          font-size: vw(12);
+          font-style: normal;
+          font-weight: 600;
+          border-radius: vw(2);
+          border: 0;
+          outline: none;
+          box-shadow: none;
+          text-align: center;
+          line-height: vw(30);
+          cursor: pointer;
+
+          &.cancel {
+            border: 1px solid #FC8719;
+            color: #FC8719;
+            background: $white;
+          }
+
+          &.submit {
+            background: #FC8719;
+            color: $white;
+          }
+        }
       }
     }
   }
