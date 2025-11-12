@@ -25,6 +25,11 @@ export class SaveConversationInDto extends BaseInDto {
      * AI深度思考内容(仅role=assistant时有值)
      */
     thinking?: string;
+
+    /**
+     * 深度思考完成状态: 0-未完成, 1-已完成, 2-思考中
+     */
+    thinkingStatus?: string;
 }
 
 export class SaveConversationOutDto extends BaseOutDto {

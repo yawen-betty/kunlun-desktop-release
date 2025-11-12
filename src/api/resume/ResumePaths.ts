@@ -11,6 +11,15 @@ export class ResumePaths {
     }
 
     /**
+     * 获取我的简历列表
+     */
+    static getMyResumeList: Path = {
+        url: '/my-list',
+        method: 'GET',
+        prefix: 'resumes'
+    }
+
+    /**
      * 保存简历内容
      */
     static saveResume: Path = {
@@ -88,6 +97,24 @@ export class ResumePaths {
     static updateModuleEntries: Path = {
         url: '/{resumeId}/modules/{moduleId}/entries',
         method: 'PUT',
+        prefix: 'resumes'
+    }
+
+    /**
+     * 删除简历
+     */
+    static deleteResume: Path = {
+        url: '/{resumeId}',
+        method: 'DELETE',
+        prefix: 'resumes'
+    }
+
+    /**
+     * 复制简历
+     */
+    static copyResume: Path = {
+        url: '/{resumeId}/copy',
+        method: 'POST',
         prefix: 'resumes'
     }
 }

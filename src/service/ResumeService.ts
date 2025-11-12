@@ -2,6 +2,7 @@ import {ResumePaths} from '@/api/resume/ResumePaths';
 import HttpClient from '@/api/HttpClient';
 import {inject} from 'vue';
 import {InitResumeInDto, InitResumeOutDto} from '@/api/resume/dto/InitResume';
+import {GetMyResumeListInDto, GetMyResumeListOutDto} from '@/api/resume/dto/GetMyResumeList';
 import {SaveResumeInDto, SaveResumeOutDto} from '@/api/resume/dto/SaveResume';
 import {RenameResumeInDto, RenameResumeOutDto} from '@/api/resume/dto/RenameResume';
 import {GetResumeDetailInDto, GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
@@ -11,6 +12,8 @@ import {GetSystemModulesInDto, GetSystemModulesOutDto} from '@/api/resume/dto/Ge
 import {GetModuleFieldsInDto, GetModuleFieldsOutDto} from '@/api/resume/dto/GetModuleFields';
 import {UpdateModuleFieldsInDto, UpdateModuleFieldsOutDto} from '@/api/resume/dto/UpdateModuleFields';
 import {UpdateModuleEntriesInDto, UpdateModuleEntriesOutDto} from '@/api/resume/dto/UpdateModuleEntries';
+import {DeleteResumeInDto, DeleteResumeOutDto} from '@/api/resume/dto/DeleteResume';
+import {CopyResumeInDto, CopyResumeOutDto} from '@/api/resume/dto/CopyResume';
 import {Result} from '@/api/BaseDto';
 import {EmptyOutDto} from '@/api/HttpClient';
 
@@ -34,6 +37,13 @@ export class ResumeService {
      */
     public async initResume(params: InitResumeInDto): Promise<Result<InitResumeOutDto>> {
         return await this.http.request<Result<InitResumeOutDto>>(ResumePaths.initResume, params);
+    }
+
+    /**
+     * 获取我的简历列表
+     */
+    public async getMyResumeList(params: GetMyResumeListInDto): Promise<Result<GetMyResumeListOutDto>> {
+        return await this.http.request<Result<GetMyResumeListOutDto>>(ResumePaths.getMyResumeList, params);
     }
 
     /**
@@ -129,5 +139,27 @@ export class ResumeService {
             url: ResumePaths.updateModuleEntries.url.replace('{resumeId}', params.resumeId).replace('{moduleId}', params.moduleId)
         };
         return await this.http.request<EmptyOutDto>(path, params);
+    }
+
+    /**
+     * 删除简历
+     */
+    public async deleteResume(params: DeleteResumeInDto): Promise<EmptyOutDto> {
+        const path = {
+            ...ResumePaths.deleteResume,
+            url: ResumePaths.deleteResume.url.replace('{resumeId}', params.resumeId)
+        };
+        return await this.http.request<EmptyOutDto>(path, params);
+    }
+
+    /**
+     * 复制简历
+     */
+    public async copyResume(params: CopyResumeInDto): Promise<Result<CopyResumeOutDto>> {
+        const path = {
+            ...ResumePaths.copyResume,
+            url: ResumePaths.copyResume.url.replace('{resumeId}', params.resumeId)
+        };
+        return await this.http.request<Result<CopyResumeOutDto>>(path, params);
     }
 }
