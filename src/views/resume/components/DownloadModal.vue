@@ -18,8 +18,10 @@
             <div class="modal-body">
                 <!-- 左侧预览区 -->
                 <div class="preview-section">
-                    <SimpleResumePreview v-if="selectedStyle === 'simple'" :resume-data="resumeData"/>
-                    <BusinessResumePreview v-else :resume-data="resumeData"/>
+                    <SimpleResumePreview v-if="selectedStyle === 'simple'" :resume-data="resumeData"
+                                         :watermark="showWatermark ? watermarkContent : ''"/>
+                    <BusinessResumePreview v-else :resume-data="resumeData"
+                                           :watermark="showWatermark ? watermarkContent : ''"/>
                 </div>
 
                 <!-- 右侧配置区 -->
@@ -65,7 +67,8 @@
                     <!-- 水印内容 -->
                     <div class="config-group">
                         <div class="group-label">水印内容</div>
-                        <Input v-model="watermarkContent" class="watermark-input" placeholder="请输入水印内容"/>
+                        <Input v-model="watermarkContent" class="watermark-input" placeholder="请输入水印内容"
+                               @on-blur="handleWatermarkBlur"/>
                     </div>
 
                     <!-- 下载按钮 -->
@@ -82,12 +85,14 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, watch} from 'vue';
-import {Button, Input, Modal} from 'view-ui-plus';
+import {computed, ref} from 'vue';
+import {Button, Input, Modal, Message} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import SimpleResumePreview from './SimpleResumePreview.vue';
 import BusinessResumePreview from './BusinessResumePreview.vue';
 import type {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const props = defineProps<{
     modelValue: boolean;
@@ -106,27 +111,64 @@ const visible = computed({
 
 const selectedStyle = ref<'simple' | 'business'>('simple');
 const selectedFormat = ref<'pdf' | 'jpg'>('pdf');
-const watermarkContent = ref('聘小芳');
+const watermarkContent = ref('');
+const showWatermark = ref(false);
 
 const handleClose = () => {
     visible.value = false;
+    watermarkContent.value = '';
+    showWatermark.value = false;
 };
 
-const handleDownload = () => {
-    emit('download', {
-        style: selectedStyle.value,
-        format: selectedFormat.value,
-        watermark: watermarkContent.value
-    });
+const handleWatermarkBlur = () => {
+    showWatermark.value = !!watermarkContent.value.trim();
 };
 
-watch(() => props.modelValue, (val) => {
-    if (val) {
-        selectedStyle.value = 'simple';
-        selectedFormat.value = 'pdf';
-        watermarkContent.value = '聘小芳';
+const handleDownload = async () => {
+    const previewEl = document.querySelector('.preview-section .content-wrapper') as HTMLElement;
+    if (!previewEl) return;
+
+    try {
+        const canvas = await html2canvas(previewEl, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            logging: false,
+            useCORS: true
+        });
+
+        const ext = selectedFormat.value;
+        const fileName = `简历_${Date.now()}.${ext}`;
+
+        let blob: Blob;
+        if (ext === 'jpg') {
+            blob = await new Promise(resolve => canvas.toBlob(resolve as any, 'image/jpeg', 0.95));
+        } else {
+            const imgWidth = 210;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const pdf = new jsPDF('p', 'mm', [imgWidth, imgHeight]);
+            pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, imgWidth, imgHeight);
+            blob = pdf.output('blob');
+        }
+
+        const handle = await (window as any).showSaveFilePicker({
+            suggestedName: fileName,
+            types: [{
+                description: ext.toUpperCase(),
+                accept: {[ext === 'jpg' ? 'image/jpeg' : 'application/pdf']: [`.${ext}`]}
+            }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+
+        Message.success('下载成功');
+    } catch (error) {
+        if ((error as any).name !== 'AbortError') {
+            Message.error('下载失败');
+        }
     }
-});
+};
 </script>
 
 <style lang="scss">
@@ -268,6 +310,7 @@ watch(() => props.modelValue, (val) => {
     background: $theme-color;
     border: none;
     border-radius: vw(2);
+    box-shadow: none;
 
     :deep(> span) {
         display: flex;
