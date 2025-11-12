@@ -108,6 +108,10 @@ const handleCancel = () => {
 const handleSubmit = () => {
   if (requirement.value.length < 20) return message.warning(Message, '请至少填写20个字！');
 
+  thinkContent.value = '';
+  content.value = '';
+  state.value = '1'
+
   const params: PolishInDto = {
     resumeId: props.resumeId,
     fieldName: props.fieldName,

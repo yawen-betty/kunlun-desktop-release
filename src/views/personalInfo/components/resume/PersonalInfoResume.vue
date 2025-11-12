@@ -1,21 +1,20 @@
 <template>
   <div class="resume-container">
-    <div class="resume-card" v-for="(resume, index) in resumeList" :key="index">
+    <div class="resume-card" v-for="resume in resumeList" :key="resume.uuid">
       <div class="resume-content">
-        <!-- 预留简历内容区域 -->
+        <ResumePreviewCard :resume-data="resume" :scrollable="false" size="small"/>
       </div>
       <div class="resume-info mt-15">
         <div class="resume-name">
           <span>{{ resume.name }}</span>
 
-
-          <Poptip placement="bottom-end">
+          <Poptip placement="bottom-end" v-model="isShow">
             <SvgIcon name="icon-gengduo" size="18" color="#9499A4" class="pointer"/>
 
             <template #content>
               <div class="select-list">
                 <div :class="['select-item', 'pointer',info.key === 'delete' && 'select-delete']"
-                     v-for="info in selectList" :key="info.key" @click="handleClick(resume,info.key)">
+                     v-for="info in selectList" :key="info.key" @click.stop="handleClick(resume,info.key)">
                   <SvgIcon :name="info.icon" size="12" color="#9499A5" class="select-icon mr-10"/>
                   <span class="select-name">{{ info.name }}</span>
                 </div>
@@ -23,7 +22,7 @@
             </template>
           </Poptip>
         </div>
-        <div class="resume-time mt-10">{{ resume.time }}</div>
+        <div class="resume-time mt-10">{{ parseDate(resume.createTime!, '{y}-{m}-{d} {h}:{i}') }}</div>
       </div>
     </div>
   </div>
@@ -70,15 +69,15 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {Button, Icon, Modal} from "view-ui-plus";
-
-interface ResumeItem {
-  name: string;
-  time: string;
-  id?: string
-}
+import ResumePreviewCard from "@/views/resume/components/ResumePreviewCard.vue";
+import {ResumeService} from "@/service/ResumeService.ts";
+import {MyResumeBean} from "@/api/resume/dto/bean/MyResumeBean.ts";
+import {GetModelAccountInDto} from "@/api/user/dto/GetModelAccount.ts";
+import {GetMyResumeListInDto} from "@/api/resume/dto/GetMyResumeList.ts";
+import {parseDate} from "@/utiles/DateUtils.ts";
 
 interface SelectItem {
   name: string;
@@ -86,18 +85,17 @@ interface SelectItem {
   key: string
 }
 
+const resumeService = new ResumeService();
+
 // 预览弹窗状态
 const previewVisible = ref<boolean>(false);
 // 预览简历id
 const previewResumeId = ref<string>('');
 // 删除弹窗状态
 const deleteVisible = ref<boolean>(false);
+const isShow = ref<boolean>(false);
 
-const resumeList = ref<ResumeItem[]>([
-  {name: '简历模板1', time: '2024-01-15'},
-  {name: '简历模板2', time: '2024-01-10'},
-  {name: '简历模板3', time: '2024-01-05'}
-]);
+const resumeList = ref<MyResumeBean[]>([]);
 
 const selectList = ref<SelectItem[]>([
   {name: '预览', icon: 'icon-yulan', key: 'preview'},
@@ -108,7 +106,9 @@ const selectList = ref<SelectItem[]>([
 ])
 
 // 处理点击事件
-const handleClick = (resume: ResumeItem, key: string) => {
+const handleClick = (resume: MyResumeBean, key: string) => {
+
+  isShow.value = false
   switch (key) {
     case 'preview':
       previewResumeId.value = resume.id!
@@ -137,6 +137,19 @@ const handleDeleteResume = () => {
 
 }
 
+// 获取简历列表
+const getResumeList = () => {
+  resumeService.getMyResumeList(new GetMyResumeListInDto()).then(res => {
+    if (res.code === 200) {
+      resumeList.value = res.data.resumes!;
+    }
+  })
+}
+
+onMounted(() => {
+  getResumeList();
+})
+
 </script>
 
 <style scoped lang="scss">
@@ -150,7 +163,7 @@ const handleDeleteResume = () => {
 }
 
 .resume-card {
-  flex: 1;
+  width: vw(530);
   display: flex;
   flex-direction: column;
 }
@@ -161,6 +174,7 @@ const handleDeleteResume = () => {
   background-color: $white;
   box-shadow: 0 0 6.625px 0 rgba(0, 0, 0, 0.10);
   border-radius: vw(2);
+  padding: vh(15) vw(20);
 }
 
 .resume-info {
