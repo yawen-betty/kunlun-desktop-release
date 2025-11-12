@@ -1,80 +1,120 @@
 <template>
-    <div class="simple-resume-preview">
-        <!-- 头部个人信息 -->
-        <div class="header-section">
-            <div class="header-left">
-                <div class="name">{{ getFieldValue('basic_info', 'name') || '未命名' }}</div>
-                <div class="job-position">{{ getFieldValue('basic_info', 'job_position') || '求职岗位' }}</div>
-                <div class="contact-info">手机号码：{{ getFieldValue('basic_info', 'mobile') }}</div>
-                <div class="contact-info">个人邮箱：{{ getFieldValue('basic_info', 'email') }}</div>
+    <div ref="resumeRef" class="simple-resume-preview">
+        <div class="content-wrapper">
+            <div v-if="watermark && watermarkCount" :style="{ height: watermarkHeight + 'px' }"
+                 class="watermark-container">
+                <div v-for="i in watermarkCount" :key="i" class="watermark-item">{{ watermark }}</div>
             </div>
-            <div v-if="getFieldValue('basic_info', 'personal_image')" class="header-right">
-                <img :src="getFieldValue('basic_info', 'personal_image')" alt="个人照片" class="avatar"/>
-            </div>
-        </div>
 
-        <!-- 基本信息 -->
-        <div v-if="getModule('basic_info')" class="module-section">
-            <div class="module-header">
-                <div class="module-title">基本信息</div>
-                <div class="divider"></div>
-            </div>
-            <div class="basic-info-grid">
-                <div v-for="field in getBasicInfoFields()" :key="field.fieldKey" class="info-item">
-                    {{ field.fieldName }}：{{ field.fieldValue }}
+            <!-- 头部个人信息 -->
+            <div class="header-section">
+                <div class="header-left">
+                    <div class="name">{{ getFieldValue('basic_info', 'name') || '未命名' }}</div>
+                    <div class="job-position">{{ getFieldValue('basic_info', 'job_position') || '求职岗位' }}</div>
+                    <div class="contact-info">手机号码：{{ getFieldValue('basic_info', 'mobile') }}</div>
+                    <div class="contact-info">个人邮箱：{{ getFieldValue('basic_info', 'email') }}</div>
+                </div>
+                <div v-if="getFieldValue('basic_info', 'personal_image')" class="header-right">
+                    <img :src="getFieldValue('basic_info', 'personal_image')" alt="个人照片" class="avatar" crossorigin="anonymous"/>
                 </div>
             </div>
-        </div>
 
-        <!-- 动态渲染模块 -->
-        <template v-for="module in sortedModules" :key="module.uuid">
-            <!-- 经历类模块 -->
-            <div v-if="isExperienceModule(module.moduleKey)" class="module-section">
+            <!-- 基本信息 -->
+            <div v-if="getModule('basic_info')" class="module-section">
                 <div class="module-header">
-                    <div class="module-title">{{ module.moduleName }}</div>
+                    <div class="module-title">基本信息</div>
                     <div class="divider"></div>
                 </div>
-                <div v-for="entry in module.entries" :key="entry.entryUuid" class="entry-item">
-                    <div class="entry-header">
-                        <div class="entry-title">
-                            <template v-for="(part, index) in getEntryTitleParts(entry)" :key="index">
-                                <span v-if="index > 0"> ｜ </span>
-                                <span :class="{ 'placeholder': !part.value }">{{ part.value || part.name }}</span>
-                            </template>
-                        </div>
-                        <div :class="{ 'placeholder': !getEntryFieldValue(entry, 'end_time') }" class="entry-time">
-                            {{ getEntryFieldValue(entry, 'end_time') || getEntryFieldName(entry, 'end_time') }}
-                        </div>
-                    </div>
-                    <div :class="{ 'placeholder': !getEntryDescription(entry) }" class="entry-content">
-                        {{ getEntryDescription(entry) || getEntryDescriptionFieldName(entry) }}
+                <div class="basic-info-grid">
+                    <div v-for="field in getBasicInfoFields()" :key="field.fieldKey" class="info-item">
+                        {{ field.fieldName }}：{{ field.fieldValue }}
                     </div>
                 </div>
             </div>
 
-            <!-- 文本类模块 -->
-            <div v-else-if="module.moduleKey !== 'default_info'" class="module-section">
-                <div class="module-header">
-                    <div class="module-title">{{ module.moduleName }}</div>
-                    <div class="divider"></div>
+            <!-- 动态渲染模块 -->
+            <template v-for="module in sortedModules" :key="module.uuid">
+                <!-- 经历类模块 -->
+                <div v-if="isExperienceModule(module.moduleKey)" class="module-section">
+                    <div class="module-header">
+                        <div class="module-title">{{ module.moduleName }}</div>
+                        <div class="divider"></div>
+                    </div>
+                    <div v-for="entry in module.entries" :key="entry.entryUuid" class="entry-item">
+                        <div class="entry-header">
+                            <div class="entry-title">
+                                <template v-for="(part, index) in getEntryTitleParts(entry)" :key="index">
+                                    <span v-if="index > 0"> ｜ </span>
+                                    <span :class="{ 'placeholder': !part.value }">{{ part.value || part.name }}</span>
+                                </template>
+                            </div>
+                            <div :class="{ 'placeholder': !getEntryFieldValue(entry, 'end_time') }" class="entry-time">
+                                {{ getEntryFieldValue(entry, 'end_time') || getEntryFieldName(entry, 'end_time') }}
+                            </div>
+                        </div>
+                        <div :class="{ 'placeholder': !getEntryDescription(entry) }" class="entry-content">
+                            {{ getEntryDescription(entry) || getEntryDescriptionFieldName(entry) }}
+                        </div>
+                    </div>
                 </div>
-                <div :class="{ 'placeholder': !getTextModuleContent(module) }" class="text-content">
-                    {{ getTextModuleContent(module) || getTextModuleFieldName(module) }}
+
+                <!-- 文本类模块 -->
+                <div v-else-if="module.moduleKey !== 'default_info'" class="module-section">
+                    <div class="module-header">
+                        <div class="module-title">{{ module.moduleName }}</div>
+                        <div class="divider"></div>
+                    </div>
+                    <div :class="{ 'placeholder': !getTextModuleContent(module) }" class="text-content">
+                        {{ getTextModuleContent(module) || getTextModuleFieldName(module) }}
+                    </div>
                 </div>
-            </div>
-        </template>
+            </template>
+        </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import {computed} from 'vue';
+import {computed, ref, watch, onMounted, nextTick} from 'vue';
 import type {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
 import type {ResumeModuleBean} from '@/api/resume/dto/bean/ResumeModuleBean';
 import type {ResumeEntryBean} from '@/api/resume/dto/bean/ResumeEntryBean';
 
 const props = defineProps<{
     resumeData: GetResumeDetailOutDto;
+    watermark?: string;
 }>();
+
+const resumeRef = ref<HTMLElement>();
+const watermarkCount = ref(0);
+const watermarkHeight = ref(0);
+
+const updateWatermarkCount = async () => {
+    await nextTick();
+    if (resumeRef.value) {
+        const contentWrapper = resumeRef.value.querySelector('.content-wrapper') as HTMLElement;
+        if (contentWrapper) {
+            const children = Array.from(contentWrapper.children).filter(el => !el.classList.contains('watermark-container'));
+            let maxHeight = 0;
+            children.forEach(child => {
+                const rect = (child as HTMLElement).getBoundingClientRect();
+                const offsetTop = (child as HTMLElement).offsetTop;
+                maxHeight = Math.max(maxHeight, offsetTop + rect.height);
+            });
+            watermarkHeight.value = maxHeight;
+            const itemHeight = 150;
+            const cols = 3;
+            const rows = Math.max(1, Math.ceil(maxHeight / itemHeight));
+            watermarkCount.value = Math.min(cols * rows, 100);
+        }
+    }
+};
+
+watch(() => props.watermark, updateWatermarkCount);
+watch(() => props.resumeData, updateWatermarkCount, {deep: true});
+
+onMounted(() => {
+    updateWatermarkCount();
+});
 
 const getModule = (moduleKey: string): ResumeModuleBean | undefined => {
     return props.resumeData.modules?.find(m => m.moduleKey === moduleKey);
@@ -158,8 +198,41 @@ const getTextModuleFieldName = (module: ResumeModuleBean): string => {
     background: $white;
     box-shadow: 0 0 vw(4.08) rgba(0, 0, 0, 0.1);
     border-radius: vw(1.36);
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.content-wrapper {
+    position: relative;
     padding: vh(21.76) vw(27.2);
-    overflow: auto;
+}
+
+.watermark-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: vh(150);
+    pointer-events: none;
+    z-index: 999;
+}
+
+.watermark-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: vw(14);
+    color: rgba(81, 90, 109, 0.10);
+    white-space: nowrap;
+    user-select: none;
+    transform: rotate(30deg);
 }
 
 .header-section {
