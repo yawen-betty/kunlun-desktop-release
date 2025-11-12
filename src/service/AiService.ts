@@ -83,8 +83,7 @@ export class AiService {
             onComplete
         );
     }
-
-
+    
     /**
      * 撰写简历内容
      */

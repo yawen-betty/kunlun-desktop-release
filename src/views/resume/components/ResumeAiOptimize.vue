@@ -106,22 +106,15 @@ const handleCancel = () => {
 
 // 开始ai 生成
 const handleSubmit = () => {
-  // if (requirement.value.length < 20) return message.warning(Message, '请至少填写20个字！');
+  if (requirement.value.length < 20) return message.warning(Message, '请至少填写20个字！');
 
   const params: PolishInDto = {
-    // resumeId: props.resumeId,
-    // fieldName: props.fieldName,
-    // maxLength: props.maxLength,
-    // mode: props.mode,
-    // text: props.text,
-    // requirement: requirement.value
-
-    "resumeId": "4f11769e52304077bea5de854ecc4305",
-    "text": "精通java \n 爱好篮球",
-    "fieldName": "项目经历",
-    "maxLength": 200,
-    "mode": "1",
-    "requirement": "帮我写好看一些"
+    resumeId: props.resumeId,
+    fieldName: props.fieldName,
+    maxLength: props.maxLength,
+    mode: props.mode,
+    text: props.text,
+    requirement: requirement.value
   }
 
   aiService.polishStream(
@@ -129,27 +122,27 @@ const handleSubmit = () => {
     (data: string) => {
 
       console.log(data)
-      // if (data.includes('event:thinking')) {
-      //
-      //   const str: string = extractDataContent(data, 'event:thinking')
-      //   if (str) {
-      //     // chatList.value[chatList.value.length - 1].thinking += str
-      //   }
-      // } else {
-      //   const str: string = extractDataContent(data, 'event:content')
-      //
-      //   if (str) {
-      //     // emits('sendTemplate', str);
-      //   }
-      // }
-      // 更新UI显示流式数据
+      if (data.includes('event:thinking')) {
+        state.value = '2'
+        const str: string = extractDataContent(data, 'event:thinking')
+        if (str) {
+          thinkContent.value += str;
+        }
+      } else {
+        state.value = '3'
+        const str: string = extractDataContent(data, 'event:content')
+
+        if (str) {
+          content.value += str;
+        }
+      }
     },
     (error: any) => {
       console.error(error, 'error')
       // 显示错误信息
     },
     () => {
-
+      state.value = '4'
     }
   )
 }
@@ -157,6 +150,7 @@ const handleSubmit = () => {
 // 抛出数据
 const handleEmitData = () => {
   emit('submit', content.value);
+  handleCancel();
 }
 </script>
 

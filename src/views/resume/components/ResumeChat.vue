@@ -142,7 +142,6 @@ const queryChatList = () => {
       });
       generateTemplate(msg)
     }
-
   })
 }
 
