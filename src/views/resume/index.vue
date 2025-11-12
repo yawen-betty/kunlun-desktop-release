@@ -2,14 +2,11 @@
 import {ref} from 'vue';
 import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
-import ResumeAiOptimize from "@/views/resume/components/ResumeAiOptimize.vue";
 
 const showMakePanel = ref(true);
 const resumeId = ref('');
 const resumeName = ref('');
 const uploadedFile = ref<File | null>(null);
-
-const aaa = ref(true);
 
 const handleResumeCreated = (data: { resumeId: string; resumeName: string; uploadedFile: File | null }) => {
   resumeId.value = data.resumeId;
@@ -32,8 +29,6 @@ const exit = () => {
     <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
     <WriteResume v-else :resume-id="resumeId" :resume-name="resumeName" :uploaded-file="uploadedFile"
                  @back-to-make="exit"/>
-
-    <ResumeAiOptimize v-model="aaa" mode="1"/>
   </div>
 </template>
 
