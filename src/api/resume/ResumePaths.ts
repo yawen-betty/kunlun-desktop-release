@@ -104,8 +104,8 @@ export class ResumePaths {
      * 删除简历
      */
     static deleteResume: Path = {
-        url: '/{resumeId}',
-        method: 'DELETE',
+        url: '/{resumeId}/delete',
+        method: 'POST',
         prefix: 'resumes'
     }
 

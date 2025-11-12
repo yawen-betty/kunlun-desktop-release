@@ -144,12 +144,12 @@ export class ResumeService {
     /**
      * 删除简历
      */
-    public async deleteResume(params: DeleteResumeInDto): Promise<EmptyOutDto> {
+    public async deleteResume(params: DeleteResumeInDto): Promise<Result<DeleteResumeOutDto>> {
         const path = {
             ...ResumePaths.deleteResume,
             url: ResumePaths.deleteResume.url.replace('{resumeId}', params.resumeId)
         };
-        return await this.http.request<EmptyOutDto>(path, params);
+        return await this.http.request<Result<DeleteResumeOutDto>>(path, params);
     }
 
     /**

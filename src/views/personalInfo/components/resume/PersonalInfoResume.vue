@@ -8,7 +8,7 @@
         <div class="resume-name">
           <span>{{ resume.name }}</span>
 
-          <Poptip placement="bottom-end" v-model="isShow">
+          <Poptip placement="bottom-end">
             <SvgIcon name="icon-gengduo" size="18" color="#9499A4" class="pointer"/>
 
             <template #content>
@@ -39,7 +39,9 @@
       <div class="preview-title">预览</div>
       <SvgIcon name="icon-cha" size="20" class="cha pointer" @click="previewVisible = false" color="#9499A4"></SvgIcon>
     </div>
-    <div class="preview-content pt-20"></div>
+    <div class="preview-content">
+      <ResumePreviewCard :resume-data="previewResume" size="large"/>
+    </div>
   </Modal>
 
 
@@ -71,13 +73,16 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
 import SvgIcon from "@/components/svgIcon/index.vue";
-import {Button, Icon, Modal} from "view-ui-plus";
+import {Button, Icon, Message, Modal} from "view-ui-plus";
 import ResumePreviewCard from "@/views/resume/components/ResumePreviewCard.vue";
 import {ResumeService} from "@/service/ResumeService.ts";
 import {MyResumeBean} from "@/api/resume/dto/bean/MyResumeBean.ts";
 import {GetModelAccountInDto} from "@/api/user/dto/GetModelAccount.ts";
 import {GetMyResumeListInDto} from "@/api/resume/dto/GetMyResumeList.ts";
 import {parseDate} from "@/utiles/DateUtils.ts";
+import {useRouter} from "vue-router";
+import {CopyResumeInDto} from "@/api/resume/dto/CopyResume.ts";
+import {message} from "@/utiles/Message.ts";
 
 interface SelectItem {
   name: string;
@@ -86,14 +91,17 @@ interface SelectItem {
 }
 
 const resumeService = new ResumeService();
+const router = useRouter();
 
 // 预览弹窗状态
 const previewVisible = ref<boolean>(false);
-// 预览简历id
-const previewResumeId = ref<string>('');
+// 预览简历
+const previewResume = ref<MyResumeBean>(new MyResumeBean());
 // 删除弹窗状态
 const deleteVisible = ref<boolean>(false);
-const isShow = ref<boolean>(false);
+// 刪除简历Id
+const deleteResumeId = ref<string>('');
+
 
 const resumeList = ref<MyResumeBean[]>([]);
 
@@ -108,23 +116,24 @@ const selectList = ref<SelectItem[]>([
 // 处理点击事件
 const handleClick = (resume: MyResumeBean, key: string) => {
 
-  isShow.value = false
+  document.body.click();
   switch (key) {
     case 'preview':
-      previewResumeId.value = resume.id!
+      previewResume.value = resume;
       previewVisible.value = true;
       break;
     case 'edit':
-      console.log('编辑');
+      router.push(`/resume?resumeId=${resume.uuid}`)
       break;
     case 'copy':
-      console.log('复制');
+      handleCopyResume(resume.uuid!)
       break;
     case 'download':
-      console.log('下载');
+      downLoadResume(resume.uuid!)
       break;
     case 'delete':
       deleteVisible.value = true;
+      deleteResumeId.value = resume.uuid!
       break;
     default:
       break;
@@ -134,7 +143,35 @@ const handleClick = (resume: MyResumeBean, key: string) => {
 
 // 删除
 const handleDeleteResume = () => {
+  const data: CopyResumeInDto = {
+    resumeId: deleteResumeId.value
+  }
+  resumeService.deleteResume(data).then(res => {
+    if (res.code === 200) {
+      message.success(Message, '简历删除成功！');
+      deleteVisible.value = false;
+      getResumeList();
+    }
+  })
+}
 
+// 下載
+const downLoadResume = (resumeId: string) => {
+
+}
+
+// 复制
+const handleCopyResume = (resumeId: string) => {
+  const data: CopyResumeInDto = {
+    resumeId
+  }
+
+  resumeService.copyResume(data).then(res => {
+    if (res.code === 200) {
+      message.success(Message, '复制简历成功！');
+      getResumeList();
+    }
+  })
 }
 
 // 获取简历列表
@@ -164,6 +201,7 @@ onMounted(() => {
 
 .resume-card {
   width: vw(530);
+  height: vh(750);
   display: flex;
   flex-direction: column;
 }
@@ -255,6 +293,11 @@ onMounted(() => {
     padding: 0 !important;
     border-radius: vw(2);
     height: vh(1000);
+    overflow-y: hidden;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .preview-header {
@@ -271,6 +314,12 @@ onMounted(() => {
       font-weight: 600;
       line-height: vw(24);
     }
+  }
+
+  .preview-content {
+    height: 100%;
+    overflow-y: auto;
+    padding: vw(48);
   }
 }
 
