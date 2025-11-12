@@ -34,7 +34,8 @@
                             getStreamValue(getTopField('job_position')?.uuid) || getTopField('job_position')?.fieldName
                         }}
                     </div>
-                    <div v-if="getTopField('mobile')?.uuid && mode === 'manual' && isEditingBasicInfo" class="contact-field flex-column">
+                    <div v-if="getTopField('mobile')?.uuid && mode === 'manual' && isEditingBasicInfo"
+                         class="contact-field flex-column">
                         <span class="field-prefix">{{ getTopField('mobile')?.fieldName }}</span>
                         <Input v-model="editFormData.mobile" :maxlength="getTopField('mobile')?.maxLength || 0"
                                class="contact-input" placeholder="请输入"/>
@@ -44,7 +45,8 @@
                          class="contact-item phone">
                         {{ getTopField('mobile')?.fieldName }}：{{ getStreamValue(getTopField('mobile')?.uuid) }}
                     </div>
-                    <div v-if="getTopField('email')?.uuid && mode === 'manual' && isEditingBasicInfo" class="contact-field flex-column">
+                    <div v-if="getTopField('email')?.uuid && mode === 'manual' && isEditingBasicInfo"
+                         class="contact-field flex-column">
                         <span class="field-prefix">{{ getTopField('email')?.fieldName }}</span>
                         <Input v-model="editFormData.email" :maxlength="getTopField('email')?.maxLength || 0"
                                class="contact-input" placeholder="请输入"/>
@@ -683,12 +685,23 @@
                 </div>
             </div>
         </div>
+
+        <ResumeAiOptimize
+            v-model="showAiOptimize"
+            :field-name="aiOptimizeProps.fieldName"
+            :max-length="aiOptimizeProps.maxLength"
+            :mode="aiOptimizeProps.mode"
+            :resume-id="aiOptimizeProps.resumeId"
+            :text="aiOptimizeProps.text"
+            @submit="handleAiOptimizeSubmit"
+        />
     </div>
 </template>
 
 <script lang="ts" setup>
 import SvgIcon from '@/components/svgIcon/index.vue';
 import ResumeModuleManager, {ItemType} from './ResumeModuleManager.vue';
+import ResumeAiOptimize from './ResumeAiOptimize.vue';
 import {computed, onMounted, ref, watch, withDefaults} from 'vue';
 import {Input, Message} from 'view-ui-plus';
 import {FileService} from '@/service/FileService';
@@ -730,6 +743,20 @@ const allAvailableFields = ref<any[]>([]); // 所有可用字段列表
 const resumeService = new ResumeService();
 const photoInput = ref<HTMLInputElement>();
 const photoUrl = ref<string>('');
+const showAiOptimize = ref(false);
+const aiOptimizeProps = ref<{
+    resumeId: string;
+    text: string;
+    fieldName: string;
+    maxLength: number;
+    mode: string;
+}>({
+    resumeId: '',
+    text: '',
+    fieldName: '',
+    maxLength: 0,
+    mode: ''
+});
 
 // 模块管理数据
 const appliedModules = computed(() => {
@@ -1061,7 +1088,36 @@ const saveTextEdit = (module: any) => {
 };
 
 const handleAiAction = (action: 'polish' | 'expand' | 'simplify' | 'summarize') => {
-    console.log('AI Action:', action);
+    const modeMap = {polish: '1', expand: '2', simplify: '3', summarize: '4'};
+
+    let text = '';
+    let fieldName = '';
+    let maxLength = 0;
+
+    if (editingEntryUuid.value) {
+        text = entryEditData.value.description || '';
+        fieldName = 'description';
+        const module = props.resumeData?.modules?.find((m: any) =>
+            m.entries?.some((e: any) => e.entryUuid === editingEntryUuid.value)
+        );
+        const entry = module?.entries?.find((e: any) => e.entryUuid === editingEntryUuid.value);
+        maxLength = getFieldMaxLength(entry, 'description');
+    } else if (editingModuleUuid.value) {
+        text = editTextContent.value;
+        const module = props.resumeData?.modules?.find((m: any) => m.uuid === editingModuleUuid.value);
+        fieldName = module?.entries?.[0]?.fields?.[0]?.fieldKey || '';
+        maxLength = getTextModuleMaxLength(module);
+    }
+
+    aiOptimizeProps.value = {
+        resumeId: props.resumeData?.uuid || '',
+        text,
+        fieldName,
+        maxLength,
+        mode: modeMap[action]
+    };
+    console.log(aiOptimizeProps.value, 'props')
+    showAiOptimize.value = true;
 };
 
 const startEntryEdit = (entry: any) => {
@@ -1091,6 +1147,14 @@ const saveEntryEdit = (entry: any) => {
     editingEntryUuid.value = '';
     entryEditData.value = {};
     emit('data-change', props.resumeData);
+};
+
+const handleAiOptimizeSubmit = (content: string) => {
+    if (editingEntryUuid.value) {
+        entryEditData.value.description = content;
+    } else if (editingModuleUuid.value) {
+        editTextContent.value = content;
+    }
 };
 
 const handleAddEntry = (module: any) => {
