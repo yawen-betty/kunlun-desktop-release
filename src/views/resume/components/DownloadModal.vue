@@ -129,11 +129,42 @@ const handleDownload = async () => {
     if (!previewEl) return;
 
     try {
+        const svgs = previewEl.querySelectorAll('svg');
+        const svgDataMap = new Map();
+
+        for (const svg of svgs) {
+            const clone = svg.cloneNode(true) as SVGElement;
+            const rect = svg.getBoundingClientRect();
+            clone.setAttribute('width', String(rect.width));
+            clone.setAttribute('height', String(rect.height));
+            const svgData = new XMLSerializer().serializeToString(clone);
+            const dataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+            svgDataMap.set(svg, {dataUrl, parent: svg.parentElement, width: rect.width, height: rect.height});
+        }
+
+        svgDataMap.forEach(({dataUrl, parent, width, height}, svg) => {
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            img.style.width = width + 'px';
+            img.style.height = height + 'px';
+            img.style.display = 'inline-block';
+            parent?.replaceChild(img, svg);
+        });
+
         const canvas = await html2canvas(previewEl, {
             scale: 2,
             backgroundColor: '#ffffff',
             logging: false,
             useCORS: true
+        });
+
+        svgDataMap.forEach(({ parent }, svg) => {
+            const imgs = parent?.querySelectorAll('img');
+            imgs?.forEach(img => {
+                if (img.src.startsWith('data:image/svg')) {
+                    parent?.replaceChild(svg, img);
+                }
+            });
         });
 
         const ext = selectedFormat.value;

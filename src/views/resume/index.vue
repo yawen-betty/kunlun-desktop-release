@@ -1,12 +1,15 @@
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
+import {useRoute} from 'vue-router';
 import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
 
+const route = useRoute();
 const showMakePanel = ref(false);
 const resumeId = ref('4f11769e52304077bea5de854ecc4305');
 const resumeName = ref('');
 const uploadedFile = ref<File | null>(null);
+const initialMode = ref<'ai' | 'manual'>('ai');
 
 const handleResumeCreated = (data: { resumeId: string; resumeName: string; uploadedFile: File | null }) => {
     resumeId.value = data.resumeId;
@@ -20,15 +23,25 @@ const exit = () => {
     resumeName.value = '';
     resumeId.value = '';
     uploadedFile.value = null;
-}
+    initialMode.value = 'ai';
+};
+
+onMounted(() => {
+    const routeResumeId = route.query.resumeId as string;
+    if (routeResumeId) {
+        resumeId.value = routeResumeId;
+        showMakePanel.value = false;
+        initialMode.value = 'manual';
+    }
+});
 
 </script>
 
 <template>
     <div class="resume-cont">
         <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
-        <WriteResume v-else :resume-id="resumeId" :resume-name="resumeName" :uploaded-file="uploadedFile"
-                     @back-to-make="exit"/>
+        <WriteResume v-else :initial-mode="initialMode" :resume-id="resumeId" :resume-name="resumeName"
+                     :uploaded-file="uploadedFile" @back-to-make="exit"/>
     </div>
 </template>
 

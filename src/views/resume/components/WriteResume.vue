@@ -32,8 +32,8 @@
                 <!-- 右侧顶部 -->
                 <div class="right-header mb-20">
                     <div v-if="showScoreAndMode && currentMode === 'ai'" class="score-wrapper flex flex-column">
-                        <div class="score-text">当前简历分数：{{ resumeScore }}</div>
-                        <Poptip class="questions-pop flex-column" placement="bottom" trigger="hover">
+                        <div class="score-text mr-10">当前简历分数：{{ resumeScore }}</div>
+                        <Poptip class="questions-pop flex-column mr-20" placement="bottom" trigger="hover">
                             <SvgIcon class="tip" color="#FC8919" name="icon-tishi"/>
                             <template #content>
                                 <ul class="problem-list">
@@ -44,6 +44,7 @@
                                 </ul>
                             </template>
                         </Poptip>
+                        <Loading/>
                     </div>
                     <div v-else></div>
                     <div class="right-actions">
@@ -182,11 +183,13 @@ import {ResumeService} from "@/service/ResumeService";
 import {GetResumeDetailInDto} from "@/api/resume/dto/GetResumeDetail";
 import {SaveResumeInDto} from "@/api/resume/dto/SaveResume";
 import {RenameResumeInDto} from "@/api/resume/dto/RenameResume";
+import Loading from '@/components/loading/index.vue'
 
 const props = defineProps<{
     resumeId: string;
     resumeName?: string;
     uploadedFile?: File | null;
+    initialMode?: 'ai' | 'manual';
 }>();
 
 const emit = defineEmits<{
@@ -203,7 +206,7 @@ const showRenameModal = ref(false);
 const showModeConfirmModal = ref(false);
 const resumeName = ref('我的简历-未命名1');
 const showScoreAndMode = ref(false);
-const currentMode = ref<'ai' | 'manual'>('ai');
+const currentMode = ref<'ai' | 'manual'>(props.initialMode || 'ai');
 const resumeScore = ref(15);
 const scoreProblems = ref<string[]>([
     '问题一问题一问题一问题一问题一问题一问题一问题一问题一问题一问题一',
@@ -249,6 +252,19 @@ watch(showRenameModal, (val) => {
     if (val) formData.resumeName = resumeName.value;
 });
 
+/**
+ * 更新简历分数
+ * @param params
+ */
+const updateScore = (params: any) => {
+    resumeScore.value = params.score;
+    scoreProblems.value = params.issues.map(item => item.question)
+}
+
+/**
+ * 获取简历详情
+ * @param resumeId
+ */
 const fetchResumeDetail = async (resumeId: string) => {
     isGenerating.value = true;
     try {
@@ -606,7 +622,6 @@ const handleUpdateModules = async () => {
 
 .score-wrapper {
     height: vh(24);
-    gap: vw(5);
 }
 
 .score-text {
