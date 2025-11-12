@@ -194,7 +194,6 @@ const getTextModuleFieldName = (module: ResumeModuleBean): string => {
     }
 
     border-radius: var(--radius);
-    box-shadow: 0 0 var(--shadow-size) rgba(0, 0, 0, 0.1);
 
     &.no-scroll {
         overflow: hidden;
