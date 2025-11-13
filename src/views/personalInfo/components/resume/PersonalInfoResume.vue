@@ -15,7 +15,8 @@
               <div class="select-list">
                 <div :class="['select-item', 'pointer',info.key === 'delete' && 'select-delete']"
                      v-for="info in selectList" :key="info.key" @click.stop="handleClick(resume,info.key)">
-                  <SvgIcon :name="info.icon" size="12" color="#9499A5" class="select-icon mr-10"/>
+                  <SvgIcon :name="info.icon" size="12" :color="info.key === 'delete' ? '#EC6B62' :'#9499A5'"
+                           class="select-icon mr-10"/>
                   <span class="select-name">{{ info.name }}</span>
                 </div>
               </div>

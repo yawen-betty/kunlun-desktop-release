@@ -5,8 +5,8 @@ import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
 
 const route = useRoute();
-const showMakePanel = ref(false);
-const resumeId = ref('bc689994c62e43bcb247a60eb2e2976c');
+const showMakePanel = ref(true);
+const resumeId = ref('');
 const resumeName = ref('');
 const uploadedFile = ref<File | null>(null);
 const initialMode = ref<'ai' | 'manual'>('ai');

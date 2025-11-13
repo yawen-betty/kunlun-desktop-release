@@ -1,89 +1,82 @@
 <template>
-  <div class="resume-chat p20">
-    <!-- 聊天内容待实现 -->
-    <div class="chatting-records">
+  <div class="resume-chat-wrapper">
+    <div class="resume-chat p20">
+      <!-- 聊天内容待实现 -->
+      <div class="chatting-records">
 
-      <template v-for="(info,index) in chatList" :key="index">
-        <div class="my-chat_box mb-20" v-if="info.role === 'user'">
-          <div class="my-chat">{{ info.content }}</div>
-        </div>
+        <template v-for="(info,index) in chatList" :key="index">
+          <div class="my-chat_box mb-20" v-if="info.role === 'user'">
+            <div class="my-chat">{{ info.content }}</div>
+          </div>
 
-        <div v-else>
-          <div class="ai-chat-box mb-20">
-            <div class="ai-chat">
-              <div class="ai-chat-text">{{ info.content }}</div>
-              <div class="is-think mt-10" v-if="['1','2'].includes(info.thinkingStatus || '0')">
-                <div class="think-text mr-5">{{ thinkingText[info.thinkingStatus!] }}</div>
-                <SvgIcon name="icon-zhankai" color="#9499A4" size="12" class="pointer"
-                         @click="info.isExpand = true"></SvgIcon>
+          <div v-else>
+            <div class="ai-chat-box mb-20">
+              <div class="ai-chat">
+                <div class="ai-chat-text">{{ info.content }}</div>
+                <div class="is-think mt-10" v-if="['1','2'].includes(info.thinkingStatus || '0')">
+                  <div class="think-text mr-5">{{ thinkingText[info.thinkingStatus!] }}</div>
+                  <SvgIcon name="icon-zhankai" color="#9499A4" size="12" class="pointer"
+                           @click="info.isExpand = true"></SvgIcon>
+                </div>
+              </div>
+            </div>
+
+            <div class="deep-thinking mt-10 mb-20" v-if="info.isExpand">
+              <SvgIcon name="icon-shouqi" color="#9499A4" size="12" class="pointer icon"
+                       @click="info.isExpand = false"></SvgIcon>
+
+              <div class="deep-thinking-title">
+                <img src="@/assets/images/deep-logo.gif" class="deep-log"/>
+                <div class="deep-thinking-title-text">深度思考</div>
+              </div>
+              <div class="deep-thinking-content">
+                {{ info.thinking }}
               </div>
             </div>
           </div>
 
-          <div class="deep-thinking mt-10 mb-20" v-if="info.isExpand">
-            <SvgIcon name="icon-shouqi" color="#9499A4" size="12" class="pointer icon"
-                     @click="info.isExpand = false"></SvgIcon>
+        </template>
+      </div>
 
-            <div class="deep-thinking-title">
-              <img src="@/assets/images/deep-logo.gif" class="deep-log"/>
-              <div class="deep-thinking-title-text">深度思考</div>
-            </div>
-            <div class="deep-thinking-content">
-              {{ info.thinking }}
-            </div>
-          </div>
+      <div class="send-message">
+        <Input
+          v-model="sendContent"
+          type="textarea"
+          :maxlength="2000"
+          :rows="2"
+          :autosize="{ minRows: 2, maxRows: 5 }"
+          placeholder="请输入"
+          :disabled="disabled"
+          @on-enter="handleSendMessage"
+        ></Input>
+        <button class="save-btn" :disabled="disabled || !sendContent" @click="handleSendMessage">
+          <SvgIcon name="icon-fasong" size="10" :color="disabled || !sendContent ? '#C5C8CE' : '#fff'"/>
+          完成
+        </button>
+      </div>
+    </div>
+
+    <Modal
+      v-model="diagnoseModal"
+      :closable="true"
+      :footer-hide="true"
+      :mask-closable="false"
+      class-name="delete-confirm-modal"
+    >
+      <div class="delete-modal-content">
+        <div class="modal-header">
+          <span class="modal-title">提示</span>
         </div>
-
-      </template>
-    </div>
-
-    <div class="send-message">
-      <Input
-        v-model="sendContent"
-        type="textarea"
-        :maxlength="2000"
-        :rows="2"
-        :autosize="{ minRows: 2, maxRows: 5 }"
-        placeholder="请输入"
-        :disabled="disabled"
-        @on-enter="handleSendMessage"
-      ></Input>
-      <button class="save-btn" :disabled="disabled || !sendContent" @click="handleSendMessage">
-        <SvgIcon name="icon-fasong" size="10" :color="disabled || !sendContent ? '#C5C8CE' : '#fff'"/>
-        完成
-      </button>
-    </div>
+        <div class="modal-body">
+          <p>{{ diagnoseContent }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" @click="over!">结束AI撰写</button>
+          <button class="btn-confirm" @click="askQuestion">继续优化</button>
+        </div>
+      </div>
+    </Modal>
   </div>
-
-  <!--  <Modal-->
-  <!--    v-model="diagnoseModal"-->
-  <!--    :mask-closable="false"-->
-  <!--    :closable="false"-->
-  <!--    footer-hide-->
-  <!--    class="ai-diagnose"-->
-  <!--  >-->
-  <!--  </Modal>-->
-
-  <Modal
-    v-model="diagnoseModal"
-    :closable="true"
-    :footer-hide="true"
-    :mask-closable="false"
-    class-name="delete-confirm-modal"
-  >
-    <div class="delete-modal-content">
-      <div class="modal-header">
-        <span class="modal-title">提示</span>
-      </div>
-      <div class="modal-body">
-        <p>{{ diagnoseContent }}</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-cancel" @click="over!">结束AI撰写</button>
-        <button class="btn-confirm" @click="askQuestion">继续优化</button>
-      </div>
-    </div>
-  </Modal>
 </template>
 
 <script setup lang="ts">
@@ -344,7 +337,10 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
         const str: string = extractDataContent(data, 'event:content')
 
         if (str) {
+          console.log(str);
+          console.log(JSON.parse(str).issues);
           if (reply) {
+            console.log('走了？')
             chatList.value.push({
               role: 'assistant',
               content: str,
@@ -352,9 +348,12 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
               thinking: ''
             });
             diagnoseContent.value = str;
+            diagnoseModal.value = true;
           } else {
+            console.log('下一步？')
             emits('sendDiagnose', str);
             diagnoseList.value = JSON.parse(str).issues;
+            askQuestion();
           }
         }
       }
@@ -364,22 +363,14 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
       // 显示错误信息
     },
     () => {
-      console.log('诊断结束了？')
       setThinkState();
-
-      if (reply) {
-        // 重新发送分数，用户自己选择是否继续撰写 （toast）
-
-        diagnoseModal.value = true;
-      } else {
-        askQuestion();
-      }
     }
   );
 }
 
 // 提出问题 (每次取第一个问题)
 const askQuestion = () => {
+  console.log(diagnoseList.value, 'diagnoseList.value')
   if (diagnoseList.value.length > 0) {
     const question = diagnoseList.value[0].question;
     chatList.value.push({
