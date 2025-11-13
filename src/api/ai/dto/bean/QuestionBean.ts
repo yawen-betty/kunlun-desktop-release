@@ -7,5 +7,15 @@ export class QuestionBean {
     /**
      * 问题类型
      */
-    type?: string;
+    moduleName?: string = '';
+
+    /**
+     * 展示问题
+     */
+    problem: string = ''
+
+    /**
+     * 问题id
+     */
+    questionUuid: string = ''
 }

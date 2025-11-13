@@ -1,4 +1,5 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
+import { AiMessageBean } from "./bean/AiMessageBean";
 
 export class ParseAttachmentInDto extends BaseInDto {
     /**
@@ -12,9 +13,9 @@ export class ParseAttachmentInDto extends BaseInDto {
     file: File | null = null;
     
     /**
-     * AI回复消息
+     * 消息列表
      */
-    assistantMessage: string = '';
+    messages: AiMessageBean[] = [];
 }
 
 export class ParseAttachmentOutDto extends BaseOutDto {

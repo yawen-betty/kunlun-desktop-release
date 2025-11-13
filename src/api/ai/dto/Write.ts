@@ -1,4 +1,5 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
+import { AiMessageBean } from "./bean/AiMessageBean";
 
 export class WriteInDto extends BaseInDto {
     /**
@@ -7,19 +8,14 @@ export class WriteInDto extends BaseInDto {
     resumeId: string = '';
     
     /**
-     * 提问问题话术
+     * 问题ID
      */
-    question: string = '';
+    questionUuid?: string;
     
     /**
-     * 用户回答内容
+     * 消息列表
      */
-    userResponse: string = '';
-    
-    /**
-     * AI回复消息
-     */
-    assistantMessage: string = '';
+    messages: AiMessageBean[] = [];
 }
 
 export class WriteOutDto extends BaseOutDto {

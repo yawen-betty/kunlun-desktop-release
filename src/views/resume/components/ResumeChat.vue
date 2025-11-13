@@ -54,12 +54,42 @@
       </button>
     </div>
   </div>
+
+  <!--  <Modal-->
+  <!--    v-model="diagnoseModal"-->
+  <!--    :mask-closable="false"-->
+  <!--    :closable="false"-->
+  <!--    footer-hide-->
+  <!--    class="ai-diagnose"-->
+  <!--  >-->
+  <!--  </Modal>-->
+
+  <Modal
+    v-model="diagnoseModal"
+    :closable="true"
+    :footer-hide="true"
+    :mask-closable="false"
+    class-name="delete-confirm-modal"
+  >
+    <div class="delete-modal-content">
+      <div class="modal-header">
+        <span class="modal-title">提示</span>
+      </div>
+      <div class="modal-body">
+        <p>{{ diagnoseContent }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" @click="over!">结束AI撰写</button>
+        <button class="btn-confirm" @click="askQuestion">继续优化</button>
+      </div>
+    </div>
+  </Modal>
 </template>
 
 <script setup lang="ts">
 // 聊天组件逻辑待实现
-import {Input, Message} from "view-ui-plus";
-import {onMounted, ref} from "vue";
+import {Input, Message, Modal} from "view-ui-plus";
+import {nextTick, onMounted, ref} from "vue";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {MessagesBean} from "@/api/ai/dto/bean/MessagesBean.ts";
 import {QueryConversationInDto} from "@/api/ai/dto/QueryConversation.ts";
@@ -69,6 +99,9 @@ import {DiagnoseInDto} from "@/api/ai/dto/Diagnose.ts";
 import {extractDataContent} from "@/utiles/processing.ts";
 import {message} from "@/utiles/Message.ts";
 import {getRandomAiMessage} from "@/utiles/aiMessages.ts";
+import {AiMessageBean} from "@/api/ai/dto/bean/AiMessageBean.ts";
+import {QuestionBean} from "@/api/ai/dto/bean/QuestionBean.ts";
+import {WriteInDto} from "@/api/ai/dto/Write.ts";
 
 type TextType = {
   [key: string]: string;
@@ -84,7 +117,9 @@ const aiService = new AiService();
 const props = defineProps<{
   resumeUuid: string;   // 简历id
   hasAttachment?: File | null; // 简历附件
-  streamWrite?: Function // 流式回填
+  streamWrite?: Function, // 流式回填
+  over?: Function // 结束ai 撰写
+
 }>();
 
 const emits = defineEmits<{
@@ -102,14 +137,27 @@ const sendContent = ref<string>('');
 const disabled = ref<boolean>(false);
 // 聊天列表
 const chatList = ref<CustomMessagesBean[]>([]);
-// 当前流程
-const currentFlow = ref<string>('1');
 // 诊断问题列表
-const diagnoseList = ref([]);
+const diagnoseList = ref<QuestionBean[]>([]);
+// 诊断问题内容
+const diagnoseContent = ref<string>('');
+// 诊断弹窗
+const diagnoseModal = ref<boolean>(false);
 
 // 分页信息
 const pageNum = ref<number>(1);
 const pageSize = ref<number>(20);
+
+// 滚动到最后一个deep-thinking-content底部
+const scrollToBottom = () => {
+  nextTick(() => {
+    const elements = document.querySelectorAll('.deep-thinking-content');
+    if (elements.length > 0) {
+      const lastElement = elements[elements.length - 1] as HTMLElement;
+      lastElement.scrollTop = lastElement.scrollHeight;
+    }
+  });
+};
 
 // 查询当前聊天记录
 const queryChatList = () => {
@@ -138,17 +186,28 @@ const queryChatList = () => {
         isExpand: true,
         thinking: ''
       });
-      generateTemplate(msg)
+      generateTemplate(msg, content)
     }
   })
 }
 
 // 生成模板
-const generateTemplate = (msg: string) => {
+const generateTemplate = (msg: string, content: string) => {
+
+  const messages: AiMessageBean[] = [
+    {
+      role: 'user',
+      content: content
+    }, {
+      role: 'assistant',
+      content: msg
+    }
+  ]
+
   const params: GenerateTemplateInDto = {
     resumeId: props.resumeUuid,
     hasAttachment: props.hasAttachment ? '1' : '0',
-    assistantMessage: msg
+    messages
   }
 
   aiService.generateTemplateStream(
@@ -159,6 +218,7 @@ const generateTemplate = (msg: string) => {
         const str: string = extractDataContent(data, 'event:thinking')
         if (str) {
           chatList.value[chatList.value.length - 1].thinking += str
+          scrollToBottom();
         }
       } else {
         const str: string = extractDataContent(data, 'event:content')
@@ -201,7 +261,12 @@ const generateTemplate = (msg: string) => {
 const parseAttachment = (msg: string) => {
   const params = {
     resumeId: props.resumeUuid,
-    assistantMessage: msg
+    messages: [
+      {
+        role: 'assistant',
+        content: msg
+      }
+    ]
   }
 
   aiService.parseAttachmentStream(
@@ -214,6 +279,7 @@ const parseAttachment = (msg: string) => {
         const str: string = extractDataContent(data, 'event:thinking')
         if (str) {
           chatList.value[chatList.value.length - 1].thinking += str
+          scrollToBottom();
         }
       } else {
         const str: string = extractDataContent(data, 'event:content')
@@ -234,8 +300,12 @@ const parseAttachment = (msg: string) => {
   );
 }
 
-// 诊断简历
-const diagnoseResume = (message?: string) => {
+/**
+ * @description 诊断简历
+ * @param message ai 消息
+ * @param reply 是否需要用户回复
+ */
+const diagnoseResume = (message?: string, reply?: boolean) => {
   // 解析模板
   const msg: string = message || '接下来我会对简历进行诊断并询问一些问题。'
 
@@ -247,9 +317,16 @@ const diagnoseResume = (message?: string) => {
     thinking: ''
   });
 
+  const messages: AiMessageBean[] = [
+    {
+      role: 'assistant',
+      content: msg
+    }
+  ]
+
   const params: DiagnoseInDto = {
     resumeId: props.resumeUuid,
-    assistantMessage: msg
+    messages
   }
 
   aiService.diagnoseStream(
@@ -261,14 +338,24 @@ const diagnoseResume = (message?: string) => {
         const str: string = extractDataContent(data, 'event:thinking')
         if (str) {
           chatList.value[chatList.value.length - 1].thinking += str
+          scrollToBottom();
         }
       } else {
         const str: string = extractDataContent(data, 'event:content')
 
         if (str) {
-          emits('sendDiagnose', str);
-          diagnoseList.value = JSON.parse(str).issues;
-          askQuestion();
+          if (reply) {
+            chatList.value.push({
+              role: 'assistant',
+              content: str,
+              isExpand: false,
+              thinking: ''
+            });
+            diagnoseContent.value = str;
+          } else {
+            emits('sendDiagnose', str);
+            diagnoseList.value = JSON.parse(str).issues;
+          }
         }
       }
     },
@@ -277,7 +364,16 @@ const diagnoseResume = (message?: string) => {
       // 显示错误信息
     },
     () => {
+      console.log('诊断结束了？')
       setThinkState();
+
+      if (reply) {
+        // 重新发送分数，用户自己选择是否继续撰写 （toast）
+
+        diagnoseModal.value = true;
+      } else {
+        askQuestion();
+      }
     }
   );
 }
@@ -290,13 +386,13 @@ const askQuestion = () => {
       role: 'assistant',
       content: question,
       isExpand: false,
-      thinkingStatus: '0',
       thinking: ''
     });
 
-    disabled.value = true;
+    disabled.value = false;
   } else {
-    // 结束问题
+    // 再次诊断
+    diagnoseResume('我将继续对简历进行诊断。', true)
   }
 }
 
@@ -330,8 +426,62 @@ const write = () => {
     thinking: ''
   });
 
-  // aiService.writeStream()
-  
+  // 获取最后三条数据转换为AiMessageBean格式
+  const messages: AiMessageBean[] = chatList.value.slice(-3).map(item => ({
+    role: item.role!,
+    content: item.content!
+  }));
+
+  const params: WriteInDto = {
+    resumeId: props.resumeUuid,
+    questionUuid: diagnoseList.value[0].questionUuid,
+    messages
+  }
+
+  aiService.writeStream(
+    params,
+    async (data) => {
+
+      if (data.includes('event:thinking')) {
+
+        const str: string = extractDataContent(data, 'event:thinking')
+        if (str) {
+          chatList.value[chatList.value.length - 1].thinking += str
+          scrollToBottom();
+        }
+      } else {
+        const str: string = extractDataContent(data, 'event:content')
+
+        if (str) {
+          console.log(str, '1111')
+          const response = JSON.parse(str);
+
+          // 是否追问
+          if (response.completed) {
+            await props.streamWrite!(response.fieldDataList);
+
+            askQuestion();
+          } else {
+            chatList.value.push({
+              role: 'assistant',
+              content: response.followUpQuestion,
+              isExpand: false,
+              thinking: ''
+            });
+
+            disabled.value = false;
+          }
+        }
+      }
+    },
+    (error) => {
+      console.error(error, 'error')
+      // 显示错误信息
+    },
+    () => {
+      setThinkState();
+    }
+  )
 }
 
 // 关闭深度思考
@@ -344,6 +494,10 @@ const setThinkState = () => {
 
 onMounted(() => {
   queryChatList();
+})
+
+defineExpose({
+  diagnoseResume
 })
 </script>
 

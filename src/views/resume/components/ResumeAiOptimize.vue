@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import {nextTick, ref} from 'vue'
 import {Button, Input, Message, Modal} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {aiOptimize, enumEcho} from "@/enums/enumDict.ts";
@@ -131,6 +131,7 @@ const handleSubmit = () => {
         const str: string = extractDataContent(data, 'event:thinking')
         if (str) {
           thinkContent.value += str;
+          scrollToBottom();
         }
       } else {
         state.value = '3'
@@ -156,6 +157,16 @@ const handleEmitData = () => {
   emit('submit', content.value);
   handleCancel();
 }
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    const elements = document.querySelectorAll('.think-content');
+    if (elements.length > 0) {
+      const lastElement = elements[elements.length - 1] as HTMLElement;
+      lastElement.scrollTop = lastElement.scrollHeight;
+    }
+  });
+};
 </script>
 
 <style lang="scss">

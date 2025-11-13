@@ -1,5 +1,6 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 import { QuestionBean } from "@/api/ai/dto/bean/QuestionBean";
+import { AiMessageBean } from "./bean/AiMessageBean";
 
 export class DiagnoseInDto extends BaseInDto {
     /**
@@ -8,9 +9,9 @@ export class DiagnoseInDto extends BaseInDto {
     resumeId: string = '';
     
     /**
-     * AI回复消息
+     * 消息列表
      */
-    assistantMessage: string = '';
+    messages: AiMessageBean[] = [];
 }
 
 export class DiagnoseOutDto extends BaseOutDto {

@@ -6,7 +6,7 @@ import WriteResume from "@/views/resume/components/WriteResume.vue";
 
 const route = useRoute();
 const showMakePanel = ref(false);
-const resumeId = ref('fa1395919e4d464ba8178e3c0ab88607');
+const resumeId = ref('bc689994c62e43bcb247a60eb2e2976c');
 const resumeName = ref('');
 const uploadedFile = ref<File | null>(null);
 const initialMode = ref<'ai' | 'manual'>('ai');
