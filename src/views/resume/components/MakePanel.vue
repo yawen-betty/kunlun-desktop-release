@@ -4,9 +4,10 @@ import {onMounted, reactive, ref} from 'vue'
 import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {ResumeService} from "@/service/ResumeService";
-import {InitResumeInDto} from "@/api/resume/dto/InitResume";
 import {debounce} from "@/utiles/debounce";
+import {useRouter} from "vue-router";
 
+const router = useRouter();
 // 输入框提示词列表
 const placeholderList = [
     '人工智能',
@@ -110,6 +111,7 @@ const handleRemoveFile = () => {
 
 const handleToDelete = () => {
     showLimitModal.value = false;
+    router.push('/personalInfo')
 }
 
 onMounted(() => {

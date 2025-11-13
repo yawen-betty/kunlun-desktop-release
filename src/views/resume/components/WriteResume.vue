@@ -89,8 +89,8 @@
                 <!-- 聊天区 -->
                 <Transition name="slide-right">
                     <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :hasAttachment="uploadedFile"
-                                :over="over" :resumeUuid="resumeId" @sendDiagnose="sendDiagnose"
-                                @sendTemplate="sendTemplate"/>
+                                :over="over" :resumeUuid="resumeId" :streamWrite="previewRef?.streamWrite"
+                                @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
                 </Transition>
             </div>
         </div>
