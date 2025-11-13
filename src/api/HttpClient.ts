@@ -236,66 +236,6 @@ export default class HttpClient {
     }
 
     /**
-     * 上传文件的便捷方法
-     * @param path Path对象
-     * @param file File文件
-     * @param extraFields 文件参数外的普通表单字段
-     */
-    public async uploadFile<T>(
-        path: Path,
-        file: File,
-        extraFields?: Map<string, any>
-    ): Promise<T> {
-        console.log('HttpClient.uploadFile 开始处理:', file.name);
-
-        // 1. 生成目标服务器 URL
-        const fullUrl = HttpClient.fixUrl(path);
-        console.log('目标上传 URL:', fullUrl);
-
-        // 2. 准备请求头
-        const headers: Record<string, string> = {
-            'Content-Type': 'multipart/form-data',
-            'Accept': 'application/json',
-            'version': Config.version
-        };
-        if (HttpClient.token) {
-            headers['Admin-Token'] = HttpClient.token;
-        }
-        console.log('上传请求头:', headers);
-
-        // 3. 将 File 对象转换为字节数组 (Uint8Array)
-        const buffer = await file.arrayBuffer();
-        const fileBytes = Array.from(new Uint8Array(buffer));
-
-        return new Promise<T>(async (resolve, reject) => {
-            try {
-                const response: HttpResponse = await invoke('upload_request', {
-                    url: fullUrl,
-                    headers,
-                    fieldName: 'file', // 根据您的要求，字段名固定为 'file'
-                    fileName: file.name,
-                    fileBytes,
-                    extraFields
-                });
-
-                console.info('文件上传响应:', response);
-
-                if (response.status >= 200 && response.status < 300) {
-                    HttpClient.handleSpecialCode(response.body);
-                    resolve(response.body as T);
-                } else {
-                    const errorMsg = `上传失败: ${response.status} ${JSON.stringify(response.body)}`;
-                    console.error(errorMsg);
-                    reject(new Error(errorMsg));
-                }
-            } catch (error) {
-                console.error('调用 upload_request 命令时出错:', error);
-                reject(error);
-            }
-        });
-    }
-
-    /**
      * SSE 流式请求方法
      * @param path Path对象
      * @param data 请求体数据
