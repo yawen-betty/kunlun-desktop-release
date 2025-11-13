@@ -19,17 +19,17 @@
       "name": "kunlun"
     },
     "dev": {
-      "baseUrl": "https://crm.dev.lingxizhifu.cn/",
+      "baseUrl": "https://hr-ai.dev.lingxizhifu.cn/",
       "basePath": "/",
       "downloadUrl": "http://update.liangjiyuren.cn/kunlun/dev"
     },
     "test": {
-      "baseUrl": "https://crm.test.lingxizhifu.cn//",
+      "baseUrl": "https://hr-ai.test.lingxizhifu.cn/",
       "basePath": "/",
       "downloadUrl": "http://update.liangjiyuren.cn/kunlun/test"
     },
     "prod": {
-      "baseUrl": "",
+      "baseUrl": "https://hr-ai.lingxizhifu.cn",
       "basePath": "/",
       "downloadUrl": "http://update.liangjiyuren.cn/kunlun/master"
     }
