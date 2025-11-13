@@ -342,11 +342,6 @@ onMounted(async () => {
     await fetchResumeDetail(props.resumeId);
     startAutoSave();
     window.addEventListener('keydown', handleKeyDown);
-
-    scoreLoading.value = true;
-    setTimeout(() => {
-        scoreLoading.value = false;
-    }, 2000)
 });
 
 onBeforeUnmount(() => {
@@ -679,7 +674,7 @@ const handleUpdateModules = async () => {
     }
 
     .ivu-poptip-popper {
-        top: vh(14) !important;
+        top: vh(20) !important;
 
         .ivu-poptip-arrow {
             border-bottom-color: rgba(70, 76, 91, 0.9);
