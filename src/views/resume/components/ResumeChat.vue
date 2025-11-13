@@ -71,7 +71,7 @@
           <p>{{ diagnoseContent }}</p>
         </div>
         <div class="modal-footer">
-          <button class="btn-cancel" @click="over!">结束AI撰写</button>
+          <button class="btn-cancel" @click="props.over?.()">结束AI撰写</button>
           <button class="btn-confirm" @click="askQuestion">继续优化</button>
         </div>
       </div>
@@ -82,7 +82,7 @@
 <script setup lang="ts">
 // 聊天组件逻辑待实现
 import {Input, Message, Modal} from "view-ui-plus";
-import {nextTick, onMounted, ref} from "vue";
+import {nextTick, onMounted, ref, watch} from "vue";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {MessagesBean} from "@/api/ai/dto/bean/MessagesBean.ts";
 import {QueryConversationInDto} from "@/api/ai/dto/QueryConversation.ts";
@@ -95,6 +95,7 @@ import {getRandomAiMessage} from "@/utiles/aiMessages.ts";
 import {AiMessageBean} from "@/api/ai/dto/bean/AiMessageBean.ts";
 import {QuestionBean} from "@/api/ai/dto/bean/QuestionBean.ts";
 import {WriteInDto} from "@/api/ai/dto/Write.ts";
+import {scrollToBottom} from "@/utiles/domUtils.ts";
 
 type TextType = {
   [key: string]: string;
@@ -141,28 +142,43 @@ const diagnoseModal = ref<boolean>(false);
 const pageNum = ref<number>(1);
 const pageSize = ref<number>(20);
 
-// 滚动到最后一个deep-thinking-content底部
-const scrollToBottom = () => {
-  nextTick(() => {
-    const elements = document.querySelectorAll('.deep-thinking-content');
-    if (elements.length > 0) {
-      const lastElement = elements[elements.length - 1] as HTMLElement;
-      lastElement.scrollTop = lastElement.scrollHeight;
-    }
-  });
+// 监听chatList变化，自动滚动到底部
+watch(chatList, () => {
+  scrollToBottom('chatting-records');
+}, {deep: true});
+
+// 根据错误码显示提示信息
+const showErrorMessage = (code: number) => {
+  const errorMessages: { [key: number]: string } = {
+    525: '免费模型次数已用完，自动切换为人工撰写模式！',
+    520: '简历模版生成失败，自动切换为人工撰写模式！',
+    521: '简历解析失败！',
+    522: '简历诊断失败！',
+    523: '简历撰写失败！'
+  };
+
+  const errorMsg = errorMessages[code];
+  if (errorMsg) {
+    message.error(Message, errorMsg);
+  }
+
+  if ([525, 520].includes(code) && props.over) props.over();
 };
+
 
 // 查询当前聊天记录
 const queryChatList = () => {
   const data: QueryConversationInDto = {
     resumeUuid: props.resumeUuid,
-    skip: pageNum.value,
-    limit: pageSize.value
+    pageInfo: {
+      pageNum: pageNum.value,
+      pageSize: pageSize.value,
+    },
   }
 
   aiService.queryConversation(data).then((res) => {
-    chatList.value = res.data.messages!;
-    if (res.data.messages?.length === 0) {
+    chatList.value = [...chatList.value, ...res.data.list!];
+    if (chatList.value?.length === 0) {
       const content: string = '请帮我制作一份求职简历！'
       chatList.value.push({
         role: 'user',
@@ -211,7 +227,7 @@ const generateTemplate = (msg: string, content: string) => {
         const str: string = extractDataContent(data, 'event:thinking')
         if (str) {
           chatList.value[chatList.value.length - 1].thinking += str
-          scrollToBottom();
+          scrollToBottom('deep-thinking-content');
         }
       } else {
         const str: string = extractDataContent(data, 'event:content')
@@ -223,12 +239,10 @@ const generateTemplate = (msg: string, content: string) => {
       // 更新UI显示流式数据
     },
     (error) => {
-      console.error(error, 'error')
-      // 显示错误信息
+      showErrorMessage(error.status)
     },
     () => {
       setThinkState();
-
       // 完成处理 查询是否存在附件，解析附件 || 分析简历
       if (props.hasAttachment) {
         // 解析模板
@@ -272,7 +286,7 @@ const parseAttachment = (msg: string) => {
         const str: string = extractDataContent(data, 'event:thinking')
         if (str) {
           chatList.value[chatList.value.length - 1].thinking += str
-          scrollToBottom();
+          scrollToBottom('deep-thinking-content');
         }
       } else {
         const str: string = extractDataContent(data, 'event:content')
@@ -283,8 +297,7 @@ const parseAttachment = (msg: string) => {
       }
     },
     (error) => {
-      console.error(error, 'error')
-      // 显示错误信息
+      showErrorMessage(error.status)
     },
     () => {
       setThinkState();
@@ -331,26 +344,23 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
         const str: string = extractDataContent(data, 'event:thinking')
         if (str) {
           chatList.value[chatList.value.length - 1].thinking += str
-          scrollToBottom();
+          scrollToBottom('deep-thinking-content');
         }
       } else {
         const str: string = extractDataContent(data, 'event:content')
 
         if (str) {
-          console.log(str);
-          console.log(JSON.parse(str).issues);
+          chatList.value.push({
+            role: 'assistant',
+            content: JSON.parse(str).diagnosisResultMessage,
+            isExpand: false,
+            thinking: ''
+          });
+
           if (reply) {
-            console.log('走了？')
-            chatList.value.push({
-              role: 'assistant',
-              content: str,
-              isExpand: false,
-              thinking: ''
-            });
             diagnoseContent.value = str;
             diagnoseModal.value = true;
           } else {
-            console.log('下一步？')
             emits('sendDiagnose', str);
             diagnoseList.value = JSON.parse(str).issues;
             askQuestion();
@@ -359,10 +369,10 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
       }
     },
     (error) => {
-      console.error(error, 'error')
-      // 显示错误信息
+      showErrorMessage(error.status)
     },
     () => {
+      console.log('我真的诊断完了吗')
       setThinkState();
     }
   );
@@ -438,7 +448,7 @@ const write = () => {
         const str: string = extractDataContent(data, 'event:thinking')
         if (str) {
           chatList.value[chatList.value.length - 1].thinking += str
-          scrollToBottom();
+          scrollToBottom('deep-thinking-content');
         }
       } else {
         const str: string = extractDataContent(data, 'event:content')
@@ -449,8 +459,8 @@ const write = () => {
 
           // 是否追问
           if (response.completed) {
-            await props.streamWrite!(response.fieldDataList);
-
+            if (props.streamWrite) await props.streamWrite(response.fieldDataList);
+            chatList.value.shift();
             askQuestion();
           } else {
             chatList.value.push({
@@ -466,8 +476,7 @@ const write = () => {
       }
     },
     (error) => {
-      console.error(error, 'error')
-      // 显示错误信息
+      showErrorMessage(error.status)
     },
     () => {
       setThinkState();
@@ -488,7 +497,7 @@ onMounted(() => {
 })
 
 defineExpose({
-  diagnoseResume
+  diagnoseResume,
 })
 </script>
 

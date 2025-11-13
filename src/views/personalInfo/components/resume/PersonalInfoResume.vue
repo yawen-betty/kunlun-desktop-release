@@ -1,7 +1,7 @@
 <template>
   <div class="resume-container">
-    <div class="resume-card" v-for="resume in resumeList" :key="resume.uuid">
-      <div class="resume-content">
+    <div class="resume-card" v-for="(resume,index) in resumeList" :key="resume.uuid">
+      <div :class="['resume-content',`resume-content-index_${index}`]">
         <ResumePreviewCard :resume-data="resume" :scrollable="false" size="small"/>
       </div>
       <div class="resume-info mt-15">
@@ -84,6 +84,7 @@ import {parseDate} from "@/utiles/DateUtils.ts";
 import {useRouter} from "vue-router";
 import {CopyResumeInDto} from "@/api/resume/dto/CopyResume.ts";
 import {message} from "@/utiles/Message.ts";
+import {download} from "@/utiles/download.ts";
 
 interface SelectItem {
   name: string;
@@ -102,8 +103,7 @@ const previewResume = ref<MyResumeBean>(new MyResumeBean());
 const deleteVisible = ref<boolean>(false);
 // 刪除简历Id
 const deleteResumeId = ref<string>('');
-
-
+// 简历列表
 const resumeList = ref<MyResumeBean[]>([]);
 
 const selectList = ref<SelectItem[]>([
@@ -130,7 +130,7 @@ const handleClick = (resume: MyResumeBean, key: string) => {
       handleCopyResume(resume.uuid!)
       break;
     case 'download':
-      downLoadResume(resume.uuid!)
+      downLoadResume(resume)
       break;
     case 'delete':
       deleteVisible.value = true;
@@ -157,8 +157,10 @@ const handleDeleteResume = () => {
 }
 
 // 下載
-const downLoadResume = (resumeId: string) => {
+const downLoadResume = (resume: MyResumeBean) => {
+  const index = resumeList.value.findIndex(info => info.uuid === resume.uuid);
 
+  download(`.resume-content-index_${index}`, 'pdf', resume.name!)
 }
 
 // 复制
@@ -174,6 +176,11 @@ const handleCopyResume = (resumeId: string) => {
     }
   })
 }
+
+// 根据uuid查找简历索引
+const findResumeIndex = (uuid: string): number => {
+  return resumeList.value.findIndex(resume => resume.uuid === uuid);
+};
 
 // 获取简历列表
 const getResumeList = () => {

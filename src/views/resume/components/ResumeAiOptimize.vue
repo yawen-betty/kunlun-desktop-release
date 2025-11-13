@@ -65,6 +65,7 @@ import {message} from "@/utiles/Message.ts";
 import {PolishInDto} from "@/api/ai/dto/Polish.ts";
 import {extractDataContent} from "@/utiles/processing.ts";
 import {AiService} from "@/service/AiService.ts";
+import {scrollToBottom} from "@/utiles/domUtils.ts";
 
 interface Props {
   modelValue: boolean; //弹窗状态
@@ -131,7 +132,7 @@ const handleSubmit = () => {
         const str: string = extractDataContent(data, 'event:thinking')
         if (str) {
           thinkContent.value += str;
-          scrollToBottom();
+          scrollToBottom('think-content');
         }
       } else {
         state.value = '3'
@@ -158,15 +159,7 @@ const handleEmitData = () => {
   handleCancel();
 }
 
-const scrollToBottom = () => {
-  nextTick(() => {
-    const elements = document.querySelectorAll('.think-content');
-    if (elements.length > 0) {
-      const lastElement = elements[elements.length - 1] as HTMLElement;
-      lastElement.scrollTop = lastElement.scrollHeight;
-    }
-  });
-};
+
 </script>
 
 <style lang="scss">

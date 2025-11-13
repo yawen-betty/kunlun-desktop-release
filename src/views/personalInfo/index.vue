@@ -15,7 +15,7 @@ import PersonalInfoTabs from './components/PersonalInfoTabs.vue';
 import PersonalInfoBasic from './components/basic/PersonalInfoBasic.vue';
 import PersonalInfoResume from "@/views/personalInfo/components/resume/PersonalInfoResume.vue";
 
-const currentTab = ref<string>('basic'); // 默认激活"基础设置"
+const currentTab = ref<string>('resume'); // 默认激活"基础设置"
 </script>
 
 
