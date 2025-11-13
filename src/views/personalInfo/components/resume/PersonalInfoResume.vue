@@ -209,6 +209,7 @@ onMounted(() => {
 .resume-content {
   width: 100%;
   height: vh(749);
+  overflow: hidden;
   background-color: $white;
   box-shadow: 0 0 6.625px 0 rgba(0, 0, 0, 0.10);
   border-radius: vw(2);

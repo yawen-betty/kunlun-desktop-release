@@ -58,16 +58,17 @@
 
 <script setup lang="ts">
 // 聊天组件逻辑待实现
-import {Input} from "view-ui-plus";
+import {Input, Message} from "view-ui-plus";
 import {onMounted, ref} from "vue";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {MessagesBean} from "@/api/ai/dto/bean/MessagesBean.ts";
 import {QueryConversationInDto} from "@/api/ai/dto/QueryConversation.ts";
 import {AiService} from "@/service/AiService.ts";
 import {GenerateTemplateInDto} from "@/api/ai/dto/GenerateTemplate.ts";
-import {ParseAttachmentInDto} from "@/api/ai/dto/ParseAttachment.ts";
 import {DiagnoseInDto} from "@/api/ai/dto/Diagnose.ts";
 import {extractDataContent} from "@/utiles/processing.ts";
+import {message} from "@/utiles/Message.ts";
+import {getRandomAiMessage} from "@/utiles/aiMessages.ts";
 
 type TextType = {
   [key: string]: string;
@@ -88,6 +89,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
   sendTemplate: [template: string]
+  sendDiagnose: [diagnose: string]
 }>()
 
 const thinkingText: TextType = {
@@ -102,16 +104,12 @@ const disabled = ref<boolean>(false);
 const chatList = ref<CustomMessagesBean[]>([]);
 // 当前流程
 const currentFlow = ref<string>('1');
-
+// 诊断问题列表
+const diagnoseList = ref([]);
 
 // 分页信息
 const pageNum = ref<number>(1);
 const pageSize = ref<number>(20);
-
-// 发送消息
-const handleSendMessage = () => {
-  console.log(sendContent.value);
-}
 
 // 查询当前聊天记录
 const queryChatList = () => {
@@ -258,7 +256,6 @@ const diagnoseResume = (message?: string) => {
     params,
     (data) => {
 
-      console.log(data, '1111')
       if (data.includes('event:thinking')) {
 
         const str: string = extractDataContent(data, 'event:thinking')
@@ -269,7 +266,9 @@ const diagnoseResume = (message?: string) => {
         const str: string = extractDataContent(data, 'event:content')
 
         if (str) {
-          emits('sendTemplate', str);
+          emits('sendDiagnose', str);
+          diagnoseList.value = JSON.parse(str).issues;
+          askQuestion();
         }
       }
     },
@@ -281,6 +280,58 @@ const diagnoseResume = (message?: string) => {
       setThinkState();
     }
   );
+}
+
+// 提出问题 (每次取第一个问题)
+const askQuestion = () => {
+  if (diagnoseList.value.length > 0) {
+    const question = diagnoseList.value[0].question;
+    chatList.value.push({
+      role: 'assistant',
+      content: question,
+      isExpand: false,
+      thinkingStatus: '0',
+      thinking: ''
+    });
+
+    disabled.value = true;
+  } else {
+    // 结束问题
+  }
+}
+
+// 发送消息
+const handleSendMessage = () => {
+
+  if (!sendContent.value) return message.error(Message, '请输入内容后发送')
+
+  chatList.value.push({
+    role: 'user',
+    content: sendContent.value,
+    isExpand: false,
+    thinkingStatus: '0',
+    thinking: ''
+  });
+  sendContent.value = '';
+  disabled.value = true;
+
+  write();
+}
+
+// 撰写
+const write = () => {
+  // 获取随机话术
+  const message = getRandomAiMessage();
+  chatList.value.push({
+    role: 'assistant',
+    content: message,
+    isExpand: true,
+    thinkingStatus: '2',
+    thinking: ''
+  });
+
+  // aiService.writeStream()
+  
 }
 
 // 关闭深度思考

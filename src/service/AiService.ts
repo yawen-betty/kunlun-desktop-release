@@ -83,12 +83,23 @@ export class AiService {
             onComplete
         );
     }
-    
+
     /**
      * 撰写简历内容
      */
-    public async write(params: WriteInDto): Promise<Result<WriteOutDto>> {
-        return await this.http.request<Result<WriteOutDto>>(AiPaths.write, params);
+    public writeStream(
+        params: WriteInDto,
+        onMessage: (data: any) => void,
+        onError: (error: any) => void,
+        onComplete: () => void
+    ): void {
+        this.http.sseRequest(
+            AiPaths.write,
+            params,
+            onMessage,
+            onError,
+            onComplete
+        );
     }
 
     /**
