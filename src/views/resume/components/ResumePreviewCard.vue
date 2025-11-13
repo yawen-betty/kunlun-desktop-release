@@ -12,7 +12,9 @@
                 </div>
             </div>
             <div class="photo-wrapper">
-                <img v-if="contactInfo.photo" :src="contactInfo.photo" alt="个人照片" class="photo"/>
+                <img v-if="contactInfo.photo" :src="`${Config.baseUrl}${contactInfo.photo}`" :style="photoStyle"
+                     alt="个人照片"
+                     class="photo"/>
                 <div v-else class="photo-placeholder"></div>
             </div>
         </div>
@@ -76,11 +78,12 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, withDefaults} from 'vue';
+import {computed, withDefaults, ref, watch, onMounted} from 'vue';
 import {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
 import {ResumeModuleBean} from '@/api/resume/dto/bean/ResumeModuleBean';
 import {ResumeEntryBean} from '@/api/resume/dto/bean/ResumeEntryBean';
 import {ResumeFieldBean} from '@/api/resume/dto/bean/ResumeFieldBean';
+import {Config} from "@/Config.ts";
 
 const props = withDefaults(defineProps<{
     resumeData: GetResumeDetailOutDto;
@@ -90,6 +93,8 @@ const props = withDefaults(defineProps<{
     scrollable: true,
     size: 'large'
 });
+
+const photoStyle = ref<any>({});
 
 const contactInfo = computed(() => {
     const basicModule = props.resumeData.modules?.find(m => m.moduleKey === 'basic_info');
@@ -170,6 +175,23 @@ const getTextModuleContent = (module: ResumeModuleBean): string => {
 const getTextModuleFieldName = (module: ResumeModuleBean): string => {
     return module.entries?.[0]?.fields?.[0]?.fieldName || '';
 };
+
+const updatePhotoStyle = () => {
+    if (contactInfo.value.photo) {
+        const imageUrl = `${Config.baseUrl}${contactInfo.value.photo}`;
+        const img = new Image();
+        img.onload = () => {
+            photoStyle.value = img.width > img.height ? {height: '100%'} : {width: '100%'};
+        };
+        img.src = imageUrl;
+    }
+};
+
+watch(() => props.resumeData, updatePhotoStyle, {deep: true});
+
+onMounted(() => {
+    updatePhotoStyle();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -270,15 +292,11 @@ const getTextModuleFieldName = (module: ResumeModuleBean): string => {
     }
 
     .photo-wrapper {
+        display: flex;
+        justify-content: center;
         width: var(--photo-w);
         height: var(--photo-h);
         overflow: hidden;
-
-        .photo {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
 
         .photo-placeholder {
             width: 100%;

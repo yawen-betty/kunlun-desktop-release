@@ -44,7 +44,7 @@
                                 </ul>
                             </template>
                         </Poptip>
-                        <Loading/>
+                        <Loading v-if="scoreLoading"/>
                     </div>
                     <div v-else></div>
                     <div class="right-actions">
@@ -89,8 +89,9 @@
                 </div>
                 <!-- 聊天区 -->
                 <Transition name="slide-right">
-                    <ResumeChat v-if="currentMode === 'ai'" :hasAttachment="uploadedFile" :resumeUuid="resumeId"
-                                @sendTemplate="sendTemplate"/>
+                    <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :hasAttachment="uploadedFile"
+                                :resumeUuid="resumeId"
+                                @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
                 </Transition>
             </div>
         </div>
@@ -154,6 +155,8 @@
                 </div>
             </div>
         </Modal>
+
+        <ModelUsageExhaustedModal v-model="usageExhaustedModalVisible"/>
     </div>
 </template>
 
@@ -184,6 +187,7 @@ import {GetResumeDetailInDto} from "@/api/resume/dto/GetResumeDetail";
 import {SaveResumeInDto} from "@/api/resume/dto/SaveResume";
 import {RenameResumeInDto} from "@/api/resume/dto/RenameResume";
 import Loading from '@/components/loading/index.vue'
+import ModelUsageExhaustedModal from "@/views/resume/components/ModelUsageExhaustedModal.vue";
 
 const props = defineProps<{
     resumeId: string;
@@ -198,6 +202,7 @@ const emit = defineEmits<{
 const resumeData = ref<any>({modules: []});
 
 const previewRef = useCompRef(ResumePreview);
+const resumeChatRef = useCompRef(ResumeChat)
 // 左侧简历的loading状态
 const isGenerating = ref(false);
 
@@ -223,6 +228,8 @@ const lottieContainer = ref<HTMLElement>();
 let lottieInstance: any = null;
 let hideTimer: number | null = null;
 const showDownloadModal = ref(false);
+const scoreLoading = ref(false)
+const usageExhaustedModalVisible = ref(false)
 
 const formData = reactive({
     resumeName: ''
@@ -253,10 +260,22 @@ watch(showRenameModal, (val) => {
 });
 
 /**
+ * ai次数用完，切换成人工模式，打开弹窗
+ */
+const over = () => {
+    currentMode.value = 'manual';
+    usageExhaustedModalVisible.value = true
+}
+
+/**
  * 更新简历分数
  * @param params
  */
-const updateScore = (params: any) => {
+const sendDiagnose = (params: any) => {
+    scoreLoading.value = true;
+    setTimeout(() => {
+        scoreLoading.value = false;
+    }, 2000)
     resumeScore.value = params.score;
     scoreProblems.value = params.issues.map(item => item.question)
 }
@@ -323,6 +342,11 @@ onMounted(async () => {
     await fetchResumeDetail(props.resumeId);
     startAutoSave();
     window.addEventListener('keydown', handleKeyDown);
+
+    scoreLoading.value = true;
+    setTimeout(() => {
+        scoreLoading.value = false;
+    }, 2000)
 });
 
 onBeforeUnmount(() => {
@@ -346,6 +370,7 @@ const handleConfirm = async () => {
             resumeName.value = formData.resumeName;
             showRenameModal.value = false;
             Message.success('重命名成功');
+            fetchResumeDetail(props.resumeId)
         } catch (error) {
             Message.error('重命名失败');
             console.error(error);
@@ -452,6 +477,9 @@ const toggleMode = debounce(() => {
         showModeConfirmModal.value = true;
     } else {
         currentMode.value = 'ai';
+        nextTick(() => {
+            resumeChatRef.value?.diagnoseResume()
+        })
     }
 }, 300);
 

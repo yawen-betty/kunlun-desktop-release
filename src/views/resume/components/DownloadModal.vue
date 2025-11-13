@@ -86,13 +86,12 @@
 
 <script lang="ts" setup>
 import {computed, ref} from 'vue';
-import {Button, Input, Modal, Message} from 'view-ui-plus';
+import {Button, Input, Modal} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import SimpleResumePreview from './SimpleResumePreview.vue';
 import BusinessResumePreview from './BusinessResumePreview.vue';
 import type {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import {download} from "@/utiles/download.ts";
 
 const props = defineProps<{
     modelValue: boolean;
@@ -124,81 +123,8 @@ const handleWatermarkBlur = () => {
     showWatermark.value = !!watermarkContent.value.trim();
 };
 
-const handleDownload = async () => {
-    const previewEl = document.querySelector('.preview-section .content-wrapper') as HTMLElement;
-    if (!previewEl) return;
-
-    try {
-        const svgs = previewEl.querySelectorAll('svg');
-        const svgDataMap = new Map();
-
-        for (const svg of svgs) {
-            const clone = svg.cloneNode(true) as SVGElement;
-            const rect = svg.getBoundingClientRect();
-            clone.setAttribute('width', String(rect.width));
-            clone.setAttribute('height', String(rect.height));
-            const svgData = new XMLSerializer().serializeToString(clone);
-            const dataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
-            svgDataMap.set(svg, {dataUrl, parent: svg.parentElement, width: rect.width, height: rect.height});
-        }
-
-        svgDataMap.forEach(({dataUrl, parent, width, height}, svg) => {
-            const img = document.createElement('img');
-            img.src = dataUrl;
-            img.style.width = width + 'px';
-            img.style.height = height + 'px';
-            img.style.display = 'inline-block';
-            parent?.replaceChild(img, svg);
-        });
-
-        const canvas = await html2canvas(previewEl, {
-            scale: 2,
-            backgroundColor: '#ffffff',
-            logging: false,
-            useCORS: true
-        });
-
-        svgDataMap.forEach(({ parent }, svg) => {
-            const imgs = parent?.querySelectorAll('img');
-            imgs?.forEach(img => {
-                if (img.src.startsWith('data:image/svg')) {
-                    parent?.replaceChild(svg, img);
-                }
-            });
-        });
-
-        const ext = selectedFormat.value;
-        const fileName = `简历_${Date.now()}.${ext}`;
-
-        let blob: Blob;
-        if (ext === 'jpg') {
-            blob = await new Promise(resolve => canvas.toBlob(resolve as any, 'image/jpeg', 0.95));
-        } else {
-            const imgWidth = 210;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            const pdf = new jsPDF('p', 'mm', [imgWidth, imgHeight]);
-            pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, imgWidth, imgHeight);
-            blob = pdf.output('blob');
-        }
-
-        const handle = await (window as any).showSaveFilePicker({
-            suggestedName: fileName,
-            types: [{
-                description: ext.toUpperCase(),
-                accept: {[ext === 'jpg' ? 'image/jpeg' : 'application/pdf']: [`.${ext}`]}
-            }]
-        });
-
-        const writable = await handle.createWritable();
-        await writable.write(blob);
-        await writable.close();
-
-        Message.success('下载成功');
-    } catch (error) {
-        if ((error as any).name !== 'AbortError') {
-            Message.error('下载失败');
-        }
-    }
+const handleDownload = () => {
+    download('.preview-section .content-wrapper', selectedFormat.value, props.resumeData.name || '未命名')
 };
 </script>
 
