@@ -34,8 +34,8 @@
                         </div>
                     </div>
                     <div v-if="getFieldValue('basic_info', 'personal_image')" class="photo-wrapper">
-                        <img :src="getFieldValue('basic_info', 'personal_image')" alt="个人照片" class="photo"
-                             crossorigin="anonymous"/>
+                        <img :src="`${Config.baseUrl}${getFieldValue('basic_info', 'personal_image')}`"
+                             :style="photoStyle" alt="个人照片" class="avatar"/>
                     </div>
                 </div>
             </div>
@@ -93,6 +93,7 @@ import type {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
 import type {ResumeModuleBean} from '@/api/resume/dto/bean/ResumeModuleBean';
 import type {ResumeEntryBean} from '@/api/resume/dto/bean/ResumeEntryBean';
 import SvgIcon from "@/components/svgIcon/index.vue";
+import {Config} from "@/Config.ts";
 
 const props = defineProps<{
     resumeData: GetResumeDetailOutDto;
@@ -102,6 +103,7 @@ const props = defineProps<{
 const resumeRef = ref<HTMLElement>();
 const watermarkCount = ref(0);
 const watermarkHeight = ref(0);
+const photoStyle = ref<any>({});
 
 const updateWatermarkCount = async () => {
     await nextTick();
@@ -127,8 +129,22 @@ const updateWatermarkCount = async () => {
 watch(() => props.watermark, updateWatermarkCount);
 watch(() => props.resumeData, updateWatermarkCount, {deep: true});
 
+const updatePhotoStyle = () => {
+    const imageUrl = `${Config.baseUrl}${getFieldValue('basic_info', 'personal_image')}`;
+    if (imageUrl && imageUrl !== Config.baseUrl) {
+        const img = new Image();
+        img.onload = () => {
+            photoStyle.value = img.width > img.height ? {height: '100%'} : {width: '100%'};
+        };
+        img.src = imageUrl;
+    }
+};
+
+watch(() => props.resumeData, updatePhotoStyle, {deep: true});
+
 onMounted(() => {
     updateWatermarkCount();
+    updatePhotoStyle();
 });
 
 const getModule = (moduleKey: string): ResumeModuleBean | undefined => {
@@ -315,16 +331,17 @@ const getTextModuleFieldName = (module: ResumeModuleBean): string => {
 }
 
 .photo-wrapper {
+    display: flex;
+    justify-content: center;
     width: vw(88.4);
     height: vw(88.4);
-    flex-shrink: 0;
     margin-right: vw(24);
+    overflow: hidden;
 }
 
-.photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.avatar {
+    display: block;
+    margin: 0 auto;
     background: $bg-gray;
 }
 

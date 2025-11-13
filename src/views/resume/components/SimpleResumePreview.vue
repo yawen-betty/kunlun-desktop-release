@@ -15,7 +15,9 @@
                     <div class="contact-info">个人邮箱：{{ getFieldValue('basic_info', 'email') }}</div>
                 </div>
                 <div v-if="getFieldValue('basic_info', 'personal_image')" class="header-right">
-                    <img :src="getFieldValue('basic_info', 'personal_image')" alt="个人照片" class="avatar" crossorigin="anonymous"/>
+                    <img :src="`${Config.baseUrl}${getFieldValue('basic_info', 'personal_image')}`" :style="avatarStyle"
+                         alt="个人照片"
+                         class="avatar"/>
                 </div>
             </div>
 
@@ -78,6 +80,7 @@ import {computed, ref, watch, onMounted, nextTick} from 'vue';
 import type {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
 import type {ResumeModuleBean} from '@/api/resume/dto/bean/ResumeModuleBean';
 import type {ResumeEntryBean} from '@/api/resume/dto/bean/ResumeEntryBean';
+import {Config} from "@/Config.ts";
 
 const props = defineProps<{
     resumeData: GetResumeDetailOutDto;
@@ -87,6 +90,7 @@ const props = defineProps<{
 const resumeRef = ref<HTMLElement>();
 const watermarkCount = ref(0);
 const watermarkHeight = ref(0);
+const avatarStyle = ref<any>({});
 
 const updateWatermarkCount = async () => {
     await nextTick();
@@ -112,8 +116,22 @@ const updateWatermarkCount = async () => {
 watch(() => props.watermark, updateWatermarkCount);
 watch(() => props.resumeData, updateWatermarkCount, {deep: true});
 
+const updateAvatarStyle = () => {
+    const imageUrl = `${Config.baseUrl}${getFieldValue('basic_info', 'personal_image')}`;
+    if (imageUrl && imageUrl !== Config.baseUrl) {
+        const img = new Image();
+        img.onload = () => {
+            avatarStyle.value = img.width > img.height ? {height: '100%'} : {width: '100%'};
+        };
+        img.src = imageUrl;
+    }
+};
+
+watch(() => props.resumeData, updateAvatarStyle, {deep: true});
+
 onMounted(() => {
     updateWatermarkCount();
+    updateAvatarStyle();
 });
 
 const getModule = (moduleKey: string): ResumeModuleBean | undefined => {
@@ -271,15 +289,15 @@ const getTextModuleFieldName = (module: ResumeModuleBean): string => {
 }
 
 .header-right {
-    width: vw(68);
-    height: vh(88.4);
+    width: vw(88.4);
+    height: vw(88.4);
     margin-left: vw(20);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
 }
 
 .avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
     background: $bg-gray;
 }
 

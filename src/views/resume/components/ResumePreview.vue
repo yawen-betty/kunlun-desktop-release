@@ -61,7 +61,7 @@
                      @click="handlePhotoClick">
                     <input ref="photoInput" accept="image/jpg,image/jpeg,image/png" style="display: none" type="file"
                            @change="handlePhotoChange"/>
-                    <img v-if="photoUrl" :src="photoUrl" alt="照片" class="photo-img"/>
+                    <img v-if="photoUrl" :src="photoUrl" :style="photoStyle" alt="照片" class="photo-img"/>
                     <SvgIcon v-else color="#9499A4" name="icon-xinzeng" size="20"/>
                 </div>
             </div>
@@ -714,6 +714,7 @@ import {UpdateModuleFieldsInDto} from '@/api/resume/dto/UpdateModuleFields';
 import {FieldUpdateBean} from '@/api/resume/dto/bean/FieldUpdateBean';
 import {UpdateModuleEntriesInDto} from '@/api/resume/dto/UpdateModuleEntries';
 import {EntryUpdateBean} from '@/api/resume/dto/bean/EntryUpdateBean';
+import {Config} from "@/Config.ts";
 
 const props = withDefaults(defineProps<{
     isGenerating?: boolean;
@@ -743,6 +744,7 @@ const allAvailableFields = ref<any[]>([]); // 所有可用字段列表
 const resumeService = new ResumeService();
 const photoInput = ref<HTMLInputElement>();
 const photoUrl = ref<string>('');
+const photoStyle = ref<any>({});
 const showAiOptimize = ref(false);
 const aiOptimizeProps = ref<{
     resumeId: string;
@@ -1204,20 +1206,27 @@ const handlePhotoChange = async (e: Event) => {
     }
 
     try {
-        const extraFields = new Map<string, any>();
-        extraFields.set('folderPath', 'kunlun-pc/personal-image');
+        const extraFields = {
+            'folderPath': 'kunlun-pc/personal-image'
+        };
         const result = await fileService.upload(file, extraFields);
 
         if (result.code === 200 && result.data) {
             const imageUrl = result.data.fileHost + result.data.filePath;
             photoUrl.value = imageUrl;
 
+            const img = new Image();
+            img.onload = () => {
+                photoStyle.value = img.width > img.height ? { height: '100%' } : { width: '100%' };
+            };
+            img.src = imageUrl;
+
             const personalImageField = getTopField('personal_image');
             if (personalImageField?.uuid) {
                 streamValues.value.set(personalImageField.uuid, imageUrl);
                 const field = basicInfoModule.value?.entries?.[0]?.fields?.find((f: any) => f.fieldKey === 'personal_image');
                 if (field) {
-                    field.fieldValue = imageUrl;
+                    field.fieldValue = result.data.filePath;
                 }
             }
 
@@ -1243,7 +1252,13 @@ const initFieldValues = () => {
                 if (field.fieldValue) {
                     streamValues.value.set(field.uuid, field.fieldValue);
                     if (field.fieldKey === 'personal_image') {
-                        photoUrl.value = field.fieldValue;
+                        const imageUrl = `${Config.baseUrl}${field.fieldValue}`;
+                        photoUrl.value = imageUrl;
+                        const img = new Image();
+                        img.onload = () => {
+                            photoStyle.value = img.width > img.height ? { height: '100%' } : { width: '100%' };
+                        };
+                        img.src = imageUrl;
                     }
                 }
             });
@@ -1344,18 +1359,6 @@ defineExpose({
     background: $bg-gray;
     flex-shrink: 0;
     overflow: hidden;
-    position: relative;
-
-    .photo-img {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-    }
 }
 
 .section-spec {
