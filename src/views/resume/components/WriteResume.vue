@@ -89,7 +89,7 @@
                 <!-- 聊天区 -->
                 <Transition name="slide-right">
                     <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :hasAttachment="uploadedFile"
-                                :over="over" :resumeUuid="resumeId" :streamWrite="previewRef?.streamWrite"
+                                :over="over" :resumeUuid="resumeId" :streamWrite="handleWriteStream"
                                 @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
                 </Transition>
             </div>
@@ -187,6 +187,7 @@ import {RenameResumeInDto} from "@/api/resume/dto/RenameResume";
 import Loading from '@/components/loading/index.vue'
 import ModelUsageExhaustedModal from "@/views/resume/components/ModelUsageExhaustedModal.vue";
 import {QuestionBean} from "@/api/ai/dto/bean/QuestionBean.ts";
+import {StreamItem} from "@/views/resume/components/ResumePreview.vue";
 
 const props = defineProps<{
     resumeId: string;
@@ -259,6 +260,11 @@ const isShowToggleBtn = ref(false);
 watch(showRenameModal, (val) => {
     if (val) formData.resumeName = resumeName.value;
 });
+
+const handleWriteStream = async (items: StreamItem[], speed?: number) => {
+    await previewRef.value?.streamWrite(items, speed);
+    isShowToggleBtn.value = true
+}
 
 /**
  * ai次数用完，切换成人工模式，打开弹窗
@@ -481,7 +487,8 @@ const toggleMode = debounce(() => {
 const sendTemplate = (templateData: string) => {
     resumeData.value = JSON.parse(templateData)
     isGenerating.value = false;
-    isShowToggleBtn.value = true
+    // 如果没有简历附件，就展示更多的按钮
+    if (!props.uploadedFile) isShowToggleBtn.value = true
 }
 
 // 确认切换模式

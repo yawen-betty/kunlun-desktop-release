@@ -1008,7 +1008,7 @@ const isEntryStreaming = (entry: any) => {
     return fields.some((f: any) => f.uuid === currentStreamingField.value);
 };
 
-interface StreamItem {
+export interface StreamItem {
     fieldUuid: string;
     fieldValue: string;
 }
@@ -1217,7 +1217,7 @@ const handlePhotoChange = async (e: Event) => {
 
             const img = new Image();
             img.onload = () => {
-                photoStyle.value = img.width > img.height ? { height: '100%' } : { width: '100%' };
+                photoStyle.value = img.width > img.height ? {height: '100%'} : {width: '100%'};
             };
             img.src = imageUrl;
 
@@ -1256,7 +1256,7 @@ const initFieldValues = () => {
                         photoUrl.value = imageUrl;
                         const img = new Image();
                         img.onload = () => {
-                            photoStyle.value = img.width > img.height ? { height: '100%' } : { width: '100%' };
+                            photoStyle.value = img.width > img.height ? {height: '100%'} : {width: '100%'};
                         };
                         img.src = imageUrl;
                     }
