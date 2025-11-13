@@ -38,8 +38,7 @@
                             <template #content>
                                 <ul class="problem-list">
                                     <li v-for="(problem, index) in scoreProblems" :key="index">
-                                        <span :title="problem.length > 20 ? problem : ''"
-                                              class="problem-text">{{ problem }}</span>
+                                        <span class="problem-text">{{ problem }}</span>
                                     </li>
                                 </ul>
                             </template>
@@ -53,7 +52,7 @@
                             <div ref="lottieContainer" class="lottie-icon flex"></div>
                             <span class="success-text">保存成功</span>
                         </div>
-                        <Button v-if="showScoreAndMode" class="mode-btn" type="primary" @click="toggleMode">
+                        <Button v-if="isShowToggleBtn" class="mode-btn" type="primary" @click="toggleMode">
                             <SvgIcon class="mr-5" color="#FFFFFF" name="icon-qiehuan" size="10"/>
                             <span>{{ currentMode === 'ai' ? '人工' : 'AI' }}撰写</span>
                         </Button>
@@ -64,20 +63,20 @@
                             </div>
                             <template #list>
                                 <DropdownMenu class="more-dropdown-menu">
-                                    <DropdownItem @click="handleSave">
-                                        <div class="dropdown-item-content">
+                                    <DropdownItem v-if="isShowToggleBtn" @click="handleSave">
+                                        <div class="dropdown-item-content flex-column">
                                             <SvgIcon name="icon-baocun" size="12"/>
                                             <span>保存(ctrl+s)</span>
                                         </div>
                                     </DropdownItem>
-                                    <DropdownItem @click="handleDownload">
-                                        <div class="dropdown-item-content">
+                                    <DropdownItem v-if="isShowToggleBtn" @click="handleDownload">
+                                        <div class="dropdown-item-content flex-column">
                                             <SvgIcon name="icon-xiazai" size="12"/>
                                             <span>下载</span>
                                         </div>
                                     </DropdownItem>
                                     <DropdownItem @click="handleExit">
-                                        <div class="dropdown-item-content">
+                                        <div class="dropdown-item-content flex-column">
                                             <SvgIcon name="icon-tuichu-mian" size="12"/>
                                             <span>退出</span>
                                         </div>
@@ -90,7 +89,7 @@
                 <!-- 聊天区 -->
                 <Transition name="slide-right">
                     <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :hasAttachment="uploadedFile"
-                                :resumeUuid="resumeId"
+                                :over="over" :resumeUuid="resumeId" :streamWrite="previewRef?.streamWrite"
                                 @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
                 </Transition>
             </div>
@@ -122,7 +121,6 @@
         <DownloadModal
             v-model="showDownloadModal"
             :resume-data="resumeData"
-            @download="handleDownloadConfirm"
         />
 
         <!-- 重命名弹框 -->
@@ -188,6 +186,7 @@ import {SaveResumeInDto} from "@/api/resume/dto/SaveResume";
 import {RenameResumeInDto} from "@/api/resume/dto/RenameResume";
 import Loading from '@/components/loading/index.vue'
 import ModelUsageExhaustedModal from "@/views/resume/components/ModelUsageExhaustedModal.vue";
+import {QuestionBean} from "@/api/ai/dto/bean/QuestionBean.ts";
 
 const props = defineProps<{
     resumeId: string;
@@ -199,38 +198,37 @@ const props = defineProps<{
 const emit = defineEmits<{
     'back-to-make': [];
 }>();
-const resumeData = ref<any>({modules: []});
 
+const resumeData = ref<any>({modules: []});
 const previewRef = useCompRef(ResumePreview);
 const resumeChatRef = useCompRef(ResumeChat)
 // 左侧简历的loading状态
-const isGenerating = ref(false);
-
+const isGenerating = ref(true);
 // 重命名弹框 visible
 const showRenameModal = ref(false);
+// 切换人工模式确认框
 const showModeConfirmModal = ref(false);
-const resumeName = ref('我的简历-未命名1');
+const resumeName = ref('');
+// 是否显示分数
 const showScoreAndMode = ref(false);
+// 当前模式
 const currentMode = ref<'ai' | 'manual'>(props.initialMode || 'ai');
+// 简历分数
 const resumeScore = ref(15);
-const scoreProblems = ref<string[]>([
-    '问题一问题一问题一问题一问题一问题一问题一问题一问题一问题一问题一',
-    '问题二',
-    '问题三',
-    '问题四',
-    '问题五',
-    '问题六',
-    '问题七'
-]);
+// 待优化问题列表
+const scoreProblems = ref<string[]>([]);
 const resumeService = new ResumeService();
+// 保存成功状态
 const showSaveSuccess = ref(false);
 const lottieContainer = ref<HTMLElement>();
 let lottieInstance: any = null;
 let hideTimer: number | null = null;
 const showDownloadModal = ref(false);
+// 显示score分数
 const scoreLoading = ref(false)
+// 模型次数用完弹窗
 const usageExhaustedModalVisible = ref(false)
-
+// 重命名弹框表单数据
 const formData = reactive({
     resumeName: ''
 })
@@ -254,6 +252,9 @@ const rules = computed(() => ({
         }
     ]
 }));
+// 是否显示切换人工按钮
+const isShowToggleBtn = ref(false);
+
 // 监听弹框打开，初始化临时名称
 watch(showRenameModal, (val) => {
     if (val) formData.resumeName = resumeName.value;
@@ -271,21 +272,26 @@ const over = () => {
  * 更新简历分数
  * @param params
  */
-const sendDiagnose = (params: any) => {
-    scoreLoading.value = true;
-    setTimeout(() => {
-        scoreLoading.value = false;
-    }, 2000)
-    resumeScore.value = params.score;
-    // scoreProblems.value = params.issues.map(item => item.question)
+const sendDiagnose = (params: string) => {
+    try {
+        const paramsObj = JSON.parse(params) as { score: number; issues: QuestionBean[] };
+        scoreLoading.value = true;
+        setTimeout(() => {
+            scoreLoading.value = false;
+        }, 2000)
+        resumeScore.value = paramsObj.score;
+        scoreProblems.value = paramsObj.issues.map(item => item.question)
+    } catch (e) {
+        console.log('简历分数更新失败')
+    }
 }
 
 /**
  * 获取简历详情
  * @param resumeId
+ * @param isFirst
  */
-const fetchResumeDetail = async (resumeId: string) => {
-    isGenerating.value = true;
+const fetchResumeDetail = async (resumeId: string, isFirst?: boolean) => {
     try {
         const resumeService = ResumeService.getInstance();
         const params = new GetResumeDetailInDto();
@@ -293,9 +299,8 @@ const fetchResumeDetail = async (resumeId: string) => {
 
         const result = await resumeService.getResumeDetail(params);
         if (result.code === 200 && result.data) {
-            resumeData.value = result.data;
+            if (!isFirst) resumeData.value = result.data;
             resumeName.value = result.data.name || '我的简历-未命名1';
-            toggleScoreDisplay(true);
         } else {
             Message.error(result.msg || '获取简历详情失败');
         }
@@ -303,7 +308,6 @@ const fetchResumeDetail = async (resumeId: string) => {
         Message.error('获取简历详情失败');
         console.error(error);
     } finally {
-        isGenerating.value = false;
     }
 };
 
@@ -338,8 +342,9 @@ onMounted(async () => {
     }
     if (props.resumeName) {
         resumeName.value = props.resumeName;
+    } else {
+        await fetchResumeDetail(props.resumeId, true);
     }
-    await fetchResumeDetail(props.resumeId);
     startAutoSave();
     window.addEventListener('keydown', handleKeyDown);
 });
@@ -448,12 +453,6 @@ const handleDownload = debounce(() => {
     showDownloadModal.value = true;
 }, 300);
 
-const handleDownloadConfirm = (config: { style: string; format: string; watermark: string }) => {
-    console.log('下载配置:', config);
-    Message.success('开始下载');
-    showDownloadModal.value = false;
-};
-
 const handleExit = debounce(async () => {
     if (isEditing.value) {
         Message.warning('当前处于编辑中,请保存后再操作!');
@@ -480,20 +479,15 @@ const toggleMode = debounce(() => {
 
 // 第一步传递的模板数据
 const sendTemplate = (templateData: string) => {
-    isGenerating.value = true;
     resumeData.value = JSON.parse(templateData)
     isGenerating.value = false;
+    isShowToggleBtn.value = true
 }
 
 // 确认切换模式
 const confirmModeSwitch = () => {
     currentMode.value = 'manual';
     showModeConfirmModal.value = false;
-};
-
-// 控制分数和模式显示
-const toggleScoreDisplay = (show: boolean) => {
-    showScoreAndMode.value = show;
 };
 
 // 数据变更处理
@@ -790,8 +784,6 @@ const handleUpdateModules = async () => {
 }
 
 .dropdown-item-content {
-    display: flex;
-    align-items: center;
     gap: vw(10);
     color: $font-dark;
     font-size: vw(14);

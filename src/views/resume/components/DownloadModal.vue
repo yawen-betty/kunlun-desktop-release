@@ -100,7 +100,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'update:modelValue': [value: boolean];
-    'download': [config: { style: string; format: string; watermark: string }];
 }>();
 
 const visible = computed({
