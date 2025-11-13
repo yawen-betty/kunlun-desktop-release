@@ -34,7 +34,7 @@
                     <div v-if="showScoreAndMode && currentMode === 'ai'" class="score-wrapper flex flex-column">
                         <div class="score-text mr-10">当前简历分数：{{ resumeScore }}</div>
                         <Poptip class="questions-pop flex-column mr-20" placement="bottom" trigger="hover">
-                            <SvgIcon class="tip" color="#FC8919" name="icon-tishi"/>
+                            <SvgIcon class="tip" color="#FC8919" name="icon-tishi" size="14"/>
                             <template #content>
                                 <ul class="problem-list">
                                     <li v-for="(problem, index) in scoreProblems" :key="index">
@@ -50,7 +50,7 @@
                     <div class="right-actions">
                         <!-- 保存成功状态 -->
                         <div v-if="showSaveSuccess" class="save-success-status flex-column mr-20">
-                            <div ref="lottieContainer" class="lottie-icon"></div>
+                            <div ref="lottieContainer" class="lottie-icon flex"></div>
                             <span class="success-text">保存成功</span>
                         </div>
                         <Button v-if="showScoreAndMode" class="mode-btn" type="primary" @click="toggleMode">
@@ -277,7 +277,7 @@ const sendDiagnose = (params: any) => {
         scoreLoading.value = false;
     }, 2000)
     resumeScore.value = params.score;
-    scoreProblems.value = params.issues.map(item => item.question)
+    // scoreProblems.value = params.issues.map(item => item.question)
 }
 
 /**
@@ -663,6 +663,8 @@ const handleUpdateModules = async () => {
     .tip {
         width: vw(14) !important;
         height: vw(14) !important;
+        min-width: 12px !important;
+        min-height: 12px !important;
     }
 }
 
