@@ -1980,6 +1980,7 @@ dependencies = [
 name = "kunlun"
 version = "1.0.1"
 dependencies = [
+ "base64 0.22.1",
  "futures-util",
  "reqwest",
  "serde",
