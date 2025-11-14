@@ -222,6 +222,7 @@ const rules = computed(() => ({
 }));
 const dropdownStyle = ref({});
 const showAvailableList = ref(false);
+const currentZIndex = ref(1000);
 
 const selectedModules = ref<ModuleItem[]>([...props.appliedModules]);
 const customAvailableModules = ref<ModuleItem[]>([...props.availableModulesList]);
@@ -380,15 +381,29 @@ const updateDropdownPosition = () => {
             position: 'fixed',
             top: `${rect.bottom}px`,
             left: `${rect.left}px`,
-            zIndex: 1000
+            zIndex: currentZIndex.value
         };
     }
 };
 
+const getMaxZIndex = () => {
+    const dropdowns = document.querySelectorAll('.module-dropdown');
+    if (dropdowns.length < 1) return 1000;
+
+    let maxZ = 1000;
+    dropdowns.forEach(el => {
+        const z = parseInt(window.getComputedStyle(el).zIndex) || 1000;
+        if (z > maxZ) maxZ = z;
+    });
+    return maxZ + 1;
+};
+
 const toggleVisible = () => {
+    console.log(visible.value)
     if (visible.value) {
         handleCancel();
     } else {
+        currentZIndex.value = getMaxZIndex();
         visible.value = true;
         selectedModules.value = [...props.appliedModules];
         customAvailableModules.value = [...props.availableModulesList];

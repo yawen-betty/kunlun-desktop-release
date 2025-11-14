@@ -9,9 +9,9 @@
         <div class="modal-content">
             <Icon class="close-icon" type="md-close" @click="handleClose"/>
 
-            <h3 class="modal-title mb-40">免费模型次数已用完</h3>
+            <h3 class="modal-title mb-40">AI账号配置</h3>
 
-            <p class="description mb-20">您可以注册、配置自己的模型账号，免费使用AI撰写功能！</p>
+            <p class="description mb-20">您可以注册、配置自己的AI账号，免费使用AI撰写功能！</p>
 
             <div class="tutorial-link mb-40" @click="handleShowTutorial">
                 <Icon type="md-help-circle"/>

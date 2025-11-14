@@ -85,7 +85,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref} from 'vue';
+import {computed, ref, watch} from 'vue';
 import {Button, Input, Modal} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import SimpleResumePreview from './SimpleResumePreview.vue';
@@ -112,11 +112,22 @@ const selectedFormat = ref<'pdf' | 'jpg'>('pdf');
 const watermarkContent = ref('');
 const showWatermark = ref(false);
 
-const handleClose = () => {
-    visible.value = false;
+const resetData = () => {
+    selectedStyle.value = 'simple';
+    selectedFormat.value = 'pdf';
     watermarkContent.value = '';
     showWatermark.value = false;
 };
+
+const handleClose = () => {
+    visible.value = false;
+};
+
+watch(visible, (newVal) => {
+    if (!newVal) {
+        resetData();
+    }
+});
 
 const handleWatermarkBlur = () => {
     showWatermark.value = !!watermarkContent.value.trim();

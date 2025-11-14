@@ -1,6 +1,6 @@
 <!-- 简历制作默认页 | 采集求职岗位丶身份 -->
 <script lang="ts" setup>
-import {onDeactivated, onActivated, reactive, ref} from 'vue'
+import {onDeactivated, onActivated, reactive, ref, onMounted, onUnmounted} from 'vue'
 import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {ResumeService} from "@/service/ResumeService";
@@ -135,11 +135,11 @@ const stopPlaceholderRotation = () => {
     }
 }
 
-onActivated(() => {
+onMounted(() => {
     startPlaceholderRotation()
 })
 
-onDeactivated(() => {
+onUnmounted(() => {
     stopPlaceholderRotation()
 })
 </script>

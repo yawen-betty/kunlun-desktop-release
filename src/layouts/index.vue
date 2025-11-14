@@ -29,7 +29,7 @@ onMounted(() => {
       <LeftMenu :minSize="minSize"></LeftMenu>
       <Content class="content">
         <router-view v-slot="{ Component }">
-          <keep-alive>
+          <keep-alive include="Resume">
             <component :is="Component" />
           </keep-alive>
         </router-view>

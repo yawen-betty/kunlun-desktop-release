@@ -702,7 +702,7 @@
 import SvgIcon from '@/components/svgIcon/index.vue';
 import ResumeModuleManager, {ItemType} from './ResumeModuleManager.vue';
 import ResumeAiOptimize from './ResumeAiOptimize.vue';
-import {computed, onActivated, ref, watch, withDefaults} from 'vue';
+import {computed, onMounted, ref, watch, withDefaults} from 'vue';
 import {Input, Message} from 'view-ui-plus';
 import {FileService} from '@/service/FileService';
 import {ResumeService} from '@/service/ResumeService';
@@ -1028,7 +1028,7 @@ const streamWrite = async (items: StreamItem[], speed: number = 50) => {
             }
             currentStreamingField.value = '';
         }
-        
+
         // 流式写入完成后，同步数据到 resumeData
         syncStreamValuesToResumeData();
     } finally {
@@ -1038,7 +1038,7 @@ const streamWrite = async (items: StreamItem[], speed: number = 50) => {
 
 const syncStreamValuesToResumeData = () => {
     if (!props.resumeData?.modules) return;
-    
+
     props.resumeData.modules.forEach((module: any) => {
         module.entries?.forEach((entry: any) => {
             entry.fields?.forEach((field: any) => {
@@ -1049,7 +1049,7 @@ const syncStreamValuesToResumeData = () => {
             });
         });
     });
-    
+
     emit('data-change', props.resumeData);
 };
 
@@ -1290,7 +1290,7 @@ watch(() => props.resumeData, () => {
     initFieldValues();
 }, {deep: true, immediate: true});
 
-onActivated(async () => {
+onMounted(async () => {
     allAvailableModules.value = await fetchAvailableModules();
 });
 

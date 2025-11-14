@@ -1,5 +1,11 @@
+<script lang="ts">
+export default {
+    name: 'Resume'
+}
+</script>
+
 <script lang="ts" setup>
-import {onActivated, ref} from 'vue';
+import {nextTick, onActivated, ref} from 'vue';
 import {useRoute} from 'vue-router';
 import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
@@ -32,7 +38,9 @@ onActivated(() => {
     if (routeResumeId) {
         resumeId.value = routeResumeId;
         showMakePanel.value = false;
-        initialMode.value = 'manual';
+        nextTick(() => {
+            initialMode.value = 'manual';
+        })
     }
 });
 

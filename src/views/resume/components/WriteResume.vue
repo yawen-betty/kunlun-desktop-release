@@ -267,6 +267,7 @@ watch(
     () => props.initialMode,
     (val) => {
         if (val === 'manual') {
+            currentMode.value = val;
             isShowToggleBtn.value = true
             isGenerating.value = false
         }
@@ -314,17 +315,15 @@ const sendDiagnose = (params: string) => {
 /**
  * 获取简历详情
  * @param resumeId
- * @param isFirst
  */
-const fetchResumeDetail = async (resumeId: string, isFirst?: boolean) => {
+const fetchResumeDetail = async (resumeId: string) => {
     try {
-        const resumeService = ResumeService.getInstance();
         const params = new GetResumeDetailInDto();
         params.resumeId = resumeId;
 
         const result = await resumeService.getResumeDetail(params);
         if (result.code === 200 && result.data) {
-            if (!isFirst) resumeData.value = result.data;
+            resumeData.value = result.data;
             resumeName.value = result.data.name || '我的简历-未命名1';
             resumeScore.value = result.data.score;
         } else {
@@ -361,7 +360,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
     }
 };
 
-onActivated(async () => {
+onMounted(async () => {
     if (!props.resumeId) {
         Message.error('简历ID不存在');
         return;
@@ -369,13 +368,13 @@ onActivated(async () => {
     if (props.resumeName) {
         resumeName.value = props.resumeName;
     } else {
-        await fetchResumeDetail(props.resumeId, true);
+        await fetchResumeDetail(props.resumeId);
     }
     startAutoSave();
     window.addEventListener('keydown', handleKeyDown);
 });
 
-onDeactivated(() => {
+onUnmounted(() => {
     stopAutoSave();
     window.removeEventListener('keydown', handleKeyDown);
 });
