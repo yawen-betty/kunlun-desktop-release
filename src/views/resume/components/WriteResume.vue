@@ -160,7 +160,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch} from 'vue';
+import {computed, nextTick, onActivated, onDeactivated, reactive, ref, watch} from 'vue';
 import lottie from 'lottie-web';
 import successAnimation from '@/assets/json/对号.json';
 import {debounce} from '@/utiles/debounce';
@@ -358,7 +358,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
     }
 };
 
-onMounted(async () => {
+onActivated(async () => {
     if (!props.resumeId) {
         Message.error('简历ID不存在');
         return;
@@ -372,7 +372,7 @@ onMounted(async () => {
     window.addEventListener('keydown', handleKeyDown);
 });
 
-onBeforeUnmount(() => {
+onDeactivated(() => {
     stopAutoSave();
     window.removeEventListener('keydown', handleKeyDown);
 });

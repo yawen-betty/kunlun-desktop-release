@@ -129,7 +129,7 @@ export enum ItemType {
 </script>
 
 <script lang="ts" setup>
-import {ref, nextTick, computed, watch, onMounted} from 'vue';
+import {ref, nextTick, computed, watch} from 'vue';
 import {Modal, Message} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import Sortable from 'sortablejs';
@@ -284,11 +284,11 @@ const addModule = (id: string) => {
         const existingDisabledIds = selectedModules.value
             .filter(m => props.disabledDragIds.includes(m.id))
             .map(m => m.id);
-        
+
         const allDisabledIds = [...existingDisabledIds, id];
         const sortedDisabledIds = props.disabledDragIds.filter(did => allDisabledIds.includes(did));
         const insertIndex = sortedDisabledIds.indexOf(id);
-        
+
         selectedModules.value.splice(insertIndex, 0, {...module});
     } else {
         selectedModules.value.push({...module});

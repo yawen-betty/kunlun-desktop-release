@@ -702,7 +702,7 @@
 import SvgIcon from '@/components/svgIcon/index.vue';
 import ResumeModuleManager, {ItemType} from './ResumeModuleManager.vue';
 import ResumeAiOptimize from './ResumeAiOptimize.vue';
-import {computed, onMounted, ref, watch, withDefaults} from 'vue';
+import {computed, onActivated, ref, watch, withDefaults} from 'vue';
 import {Input, Message} from 'view-ui-plus';
 import {FileService} from '@/service/FileService';
 import {ResumeService} from '@/service/ResumeService';
@@ -1270,7 +1270,7 @@ watch(() => props.resumeData, () => {
     initFieldValues();
 }, {deep: true, immediate: true});
 
-onMounted(async () => {
+onActivated(async () => {
     allAvailableModules.value = await fetchAvailableModules();
 });
 

@@ -1,12 +1,12 @@
 <!-- 简历制作默认页 | 采集求职岗位丶身份 -->
 <script lang="ts" setup>
-import {onBeforeUnmount, onMounted, reactive, ref} from 'vue'
+import {onDeactivated, onActivated, reactive, ref} from 'vue'
 import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {ResumeService} from "@/service/ResumeService";
 import {debounce} from "@/utiles/debounce";
 import {useRouter} from "vue-router";
-import Ellipsis from '@/components/ellipsis'
+import Ellipsis from '@/components/ellipsis/index.vue'
 
 const router = useRouter();
 // 输入框提示词列表
@@ -135,11 +135,11 @@ const stopPlaceholderRotation = () => {
     }
 }
 
-onMounted(() => {
+onActivated(() => {
     startPlaceholderRotation()
 })
 
-onBeforeUnmount(() => {
+onDeactivated(() => {
     stopPlaceholderRotation()
 })
 </script>
