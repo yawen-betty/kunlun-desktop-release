@@ -13,8 +13,6 @@
           </div>
 
           <div v-else>
-            <div class="system-hint mt-40 mb-40" v-if="info.type === '3'">-开启AI撰写-</div>
-
             <div class="ai-chat-box mb-20">
               <div class="ai-chat">
                 <div class="ai-chat-text">{{ info.content }}</div>
@@ -535,13 +533,11 @@ const setThinkState = () => {
 
 // 处理滚动事件
 const handleScroll = () => {
-  console.log('123')
   const scrollElement = chattingRecordsRef.value;
   if (!scrollElement || loading.value || !hasMore.value) return;
 
   // 当滚动到顶部附近时加载更多
   if (scrollElement.scrollTop <= 50) {
-    console.log('11111');
     pageNum.value++;
     queryChatList();
   }
@@ -599,16 +595,6 @@ defineExpose({
         line-height: vw(14);
         word-break: break-all;
       }
-    }
-
-    .system-hint {
-      width: 100%;
-      color: $font-light;
-      text-align: center;
-      font-size: vw(14);
-      font-style: normal;
-      font-weight: 400;
-      line-height: vw(14);
     }
 
     .ai-chat-box {
