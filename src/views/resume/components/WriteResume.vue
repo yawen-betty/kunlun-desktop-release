@@ -161,7 +161,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, nextTick, onActivated, onDeactivated, reactive, ref, watch} from 'vue';
+import {computed, nextTick, onActivated, onDeactivated, onMounted, onUnmounted, reactive, ref, watch} from 'vue';
 import lottie from 'lottie-web';
 import successAnimation from '@/assets/json/对号.json';
 import {debounce} from '@/utiles/debounce';
@@ -268,6 +268,7 @@ watch(
     (val) => {
         if (val === 'manual') {
             isShowToggleBtn.value = true
+            isGenerating.value = false
         }
     }
 )
