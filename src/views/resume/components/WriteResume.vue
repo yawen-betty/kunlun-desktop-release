@@ -33,7 +33,8 @@
                 <div class="right-header mb-20">
                     <div v-if="showScoreAndMode && currentMode === 'ai'" class="score-wrapper flex flex-column">
                         <div class="score-text mr-10">当前简历分数：{{ resumeScore }}</div>
-                        <Poptip class="questions-pop flex-column mr-20" placement="bottom" trigger="hover">
+                        <Poptip v-if="scoreProblems.length" class="questions-pop flex-column mr-20" placement="bottom"
+                                trigger="hover">
                             <SvgIcon class="tip" color="#FC8919" name="icon-tishi" size="14"/>
                             <template #content>
                                 <ul class="problem-list">
@@ -324,6 +325,7 @@ const fetchResumeDetail = async (resumeId: string, isFirst?: boolean) => {
         if (result.code === 200 && result.data) {
             if (!isFirst) resumeData.value = result.data;
             resumeName.value = result.data.name || '我的简历-未命名1';
+            resumeScore.value = result.data.score;
         } else {
             Message.error(result.msg || '获取简历详情失败');
         }
