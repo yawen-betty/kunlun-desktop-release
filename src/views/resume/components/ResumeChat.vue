@@ -71,7 +71,7 @@
           <p>{{ diagnoseContent }}</p>
         </div>
         <div class="modal-footer">
-          <button class="btn-cancel" @click="props.over?.()">结束AI撰写</button>
+          <button class="btn-cancel" @click="handleOver">结束AI撰写</button>
           <button class="btn-confirm" @click="askQuestion">继续优化</button>
         </div>
       </div>
@@ -165,6 +165,15 @@ const showErrorMessage = (code: number) => {
   if ([525, 520].includes(code) && props.over) props.over();
 };
 
+// 结束ai 对话
+const handleOver = () => {
+  chatList.value.push({
+    role: 'assistant',
+    content: '结束对话',
+    isExpand: false,
+  });
+  props.over?.()
+}
 
 // 查询当前聊天记录
 const queryChatList = () => {
@@ -451,6 +460,7 @@ const write = () => {
           scrollToBottom('deep-thinking-content');
         }
       } else {
+        setThinkState();
         const str: string = extractDataContent(data, 'event:content')
 
         if (str) {
@@ -460,7 +470,7 @@ const write = () => {
           // 是否追问
           if (response.completed) {
             if (props.streamWrite) await props.streamWrite(response.fieldDataList);
-            chatList.value.shift();
+            diagnoseList.value.shift();
             askQuestion();
           } else {
             chatList.value.push({
@@ -479,7 +489,7 @@ const write = () => {
       showErrorMessage(error.status)
     },
     () => {
-      setThinkState();
+
     }
   )
 }
@@ -490,6 +500,9 @@ const setThinkState = () => {
 
   lastData.thinkingStatus = '1';
   lastData.isExpand = false;
+
+
+  console.log(chatList.value, 'chatList.valuechatList.value')
 }
 
 onMounted(() => {
