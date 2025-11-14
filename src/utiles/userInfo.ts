@@ -5,10 +5,11 @@ import router from "@/router/index.ts";
 export class UserInfo {
 
     static info = reactive({
-        token: '8cbf95bc95f440978bbeb7759839a2f0', // token
+        token: '', // token
         userName: '', // 用户名
         userId: '', // 用户ID
-        avatar: '',  // 头像
+        avatar: '',  // 头像,
+        runningResumeId: '', // 正在制作的简历ID
     });
 
     static async logout() {
@@ -16,6 +17,7 @@ export class UserInfo {
         UserInfo.info.userName = '';
         UserInfo.info.userId = '';
         UserInfo.info.avatar = '';
+        UserInfo.info.runningResumeId = '';
         await auth.saveToken('');
         await router.replace('/login');
     }

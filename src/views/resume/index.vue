@@ -20,6 +20,7 @@ const initialMode = ref<'ai' | 'manual'>('ai');
 
 const handleResumeCreated = (data: { resumeId: string; resumeName: string; uploadedFile: File | null }) => {
     resumeId.value = data.resumeId;
+    UserInfo.info.runningResumeId = resumeId.value
     resumeName.value = data.resumeName;
     uploadedFile.value = data.uploadedFile;
     showMakePanel.value = false;
@@ -29,6 +30,7 @@ const exit = () => {
     showMakePanel.value = true;
     resumeName.value = '';
     resumeId.value = '';
+    UserInfo.info.runningResumeId = '';
     uploadedFile.value = null;
     initialMode.value = 'ai';
 };
@@ -37,6 +39,7 @@ onActivated(() => {
     const routeResumeId = route.query.resumeId as string;
     if (routeResumeId) {
         resumeId.value = routeResumeId;
+        UserInfo.info.runningResumeId = resumeId.value
         showMakePanel.value = false;
         nextTick(() => {
             initialMode.value = 'manual';
