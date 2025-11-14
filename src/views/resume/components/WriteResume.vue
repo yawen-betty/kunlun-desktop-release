@@ -88,9 +88,10 @@
                 </div>
                 <!-- 聊天区 -->
                 <Transition name="slide-right">
-                    <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :hasAttachment="uploadedFile"
-                                :over="over" :resumeUuid="resumeId" :streamWrite="handleWriteStream"
-                                @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
+                    <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :changeMode="changeMode"
+                                :hasAttachment="uploadedFile" :over="over" :resumeUuid="resumeId"
+                                :streamWrite="handleWriteStream" @sendDiagnose="sendDiagnose"
+                                @sendTemplate="sendTemplate"/>
                 </Transition>
             </div>
         </div>
@@ -261,11 +262,26 @@ watch(showRenameModal, (val) => {
     if (val) formData.resumeName = resumeName.value;
 });
 
+watch(
+    () => props.initialMode,
+    (val) => {
+        if (val === 'manual') {
+            isShowToggleBtn.value = true
+        }
+    }
+)
+
 const handleWriteStream = async (items: StreamItem[], speed?: number) => {
     await previewRef.value?.streamWrite(items, speed);
     isShowToggleBtn.value = true
 }
 
+/**
+ * 结束AI撰写，
+ */
+const changeMode = () => {
+    currentMode.value = 'manual';
+}
 /**
  * ai次数用完，切换成人工模式，打开弹窗
  */
@@ -285,6 +301,7 @@ const sendDiagnose = (params: string) => {
         setTimeout(() => {
             scoreLoading.value = false;
         }, 2000)
+        showScoreAndMode.value = true
         resumeScore.value = paramsObj.score;
         scoreProblems.value = paramsObj.issues.map(item => item.question)
     } catch (e) {
@@ -477,6 +494,7 @@ const toggleMode = debounce(() => {
         showModeConfirmModal.value = true;
     } else {
         currentMode.value = 'ai';
+        showScoreAndMode.value = true
         nextTick(() => {
             resumeChatRef.value?.diagnoseResume()
         })
