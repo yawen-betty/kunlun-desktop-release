@@ -100,6 +100,7 @@ import {QuestionBean} from "@/api/ai/dto/bean/QuestionBean.ts";
 import {WriteInDto} from "@/api/ai/dto/Write.ts";
 import {scrollToBottom} from "@/utiles/domUtils.ts";
 import {AiConversationOutDto} from "@/api/ai/dto/bean/AiConversationOutDto.ts";
+import {AiErrorHandler} from "@/utiles/aiErrorHandler.ts";
 
 type TextType = {
   [key: string]: string;
@@ -116,8 +117,8 @@ const props = defineProps<{
   resumeUuid: string;   // 简历id
   hasAttachment?: File | null; // 简历附件
   streamWrite: Function, // 流式回填
-  over: Function // 结束ai 撰写（ai次数用完调用的）
-  changeMode: Function // ai 结束调用
+  over: () => void // 结束ai 撰写（ai次数用完调用的）
+  changeMode: () => void // ai 结束调用
 
 }>();
 
@@ -162,34 +163,20 @@ watch(chatList, () => {
 
 // 根据错误码显示提示信息
 const showErrorMessage = (code: number) => {
-  const errorMessages: { [key: number]: string } = {
-    525: '免费模型次数已用完，自动切换为人工撰写模式！',
-    520: '简历模版生成失败，自动切换为人工撰写模式！',
-    521: '简历解析失败！',
-    522: '简历诊断失败！',
-    523: '简历撰写失败！'
-  };
-
-  const errorMsg = errorMessages[code];
-  if (errorMsg) {
-    message.error(Message, errorMsg);
-  }
-
-  if ([525, 520].includes(code) && props.over) props.over();
+  AiErrorHandler.handleError(code, props.over);
 };
 
 // 结束ai 对话
 const handleOver = () => {
   chatList.value.push({
-    role: 'assistant',
+    role: 'user',
     content: '结束对话',
     isExpand: false,
   });
 
-  nextTick(() => {
-
+  setTimeout(() => {
+    props.changeMode()
   })
-  props.changeMode()
 }
 
 // 查询当前聊天记录
@@ -529,12 +516,8 @@ const write = () => {
 // 关闭深度思考
 const setThinkState = () => {
   const lastData = chatList.value[chatList.value.length - 1]
-
   lastData.thinkingStatus = '1';
   lastData.isExpand = false;
-
-
-  console.log(chatList.value, 'chatList.valuechatList.value')
 }
 
 // 处理滚动事件

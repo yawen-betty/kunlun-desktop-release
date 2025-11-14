@@ -66,6 +66,7 @@ import {PolishInDto} from "@/api/ai/dto/Polish.ts";
 import {extractDataContent} from "@/utiles/processing.ts";
 import {AiService} from "@/service/AiService.ts";
 import {scrollToBottom} from "@/utiles/domUtils.ts";
+import {AiErrorHandler} from "@/utiles/aiErrorHandler.ts";
 
 interface Props {
   modelValue: boolean; //弹窗状态
@@ -144,8 +145,7 @@ const handleSubmit = () => {
       }
     },
     (error: any) => {
-      console.error(error, 'error')
-      // 显示错误信息
+      AiErrorHandler.handleError(error.status);
     },
     () => {
       state.value = '4'
