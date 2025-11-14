@@ -90,6 +90,7 @@ import {useRouter} from "vue-router";
 import {CopyResumeInDto} from "@/api/resume/dto/CopyResume.ts";
 import {message} from "@/utiles/Message.ts";
 import {download} from "@/utiles/download.ts";
+import {UserInfo} from "@/utiles/userInfo.ts";
 
 interface SelectItem {
   name: string;
@@ -138,8 +139,13 @@ const handleClick = (resume: MyResumeBean, key: string) => {
       downLoadResume(resume)
       break;
     case 'delete':
+      if (UserInfo.info.runningResumeId === resume.uuid) {
+        message.error(Message, '简历正在编辑中，不可删除！');
+        return;
+      }
       deleteVisible.value = true;
       deleteResumeId.value = resume.uuid!
+
       break;
     default:
       break;
