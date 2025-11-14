@@ -1,5 +1,5 @@
 <template>
-  <div class="resume-container">
+  <div class="resume-container" v-if="resumeList.length > 0">
     <div class="resume-card" v-for="(resume,index) in resumeList" :key="resume.uuid">
       <div :class="['resume-content',`resume-content-index_${index}`]">
         <ResumePreviewCard :resume-data="resume" :scrollable="false" size="small"/>
@@ -26,6 +26,11 @@
         <div class="resume-time mt-10">{{ parseDate(resume.createTime!, '{y}-{m}-{d} {h}:{i}') }}</div>
       </div>
     </div>
+  </div>
+
+  <div class="no-data" v-else>
+    <img src="@/assets/images/no-data.png" class="no-data_icon"/>
+    <div class="no-data-text">暂无数据</div>
   </div>
 
   <Modal
@@ -205,6 +210,27 @@ onMounted(() => {
   display: flex;
   gap: vw(40);
   padding: vh(40) vw(49) 0 vw(41);
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  .no-data_icon {
+    width: vw(140);
+    height: vh(148);
+  }
+
+  .no-data-text {
+    color: $icon-gray;
+    font-size: vw(24);
+    font-style: normal;
+    font-weight: 400;
+    line-height: vw(24);
+  }
 }
 
 .resume-card {

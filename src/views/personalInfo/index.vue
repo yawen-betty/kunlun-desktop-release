@@ -23,4 +23,12 @@ const currentTab = ref<string>('resume'); // 默认激活"基础设置"
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
 
+
+.personal-info {
+  height: 100%;
+
+  .personal-content {
+    height: 100%;
+  }
+}
 </style>
