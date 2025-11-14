@@ -144,6 +144,8 @@ const diagnoseContent = ref<string>('');
 const diagnoseModal = ref<boolean>(false);
 // 聊天记录容器引用
 const chattingRecordsRef = ref<HTMLElement>();
+// 是否追问
+const isFollowUp = ref<boolean>(false);
 
 // 分页信息
 const pageNum = ref<number>(1);
@@ -476,6 +478,7 @@ const write = () => {
   const params: WriteInDto = {
     resumeId: props.resumeUuid,
     questionUuid: diagnoseList.value[0].questionUuid,
+    isFollowUp: isFollowUp.value,
     messages
   }
 
@@ -494,6 +497,7 @@ const write = () => {
 
         const response = JSON.parse(str);
 
+        isFollowUp.value = response.isFollowUp
         // 是否追问
         if (response.completed) {
           if (props.streamWrite) await props.streamWrite(response.fieldDataList);

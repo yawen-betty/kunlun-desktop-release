@@ -1,6 +1,6 @@
 <template>
   <div class="modal-content">
-    <h3 class="modal-title mb-40">免费模型次数已用完</h3>
+    <h3 class="modal-title mb-40">模型账号</h3>
 
     <p class="description mb-20"> 配置模型账号后，您可以无限制使用AI相关功能，包含：</p>
 
