@@ -2,7 +2,10 @@
   <div class="resume-chat-wrapper">
     <div class="resume-chat p20">
       <!-- 聊天内容待实现 -->
-      <div class="chatting-records">
+      <div class="chatting-records" @scroll="handleScroll" ref="chattingRecordsRef">
+        <div v-if="loading && pageNum > 1" class="loading-more">
+          <span>加载中...</span>
+        </div>
 
         <template v-for="(info,index) in chatList" :key="index">
           <div class="my-chat_box mb-20" v-if="info.role === 'user'">
@@ -10,6 +13,8 @@
           </div>
 
           <div v-else>
+            <div class="system-hint mt-40 mb-40" v-if="info.type === '3'">-开启AI撰写-</div>
+
             <div class="ai-chat-box mb-20">
               <div class="ai-chat">
                 <div class="ai-chat-text">{{ info.content }}</div>
@@ -82,7 +87,7 @@
 <script setup lang="ts">
 // 聊天组件逻辑待实现
 import {Input, Message, Modal} from "view-ui-plus";
-import {nextTick, onMounted, ref, watch} from "vue";
+import {nextTick, onActivated, onMounted, ref, watch} from "vue";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {MessagesBean} from "@/api/ai/dto/bean/MessagesBean.ts";
 import {QueryConversationInDto} from "@/api/ai/dto/QueryConversation.ts";
@@ -96,12 +101,13 @@ import {AiMessageBean} from "@/api/ai/dto/bean/AiMessageBean.ts";
 import {QuestionBean} from "@/api/ai/dto/bean/QuestionBean.ts";
 import {WriteInDto} from "@/api/ai/dto/Write.ts";
 import {scrollToBottom} from "@/utiles/domUtils.ts";
+import {AiConversationOutDto} from "@/api/ai/dto/bean/AiConversationOutDto.ts";
 
 type TextType = {
   [key: string]: string;
 };
 
-class CustomMessagesBean extends MessagesBean {
+class CustomMessagesBean extends AiConversationOutDto {
   // 是否展开收起深度思考
   isExpand?: boolean = false;
 }
@@ -111,8 +117,9 @@ const aiService = new AiService();
 const props = defineProps<{
   resumeUuid: string;   // 简历id
   hasAttachment?: File | null; // 简历附件
-  streamWrite?: Function, // 流式回填
-  over?: Function // 结束ai 撰写
+  streamWrite: Function, // 流式回填
+  over: Function // 结束ai 撰写（ai次数用完调用的）
+  changeMode: Function // ai 结束调用
 
 }>();
 
@@ -137,10 +144,16 @@ const diagnoseList = ref<QuestionBean[]>([]);
 const diagnoseContent = ref<string>('');
 // 诊断弹窗
 const diagnoseModal = ref<boolean>(false);
+// 聊天记录容器引用
+const chattingRecordsRef = ref<HTMLElement>();
 
 // 分页信息
 const pageNum = ref<number>(1);
 const pageSize = ref<number>(20);
+// 是否还有更多数据
+const hasMore = ref<boolean>(true);
+// 是否正在加载
+const loading = ref<boolean>(false);
 
 // 监听chatList变化，自动滚动到底部
 watch(chatList, () => {
@@ -172,11 +185,18 @@ const handleOver = () => {
     content: '结束对话',
     isExpand: false,
   });
-  props.over?.()
+
+  nextTick(() => {
+
+  })
+  props.changeMode()
 }
 
 // 查询当前聊天记录
-const queryChatList = () => {
+const queryChatList = async () => {
+  if (loading.value || !hasMore.value) return;
+
+  loading.value = true;
   const data: QueryConversationInDto = {
     resumeUuid: props.resumeUuid,
     pageInfo: {
@@ -185,8 +205,30 @@ const queryChatList = () => {
     },
   }
 
-  aiService.queryConversation(data).then((res) => {
-    chatList.value = [...chatList.value, ...res.data.list!];
+  try {
+    const res = await aiService.queryConversation(data);
+    const newData = res.data.list || [];
+
+    if (pageNum.value === 1) {
+      chatList.value = newData;
+    } else {
+      // 保存当前滚动位置
+      const scrollElement = chattingRecordsRef.value;
+      const oldScrollHeight = scrollElement?.scrollHeight || 0;
+
+      chatList.value = [...newData, ...chatList.value];
+
+      // 恢复滚动位置
+      await nextTick();
+      if (scrollElement) {
+        const newScrollHeight = scrollElement.scrollHeight;
+        scrollElement.scrollTop = newScrollHeight - oldScrollHeight;
+      }
+    }
+
+    // 检查是否还有更多数据
+    hasMore.value = newData.length === pageSize.value;
+
     if (chatList.value?.length === 0) {
       const content: string = '请帮我制作一份求职简历！'
       chatList.value.push({
@@ -205,8 +247,12 @@ const queryChatList = () => {
         thinking: ''
       });
       generateTemplate(msg, content)
+    } else if (pageNum.value === 1) {
+      scrollToBottom('chatting-records');
     }
-  })
+  } finally {
+    loading.value = false;
+  }
 }
 
 // 生成模板
@@ -234,16 +280,11 @@ const generateTemplate = (msg: string, content: string) => {
       if (data.includes('event:thinking')) {
 
         const str: string = extractDataContent(data, 'event:thinking')
-        if (str) {
-          chatList.value[chatList.value.length - 1].thinking += str
-          scrollToBottom('deep-thinking-content');
-        }
+        chatList.value[chatList.value.length - 1].thinking += str
+        scrollToBottom('deep-thinking-content');
       } else {
         const str: string = extractDataContent(data, 'event:content')
-
-        if (str) {
-          emits('sendTemplate', str);
-        }
+        emits('sendTemplate', str);
       }
       // 更新UI显示流式数据
     },
@@ -293,16 +334,12 @@ const parseAttachment = (msg: string) => {
       if (data.includes('event:thinking')) {
 
         const str: string = extractDataContent(data, 'event:thinking')
-        if (str) {
-          chatList.value[chatList.value.length - 1].thinking += str
-          scrollToBottom('deep-thinking-content');
-        }
+        chatList.value[chatList.value.length - 1].thinking += str
+        scrollToBottom('deep-thinking-content');
       } else {
         const str: string = extractDataContent(data, 'event:content')
 
-        if (str) {
-          emits('sendTemplate', str);
-        }
+        emits('sendTemplate', str);
       }
     },
     (error) => {
@@ -351,29 +388,25 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
       if (data.includes('event:thinking')) {
 
         const str: string = extractDataContent(data, 'event:thinking')
-        if (str) {
-          chatList.value[chatList.value.length - 1].thinking += str
-          scrollToBottom('deep-thinking-content');
-        }
+        chatList.value[chatList.value.length - 1].thinking += str
+        scrollToBottom('deep-thinking-content');
       } else {
         const str: string = extractDataContent(data, 'event:content')
 
-        if (str) {
-          chatList.value.push({
-            role: 'assistant',
-            content: JSON.parse(str).diagnosisResultMessage,
-            isExpand: false,
-            thinking: ''
-          });
+        chatList.value.push({
+          role: 'assistant',
+          content: JSON.parse(str).diagnosisResultMessage,
+          isExpand: false,
+          thinking: ''
+        });
 
-          if (reply) {
-            diagnoseContent.value = str;
-            diagnoseModal.value = true;
-          } else {
-            emits('sendDiagnose', str);
-            diagnoseList.value = JSON.parse(str).issues;
-            askQuestion();
-          }
+        if (reply) {
+          diagnoseContent.value = JSON.parse(str).diagnosisResultMessage;
+          diagnoseModal.value = true;
+        } else {
+          emits('sendDiagnose', str);
+          diagnoseList.value = JSON.parse(str).issues;
+          askQuestion();
         }
       }
     },
@@ -455,33 +488,28 @@ const write = () => {
       if (data.includes('event:thinking')) {
 
         const str: string = extractDataContent(data, 'event:thinking')
-        if (str) {
-          chatList.value[chatList.value.length - 1].thinking += str
-          scrollToBottom('deep-thinking-content');
-        }
+        chatList.value[chatList.value.length - 1].thinking += str
+        scrollToBottom('deep-thinking-content');
       } else {
         setThinkState();
         const str: string = extractDataContent(data, 'event:content')
 
-        if (str) {
-          console.log(str, '1111')
-          const response = JSON.parse(str);
+        const response = JSON.parse(str);
 
-          // 是否追问
-          if (response.completed) {
-            if (props.streamWrite) await props.streamWrite(response.fieldDataList);
-            diagnoseList.value.shift();
-            askQuestion();
-          } else {
-            chatList.value.push({
-              role: 'assistant',
-              content: response.followUpQuestion,
-              isExpand: false,
-              thinking: ''
-            });
+        // 是否追问
+        if (response.completed) {
+          if (props.streamWrite) await props.streamWrite(response.fieldDataList);
+          diagnoseList.value.shift();
+          askQuestion();
+        } else {
+          chatList.value.push({
+            role: 'assistant',
+            content: response.followUpQuestion,
+            isExpand: false,
+            thinking: ''
+          });
 
-            disabled.value = false;
-          }
+          disabled.value = false;
         }
       }
     },
@@ -505,7 +533,21 @@ const setThinkState = () => {
   console.log(chatList.value, 'chatList.valuechatList.value')
 }
 
-onMounted(() => {
+// 处理滚动事件
+const handleScroll = () => {
+  console.log('123')
+  const scrollElement = chattingRecordsRef.value;
+  if (!scrollElement || loading.value || !hasMore.value) return;
+
+  // 当滚动到顶部附近时加载更多
+  if (scrollElement.scrollTop <= 50) {
+    console.log('11111');
+    pageNum.value++;
+    queryChatList();
+  }
+};
+
+onActivated(() => {
   queryChatList();
 })
 
@@ -535,6 +577,13 @@ defineExpose({
       width: 0;
     }
 
+    .loading-more {
+      text-align: center;
+      padding: vh(10) 0;
+      color: $font-middle;
+      font-size: vw(12);
+    }
+
     .my-chat_box {
       display: flex;
       justify-content: flex-end;
@@ -550,6 +599,16 @@ defineExpose({
         line-height: vw(14);
         word-break: break-all;
       }
+    }
+
+    .system-hint {
+      width: 100%;
+      color: $font-light;
+      text-align: center;
+      font-size: vw(14);
+      font-style: normal;
+      font-weight: 400;
+      line-height: vw(14);
     }
 
     .ai-chat-box {

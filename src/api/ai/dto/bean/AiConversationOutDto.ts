@@ -23,4 +23,9 @@ export class AiConversationOutDto {
      * 会话时间
      */
     timestamp?: number;
+
+    /**
+     * ai会话类型 1-简历模版 2-简历解析 3-简历诊断 4-简历撰写
+     */
+    type?: string;
 }
