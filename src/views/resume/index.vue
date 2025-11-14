@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue';
+import {onActivated, ref} from 'vue';
 import {useRoute} from 'vue-router';
 import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
@@ -27,7 +27,7 @@ const exit = () => {
     initialMode.value = 'ai';
 };
 
-onMounted(() => {
+onActivated(() => {
     const routeResumeId = route.query.resumeId as string;
     if (routeResumeId) {
         resumeId.value = routeResumeId;

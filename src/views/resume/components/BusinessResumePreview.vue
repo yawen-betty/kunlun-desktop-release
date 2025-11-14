@@ -88,11 +88,10 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, watch, onMounted, nextTick} from 'vue';
+import {computed, ref, watch, onActivated, nextTick} from 'vue';
 import type {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
 import type {ResumeModuleBean} from '@/api/resume/dto/bean/ResumeModuleBean';
 import type {ResumeEntryBean} from '@/api/resume/dto/bean/ResumeEntryBean';
-import SvgIcon from "@/components/svgIcon/index.vue";
 import {Config} from "@/Config.ts";
 
 const props = defineProps<{
@@ -142,7 +141,7 @@ const updatePhotoStyle = () => {
 
 watch(() => props.resumeData, updatePhotoStyle, {deep: true});
 
-onMounted(() => {
+onActivated(() => {
     updateWatermarkCount();
     updatePhotoStyle();
 });

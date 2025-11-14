@@ -76,7 +76,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, watch, onMounted, nextTick} from 'vue';
+import {computed, ref, watch, onActivated, nextTick} from 'vue';
 import type {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
 import type {ResumeModuleBean} from '@/api/resume/dto/bean/ResumeModuleBean';
 import type {ResumeEntryBean} from '@/api/resume/dto/bean/ResumeEntryBean';
@@ -129,7 +129,7 @@ const updateAvatarStyle = () => {
 
 watch(() => props.resumeData, updateAvatarStyle, {deep: true});
 
-onMounted(() => {
+onActivated(() => {
     updateWatermarkCount();
     updateAvatarStyle();
 });

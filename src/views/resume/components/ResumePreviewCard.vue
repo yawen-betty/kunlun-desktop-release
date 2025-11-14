@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, withDefaults, ref, watch, onMounted} from 'vue';
+import {computed, withDefaults, ref, watch, onActivated} from 'vue';
 import {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
 import {ResumeModuleBean} from '@/api/resume/dto/bean/ResumeModuleBean';
 import {ResumeEntryBean} from '@/api/resume/dto/bean/ResumeEntryBean';
@@ -189,7 +189,7 @@ const updatePhotoStyle = () => {
 
 watch(() => props.resumeData, updatePhotoStyle, {deep: true});
 
-onMounted(() => {
+onActivated(() => {
     updatePhotoStyle();
 });
 </script>
