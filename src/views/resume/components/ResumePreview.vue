@@ -1028,9 +1028,29 @@ const streamWrite = async (items: StreamItem[], speed: number = 50) => {
             }
             currentStreamingField.value = '';
         }
+        
+        // 流式写入完成后，同步数据到 resumeData
+        syncStreamValuesToResumeData();
     } finally {
         isStreaming.value = false;
     }
+};
+
+const syncStreamValuesToResumeData = () => {
+    if (!props.resumeData?.modules) return;
+    
+    props.resumeData.modules.forEach((module: any) => {
+        module.entries?.forEach((entry: any) => {
+            entry.fields?.forEach((field: any) => {
+                const streamValue = streamValues.value.get(field.uuid);
+                if (streamValue !== undefined) {
+                    field.fieldValue = streamValue;
+                }
+            });
+        });
+    });
+    
+    emit('data-change', props.resumeData);
 };
 
 const startEdit = (module: any) => {
