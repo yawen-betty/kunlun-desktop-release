@@ -173,6 +173,7 @@ onMounted(() => {
   .form-title {
     font-size: vw(28);
     color: $font-dark;
+    font-family: 'YouSheBiaoTiHei', serif;
     font-weight: 400;
     margin-bottom: vh(40);
   }

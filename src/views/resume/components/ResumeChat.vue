@@ -497,6 +497,8 @@ const write = () => {
 
         const response = JSON.parse(str);
 
+        console.log(response, '撰写')
+
         isFollowUp.value = response.isFollowUp
         // 是否追问
         if (response.completed) {
@@ -547,12 +549,12 @@ const handleScroll = () => {
   }
 };
 
-onActivated(() => {
+onMounted(() => {
   queryChatList();
 })
 
 defineExpose({
-  diagnoseResume,
+  diagnoseResume
 })
 </script>
 

@@ -58,10 +58,10 @@ const handleMobileInput = (e: any) => {
   }
 };
 
-// 邮箱输入限制（不允许中文和空格）
+// 邮箱输入限制（不允许中文）
 const handleEmailInput = (e: any) => {
   const value: string = e.target.value
-  const filteredValue = value.replace(/[\u4e00-\u9fa5\s]/g, '');
+  const filteredValue = value.replace(/[\u4e00-\u9fa5]/g, '');
   if (filteredValue !== value) {
     props.formData.email = filteredValue;
   }
