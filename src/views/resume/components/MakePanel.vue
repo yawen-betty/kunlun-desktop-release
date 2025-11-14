@@ -1,11 +1,12 @@
 <!-- 简历制作默认页 | 采集求职岗位丶身份 -->
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue'
+import {onBeforeUnmount, onMounted, reactive, ref} from 'vue'
 import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {ResumeService} from "@/service/ResumeService";
 import {debounce} from "@/utiles/debounce";
 import {useRouter} from "vue-router";
+import Ellipsis from '@/components/ellipsis'
 
 const router = useRouter();
 // 输入框提示词列表
@@ -30,6 +31,7 @@ const infoList = [
     'AI简历定制，让Offer多来几封'
 ]
 const placeholderIdx = ref<number>(0)
+const placeholderTimer = ref<number | null>(null)
 const formRef = ref();
 const formRules = {
     jobPosition: [{required: true, message: '请输入求职岗位！', trigger: 'submit'}],
@@ -114,13 +116,31 @@ const handleToDelete = () => {
     router.push('/personalInfo')
 }
 
-onMounted(() => {
-    setInterval(() => {
-        placeholderIdx.value++;
-        if (placeholderIdx.value === placeholderList.length) {
-            placeholderIdx.value = 0
+const startPlaceholderRotation = () => {
+    if (placeholderTimer.value) return;
+    placeholderTimer.value = window.setInterval(() => {
+        if (!formData.jobPosition) {
+            placeholderIdx.value++;
+            if (placeholderIdx.value === placeholderList.length) {
+                placeholderIdx.value = 0
+            }
         }
     }, 2000)
+}
+
+const stopPlaceholderRotation = () => {
+    if (placeholderTimer.value) {
+        clearInterval(placeholderTimer.value)
+        placeholderTimer.value = null
+    }
+}
+
+onMounted(() => {
+    startPlaceholderRotation()
+})
+
+onBeforeUnmount(() => {
+    stopPlaceholderRotation()
 })
 </script>
 
@@ -150,17 +170,18 @@ onMounted(() => {
                     </Upload>
                     <div v-if="uploadFile" class="file-box mt-10 pl-20 pr-15 flex-column align-between">
                         <div class="file-name flex-column">
-                            <SvgIcon name="icon-pdf" size="24"/>
+                            <SvgIcon class="file-icon" name="icon-pdf" size="24"/>
                             <div class="file-status ml-20">
-                                <p class="mb-10 name">{{ uploadFile.name }}</p>
-                                <p class="status">
+                                <Ellipsis :content="uploadFile.name" class="name"/>
+                                <!--                                <p class="mb-10 name">{{ uploadFile.name }}</p>-->
+                                <p class="status mt-10">
                                     {{ uploadFile.uploading ? '上传中...' : '上传完成' }}
                                     <span class="ml-5 mr-5"></span>
                                     {{ uploadFile.size }}
                                 </p>
                             </div>
                         </div>
-                        <SvgIcon class="pointer" color="#FC8719" name="icon-bufuhe" size="20"
+                        <SvgIcon class="close-icon pointer" color="#FC8719" name="icon-bufuhe" size="20"
                                  @click="handleRemoveFile"/>
                     </div>
                 </FormItem>
@@ -252,26 +273,38 @@ onMounted(() => {
                 background: $bg-gray;
                 line-height: normal;
 
-                .name {
-                    color: $font-dark;
-                    font-family: Inter;
-                    font-size: vw(14);
-                    font-weight: 500;
+                .file-name {
+                    max-width: 75%;
+
+                    .file-status {
+                        width: 100%;
+                    }
+
+                    .name {
+                        color: $font-dark;
+                        font-family: Inter;
+                        font-size: vw(14);
+                        font-weight: 500;
+                    }
+
+                    .status {
+                        display: flex;
+                        align-items: center;
+                        color: #B0B7C6;
+                        font-family: Inter;
+                        font-size: vw(12);
+                        font-weight: 500;
+
+                        span {
+                            width: vw(1);
+                            height: vh(12);
+                            background: #B0B7C6;
+                        }
+                    }
                 }
 
-                .status {
-                    display: flex;
-                    align-items: center;
-                    color: #B0B7C6;
-                    font-family: Inter;
-                    font-size: vw(12);
-                    font-weight: 500;
-
-                    span {
-                        width: vw(1);
-                        height: vh(12);
-                        background: #B0B7C6;
-                    }
+                .close-icon, .file-icon {
+                    flex-shrink: 0;
                 }
             }
         }
