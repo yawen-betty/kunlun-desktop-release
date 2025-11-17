@@ -148,7 +148,10 @@ const getUserInfo = () => {
         birthDate: new Date(res.data.birthDate as any)
       })
 
-      filePreviewUrl.value = Config.baseUrl + res.data.avatarUrl!;
+      if (res.data.avatarUrl) {
+        filePreviewUrl.value = Config.baseUrl + res.data.avatarUrl!;
+      }
+
     }
   })
 }
