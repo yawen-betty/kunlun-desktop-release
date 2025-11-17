@@ -61,7 +61,9 @@ const manualCheckUpdate = async () => {
 const getUserInfo = (userService: UserService) => {
   userService.getProfile(new GetProfileInDto()).then(res => {
     if (res.code === 200) {
-      UserInfo.info.avatar = Config.baseUrl + res.data.avatarUrl!;
+      if (res.data.avatarUrl) {
+        UserInfo.info.avatar = Config.baseUrl + res.data.avatarUrl!;
+      }
       UserInfo.info.userName = res.data.name!;
       UserInfo.info.userId = res.data.uuid!;
 

@@ -156,11 +156,6 @@ const hasMore = ref<boolean>(true);
 // 是否正在加载
 const loading = ref<boolean>(false);
 
-// 监听chatList变化，自动滚动到底部
-watch(chatList, () => {
-  scrollToBottom('chatting-records');
-}, {deep: true});
-
 // 根据错误码显示提示信息
 const showErrorMessage = (code: number) => {
   AiErrorHandler.handleError(code, props.over);
@@ -198,19 +193,9 @@ const queryChatList = async () => {
 
     if (pageNum.value === 1) {
       chatList.value = newData;
+      scrollToBottom('chatting-records')
     } else {
-      // 保存当前滚动位置
-      const scrollElement = chattingRecordsRef.value;
-      const oldScrollHeight = scrollElement?.scrollHeight || 0;
-
-      chatList.value = [...newData, ...chatList.value];
-
-      // 恢复滚动位置
-      await nextTick();
-      if (scrollElement) {
-        const newScrollHeight = scrollElement.scrollHeight;
-        scrollElement.scrollTop = newScrollHeight - oldScrollHeight;
-      }
+      chatList.value = [...newData.reverse(), ...chatList.value];
     }
 
     // 检查是否还有更多数据
@@ -234,8 +219,6 @@ const queryChatList = async () => {
         thinking: ''
       });
       generateTemplate(msg, content)
-    } else if (pageNum.value === 1) {
-      scrollToBottom('chatting-records');
     }
   } finally {
     loading.value = false;
@@ -264,6 +247,7 @@ const generateTemplate = (msg: string, content: string) => {
   aiService.generateTemplateStream(
     params,
     (data) => {
+      scrollToBottom('chatting-records')
       if (data.includes('event:thinking')) {
 
         const str: string = extractDataContent(data, 'event:thinking')
@@ -317,7 +301,7 @@ const parseAttachment = (msg: string) => {
     params,
     props.hasAttachment!,
     (data) => {
-
+      scrollToBottom('chatting-records')
       if (data.includes('event:thinking')) {
 
         const str: string = extractDataContent(data, 'event:thinking')
@@ -371,7 +355,7 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
   aiService.diagnoseStream(
     params,
     (data) => {
-
+      scrollToBottom('chatting-records')
       if (data.includes('event:thinking')) {
 
         const str: string = extractDataContent(data, 'event:thinking')
@@ -472,7 +456,7 @@ const write = () => {
   aiService.writeStream(
     params,
     async (data) => {
-
+      scrollToBottom('chatting-records')
       if (data.includes('event:thinking')) {
 
         const str: string = extractDataContent(data, 'event:thinking')
@@ -583,6 +567,7 @@ defineExpose({
         font-weight: 400;
         line-height: vw(14);
         word-break: break-all;
+        white-space: pre-wrap
       }
     }
 
@@ -601,6 +586,7 @@ defineExpose({
           font-weight: 400;
           line-height: vw(14);
           word-break: break-all;
+          white-space: pre-wrap
         }
       }
 
@@ -663,6 +649,7 @@ defineExpose({
         max-height: vh(350);
         overflow-y: auto;
         word-break: break-all;
+        white-space: pre-wrap;
         margin-top: vh(24);
 
         &::-webkit-scrollbar {
