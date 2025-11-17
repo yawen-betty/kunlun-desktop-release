@@ -8,7 +8,8 @@ export class UserInfo {
         token: '', // token
         userName: '', // 用户名
         userId: '', // 用户ID
-        avatar: '',  // 头像
+        avatar: '',  // 头像,
+        runningResumeId: '', // 正在制作的简历ID
     });
 
     static async logout() {
@@ -16,8 +17,8 @@ export class UserInfo {
         UserInfo.info.userName = '';
         UserInfo.info.userId = '';
         UserInfo.info.avatar = '';
+        UserInfo.info.runningResumeId = '';
         await auth.saveToken('');
-        console.log(router, 'routerrouter')
         await router.replace('/login');
     }
 }

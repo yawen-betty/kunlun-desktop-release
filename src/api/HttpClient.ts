@@ -2,6 +2,7 @@ import type {App} from "vue";
 import {Config} from "@/Config.ts";
 import {UserInfo} from "@/utiles/userInfo.ts";
 import {invoke} from '@tauri-apps/api/core';
+import {listen} from '@tauri-apps/api/event';
 import type {Path} from "@/api/Path.ts";
 import {message} from "@/utiles/Message.ts";
 import {Message} from "view-ui-plus";
@@ -12,8 +13,10 @@ interface HttpRequestParams {
     method: string;
     headers?: Record<string, string>;
     body?: any;
-    file_path?: string;
-    file_field_name?: string;
+    field_name?: string;
+    file_name?: string;
+    file_bytes?: number[];
+    extra_fields?: Record<string, string>;
 }
 
 // 定义响应接口
@@ -28,6 +31,13 @@ export interface EmptyOutDto {
 }
 
 export default class HttpClient {
+    static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
+
+    // 动态获取token，确保每次请求都使用最新的token
+    static get token(): string | undefined {
+        return UserInfo.info?.token;
+    }
+
     static create(): any {
         return {
             install: (app: App) => {
@@ -35,13 +45,6 @@ export default class HttpClient {
             }
         }
     };
-
-    static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
-
-    // 动态获取token，确保每次请求都使用最新的token
-    static get token(): string | undefined {
-        return UserInfo.info?.token;
-    }
 
     // 接口URL拼接
     private static fixUrl(path: Path, data?: any): string {
@@ -111,6 +114,41 @@ export default class HttpClient {
         return fullUrl;
     }
 
+    // 在 HttpClient 类中添加一个私有方法来处理特殊 code
+    private static handleSpecialCode(responseBody: any): void {
+        // 检查响应体是否包含 code 字段
+        if (responseBody && typeof responseBody === 'object' && 'code' in responseBody) {
+            const code = responseBody.code;
+
+            switch (code) {
+                case 302:
+                    message.error(Message, responseBody.msg);
+                    UserInfo.logout();
+                    break;
+
+                case 2108:
+                    message.error(Message, ' 账号已在其他设备登录！');
+                    UserInfo.logout();
+                    break;
+
+                // 简历数量已达上限
+                case 2305:
+                    message.error(Message, responseBody.msg);
+                    break;
+
+                default:
+                    // 其他错误码的通用处理
+                    // TODO 白名单
+                    if (code !== 200) {
+                        console.log(responseBody, 'responseBodyresponseBody')
+                        const msg = responseBody.msg || '请求失败';
+                        message.error(Message, msg);
+                        throw new Error(msg);
+                    }
+            }
+        }
+    }
+
     /**
      * 核心请求方法。通过 Path 对象封装了请求的 URL 和 Method。
      *
@@ -123,8 +161,8 @@ export default class HttpClient {
         path: Path,
         data?: any,
         options?: {
-            file_path?: string;
-            file_field_name?: string;
+            file?: File;
+            extraFields?: Record<string, string>;
         }
     ): Promise<T> {
         console.log('开始请求:', path);
@@ -153,19 +191,20 @@ export default class HttpClient {
             headers: defaultHeaders
         };
 
-        // 添加请求体 - 对于非GET请求
-        if (path.method !== 'GET' && data) {
-            // 对于POST请求，确保数据正确格式化为对象
+        // 添加请求体 - 判断是文件上传还是普通请求
+        if (options?.file) {
+            // 文件上传
+            const buffer = await options.file.arrayBuffer();
+            const fileBytes = Array.from(new Uint8Array(buffer));
+            requestParams.field_name = 'file';
+            requestParams.file_name = options.file.name;
+            requestParams.file_bytes = fileBytes;
+            requestParams.extra_fields = options.extraFields;
+            delete requestParams.headers?.['Content-Type'];
+        } else if (path.method !== 'GET' && data) {
+            // 普通 JSON 请求
             requestParams.body = data;
             console.log('请求体:', requestParams.body);
-        }
-
-        // 添加文件上传参数
-        if (options?.file_path && options?.file_field_name) {
-            requestParams.file_path = options.file_path;
-            requestParams.file_field_name = options.file_field_name;
-            // 文件上传时不需要设置Content-Type，由后端处理
-            delete requestParams.headers?.['Content-Type'];
         }
 
         return new Promise<T>(async (resolve, reject) => {
@@ -197,88 +236,94 @@ export default class HttpClient {
     }
 
     /**
-     * 上传文件的便捷方法
+     * SSE 流式请求方法
      * @param path Path对象
-     * @param file File文件
+     * @param data 请求体数据
+     * @param onMessage 接收到消息时的回调
+     * @param onError 发生错误时的回调
+     * @param onComplete 完成时的回调
+     * @param options formData请求参数
      */
-    public async uploadFile<T>(
+    public async sseRequest(
         path: Path,
-        file: File
-    ): Promise<T> {
-        console.log('HttpClient.uploadFile 开始处理:', file.name);
-
-        // 1. 生成目标服务器 URL
+        data?: any,
+        onMessage?: (data: string) => void,
+        onError?: (error: any) => void,
+        onComplete?: () => void,
+        options?: {
+            file?: File;
+            extraFields?: Record<string, string>;
+        }
+    ): Promise<void> {
         const fullUrl = HttpClient.fixUrl(path);
-        console.log('目标上传 URL:', fullUrl);
+        const eventId = `sse-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
 
-        // 2. 准备请求头
         const headers: Record<string, string> = {
-            'Content-Type': 'multipart/form-data',
-            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Accept': 'text/event-stream',
             'version': Config.version
         };
+
         if (HttpClient.token) {
             headers['Admin-Token'] = HttpClient.token;
         }
-        console.log('上传请求头:', headers);
 
-        // 3. 将 File 对象转换为字节数组 (Uint8Array)
-        const buffer = await file.arrayBuffer();
-        const fileBytes = Array.from(new Uint8Array(buffer));
-
-        return new Promise<T>(async (resolve, reject) => {
-            try {
-                const response: HttpResponse = await invoke('upload_request', {
-                  url: fullUrl,
-                  headers,
-                  fieldName: 'file', // 根据您的要求，字段名固定为 'file'
-                  fileName: file.name,
-                  fileBytes,
-                });
-
-                console.info('文件上传响应:', response);
-
-                if (response.status >= 200 && response.status < 300) {
-                    HttpClient.handleSpecialCode(response.body);
-                    resolve(response.body as T);
-                } else {
-                    const errorMsg = `上传失败: ${response.status} ${JSON.stringify(response.body)}`;
-                    console.error(errorMsg);
-                    reject(new Error(errorMsg));
-                }
-            } catch (error) {
-                console.error('调用 upload_request 命令时出错:', error);
-                reject(error);
+        // 监听消息
+        const unlistenMessage = await listen(`sse-message-${eventId}`, (event) => {
+            if (onMessage) {
+                onMessage(event.payload as string);
             }
         });
-    }
 
-    // 在 HttpClient 类中添加一个私有方法来处理特殊 code
-    private static handleSpecialCode(responseBody: any): void {
-        // 检查响应体是否包含 code 字段
-        if (responseBody && typeof responseBody === 'object' && 'code' in responseBody) {
-            const code = responseBody.code;
+        // 监听错误
+        const unlistenError = await listen(`sse-error-${eventId}`, (event) => {
+            if (onError) {
+                onError(event.payload);
+            }
+            unlistenMessage();
+            unlistenError();
+            unlistenComplete();
+        });
 
-            switch (code) {
-                case 302:
-                    message.error(Message, responseBody.msg);
-                    UserInfo.logout();
-                    break;
+        // 监听完成
+        const unlistenComplete = await listen(`sse-complete-${eventId}`, () => {
+            if (onComplete) {
+                onComplete();
+            }
+            unlistenMessage();
+            unlistenError();
+            unlistenComplete();
+        });
 
-                case 2108:
-                    message.error(Message, ' 账号已在其他设备登录！');
-                    UserInfo.logout();
-                    break;
+        // 发起 SSE 请求
+        try {
+            const params: any = {
+                url: fullUrl,
+                headers,
+                eventId
+            };
 
-                default:
-                    // 其他错误码的通用处理
-                    // TODO 白名单
-                    if (code !== 200) {
-                        console.log(responseBody, 'responseBodyresponseBody')
-                        const msg = responseBody.msg || '请求失败';
-                        message.error(Message, msg);
-                        throw new Error(msg);
-                    }
+            // 判断是文件上传还是 JSON
+            if (options?.file) {
+                const buffer = await options.file.arrayBuffer();
+                const fileBytes = Array.from(new Uint8Array(buffer));
+                params.fieldName = 'file';
+                params.fileName = options.file.name;
+                params.fileBytes = fileBytes;
+                params.extraFields = options.extraFields;
+                delete params.headers['Content-Type'];
+            } else {
+                params.body = data;
+            }
+
+            await invoke('sse_request', params);
+        } catch (error) {
+            console.error('SSE 请求失败:', error);
+            unlistenMessage();
+            unlistenError();
+            unlistenComplete();
+            if (onError) {
+                onError(error);
             }
         }
     }

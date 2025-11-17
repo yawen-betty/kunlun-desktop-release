@@ -249,7 +249,7 @@ onMounted(() => {
     display: flex;
     align-items: center;
     min-height: vh(32);
-    padding: vh(12) vw(20);
+    padding: 0 vw(20);
     background: $bg-gray;
     height: vh(40);
 
@@ -288,7 +288,8 @@ onMounted(() => {
         font-size: vw(14);
         font-style: normal;
         font-weight: 400;
-        line-height: vh(14);
+        height: vh(40);
+        line-height: vh(40);
       }
 
       .tag-box {

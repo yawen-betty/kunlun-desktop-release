@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Kunlun",
-  "version": "1.0.0",
-  "identifier": "com.yawen.kunlun",
+  "version": "1.0.1",
+  "identifier": "com.liangji.kunlun",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
@@ -21,7 +21,8 @@
         "decorations": false,
         "resizable": true,
         "transparent": false,
-        "devtools": true
+        "devtools": true,
+        "dragDropEnabled": true
       }
     ],
     "security": {
@@ -44,11 +45,16 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQwQ0JDMzE2RTlGMzgyMTIKUldRU2d2UHBGc1BMME93U0pMWjhmUCsxYm5qVUpzcWxjRGhQTmNQVzlJUU14N2dtYXZaMVY3VkcK",
       "endpoints": [
-        "http://update.liangjiyuren.cn/kunlun/{{target}}/latest.json"
+        "http://update.liangjiyuren.cn/kunlun/dev/latest.json"
       ]
     },
     "process": {
       "relaunch": true
+    },
+    "fs": {
+      "scope": [
+        "$LOG/*"
+      ]
     }
   }
 }

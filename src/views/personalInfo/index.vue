@@ -3,7 +3,8 @@
   <div class="personal-info">
     <PersonalInfoTabs v-model="currentTab"/>
     <div class="personal-content">
-      <PersonalInfoBasic v-if="currentTab === 'basic'" @logout="handleLogout"/>
+      <PersonalInfoBasic v-if="currentTab === 'basic'"/>
+      <PersonalInfoResume v-if="currentTab === 'resume'"/>
     </div>
   </div>
 </template>
@@ -12,21 +13,22 @@
 import {ref} from 'vue';
 import PersonalInfoTabs from './components/PersonalInfoTabs.vue';
 import PersonalInfoBasic from './components/basic/PersonalInfoBasic.vue';
+import PersonalInfoResume from "@/views/personalInfo/components/resume/PersonalInfoResume.vue";
 
-const currentTab = ref<string>('basic'); // 默认激活"基础设置"
-
-const handleLogout = () => {
-  // 处理退出登录逻辑
-};
+const currentTab = ref<string>('resume'); // 默认激活"基础设置"
 </script>
 
 
 <style scoped lang="scss">
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
-.personal-content {
-  padding: vh(40) vw(40) vw(30) vw(40);
 
 
+.personal-info {
+  height: 100%;
+
+  .personal-content {
+    height: 100%;
+  }
 }
 </style>

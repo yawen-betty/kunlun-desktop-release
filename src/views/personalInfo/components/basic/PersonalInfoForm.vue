@@ -50,6 +50,7 @@ import {message} from "@/utiles/Message.ts";
 import {UserService} from "@/service/UserService.ts";
 import {UpdateProfileInDto} from "@/api/user/dto/UpdateProfile.ts";
 import {FileService} from "@/service/FileService.ts";
+import {Config} from "@/Config.ts";
 
 const formRef = ref<any>(null);
 
@@ -143,10 +144,11 @@ const getUserInfo = () => {
     if (res.code === 200) {
       Object.assign(formValidate, {
         ...res.data,
+        avatarUrl: Config.baseUrl + res.data.avatarUrl!,
         birthDate: new Date(res.data.birthDate as any)
       })
 
-      filePreviewUrl.value = res.data.avatarUrl!;
+      filePreviewUrl.value = Config.baseUrl + res.data.avatarUrl!;
     }
   })
 }
@@ -171,6 +173,7 @@ onMounted(() => {
   .form-title {
     font-size: vw(28);
     color: $font-dark;
+    font-family: 'YouSheBiaoTiHei', serif;
     font-weight: 400;
     margin-bottom: vh(40);
   }

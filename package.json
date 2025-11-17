@@ -19,27 +19,32 @@
       "name": "kunlun"
     },
     "dev": {
-      "baseUrl": "https://crm.dev.lingxizhifu.cn/",
+      "baseUrl": "https://hr-ai.dev.lingxizhifu.cn/",
       "basePath": "/",
-      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/dev"
     },
     "test": {
-      "baseUrl": "https://crm.test.lingxizhifu.cn//",
+      "baseUrl": "https://hr-ai.test.lingxizhifu.cn/",
       "basePath": "/",
-      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/test"
     },
     "prod": {
-      "baseUrl": "",
+      "baseUrl": "https://hr-ai.lingxizhifu.cn",
       "basePath": "/",
-      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/"
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/master"
     }
   },
   "dependencies": {
     "@tauri-apps/api": "2.9.0",
+    "@tauri-apps/plugin-dialog": "^2.4.2",
+    "@tauri-apps/plugin-fs": "^2.4.4",
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-os": "^2.3.1",
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-updater": "^2.9.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.3",
+    "lottie-web": "^5.13.0",
     "sortablejs": "^1.15.6",
     "view-ui-plus": "^1.3.21",
     "vue": "^3.5.13",
