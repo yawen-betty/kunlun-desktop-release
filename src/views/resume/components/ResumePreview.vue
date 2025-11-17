@@ -786,7 +786,7 @@ const fetchAvailableFields = async (basicInfoModuleId: string) => {
 
         if (result.code === 200 && result.data?.fields) {
             return result.data.fields
-                .filter(f => !['姓名', '求职岗位'].includes(f.fieldName))
+                .filter(f => !['姓名', '求职岗位'].includes(f.fieldName!))
                 .map(f => ({
                     id: f.uuid,
                     name: f.fieldName
