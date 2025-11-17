@@ -261,6 +261,7 @@ const handleEmitData = () => {
             background: linear-gradient(92deg, rgba(196, 162, 252, 0.10) 3.76%, rgba(136, 233, 255, 0.10) 95.27%);
             max-height: vh(360);
             word-break: break-all;
+            white-space: pre-wrap;
 
             &::-webkit-scrollbar {
               display: none;
@@ -270,6 +271,7 @@ const handleEmitData = () => {
           .content {
             height: vh(330);
             word-break: break-all;
+            white-space: pre-wrap;
             overflow-y: auto;
             margin-top: vh(13);
 
