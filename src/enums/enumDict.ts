@@ -41,3 +41,19 @@ export const aiModal = [
         value: '智谱'
     }
 ]
+
+export const aiOptimize = [
+    {
+        key: '1',
+        value: '润色'
+    }, {
+        key: '2',
+        value: '扩展'
+    }, {
+        key: '3',
+        value: '简化'
+    }, {
+        key: '4',
+        value: '总结'
+    }
+]

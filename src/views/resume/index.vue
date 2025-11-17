@@ -1,46 +1,118 @@
-<script setup lang="ts">
+<script lang="ts">
+export default {
+    name: 'Resume'
+}
+</script>
+
+<script lang="ts" setup>
+import {nextTick, onActivated, ref} from 'vue';
+import {useRoute} from 'vue-router';
 import MakePanel from './components/MakePanel.vue'
-import ModelUsageExhaustedModal from './components/ModelUsageExhaustedModal.vue'
-import {ref} from "vue";
+import WriteResume from "@/views/resume/components/WriteResume.vue";
+import {UserInfo} from "@/utiles/userInfo.ts";
 
-const visible = ref(true)
+const route = useRoute();
+const showMakePanel = ref(true);
+// const resumeId = ref('4f11769e52304077bea5de854ecc4305');
+const resumeId = ref('');
+const resumeName = ref('');
+const uploadedFile = ref<File | null>(null);
+const initialMode = ref<'ai' | 'manual'>('ai');
 
-// const rightList = ref([
-//     { id: '1', name: '教育经历' },
-//     { id: '2', name: '工作经历' },
-//     { id: '3', name: '专业技能' },
-//     { id: '4', name: '奖项证书' },
-//     { id: '5', name: '自我评价' },
-//     { id: '6', name: '项目经历' },
-//     { id: '7', name: '培训情况' },
-//     { id: '8', name: '语言能力' },
-//     { id: '9', name: '专利/学术成果' },
-//     { id: '10', name: '兴趣爱好' },
-//     { id: '12', name: '实习经历' }
-// ])
-// const appliedModules = ref<any[]>([])
-// const disabledDragIds = ['1', '2', '3']
-// const handleModulesApply = (modules: any[]) => {
-//     appliedModules.value = [...modules]
-//     console.log(appliedModules.value, 'appliedModules.value');
-// }
+const handleResumeCreated = (data: { resumeId: string; resumeName: string; uploadedFile: File | null }) => {
+    resumeId.value = data.resumeId;
+    UserInfo.info.runningResumeId = resumeId.value
+    resumeName.value = data.resumeName;
+    uploadedFile.value = data.uploadedFile;
+    showMakePanel.value = false;
+};
 
+const exit = () => {
+    showMakePanel.value = true;
+    resumeName.value = '';
+    resumeId.value = '';
+    UserInfo.info.runningResumeId = '';
+    uploadedFile.value = null;
+    initialMode.value = 'ai';
+};
+
+onActivated(() => {
+    const routeResumeId = route.query.resumeId as string;
+    if (routeResumeId) {
+        resumeId.value = routeResumeId;
+        UserInfo.info.runningResumeId = resumeId.value
+        showMakePanel.value = false;
+        nextTick(() => {
+            initialMode.value = 'manual';
+        })
+    }
+});
 
 </script>
 
 <template>
     <div class="resume-cont">
-        <MakePanel />
-
-        <ModelUsageExhaustedModal v-model="visible"/>
+        <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
+        <WriteResume v-else :initial-mode="initialMode" :resume-id="resumeId" :resume-name="resumeName"
+                     :uploaded-file="uploadedFile" @back-to-make="exit"/>
     </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
 .resume-cont {
     height: 100%;
     padding: vh(40);
+}
+
+.test-drag-area {
+    position: fixed;
+    left: 300px;
+    top: 300px;
+    margin-top: 40px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+
+    h3 {
+        margin-bottom: 16px;
+    }
+}
+
+.test-list {
+    width: vw(400);
+    max-height: vh(268);
+    padding: vw(10) vw(10) 0;
+    background: $white;
+    overflow-y: auto;
+    -webkit-app-region: no-drag;
+}
+
+.test-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 4px;
+    cursor: move !important;
+    user-select: none;
+    -webkit-app-region: no-drag;
+
+    .drag-handle {
+        cursor: move !important;
+        font-size: 18px;
+        color: #999;
+    }
+}
+
+:deep(.sortable-fallback) {
+    opacity: 1 !important;
+    background: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 4px !important;
 }
 </style>

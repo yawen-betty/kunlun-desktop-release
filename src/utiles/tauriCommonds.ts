@@ -18,7 +18,7 @@ export const auth = {
       throw error;
     }
   },
-  
+
   /**
    * 获取保存的认证令牌
    * @returns 认证令牌，如果不存在则返回 "no token"
@@ -34,8 +34,25 @@ export const auth = {
   }
 };
 
-export const keyboard = {
-  listenSaveShortcut: async () => {
-    return await invoke('listen_save_shortcut');
+
+/**
+ * 图片处理相关的 Tauri 命令封装
+ */
+export const image = {
+  /**
+   * 将服务器图片URL转换为Base64 Data URL
+   * @param url 图片URL（支持http/https）
+   * @returns Base64 Data URL字符串，格式：data:image/xxx;base64,xxx
+   * @example
+   * const base64 = await image.toBase64('https://example.com/image.png');
+   * // 直接用于img标签: <img :src="base64" />
+   */
+  toBase64: async (url: string): Promise<string> => {
+    try {
+      return await invoke('image_to_base64', { url });
+    } catch (error) {
+      console.error('图片转Base64失败:', error);
+      throw error;
+    }
   }
 };

@@ -48,7 +48,7 @@ export class UserService {
     /**
      * 获取模型账号配置
      */
-    public async getModelAccount(params: GetModelAccountInDto): Promise<Result<GetModelAccountInDto>> {
+    public async getModelAccount(params: GetModelAccountInDto): Promise<Result<GetModelAccountOutDto>> {
         return await this.http.request<Result<GetModelAccountOutDto>>(UserPaths.getModelAccount, params);
     }
 

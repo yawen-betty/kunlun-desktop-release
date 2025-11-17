@@ -8,7 +8,12 @@ pub struct HttpRequest {
     url: String,
     method: String,
     headers: Option<HashMap<String, String>>,
-    body: Option<serde_json::Value>
+    body: Option<serde_json::Value>,
+    // multipart 参数（可选）
+    field_name: Option<String>,
+    file_name: Option<String>,
+    file_bytes: Option<Vec<u8>>,
+    extra_fields: Option<HashMap<String, String>>
 }
 
 // 响应结构体
@@ -65,21 +70,35 @@ pub async fn http_request(req: HttpRequest) -> Result<HttpResponse, String> {
         }
     }
 
-    // 处理普通请求体
-    if let Some(body) = req.body {
+    // 处理请求体 - 判断是 multipart 还是 JSON
+    if let (Some(field), Some(name), Some(bytes)) = (req.field_name, req.file_name, req.file_bytes) {
+        // 使用 multipart/form-data 格式
+        let part = reqwest::multipart::Part::bytes(bytes)
+            .file_name(name)
+            .mime_str("application/json")
+            .map_err(|e| format!("创建文件部分失败: {}", e))?;
+
+        let mut form = reqwest::multipart::Form::new().part(field, part);
+
+        if let Some(fields) = req.extra_fields {
+            for (key, value) in fields {
+                form = form.text(key, value);
+            }
+        }
+
+        request_builder = request_builder.multipart(form);
+    } else if let Some(body) = req.body {
+        // 使用 JSON 格式
         match body {
-            // 对于对象类型，使用json方法
             serde_json::Value::Object(_) => {
                 match serde_json::to_string(&body) {
                     Ok(_) => request_builder = request_builder.json(&body),
                     Err(e) => return Err(format!("JSON序列化失败: {}", e)),
                 }
             },
-            // 对于字符串类型，使用body方法
             serde_json::Value::String(s) => {
                 request_builder = request_builder.body(s);
             },
-            // 对于其他类型，转换为JSON字符串
             _ => {
                 if let Ok(json_str) = serde_json::to_string(&body) {
                     request_builder = request_builder.body(json_str);
@@ -132,64 +151,6 @@ pub async fn http_request(req: HttpRequest) -> Result<HttpResponse, String> {
     };
 
     // 返回响应
-    Ok(HttpResponse {
-        status,
-        headers: response_headers,
-        body: response_body,
-    })
-}
-
-// 上传接口
-#[command]
-pub async fn upload_request(
-    url: String,
-    headers: Option<HashMap<String, String>>,
-    field_name: String,
-    file_name: String,
-    file_bytes: Vec<u8>,
- ) -> Result<HttpResponse, String> {
-//     let client = reqwest::Client::new();
-    let client = match reqwest::Client::builder()
-        .danger_accept_invalid_certs(true)
-        .build() {
-        Ok(client) => client,
-            Err(e) => return Err(format!("创建HTTP客户端失败: {}", e)),
-    };
-
-    // 1. 创建 multipart/form-data 表单
-    let part = reqwest::multipart::Part::bytes(file_bytes)
-        .file_name(file_name)
-        .mime_str("application/json")
-        .map_err(|e| format!("创建文件部分失败: {}", e))?;
-
-    let form = reqwest::multipart::Form::new().part(field_name, part);
-
-    // 2. 构建请求
-    let mut request_builder = client.post(url).multipart(form);
-
-    // 3. 添加请求头
-    if let Some(h) = headers {
-        for (key, value) in h {
-            request_builder = request_builder.header(&key, &value);
-        }
-    }
-
-    // 4. 发送请求
-    let response = request_builder.send().await.map_err(|e| format!("请求发送失败: {}", e))?;
-
-    // 5. 处理并返回响应 (与您现有的 http_request 函数逻辑类似)
-    let status = response.status().as_u16();
-    let mut response_headers = HashMap::new();
-        for (key, value) in response.headers() {
-            if let Ok(value_str) = value.to_str() {
-                response_headers.insert(key.to_string(), value_str.to_string());
-            }
-        }
-        let response_body = match response.text().await {
-            Ok(body) => serde_json::from_str(&body).unwrap_or_else(|_| serde_json::Value::String(body)),
-            Err(e) => return Err(format!("读取响应失败: {}", e)),
-        };
-
     Ok(HttpResponse {
         status,
         headers: response_headers,

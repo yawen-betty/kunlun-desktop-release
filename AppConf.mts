@@ -1,4 +1,6 @@
 import * as fs from 'fs';
+import * as path from 'path';
+
 class AppConfig {
     /**
      * 编码
@@ -78,8 +80,40 @@ export class Config {
         fs.writeFileSync('src/Config.ts', evn, this.encoding);
     }
 
+    updateTauriConf() {
+        const tauriConfPath = 'src-tauri/tauri.conf.json';
+        console.log(`Updating ${tauriConfPath} with downloadUrl from package.json...`);
+
+        // 从 package.json 的配置中获取基础 URL
+        const baseUrl = this.config.downloadUrl;
+
+        if (!baseUrl) {
+            console.warn('Warning: "downloadUrl" is not defined in package.json for the current environment. Skipping tauri.conf.json update.');
+            return;
+        }
+
+        // 拼接上 /latest.json
+        const endpoint = `${baseUrl}/latest.json`;
+
+        console.log(`Setting updater endpoint to: ${endpoint}`);
+
+        // 读取、修改并写回 tauri.conf.json
+        const tauriConfData = fs.readFileSync(tauriConfPath, { encoding: this.encoding });
+        const tauriConf = JSON.parse(tauriConfData);
+
+        if (tauriConf.plugins && tauriConf.plugins.updater) {
+            tauriConf.plugins.updater.endpoints = [endpoint];
+        } else {
+            console.error('Error: "plugins.updater" section not found in tauri.conf.json');
+            process.exit(1);
+        }
+
+        fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2), this.encoding);
+        console.log(`${tauriConfPath} updated successfully.`);
+    }
 }
 
 const config = new AppConfig();
 
 config.genConfig();
+config.updateTauriConf(); // <-- 增加这一行

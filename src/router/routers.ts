@@ -29,7 +29,7 @@ const onlyHeader = function (meta: any) {
 const all = [
     {
         path: '/',
-        redirect: '/login'
+        redirect: '/resume'
     },
     // 登录
     onlyHeader({
@@ -53,7 +53,7 @@ const all = [
     // 个人信息
     layout({
         path: '/personalInfo',
-        title: '个人信息',
+        title: '个人中心',
         icon: 'icon-gerenzhongxin',
         component: () => import('@/views/personalInfo/index.vue')
     })

@@ -2,7 +2,6 @@
   <div class="basic">
     <PersonalInfoSidebar
       v-model="currentMenu"
-      @logout="handleLogout"
     />
 
     <div class="basic-content">
@@ -20,23 +19,16 @@ import PersonalInfoSidebar from '@/views/personalInfo/components/PersonalInfoSid
 import PersonalInfoForm from "@/views/personalInfo/components/basic/PersonalInfoForm.vue";
 import PersonalInfoExhaustedModal from "@/views/personalInfo/components/basic/PersonalInfoExhaustedModal.vue";
 
-interface Emits {
-  (e: 'logout'): void;
-}
-
-const emit = defineEmits<Emits>();
-
 const currentMenu = ref<string>('personal');
 
-const handleLogout = () => {
-  emit('logout');
-};
 </script>
 
 <style scoped lang="scss">
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
 .basic {
+  padding: vh(40) vw(40) vw(30) vw(40);
   display: flex;
   gap: vw(40);
 
