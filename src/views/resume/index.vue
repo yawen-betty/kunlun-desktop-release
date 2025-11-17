@@ -9,6 +9,7 @@ import {nextTick, onActivated, ref} from 'vue';
 import {useRoute} from 'vue-router';
 import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
+import {UserInfo} from "@/utiles/userInfo.ts";
 
 const route = useRoute();
 const showMakePanel = ref(true);
