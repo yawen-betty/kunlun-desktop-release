@@ -325,7 +325,7 @@ const fetchResumeDetail = async (resumeId: string) => {
         if (result.code === 200 && result.data) {
             resumeData.value = result.data;
             resumeName.value = result.data.name || '我的简历-未命名1';
-            resumeScore.value = result.data.score;
+            resumeScore.value = result.data.score!;
         } else {
             Message.error(result.msg || '获取简历详情失败');
         }
