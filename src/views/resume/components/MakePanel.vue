@@ -147,7 +147,10 @@ onUnmounted(() => {
 <template>
     <div class="resume-prod-cont">
         <div class="prod-left">
-            <div class="title">简历制作</div>
+            <div class="title flex-column">
+                <SvgIcon class="ai-icon" color="#FC8719" name="icon-AI" size="40"/>
+                <span>简历制作</span>
+            </div>
             <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form">
                 <FormItem prop="jobPosition">
                     <Input v-model="formData.jobPosition" :max-length="20"
@@ -253,6 +256,11 @@ onUnmounted(() => {
             font-size: vw(38);
             font-style: normal;
             line-height: vh(50); /* 131.579% */
+
+            svg {
+                width: vw(61) !important;
+                height: vh(45) !important;
+            }
         }
 
         .custom-form {
