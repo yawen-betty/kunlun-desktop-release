@@ -1,6 +1,6 @@
 <!-- 简历制作默认页 | 采集求职岗位丶身份 -->
 <script lang="ts" setup>
-import {onDeactivated, onActivated, reactive, ref, onMounted, onUnmounted} from 'vue'
+import {computed, onMounted, onUnmounted, reactive, ref} from 'vue'
 import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {ResumeService} from "@/service/ResumeService";
@@ -48,6 +48,15 @@ const uploadFile = ref<{
     uploading: boolean;
     file: File;
 } | null>(null);
+
+const fileIcon = computed(() => {
+    if (!uploadFile.value) return 'icon-pdf';
+    const fileName = uploadFile.value.name.toLowerCase();
+    if (fileName.endsWith('.pdf')) return 'icon-pdf';
+    if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) return 'icon-word';
+    return 'icon-pdf';
+});
+
 const resumeService = new ResumeService();
 const showLimitModal = ref(false);
 const emit = defineEmits<{
@@ -147,7 +156,10 @@ onUnmounted(() => {
 <template>
     <div class="resume-prod-cont">
         <div class="prod-left">
-            <div class="title">简历制作</div>
+            <div class="title flex-column">
+                <SvgIcon class="ai-icon" color="#FC8719" name="icon-AI" size="40"/>
+                <span>简历制作</span>
+            </div>
             <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form">
                 <FormItem prop="jobPosition">
                     <Input v-model="formData.jobPosition" :max-length="20"
@@ -170,7 +182,7 @@ onUnmounted(() => {
                     </Upload>
                     <div v-if="uploadFile" class="file-box mt-10 pl-20 pr-15 flex-column align-between">
                         <div class="file-name flex-column">
-                            <SvgIcon class="file-icon" name="icon-pdf" size="24"/>
+                            <SvgIcon class="file-icon" :name="fileIcon" size="24"/>
                             <div class="file-status ml-20">
                                 <Ellipsis :content="uploadFile.name" class="name"/>
                                 <!--                                <p class="mb-10 name">{{ uploadFile.name }}</p>-->
@@ -253,6 +265,11 @@ onUnmounted(() => {
             font-size: vw(38);
             font-style: normal;
             line-height: vh(50); /* 131.579% */
+
+            svg {
+                width: vw(61) !important;
+                height: vh(45) !important;
+            }
         }
 
         .custom-form {
