@@ -39,6 +39,8 @@ onMounted(async () => {
     if (token) {
       UserInfo.info.token = token;
       getUserInfo(userService);
+    } else {
+      router.push('/login')
     }
   })
 
