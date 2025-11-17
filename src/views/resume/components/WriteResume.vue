@@ -306,7 +306,7 @@ const sendDiagnose = (params: string) => {
         }, 2000)
         showScoreAndMode.value = true
         resumeScore.value = paramsObj.score;
-        scoreProblems.value = paramsObj.issues.map(item => item.question)
+        scoreProblems.value = paramsObj.issues.map(item => item.problem)
     } catch (e) {
         console.log('简历分数更新失败')
     }

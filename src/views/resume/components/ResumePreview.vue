@@ -227,7 +227,8 @@
                                             getStreamValue(getFieldUuid(entry, 'degree')) || getFieldName(entry, 'degree')
                                         }}</span>
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }"
+                                >
                                     {{
                                         getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
                                     }}
@@ -350,7 +351,8 @@
                                             getStreamValue(getFieldUuid(entry, 'position_name')) || getFieldName(entry, 'position_name')
                                         }}</span>
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }"
+                                >
                                     {{
                                         getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
                                     }}
@@ -472,7 +474,8 @@
                                             getStreamValue(getFieldUuid(entry, 'position_name')) || getFieldName(entry, 'position_name')
                                         }}</span>
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }"
+                                >
                                     {{
                                         getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
                                     }}
@@ -582,7 +585,8 @@
                                         getStreamValue(getFieldUuid(entry, 'project_name')) || getFieldName(entry, 'project_name')
                                     }}
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }"
+                                >
                                     {{
                                         getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
                                     }}
@@ -781,10 +785,12 @@ const fetchAvailableFields = async (basicInfoModuleId: string) => {
         const result = await resumeService.getModuleFields(params);
 
         if (result.code === 200 && result.data?.fields) {
-            return result.data.fields.map(f => ({
-                id: f.uuid,
-                name: f.fieldName
-            }));
+            return result.data.fields
+                .filter(f => !['姓名', '求职岗位'].includes(f.fieldName))
+                .map(f => ({
+                    id: f.uuid,
+                    name: f.fieldName
+                }));
         }
         return [];
     } catch (error) {
@@ -1118,16 +1124,16 @@ const handleAiAction = (action: 'polish' | 'expand' | 'simplify' | 'summarize') 
 
     if (editingEntryUuid.value) {
         text = entryEditData.value.description || '';
-        fieldName = 'description';
         const module = props.resumeData?.modules?.find((m: any) =>
             m.entries?.some((e: any) => e.entryUuid === editingEntryUuid.value)
         );
         const entry = module?.entries?.find((e: any) => e.entryUuid === editingEntryUuid.value);
+        fieldName = getFieldName(entry, 'description');
         maxLength = getFieldMaxLength(entry, 'description');
     } else if (editingModuleUuid.value) {
         text = editTextContent.value;
         const module = props.resumeData?.modules?.find((m: any) => m.uuid === editingModuleUuid.value);
-        fieldName = module?.entries?.[0]?.fields?.[0]?.fieldKey || '';
+        fieldName = module?.entries?.[0]?.fields?.[0]?.fieldName || '';
         maxLength = getTextModuleMaxLength(module);
     }
 
@@ -1560,9 +1566,13 @@ defineExpose({
     color: $placeholder-color;
 }
 
+.time-box {
+    width: vw(67);
+}
+
 .time-placeholder {
     color: $placeholder-color;
-    text-align: right;
+    //text-align: right;
     font-weight: 400;
 }
 
