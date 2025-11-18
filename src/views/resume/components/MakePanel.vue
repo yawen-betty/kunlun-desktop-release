@@ -130,7 +130,6 @@ const startPlaceholderRotation = () => {
     placeholderTimer.value = window.setInterval(() => {
         if (!formData.jobPosition) {
             placeholderIdx.value++;
-            console.log(222)
             if (placeholderIdx.value === placeholderList.length) {
                 placeholderIdx.value = 0
             }
@@ -154,7 +153,6 @@ onDeactivated(() => {
 })
 
 onMounted(() => {
-    console.log(222222)
     startPlaceholderRotation()
 })
 

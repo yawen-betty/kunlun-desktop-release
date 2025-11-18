@@ -139,12 +139,16 @@ const getEntryTitle = (entry: ResumeEntryBean): string => {
 
 const getEntryTime = (entry: ResumeEntryBean): string => {
     const fields = entry.fields || [];
-    return fields.find(f => f.fieldKey === 'end_time')?.fieldValue || '';
+    const startTime = fields.find(f => f.fieldKey === 'start_time')?.fieldValue || '';
+    const endTime = fields.find(f => f.fieldKey === 'end_time')?.fieldValue || '';
+    
+    if (!startTime && !endTime) return '';
+    if (startTime && endTime) return `${startTime} - ${endTime}`;
+    return startTime || endTime;
 };
 
 const getEntryTimeFieldName = (entry: ResumeEntryBean): string => {
-    const fields = entry.fields || [];
-    return fields.find(f => f.fieldKey === 'end_time')?.fieldName || '';
+    return '起止时间';
 };
 
 const getEntryDuties = (entry: ResumeEntryBean): string[] => {

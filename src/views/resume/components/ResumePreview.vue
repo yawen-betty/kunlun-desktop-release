@@ -1003,9 +1003,8 @@ const getStreamValue = (fieldUuid: string) => {
 const getTimeRangeDisplay = (entry: any) => {
     const startTime = getStreamValue(getFieldUuid(entry, 'start_time'));
     const endTime = getStreamValue(getFieldUuid(entry, 'end_time'));
-    console.log(startTime, endTime)
     if (!startTime && !endTime) {
-        return getFieldName(entry, 'end_time');
+        return '起止时间';
     }
     if (startTime && endTime) {
         return `${startTime} - ${endTime}`;
