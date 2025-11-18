@@ -91,8 +91,8 @@
                 <Transition name="slide-right">
                     <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :changeMode="changeMode"
                                 :hasAttachment="uploadedFile" :over="over" :resumeUuid="resumeId"
-                                :streamWrite="handleWriteStream" @sendDiagnose="sendDiagnose"
-                                @sendTemplate="sendTemplate"/>
+                                :streamWrite="handleWriteStream" @listFinish="listFinish"
+                                @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
                 </Transition>
             </div>
         </div>
@@ -161,7 +161,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, nextTick, onActivated, onDeactivated, onMounted, onUnmounted, reactive, ref, watch} from 'vue';
+import {computed, nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue';
 import lottie from 'lottie-web';
 import successAnimation from '@/assets/json/对号.json';
 import {debounce} from '@/utiles/debounce';
@@ -365,9 +365,11 @@ onMounted(async () => {
         Message.error('简历ID不存在');
         return;
     }
+    // 从简历制作页面进入
     if (props.resumeName) {
         resumeName.value = props.resumeName;
     } else {
+        // 从个人中心简历中点击进入
         await fetchResumeDetail(props.resumeId);
     }
     startAutoSave();
@@ -407,7 +409,7 @@ const handleConfirm = async () => {
 const saveResume = async () => {
     try {
         const params = new SaveResumeInDto();
-        params.resumeId = resumeData.value.uuid || '';
+        params.resumeId = props.resumeId;
         params.modules = resumeData.value.modules;
 
         await resumeService.saveResume(params);
@@ -483,7 +485,9 @@ const handleExit = debounce(async () => {
         Message.warning('当前处于编辑中,请保存后再操作!');
         return;
     }
-    await saveResume()
+    if (!isGenerating.value) {
+        await saveResume()
+    }
     emit('back-to-make');
 }, 300);
 
@@ -497,11 +501,15 @@ const toggleMode = debounce(() => {
     } else {
         currentMode.value = 'ai';
         showScoreAndMode.value = true
-        nextTick(() => {
-            resumeChatRef.value?.diagnoseResume()
-        })
+        // nextTick(() => {
+        //     resumeChatRef.value?.diagnoseResume()
+        // })
     }
 }, 300);
+
+const listFinish = () => {
+    resumeChatRef.value?.diagnoseResume()
+}
 
 // 第一步传递的模板数据
 const sendTemplate = (templateData: string) => {

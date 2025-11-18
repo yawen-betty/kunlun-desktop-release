@@ -125,6 +125,7 @@ const props = defineProps<{
 const emits = defineEmits<{
   sendTemplate: [template: string]
   sendDiagnose: [diagnose: string]
+  listFinish: []
 }>()
 
 const thinkingText: TextType = {
@@ -192,8 +193,9 @@ const queryChatList = async () => {
     const newData = res.data.list || [];
 
     if (pageNum.value === 1) {
-      chatList.value = newData;
-      scrollToBottom('chatting-records')
+      chatList.value = newData.reverse();
+
+      scrollToBottom('chatting-records');
     } else {
       chatList.value = [...newData.reverse(), ...chatList.value];
     }
@@ -201,6 +203,9 @@ const queryChatList = async () => {
     // 检查是否还有更多数据
     hasMore.value = newData.length === pageSize.value;
 
+    if (chatList.value?.length > 0 && pageNum.value === 1) {
+      emits('listFinish');
+    }
     if (chatList.value?.length === 0) {
       const content: string = '请帮我制作一份求职简历！'
       chatList.value.push({
