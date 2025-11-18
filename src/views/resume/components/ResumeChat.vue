@@ -125,6 +125,7 @@ const props = defineProps<{
 const emits = defineEmits<{
   sendTemplate: [template: string]
   sendDiagnose: [diagnose: string]
+  listFinish: []
 }>()
 
 const thinkingText: TextType = {
@@ -192,8 +193,9 @@ const queryChatList = async () => {
     const newData = res.data.list || [];
 
     if (pageNum.value === 1) {
-      chatList.value = newData;
-      scrollToBottom('chatting-records')
+      chatList.value = newData.reverse();
+      emits('listFinish');
+      scrollToBottom('chatting-records');
     } else {
       chatList.value = [...newData.reverse(), ...chatList.value];
     }
