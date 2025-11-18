@@ -182,7 +182,7 @@ onUnmounted(() => {
                     </Upload>
                     <div v-if="uploadFile" class="file-box mt-10 pl-20 pr-15 flex-column align-between">
                         <div class="file-name flex-column">
-                            <SvgIcon class="file-icon" :name="fileIcon" size="24"/>
+                            <SvgIcon :name="fileIcon" class="file-icon" size="24"/>
                             <div class="file-status ml-20">
                                 <Ellipsis :content="uploadFile.name" class="name"/>
                                 <!--                                <p class="mb-10 name">{{ uploadFile.name }}</p>-->
@@ -265,6 +265,10 @@ onUnmounted(() => {
             font-size: vw(38);
             font-style: normal;
             line-height: vh(50); /* 131.579% */
+
+            .ai-icon {
+                margin-right: vw(14.33);
+            }
 
             svg {
                 width: vw(61) !important;
