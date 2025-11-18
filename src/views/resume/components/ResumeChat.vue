@@ -203,6 +203,9 @@ const queryChatList = async () => {
     // 检查是否还有更多数据
     hasMore.value = newData.length === pageSize.value;
 
+    if (chatList.value?.length > 0 && pageNum.value === 1) {
+      emits('listFinish');
+    }
     if (chatList.value?.length === 0) {
       const content: string = '请帮我制作一份求职简历！'
       chatList.value.push({
@@ -221,9 +224,6 @@ const queryChatList = async () => {
         thinking: ''
       });
       generateTemplate(msg, content)
-    }
-    if (chatList.value?.length > 0 && pageNum.value === 1) {
-      emits('listFinish');
     }
   } finally {
     loading.value = false;
