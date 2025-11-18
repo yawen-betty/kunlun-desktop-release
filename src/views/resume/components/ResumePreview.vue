@@ -162,7 +162,7 @@
                                        class="field-input field-input-half"/>
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
-                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time"
                                            placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
@@ -227,11 +227,9 @@
                                             getStreamValue(getFieldUuid(entry, 'degree')) || getFieldName(entry, 'degree')
                                         }}</span>
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }"
-                                >
-                                    {{
-                                        getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
-                                    }}
+                                <span
+                                    :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'start_time')) && !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                    {{ getTimeRangeDisplay(entry) }}
                                 </span>
                             </div>
                             <div
@@ -290,7 +288,7 @@
                             <div class="entry-fields flex-column mt-10">
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
-                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time" placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
                                     <Input v-model="entryEditData.end_time"
@@ -351,11 +349,9 @@
                                             getStreamValue(getFieldUuid(entry, 'position_name')) || getFieldName(entry, 'position_name')
                                         }}</span>
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }"
-                                >
-                                    {{
-                                        getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
-                                    }}
+                                <span
+                                    :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'start_time')) && !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                    {{ getTimeRangeDisplay(entry) }}
                                 </span>
                             </div>
                             <div
@@ -411,7 +407,7 @@
                             <div class="entry-fields flex-column mt-10">
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
-                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time"
                                            placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
@@ -474,11 +470,9 @@
                                             getStreamValue(getFieldUuid(entry, 'position_name')) || getFieldName(entry, 'position_name')
                                         }}</span>
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }"
-                                >
-                                    {{
-                                        getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
-                                    }}
+                                <span
+                                    :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'start_time')) && !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                    {{ getTimeRangeDisplay(entry) }}
                                 </span>
                             </div>
                             <div
@@ -528,7 +522,7 @@
                                        class="field-input field-input-half"/>
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
-                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time" placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
                                     <Input v-model="entryEditData.end_time"
@@ -585,11 +579,9 @@
                                         getStreamValue(getFieldUuid(entry, 'project_name')) || getFieldName(entry, 'project_name')
                                     }}
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }"
-                                >
-                                    {{
-                                        getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
-                                    }}
+                                <span
+                                    :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'start_time')) && !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                    {{ getTimeRangeDisplay(entry) }}
                                 </span>
                             </div>
                             <div
@@ -1006,6 +998,18 @@ const getFieldUuid = (container: any, fieldKey: string) => {
 
 const getStreamValue = (fieldUuid: string) => {
     return streamValues.value.get(fieldUuid) || '';
+};
+
+const getTimeRangeDisplay = (entry: any) => {
+    const startTime = getStreamValue(getFieldUuid(entry, 'start_time'));
+    const endTime = getStreamValue(getFieldUuid(entry, 'end_time'));
+    if (!startTime && !endTime) {
+        return '起止时间';
+    }
+    if (startTime && endTime) {
+        return `${startTime} - ${endTime}`;
+    }
+    return startTime || endTime;
 };
 
 const isEntryStreaming = (entry: any) => {
