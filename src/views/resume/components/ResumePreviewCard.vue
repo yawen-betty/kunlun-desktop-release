@@ -7,8 +7,8 @@
                 <h1 class="name">{{ contactInfo.name || '未命名' }}</h1>
                 <p class="job-position">{{ contactInfo.jobPosition || '求职岗位' }}</p>
                 <div class="contact-info">
-                    <span v-if="contactInfo.phone" class="contact-item">手机号码：{{ contactInfo.phone }}</span>
-                    <span v-if="contactInfo.email" class="contact-item">个人邮箱：{{ contactInfo.email }}</span>
+                    <span class="contact-item">手机号码：{{ contactInfo.phone }}</span>
+                    <span class="contact-item">个人邮箱：{{ contactInfo.email }}</span>
                 </div>
             </div>
             <div class="photo-wrapper">
