@@ -194,7 +194,7 @@ const queryChatList = async () => {
 
     if (pageNum.value === 1) {
       chatList.value = newData.reverse();
-      emits('listFinish');
+
       scrollToBottom('chatting-records');
     } else {
       chatList.value = [...newData.reverse(), ...chatList.value];
@@ -221,6 +221,9 @@ const queryChatList = async () => {
         thinking: ''
       });
       generateTemplate(msg, content)
+    }
+    if (chatList.value?.length > 0 && pageNum.value === 1) {
+      emits('listFinish');
     }
   } finally {
     loading.value = false;
