@@ -91,8 +91,8 @@
                 <Transition name="slide-right">
                     <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :changeMode="changeMode"
                                 :hasAttachment="uploadedFile" :over="over" :resumeUuid="resumeId"
-                                :streamWrite="handleWriteStream" @sendDiagnose="sendDiagnose"
-                                @sendTemplate="sendTemplate"/>
+                                :streamWrite="handleWriteStream" @listFinish="listFinish"
+                                @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
                 </Transition>
             </div>
         </div>
@@ -497,11 +497,15 @@ const toggleMode = debounce(() => {
     } else {
         currentMode.value = 'ai';
         showScoreAndMode.value = true
-        nextTick(() => {
-            resumeChatRef.value?.diagnoseResume()
-        })
+        // nextTick(() => {
+        //     resumeChatRef.value?.diagnoseResume()
+        // })
     }
 }, 300);
+
+const listFinish = () => {
+    resumeChatRef.value?.diagnoseResume()
+}
 
 // 第一步传递的模板数据
 const sendTemplate = (templateData: string) => {
