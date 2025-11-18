@@ -294,12 +294,12 @@ const generateTemplate = (msg: string, content: string) => {
 const parseAttachment = (msg: string) => {
   const params = {
     resumeId: props.resumeUuid,
-    messages: [
+    messages: JSON.stringify([
       {
         role: 'assistant',
         content: msg
       }
-    ]
+    ])
   }
 
   aiService.parseAttachmentStream(

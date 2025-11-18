@@ -47,7 +47,7 @@ export class AiService {
      * 解析简历附件
      */
     public parseAttachmentStream(
-        extraFields: Record<string, any>,
+        extraFields: Record<string, string>,
         file: File,
         onMessage: (data: any) => void,
         onError: (error: any) => void,
