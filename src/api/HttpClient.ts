@@ -16,7 +16,7 @@ interface HttpRequestParams {
     field_name?: string;
     file_name?: string;
     file_bytes?: number[];
-    extra_fields?: Record<string, string>;
+    extra_fields?: Record<string, any>;
 }
 
 // 定义响应接口
