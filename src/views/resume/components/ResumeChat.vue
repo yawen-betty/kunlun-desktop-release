@@ -71,7 +71,7 @@
       :closable="false"
       :footer-hide="true"
       :mask-closable="false"
-      class-name="delete-confirm-modal"
+      class-name="delete-confirm-modal question-modal"
     >
       <div class="delete-modal-content">
         <div class="modal-header">
@@ -817,6 +817,16 @@ defineExpose({
   }
   60%, 100% {
     opacity: 0;
+  }
+}
+
+</style>
+
+<style lang="scss">
+.question-modal {
+  .modal-body {
+    min-height: vh(126);
+    height: auto;
   }
 }
 </style>
