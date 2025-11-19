@@ -5,12 +5,12 @@
             <!-- 左侧区域 -->
             <div class="left-section">
                 <!-- 左侧顶部 -->
-                <div class="left-header mb-20">
-                    <div class="title-section">
+                <div class="left-header align-between mb-20">
+                    <div class="title-section flex-column">
                         <SvgIcon class="ai-icon" name="icon-AI" size="30"/>
                         <p class="title">简历制作</p>
                     </div>
-                    <div class="resume-name">
+                    <div class="resume-name flex-column pointer">
                         <span>{{ resumeName }}</span>
                         <SvgIcon class="pointer" color="#9499A4" name="icon-bianji-xian" size="14"
                                  @click="showRenameModal = true"/>
@@ -30,7 +30,7 @@
             <!-- 右侧区域 -->
             <div class="right-section ml-40">
                 <!-- 右侧顶部 -->
-                <div class="right-header mb-20">
+                <div class="right-header align-between mb-20">
                     <div v-if="showScoreAndMode && currentMode === 'ai'" class="score-wrapper flex flex-column">
                         <div class="score-text mr-10">当前简历分数：{{ resumeScore }}</div>
                         <Poptip v-if="scoreProblems.length" class="questions-pop flex-column mr-20" placement="bottom"
@@ -47,7 +47,7 @@
                         <Loading v-if="scoreLoading"/>
                     </div>
                     <div v-else></div>
-                    <div class="right-actions">
+                    <div class="right-actions flex-column">
                         <!-- 保存成功状态 -->
                         <div v-if="showSaveSuccess" class="save-success-status flex-column mr-20">
                             <div ref="lottieContainer" class="lottie-icon flex"></div>
@@ -58,7 +58,7 @@
                             <span>{{ currentMode === 'ai' ? '人工' : 'AI' }}撰写</span>
                         </Button>
                         <Dropdown placement="bottom-end" trigger="click">
-                            <div class="more-btn">
+                            <div class="more-btn flex-center">
                                 <SvgIcon class="mr-5" color="#FFFFFF" name="icon-gengduo" size="10"/>
                                 <span>更多</span>
                             </div>
@@ -217,7 +217,7 @@ const showScoreAndMode = ref(false);
 // 当前模式
 const currentMode = ref<'ai' | 'manual'>(props.initialMode || 'ai');
 // 简历分数
-const resumeScore = ref(15);
+const resumeScore = ref<number>();
 // 待优化问题列表
 const scoreProblems = ref<string[]>([]);
 const resumeService = new ResumeService();
@@ -235,6 +235,8 @@ const usageExhaustedModalVisible = ref(false)
 const formData = reactive({
     resumeName: ''
 })
+// 是否开启自动保存
+const autoSave = ref(!props.uploadedFile);
 const formRef = ref<any>()
 const rules = computed(() => ({
     resumeName: [
@@ -273,6 +275,27 @@ watch(
         }
     }
 )
+
+onMounted(async () => {
+    if (!props.resumeId) {
+        Message.error('简历ID不存在');
+        return;
+    }
+    // 从简历制作页面进入
+    if (props.resumeName) {
+        resumeName.value = props.resumeName;
+    } else {
+        // 从个人中心简历中点击进入
+        await fetchResumeDetail(props.resumeId);
+    }
+    startAutoSave();
+    window.addEventListener('keydown', handleKeyDown);
+});
+
+onUnmounted(() => {
+    stopAutoSave();
+    window.removeEventListener('keydown', handleKeyDown);
+});
 
 const handleWriteStream = async (items: StreamItem[], speed?: number) => {
     await previewRef.value?.streamWrite(items, speed);
@@ -326,6 +349,7 @@ const fetchResumeDetail = async (resumeId: string) => {
             resumeData.value = result.data;
             resumeName.value = result.data.name || '我的简历-未命名1';
             resumeScore.value = result.data.score!;
+            console.log(resumeScore.value, '分数')
         } else {
             Message.error(result.msg || '获取简历详情失败');
         }
@@ -341,7 +365,7 @@ let autoSaveTimer: number | null = null;
 // 自动保存
 const startAutoSave = () => {
     autoSaveTimer = window.setInterval(() => {
-        saveResume();
+        if (autoSave.value) saveResume();
     }, 120000);
 };
 
@@ -359,27 +383,6 @@ const handleKeyDown = (e: KeyboardEvent) => {
         handleSave();
     }
 };
-
-onMounted(async () => {
-    if (!props.resumeId) {
-        Message.error('简历ID不存在');
-        return;
-    }
-    // 从简历制作页面进入
-    if (props.resumeName) {
-        resumeName.value = props.resumeName;
-    } else {
-        // 从个人中心简历中点击进入
-        await fetchResumeDetail(props.resumeId);
-    }
-    startAutoSave();
-    window.addEventListener('keydown', handleKeyDown);
-});
-
-onUnmounted(() => {
-    stopAutoSave();
-    window.removeEventListener('keydown', handleKeyDown);
-});
 
 // 确认重命名
 const handleConfirm = async () => {
@@ -512,11 +515,18 @@ const listFinish = () => {
 }
 
 // 第一步传递的模板数据
-const sendTemplate = (templateData: string) => {
+const sendTemplate = (templateData: string, type: 'attachmentStream' | 'template') => {
     resumeData.value = JSON.parse(templateData)
-    isGenerating.value = false;
     // 如果没有简历附件，就展示更多的按钮
-    if (!props.uploadedFile) isShowToggleBtn.value = true
+    if (!props.uploadedFile) {
+        isShowToggleBtn.value = true
+        isGenerating.value = false;
+    }
+    if (type === 'attachmentStream') {
+        isGenerating.value = false;
+        // 开启自动保存
+        autoSave.value = true
+    }
 }
 
 // 确认切换模式
@@ -535,6 +545,15 @@ const handleUpdateModules = async () => {
     if (!resumeData.value?.uuid) return;
     await fetchResumeDetail(resumeData.value.uuid);
 };
+
+/**
+ * 切换新的简历ID进入并且当前组件存在不会走 onMounted 时（keepAlive）
+ */
+const reset = () => {
+    fetchResumeDetail(props.resumeId);
+}
+
+defineExpose({reset})
 </script>
 
 <style lang="scss" scoped>
@@ -550,7 +569,6 @@ const handleUpdateModules = async () => {
 .content {
     display: flex;
     flex: 1;
-    overflow: hidden;
     height: 100%;
     position: relative;
 }
@@ -567,10 +585,8 @@ const handleUpdateModules = async () => {
 }
 
 .left-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     padding-top: vh(11);
+    align-items: end;
 }
 
 .right-section {
@@ -578,7 +594,6 @@ const handleUpdateModules = async () => {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    overflow: hidden;
 }
 
 // 聊天区滑动动画
@@ -608,8 +623,6 @@ const handleUpdateModules = async () => {
 }
 
 .title-section {
-    display: flex;
-    align-items: center;
     gap: vw(4);
 
     :deep(.ai-icon) {
@@ -634,8 +647,6 @@ const handleUpdateModules = async () => {
 
 
 .resume-name {
-    display: flex;
-    align-items: center;
     gap: vw(10);
     cursor: pointer;
 
@@ -666,9 +677,7 @@ const handleUpdateModules = async () => {
 }
 
 .right-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: end;
     padding-top: vh(8);
 }
 
@@ -737,9 +746,8 @@ const handleUpdateModules = async () => {
 
             .problem-list {
                 margin: 0;
-                height: vh(140);
+                max-height: vh(140);
                 padding-left: vw(21);
-
 
                 li {
                     font-family: 'PingFangSCBold', sans-serif;
@@ -763,8 +771,6 @@ const handleUpdateModules = async () => {
 }
 
 .right-actions {
-    display: flex;
-    align-items: center;
     gap: vw(10);
 }
 
@@ -794,9 +800,6 @@ const handleUpdateModules = async () => {
 }
 
 .more-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     gap: vw(6);
     width: vw(80);
     height: vh(32);

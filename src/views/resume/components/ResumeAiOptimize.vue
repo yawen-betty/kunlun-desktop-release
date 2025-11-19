@@ -108,7 +108,7 @@ const handleCancel = () => {
 
 // 开始ai 生成
 const handleSubmit = () => {
-  if (requirement.value.length < 20) return message.warning(Message, '请至少填写20个字！');
+  if (requirement.value.length > 0 && requirement.value.length < 20) return message.warning(Message, '请至少填写20个字！');
 
   thinkContent.value = '';
   content.value = '';
@@ -126,8 +126,6 @@ const handleSubmit = () => {
   aiService.polishStream(
     params,
     (data: string) => {
-
-      console.log(data)
       if (data.includes('event:thinking')) {
         state.value = '2'
         const str: string = extractDataContent(data, 'event:thinking')

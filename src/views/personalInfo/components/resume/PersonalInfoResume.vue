@@ -73,6 +73,31 @@
         <Button type="primary" class="submit btn" @click="handleDeleteResume">确定</Button>
       </div>
     </div>
+
+  </Modal>
+
+  <Modal
+    v-model="editVisible"
+    :mask-closable="false"
+    :closable="false"
+    footer-hide
+    class="resume-delete-modal"
+  >
+    <div class="delete-box">
+      <div class="delete-content">
+        <div class="delete-header">
+          <h3 class="delete-title mb-40">提示</h3>
+          <SvgIcon name="icon-cha" size="20" class="cha pointer" @click="deleteVisible = false"
+                   color="#9499A4"></SvgIcon>
+        </div>
+        <div class="delete-html">当前有正在编辑的简历，如执行此操作将会中断当前的简历制作；是否继续？</div>
+      </div>
+
+      <div class="delete-footer">
+        <Button class="mr-10 cancel btn" @click="editVisible = false">取消</Button>
+        <Button type="primary" class="submit btn" @click="handleEditResume">确定</Button>
+      </div>
+    </div>
   </Modal>
 </template>
 
@@ -109,6 +134,10 @@ const previewResume = ref<MyResumeBean>(new MyResumeBean());
 const deleteVisible = ref<boolean>(false);
 // 刪除简历Id
 const deleteResumeId = ref<string>('');
+// 编辑弹窗状态
+const editVisible = ref<boolean>(false);
+// 编辑简历id
+const editResumeId = ref<string>('');
 // 简历列表
 const resumeList = ref<MyResumeBean[]>([]);
 
@@ -130,6 +159,12 @@ const handleClick = (resume: MyResumeBean, key: string) => {
       previewVisible.value = true;
       break;
     case 'edit':
+      if (UserInfo.info.runningResumeId && UserInfo.info.runningResumeId !== resume.uuid) {
+        editVisible.value = true
+        editResumeId.value = resume.uuid!
+        return;
+      }
+
       router.push(`/resume?resumeId=${resume.uuid}`)
       break;
     case 'copy':
@@ -145,12 +180,13 @@ const handleClick = (resume: MyResumeBean, key: string) => {
       }
       deleteVisible.value = true;
       deleteResumeId.value = resume.uuid!
-
-      break;
-    default:
       break;
   }
-  console.log(key)
+}
+
+// 跳转编辑
+const handleEditResume = () => {
+  router.push(`/resume?resumeId=${editResumeId.value}`)
 }
 
 // 删除
@@ -187,11 +223,6 @@ const handleCopyResume = (resumeId: string) => {
     }
   })
 }
-
-// 根据uuid查找简历索引
-const findResumeIndex = (uuid: string): number => {
-  return resumeList.value.findIndex(resume => resume.uuid === uuid);
-};
 
 // 获取简历列表
 const getResumeList = () => {
