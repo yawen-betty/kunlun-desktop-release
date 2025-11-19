@@ -32,6 +32,7 @@ const infoList = [
 ]
 const placeholderIdx = ref<number>(0)
 const placeholderTimer = ref<number | null>(null)
+const isComposing = ref(false)
 const formRef = ref();
 const formRules = {
     jobPosition: [{required: true, message: '请输入求职岗位！', trigger: 'submit'}],
@@ -128,11 +129,9 @@ const handleToDelete = () => {
 const startPlaceholderRotation = () => {
     if (placeholderTimer.value) return;
     placeholderTimer.value = window.setInterval(() => {
-        if (!formData.jobPosition) {
-            placeholderIdx.value++;
-            if (placeholderIdx.value === placeholderList.length) {
-                placeholderIdx.value = 0
-            }
+        placeholderIdx.value++;
+        if (placeholderIdx.value === placeholderList.length) {
+            placeholderIdx.value = 0
         }
     }, 2000)
 }
@@ -141,6 +140,28 @@ const stopPlaceholderRotation = () => {
     if (placeholderTimer.value) {
         clearInterval(placeholderTimer.value)
         placeholderTimer.value = null
+    }
+}
+
+const handleCompositionStart = () => {
+    isComposing.value = true;
+    stopPlaceholderRotation();
+}
+
+const handleCompositionEnd = () => {
+    isComposing.value = false;
+    if (!formData.jobPosition) {
+        startPlaceholderRotation();
+    }
+}
+
+const handleInputChange = () => {
+    if (isComposing.value) return;
+    
+    if (formData.jobPosition) {
+        stopPlaceholderRotation();
+    } else {
+        startPlaceholderRotation();
     }
 }
 
@@ -172,7 +193,10 @@ onUnmounted(() => {
                 <FormItem prop="jobPosition">
                     <Input v-model="formData.jobPosition" :max-length="20"
                            :placeholder="placeholderList[placeholderIdx]"
-                           class="job-name"/>
+                           class="job-name"
+                           @on-change="handleInputChange"
+                           @compositionstart="handleCompositionStart"
+                           @compositionend="handleCompositionEnd"/>
                 </FormItem>
                 <FormItem class="custom-form-item" prop="identity">
                     <RadioGroup v-model="formData.identity" class="custom-radio">
