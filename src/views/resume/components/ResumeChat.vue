@@ -28,9 +28,16 @@
               <SvgIcon name="icon-shouqi" color="#9499A4" size="12" class="pointer icon"
                        @click="info.isExpand = false"></SvgIcon>
 
-              <div class="deep-thinking-title">
+              <div class="deep-thinking-title" v-if=" info.thinkingStatus === '2'">
                 <img src="@/assets/images/deep-logo.gif" class="deep-log"/>
                 <div class="deep-thinking-title-text">深度思考</div>
+              </div>
+
+              <div class="deep-thinking-finish" v-else-if="info.thinkingStatus === '1'">
+                <div class="deep-thinking-finish-text">已完成思考</div>
+                <div class="deep-thinking-finish-loading" v-if="info.loadingContentStart">请稍后，内容正在收集中<span
+                  class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+                </div>
               </div>
               <div class="deep-thinking-content">
                 {{ info.thinking }}
@@ -54,7 +61,7 @@
         ></Input>
         <button class="save-btn" :disabled="disabled || !sendContent" @click="handleSendMessage">
           <SvgIcon name="icon-fasong" size="10" :color="disabled || !sendContent ? '#C5C8CE' : '#fff'"/>
-          完成
+          发送
         </button>
       </div>
     </div>
@@ -108,6 +115,9 @@ type TextType = {
 class CustomMessagesBean extends AiConversationOutDto {
   // 是否展开收起深度思考
   isExpand?: boolean = false;
+
+  // 是否展示正在思考完成，等待中
+  loadingContentStart?: boolean = false;
 }
 
 const aiService = new AiService();
@@ -261,10 +271,16 @@ const generateTemplate = (msg: string, content: string) => {
   aiService.generateTemplateStream(
     params,
     (data) => {
+      const lastData = chatList.value[chatList.value.length - 1]
       if (data.includes('event:thinking')) {
         const str: string = extractDataContent(data, 'event:thinking')
-        chatList.value[chatList.value.length - 1].thinking += str
+        lastData.thinking += str
         scrollThinkingToBottom();
+      } else if (data.includes('event:event:loadingContentStart')) {
+        lastData.thinkingStatus = '1';
+        lastData.loadingContentStart = true;
+      } else if (data.includes('event:event:loadingContentEnd')) {
+        lastData.loadingContentStart = false;
       } else {
         const str: string = extractDataContent(data, 'event:content')
         emits('sendTemplate', str, 'template');
@@ -313,10 +329,17 @@ const parseAttachment = (msg: string) => {
     params,
     props.hasAttachment!,
     (data) => {
+      const lastData = chatList.value[chatList.value.length - 1]
+
       if (data.includes('event:thinking')) {
         const str: string = extractDataContent(data, 'event:thinking')
-        chatList.value[chatList.value.length - 1].thinking += str
+        lastData.thinking += str
         scrollThinkingToBottom();
+      } else if (data.includes('event:event:loadingContentStart')) {
+        lastData.thinkingStatus = '1';
+        lastData.loadingContentStart = true;
+      } else if (data.includes('event:event:loadingContentEnd')) {
+        lastData.loadingContentStart = false;
       } else {
         const str: string = extractDataContent(data, 'event:content')
         emits('sendTemplate', str, 'attachmentStream');
@@ -365,11 +388,19 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
   aiService.diagnoseStream(
     params,
     (data) => {
+      const lastData = chatList.value[chatList.value.length - 1]
+
       if (data.includes('event:thinking')) {
         const str: string = extractDataContent(data, 'event:thinking')
-        chatList.value[chatList.value.length - 1].thinking += str
+        lastData.thinking += str
         scrollToBottom('deep-thinking-content');
+      } else if (data.includes('event:event:loadingContentStart')) {
+        lastData.thinkingStatus = '1';
+        lastData.loadingContentStart = true;
+      } else if (data.includes('event:event:loadingContentEnd')) {
+        lastData.loadingContentStart = false;
       } else {
+        setThinkState();
         const str: string = extractDataContent(data, 'event:content')
         chatList.value.push({
           role: 'assistant',
@@ -394,7 +425,6 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
     },
     () => {
       console.log('我真的诊断完了吗')
-      setThinkState();
     }
   );
 }
@@ -463,10 +493,17 @@ const write = () => {
   aiService.writeStream(
     params,
     async (data) => {
+      const lastData = chatList.value[chatList.value.length - 1]
+
       if (data.includes('event:thinking')) {
         const str: string = extractDataContent(data, 'event:thinking')
-        chatList.value[chatList.value.length - 1].thinking += str
+        lastData.thinking += str
         scrollToBottom('deep-thinking-content');
+      } else if (data.includes('event:event:loadingContentStart')) {
+        lastData.thinkingStatus = '1';
+        lastData.loadingContentStart = true;
+      } else if (data.includes('event:event:loadingContentEnd')) {
+        lastData.loadingContentStart = false;
       } else {
         setThinkState();
         const str: string = extractDataContent(data, 'event:content')
@@ -501,7 +538,7 @@ const write = () => {
 // 关闭深度思考
 const setThinkState = () => {
   const lastData = chatList.value[chatList.value.length - 1]
-  lastData.thinkingStatus = '1';
+
   lastData.isExpand = false;
 }
 
@@ -657,6 +694,27 @@ defineExpose({
         }
       }
 
+      .deep-thinking-finish {
+        display: flex;
+        gap: vw(20);
+
+        .deep-thinking-finish-text {
+          color: $font-dark;
+          font-size: vw(14);
+          font-style: normal;
+          font-weight: 400;
+          line-height: vw(20)
+        }
+
+        .deep-thinking-finish-loading {
+          color: #C4A2FC;
+          font-size: vw(14);
+          font-style: normal;
+          font-weight: 400;
+          line-height: vw(20)
+        }
+      }
+
       .deep-thinking-content {
         color: $font-middle;
         font-size: vw(14);
@@ -671,6 +729,27 @@ defineExpose({
 
         &::-webkit-scrollbar {
           display: none;
+        }
+      }
+    }
+
+    .deep-thinking-finish {
+      .loading-dots {
+        span {
+          opacity: 0;
+          animation: loading 2s infinite;
+
+          &:nth-child(1) {
+            animation-delay: 0s;
+          }
+
+          &:nth-child(2) {
+            animation-delay: 0.3s;
+          }
+
+          &:nth-child(3) {
+            animation-delay: 0.6s;
+          }
         }
       }
     }
@@ -723,6 +802,21 @@ defineExpose({
         cursor: no-drop;
       }
     }
+  }
+}
+
+@keyframes loading {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 1;
+  }
+  60%, 100% {
+    opacity: 0;
   }
 }
 </style>
