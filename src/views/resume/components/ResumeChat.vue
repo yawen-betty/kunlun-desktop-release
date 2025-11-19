@@ -276,10 +276,10 @@ const generateTemplate = (msg: string, content: string) => {
         const str: string = extractDataContent(data, 'event:thinking')
         lastData.thinking += str
         scrollThinkingToBottom();
-      } else if (data.includes('event:event:loadingContentStart')) {
+      } else if (data.includes('event:loadingContentStart')) {
         lastData.thinkingStatus = '1';
         lastData.loadingContentStart = true;
-      } else if (data.includes('event:event:loadingContentEnd')) {
+      } else if (data.includes('event:loadingContentEnd')) {
         lastData.loadingContentStart = false;
       } else {
         const str: string = extractDataContent(data, 'event:content')
@@ -335,10 +335,10 @@ const parseAttachment = (msg: string) => {
         const str: string = extractDataContent(data, 'event:thinking')
         lastData.thinking += str
         scrollThinkingToBottom();
-      } else if (data.includes('event:event:loadingContentStart')) {
+      } else if (data.includes('event:loadingContentStart')) {
         lastData.thinkingStatus = '1';
         lastData.loadingContentStart = true;
-      } else if (data.includes('event:event:loadingContentEnd')) {
+      } else if (data.includes('event:loadingContentEnd')) {
         lastData.loadingContentStart = false;
       } else {
         const str: string = extractDataContent(data, 'event:content')
@@ -394,10 +394,10 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
         const str: string = extractDataContent(data, 'event:thinking')
         lastData.thinking += str
         scrollToBottom('deep-thinking-content');
-      } else if (data.includes('event:event:loadingContentStart')) {
+      } else if (data.includes('event:loadingContentStart')) {
         lastData.thinkingStatus = '1';
         lastData.loadingContentStart = true;
-      } else if (data.includes('event:event:loadingContentEnd')) {
+      } else if (data.includes('event:loadingContentEnd')) {
         lastData.loadingContentStart = false;
       } else {
         setThinkState();
@@ -499,10 +499,10 @@ const write = () => {
         const str: string = extractDataContent(data, 'event:thinking')
         lastData.thinking += str
         scrollToBottom('deep-thinking-content');
-      } else if (data.includes('event:event:loadingContentStart')) {
+      } else if (data.includes('event:loadingContentStart')) {
         lastData.thinkingStatus = '1';
         lastData.loadingContentStart = true;
-      } else if (data.includes('event:event:loadingContentEnd')) {
+      } else if (data.includes('event:loadingContentEnd')) {
         lastData.loadingContentStart = false;
       } else {
         setThinkState();
