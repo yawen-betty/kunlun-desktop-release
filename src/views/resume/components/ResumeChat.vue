@@ -155,6 +155,8 @@ const pageSize = ref<number>(20);
 const hasMore = ref<boolean>(true);
 // 是否正在加载
 const loading = ref<boolean>(false);
+// 用户是否在底部（用于判断是否需要自动滚动）
+const isUserAtBottom = ref<boolean>(true);
 
 // 根据错误码显示提示信息
 const showErrorMessage = (code: number) => {
@@ -259,17 +261,15 @@ const generateTemplate = (msg: string, content: string) => {
   aiService.generateTemplateStream(
     params,
     (data) => {
-      scrollToBottom('chatting-records')
       if (data.includes('event:thinking')) {
-
         const str: string = extractDataContent(data, 'event:thinking')
         chatList.value[chatList.value.length - 1].thinking += str
-        scrollToBottom('deep-thinking-content');
+        scrollThinkingToBottom();
       } else {
         const str: string = extractDataContent(data, 'event:content')
         emits('sendTemplate', str);
       }
-      // 更新UI显示流式数据
+      smartScrollToBottom();
     },
     (error) => {
       showErrorMessage(error.status)
@@ -313,17 +313,15 @@ const parseAttachment = (msg: string) => {
     params,
     props.hasAttachment!,
     (data) => {
-      scrollToBottom('chatting-records')
       if (data.includes('event:thinking')) {
-
         const str: string = extractDataContent(data, 'event:thinking')
         chatList.value[chatList.value.length - 1].thinking += str
-        scrollToBottom('deep-thinking-content');
+        scrollThinkingToBottom();
       } else {
         const str: string = extractDataContent(data, 'event:content')
-
         emits('sendTemplate', str);
       }
+      smartScrollToBottom();
     },
     (error) => {
       showErrorMessage(error.status)
@@ -367,15 +365,12 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
   aiService.diagnoseStream(
     params,
     (data) => {
-      scrollToBottom('chatting-records')
       if (data.includes('event:thinking')) {
-
         const str: string = extractDataContent(data, 'event:thinking')
         chatList.value[chatList.value.length - 1].thinking += str
         scrollToBottom('deep-thinking-content');
       } else {
         const str: string = extractDataContent(data, 'event:content')
-
         chatList.value.push({
           role: 'assistant',
           content: JSON.parse(str).diagnosisResultMessage,
@@ -392,6 +387,7 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
           askQuestion();
         }
       }
+      smartScrollToBottom();
     },
     (error) => {
       showErrorMessage(error.status)
@@ -467,22 +463,16 @@ const write = () => {
   aiService.writeStream(
     params,
     async (data) => {
-      scrollToBottom('chatting-records')
       if (data.includes('event:thinking')) {
-
         const str: string = extractDataContent(data, 'event:thinking')
         chatList.value[chatList.value.length - 1].thinking += str
         scrollToBottom('deep-thinking-content');
       } else {
         setThinkState();
         const str: string = extractDataContent(data, 'event:content')
-
         const response = JSON.parse(str);
-
-        console.log(response, '撰写')
-
+        
         isFollowUp.value = response.isFollowUp
-        // 是否追问
         if (response.completed) {
           if (props.streamWrite) await props.streamWrite(response.fieldDataList);
           diagnoseList.value.shift();
@@ -494,10 +484,10 @@ const write = () => {
             isExpand: false,
             thinking: ''
           });
-
           disabled.value = false;
         }
       }
+      smartScrollToBottom();
     },
     (error) => {
       showErrorMessage(error.status)
@@ -518,13 +508,29 @@ const setThinkState = () => {
 // 处理滚动事件
 const handleScroll = () => {
   const scrollElement = chattingRecordsRef.value;
-  if (!scrollElement || loading.value || !hasMore.value) return;
-
+  if (!scrollElement) return;
+  
+  // 检查用户是否在底部（距离底部50px内认为是底部）
+  const { scrollTop, scrollHeight, clientHeight } = scrollElement;
+  isUserAtBottom.value = scrollTop + clientHeight >= scrollHeight - 50;
+  
   // 当滚动到顶部附近时加载更多
-  if (scrollElement.scrollTop <= 50) {
+  if (!loading.value && hasMore.value && scrollTop <= 50) {
     pageNum.value++;
     queryChatList();
   }
+};
+
+// 智能滚动到底部（只有用户在底部时才滚动）
+const smartScrollToBottom = () => {
+  if (isUserAtBottom.value) {
+    scrollToBottom('chatting-records');
+  }
+};
+
+// 深度思考内容滚动（始终滚动到底部）
+const scrollThinkingToBottom = () => {
+  scrollToBottom('deep-thinking-content');
 };
 
 onMounted(() => {
