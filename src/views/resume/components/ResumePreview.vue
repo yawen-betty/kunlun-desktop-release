@@ -184,19 +184,19 @@
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('polish')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('polish')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>润色</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('expand')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('expand')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>扩展</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('simplify')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('simplify')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>简化</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('summarize')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('summarize')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>总结</span>
                                     </div>
@@ -245,10 +245,10 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="mode === 'manual'" class="add-entry-btn flex-column pointer"
+                    <div v-if="mode === 'manual'" class="add-entry-btn pointer"
                          @click="handleAddEntry(module)">
                         <SvgIcon color="#9499A4" name="icon-xinzeng-main" size="12"/>
-                        <span>增加新的经历</span>
+                        <span class="ml-10">增加新的经历</span>
                     </div>
                 </section>
 
@@ -308,19 +308,19 @@
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('polish')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('polish')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>润色</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('expand')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('expand')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>扩展</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('simplify')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('simplify')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>简化</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('summarize')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('summarize')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>总结</span>
                                     </div>
@@ -366,9 +366,9 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="mode === 'manual'" class="add-entry-btn" @click="handleAddEntry(module)">
+                    <div v-if="mode === 'manual'" class="add-entry-btn pointer" @click="handleAddEntry(module)">
                         <SvgIcon class="pointer" color="#9499A4" name="icon-xinzeng-main" size="12"/>
-                        <span>增加新的经历</span>
+                        <span class="ml-10">增加新的经历</span>
                     </div>
                 </section>
 
@@ -429,19 +429,19 @@
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('polish')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('polish')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>润色</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('expand')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('expand')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>扩展</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('simplify')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('simplify')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>简化</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('summarize')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('summarize')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>总结</span>
                                     </div>
@@ -487,9 +487,9 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="mode === 'manual'" class="add-entry-btn" @click="handleAddEntry(module)">
+                    <div v-if="mode === 'manual'" class="add-entry-btn pointer" @click="handleAddEntry(module)">
                         <SvgIcon class="pointer" color="#9499A4" name="icon-xinzeng-main" size="12"/>
-                        <span>增加新的经历</span>
+                        <span class="ml-10">增加新的经历</span>
                     </div>
                 </section>
 
@@ -543,19 +543,19 @@
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('polish')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('polish')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>润色</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('expand')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('expand')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>扩展</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('simplify')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('simplify')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>简化</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('summarize')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('summarize')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>总结</span>
                                     </div>
@@ -596,9 +596,9 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="mode === 'manual'" class="add-entry-btn" @click="handleAddEntry(module)">
+                    <div v-if="mode === 'manual'" class="add-entry-btn pointer" @click="handleAddEntry(module)">
                         <SvgIcon class="pointer" color="#9499A4" name="icon-xinzeng-main" size="12"/>
-                        <span>增加新的经历</span>
+                        <span class="ml-10">增加新的经历</span>
                     </div>
                 </section>
 
@@ -627,19 +627,19 @@
                         </div>
                         <div class="text-edit-footer align-between flex-center">
                             <div class="ai-actions flex-column flex">
-                                <div class="ai-btn pointer flex-column" @click="handleAiAction('polish')">
+                                <div class="ai-btn pointer" @click="handleAiAction('polish')">
                                     <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                     <span>润色</span>
                                 </div>
-                                <div class="ai-btn pointer flex-column" @click="handleAiAction('expand')">
+                                <div class="ai-btn pointer" @click="handleAiAction('expand')">
                                     <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                     <span>扩展</span>
                                 </div>
-                                <div class="ai-btn pointer flex-column" @click="handleAiAction('simplify')">
+                                <div class="ai-btn pointer" @click="handleAiAction('simplify')">
                                     <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                     <span>简化</span>
                                 </div>
-                                <div class="ai-btn pointer flex-column" @click="handleAiAction('summarize')">
+                                <div class="ai-btn pointer" @click="handleAiAction('summarize')">
                                     <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                     <span>总结</span>
                                 </div>
@@ -1473,17 +1473,21 @@ defineExpose({
 }
 
 .add-entry-btn {
-    display: flex;
-    align-items: center;
-    gap: vw(10);
-    margin-top: vh(20);
-    cursor: pointer;
+    line-height: normal;
 
     span {
+        display: inline-block;
+        vertical-align: middle;
         font-family: 'PingFang SC', sans-serif;
         font-size: vw(14);
         line-height: vh(14);
         color: $font-middle;
+    }
+
+    svg {
+        width: vw(12) !important;
+        height: vw(12) !important;
+        vertical-align: middle;
     }
 }
 
@@ -1527,7 +1531,7 @@ defineExpose({
 .experience-desc {
     font-family: 'PingFangSCBold', sans-serif;
     font-size: vw(16);
-    line-height: vh(16);
+    line-height: vh(22);
     color: $font-dark;
 }
 
@@ -1759,17 +1763,26 @@ defineExpose({
 }
 
 .ai-btn {
-    gap: vw(5);
+    line-height: normal;
+
+    &:hover {
+        opacity: 0.8;
+    }
 
     span {
+        display: inline-block;
+        vertical-align: middle;
         font-family: 'PingFang SC', sans-serif;
         font-size: vw(14);
         line-height: vh(14);
         color: $theme-color;
+        margin-left: vw(5);
     }
 
-    &:hover {
-        opacity: 0.8;
+    svg {
+        vertical-align: middle;
+        width: vw(16) !important;
+        height: vw(16) !important;
     }
 }
 
@@ -1778,14 +1791,16 @@ defineExpose({
 }
 
 .action-item {
-    gap: vw(5);
     cursor: pointer;
 
     span {
+        display: inline-block;
+        vertical-align: middle;
         font-family: 'PingFangSCBold', sans-serif;
         font-size: vw(14);
         line-height: vh(14);
         color: $font-middle;
+        margin-left: vw(5);
     }
 
     &:hover {
@@ -1796,6 +1811,12 @@ defineExpose({
         :deep(.svg-icon > use) {
             fill: $theme-color;
         }
+    }
+
+    svg {
+        vertical-align: middle;
+        width: vw(12) !important;
+        height: vw(12) !important;
     }
 }
 
