@@ -61,7 +61,7 @@
 
     <Modal
       v-model="diagnoseModal"
-      :closable="true"
+      :closable="false"
       :footer-hide="true"
       :mask-closable="false"
       class-name="delete-confirm-modal"
@@ -75,7 +75,7 @@
         </div>
         <div class="modal-footer">
           <button class="btn-cancel" @click="handleOver">结束AI撰写</button>
-          <button class="btn-confirm" @click="askQuestion">继续优化</button>
+          <button class="btn-confirm" @click="continueOptimize">继续优化</button>
         </div>
       </div>
     </Modal>
@@ -85,9 +85,8 @@
 <script setup lang="ts">
 // 聊天组件逻辑待实现
 import {Input, Message, Modal} from "view-ui-plus";
-import {nextTick, onActivated, onMounted, ref, watch} from "vue";
+import {onMounted, ref} from "vue";
 import SvgIcon from "@/components/svgIcon/index.vue";
-import {MessagesBean} from "@/api/ai/dto/bean/MessagesBean.ts";
 import {QueryConversationInDto} from "@/api/ai/dto/QueryConversation.ts";
 import {AiService} from "@/service/AiService.ts";
 import {GenerateTemplateInDto} from "@/api/ai/dto/GenerateTemplate.ts";
@@ -164,6 +163,8 @@ const showErrorMessage = (code: number) => {
 
 // 结束ai 对话
 const handleOver = () => {
+  diagnoseModal.value = false;
+
   chatList.value.push({
     role: 'user',
     content: '结束对话',
@@ -172,7 +173,7 @@ const handleOver = () => {
 
   setTimeout(() => {
     props.changeMode()
-  })
+  }, 1000)
 }
 
 // 查询当前聊天记录
@@ -228,6 +229,12 @@ const queryChatList = async () => {
   } finally {
     loading.value = false;
   }
+}
+
+// 继续优化
+const continueOptimize = () => {
+  diagnoseModal.value = false;
+  askQuestion();
 }
 
 // 生成模板
@@ -375,13 +382,13 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
           isExpand: false,
           thinking: ''
         });
+        diagnoseList.value = JSON.parse(str).issues;
 
         if (reply) {
           diagnoseContent.value = JSON.parse(str).diagnosisResultMessage;
           diagnoseModal.value = true;
         } else {
           emits('sendDiagnose', str);
-          diagnoseList.value = JSON.parse(str).issues;
           askQuestion();
         }
       }
@@ -398,7 +405,6 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
 
 // 提出问题 (每次取第一个问题)
 const askQuestion = () => {
-  console.log(diagnoseList.value, 'diagnoseList.value')
   if (diagnoseList.value.length > 0) {
     const question = diagnoseList.value[0].question;
     chatList.value.push({
@@ -570,7 +576,7 @@ defineExpose({
         font-size: vw(14);
         font-style: normal;
         font-weight: 400;
-        line-height: vw(14);
+        line-height: vw(20);
         word-break: break-all;
         white-space: pre-wrap
       }
@@ -589,7 +595,7 @@ defineExpose({
           font-size: vw(14);
           font-style: normal;
           font-weight: 400;
-          line-height: vw(14);
+          line-height: vw(20);
           word-break: break-all;
           white-space: pre-wrap
         }
