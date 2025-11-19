@@ -126,8 +126,6 @@ const handleSubmit = () => {
   aiService.polishStream(
     params,
     (data: string) => {
-
-      console.log(data)
       if (data.includes('event:thinking')) {
         state.value = '2'
         const str: string = extractDataContent(data, 'event:thinking')

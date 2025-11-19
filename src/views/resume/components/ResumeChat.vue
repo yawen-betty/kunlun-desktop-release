@@ -122,7 +122,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  sendTemplate: [template: string]
+  sendTemplate: [template: string, type: string]
   sendDiagnose: [diagnose: string]
   listFinish: []
 }>()
@@ -267,7 +267,7 @@ const generateTemplate = (msg: string, content: string) => {
         scrollThinkingToBottom();
       } else {
         const str: string = extractDataContent(data, 'event:content')
-        emits('sendTemplate', str);
+        emits('sendTemplate', str, 'template');
       }
       smartScrollToBottom();
     },
@@ -319,7 +319,7 @@ const parseAttachment = (msg: string) => {
         scrollThinkingToBottom();
       } else {
         const str: string = extractDataContent(data, 'event:content')
-        emits('sendTemplate', str);
+        emits('sendTemplate', str, 'attachmentStream');
       }
       smartScrollToBottom();
     },
@@ -471,7 +471,7 @@ const write = () => {
         setThinkState();
         const str: string = extractDataContent(data, 'event:content')
         const response = JSON.parse(str);
-        
+
         isFollowUp.value = response.isFollowUp
         if (response.completed) {
           if (props.streamWrite) await props.streamWrite(response.fieldDataList);
@@ -509,11 +509,11 @@ const setThinkState = () => {
 const handleScroll = () => {
   const scrollElement = chattingRecordsRef.value;
   if (!scrollElement) return;
-  
+
   // 检查用户是否在底部（距离底部50px内认为是底部）
-  const { scrollTop, scrollHeight, clientHeight } = scrollElement;
+  const {scrollTop, scrollHeight, clientHeight} = scrollElement;
   isUserAtBottom.value = scrollTop + clientHeight >= scrollHeight - 50;
-  
+
   // 当滚动到顶部附近时加载更多
   if (!loading.value && hasMore.value && scrollTop <= 50) {
     pageNum.value++;
