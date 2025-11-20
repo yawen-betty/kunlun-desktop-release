@@ -846,6 +846,9 @@ const handleModulesApply = async (modules: any[]) => {
         ];
 
         await resumeService.updateModules(params);
+        isEditingBasicInfo.value = false;
+        editingEntryUuid.value = '';
+        editingModuleUuid.value = '';
         Message.success('模块更新成功');
         emit('update-modules');
     } catch (error) {
@@ -919,6 +922,9 @@ const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
         });
 
         await resumeService.updateModuleEntries(params);
+        isEditingBasicInfo.value = false;
+        editingEntryUuid.value = '';
+        editingModuleUuid.value = '';
         Message.success('条目更新成功');
         emit('update-modules');
     } catch (error) {
@@ -962,6 +968,9 @@ const handleFieldsApply = async (fields: any[]) => {
             })
         ];
         await resumeService.updateModuleFields(params);
+        isEditingBasicInfo.value = false;
+        editingEntryUuid.value = '';
+        editingModuleUuid.value = '';
         Message.success('字段更新成功');
         emit('update-modules');
     } catch (error) {
