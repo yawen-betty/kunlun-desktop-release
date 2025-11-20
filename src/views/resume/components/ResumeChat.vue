@@ -144,7 +144,7 @@ const thinkingText: TextType = {
 // 输入内容
 const sendContent = ref<string>('');
 // 是否禁用输入框
-const disabled = ref<boolean>(false);
+const disabled = ref<boolean>(true);
 // 聊天列表
 const chatList = ref<CustomMessagesBean[]>([]);
 // 诊断问题列表
@@ -827,6 +827,11 @@ defineExpose({
   .modal-body {
     min-height: vh(126);
     height: auto;
+
+    p {
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
   }
 }
 </style>
