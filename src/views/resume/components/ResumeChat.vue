@@ -281,6 +281,9 @@ const generateTemplate = (msg: string, content: string) => {
         lastData.loadingContentStart = true;
       } else if (data.includes('event:loadingContentEnd')) {
         lastData.loadingContentStart = false;
+      } else if (data.includes('event:error')) {
+        const error: string = extractDataContent(data, 'event:error')
+        message.error(Message, error)
       } else {
         const str: string = extractDataContent(data, 'event:content')
         emits('sendTemplate', str, 'template');
@@ -340,6 +343,9 @@ const parseAttachment = (msg: string) => {
         lastData.loadingContentStart = true;
       } else if (data.includes('event:loadingContentEnd')) {
         lastData.loadingContentStart = false;
+      } else if (data.includes('event:error')) {
+        const error: string = extractDataContent(data, 'event:error')
+        message.error(Message, error)
       } else {
         const str: string = extractDataContent(data, 'event:content')
         emits('sendTemplate', str, 'attachmentStream');
@@ -399,6 +405,9 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
         lastData.loadingContentStart = true;
       } else if (data.includes('event:loadingContentEnd')) {
         lastData.loadingContentStart = false;
+      } else if (data.includes('event:error')) {
+        const error: string = extractDataContent(data, 'event:error')
+        message.error(Message, error)
       } else {
         setThinkState();
         const str: string = extractDataContent(data, 'event:content')
@@ -424,7 +433,7 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
       showErrorMessage(error.status)
     },
     () => {
-      console.log('我真的诊断完了吗')
+      console.log('我诊断完了')
     }
   );
 }
@@ -504,6 +513,9 @@ const write = () => {
         lastData.loadingContentStart = true;
       } else if (data.includes('event:loadingContentEnd')) {
         lastData.loadingContentStart = false;
+      } else if (data.includes('event:error')) {
+        const error: string = extractDataContent(data, 'event:error')
+        message.error(Message, error)
       } else {
         setThinkState();
         const str: string = extractDataContent(data, 'event:content')

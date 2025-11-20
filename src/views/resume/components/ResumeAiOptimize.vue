@@ -133,6 +133,9 @@ const handleSubmit = () => {
           thinkContent.value += str;
           scrollToBottom('think-content');
         }
+      } else if (data.includes('event:error')) {
+        const error: string = extractDataContent(data, 'event:error')
+        message.error(Message, error)
       } else {
         state.value = '3'
         const str: string = extractDataContent(data, 'event:content')
