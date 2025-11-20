@@ -2,6 +2,10 @@
 import {reactive, ref} from 'vue';
 import PositionDetail from "@/views/position/components/PositionDetail.vue";
 import SvgIcon from "@/components/svgIcon/index.vue";
+import Pagination from "@/components/pagination/index.vue";
+import bossIcon from '@/assets/images/boss.png'
+import zhilianIcon from '@/assets/images/zhilian.png'
+import guopinIcon from '@/assets/images/guopin.png'
 
 const searchData = reactive({
     channel: '0',
@@ -146,6 +150,36 @@ const handlePageSizeChange = (pageSize: number) => {
     pagination.pageSize = pageSize
     pagination.current = 1
 }
+
+const showChannelModal = ref(false)
+
+const channels = [
+    {
+        name: 'BOSS直聘',
+        icon: bossIcon,
+        isLogin: true
+    },
+    {
+        name: '智联招聘',
+        icon: zhilianIcon,
+        isLogin: true
+    },
+    {
+        name: '国聘网',
+        icon: guopinIcon,
+        isLogin: false
+    }
+]
+
+const handleChannelLogin = () => {
+    showChannelModal.value = true
+}
+
+const handleLogin = (channel: any) => {
+    if (!channel.isLogin) {
+        console.log('登录', channel.name)
+    }
+}
 </script>
 
 <template>
@@ -181,21 +215,10 @@ const handlePageSizeChange = (pageSize: number) => {
                         </div>
                     </div>
                     <div class="task-right">
-                        <Tooltip content="BOSS直聘" placement="bottom" theme="dark" transfer>
+                        <Tooltip v-for="item in channels" :key="item.name" :content="item.name" placement="bottom"
+                                 theme="dark" transfer>
                             <div class="channel-icon">
-                                <img alt="BOSS直聘" src="@/assets/images/boss.png"/>
-                                <div class="icon-mask"></div>
-                            </div>
-                        </Tooltip>
-                        <Tooltip content="智联招聘" placement="bottom" theme="dark" transfer>
-                            <div class="channel-icon">
-                                <img alt="智联招聘" src="@/assets/images/zhilian.png"/>
-                                <div class="icon-mask"></div>
-                            </div>
-                        </Tooltip>
-                        <Tooltip content="国聘网" placement="bottom" theme="dark" transfer>
-                            <div class="channel-icon">
-                                <img alt="国聘" src="@/assets/images/guopin.png"/>
+                                <img :alt="item.name" :src="item.icon"/>
                                 <div class="icon-mask"></div>
                             </div>
                         </Tooltip>
@@ -210,7 +233,7 @@ const handlePageSizeChange = (pageSize: number) => {
                         <SvgIcon name="icon-xinzeng" size="12"/>
                         <span>新增任务</span>
                     </div>
-                    <div class="action-item">
+                    <div class="action-item" @click="handleChannelLogin">
                         <SvgIcon name="icon-user" size="12"/>
                         <span>渠道登录</span>
                     </div>
@@ -218,7 +241,7 @@ const handlePageSizeChange = (pageSize: number) => {
             </div>
 
             <div v-if="positionList.length > 0" class="position-list">
-                <div v-for="(item, index) in positionList" :key="item.id"
+                <div v-for="(item) in positionList" :key="item.id"
                      :class="{ 'is-active': selectedId === item.id }" class="position-item"
                      @click="selectedId = item.id">
                     <div class="item-top">
@@ -251,25 +274,14 @@ const handlePageSizeChange = (pageSize: number) => {
                 </div>
             </div>
 
-            <div v-if="positionList.length > 0" class="pagination-wrapper">
-                <div class="pagination-left mr-10">
-                    <span class="total-text mr-20">共{{ pagination.total }}条</span>
-                    <Select v-model="pagination.pageSize" class="page-size-select" @on-change="handlePageSizeChange">
-                        <Option :value="10">10条/页</Option>
-                        <Option :value="20">20条/页</Option>
-                        <Option :value="50">50条/页</Option>
-                    </Select>
-                </div>
-                <Page
-                    v-model="pagination.current"
-                    :page-size="pagination.pageSize"
-                    :total="pagination.total"
-                    class="custom-page"
-                    show-elevator
-                    @on-change="handlePageChange"
-                    @on-page-size-change="handlePageSizeChange"
-                />
-            </div>
+            <Pagination
+                v-if="positionList.length > 0"
+                v-model:current="pagination.current"
+                v-model:page-size="pagination.pageSize"
+                :total="pagination.total"
+                @on-change="handlePageChange"
+                @on-page-size-change="handlePageSizeChange"
+            />
 
             <div v-else class="empty-state">
                 <img alt="暂无数据" class="empty-img" src="@/assets/images/no-data.png"/>
@@ -280,9 +292,161 @@ const handlePageSizeChange = (pageSize: number) => {
         <div class="panel-right">
             <PositionDetail/>
         </div>
+
+        <Modal v-model="showChannelModal" :closable="false" :footer-hide="true" :mask-closable="false"
+               class-name="channel-modal">
+            <div class="modal-header">
+                <span class="modal-title">渠道登录</span>
+                <SvgIcon class="close-icon" name="icon-cha" size="16" @click="showChannelModal = false"/>
+            </div>
+            <div class="modal-content">
+                <div class="modal-desc">
+                    <p>至少登录一个渠道，求职任务才能正常进行。</p>
+                    <p>渠道处于“登录状态”并且“任务已开启”，系统将自动为您匹配合适岗位。</p>
+                </div>
+                <div class="channel-list">
+                    <div v-for="(channel, index) in channels" :key="index" class="channel-card"
+                         @click="handleLogin(channel)">
+                        <div class="channel-icon-wrapper">
+                            <img :alt="channel.name" :src="channel.icon" class="channel-img"/>
+                            <div v-if="!channel.isLogin" class="icon-mask"></div>
+                        </div>
+                        <div class="channel-name">{{ channel.name }}</div>
+                        <div :class="{ 'is-login': channel.isLogin }" class="channel-status">
+                            {{ channel.isLogin ? '已登录' : '立即登录' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Modal>
     </div>
 </template>
 
+<style lang="scss">
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
+
+.channel-modal {
+    .ivu-modal {
+        width: vw(900) !important;
+    }
+
+    .ivu-modal-content {
+        border-radius: vw(2);
+        box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .ivu-modal-body {
+        padding: 0;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: vh(40) vw(40) 0 vw(40);
+
+        .modal-title {
+            font-family: 'YouSheBiaoTiHei';
+            font-size: vw(28);
+            color: $font-dark;
+            line-height: vh(28);
+        }
+
+        .close-icon {
+            cursor: pointer;
+
+            svg {
+                width: vw(16) !important;
+                height: vw(16) !important;
+            }
+        }
+    }
+
+    .modal-content {
+        padding: vh(28) vw(40) vh(40) vw(40);
+
+        .modal-desc {
+            margin-bottom: vh(30);
+
+            p {
+                font-family: 'PingFang SC', sans-serif;
+                font-size: vw(16);
+                font-weight: 600;
+                color: $font-dark;
+                line-height: vh(20);
+                margin: 0;
+            }
+        }
+
+        .channel-list {
+            display: flex;
+            gap: vw(40);
+
+            .channel-card {
+                width: vw(200);
+                height: vh(250);
+                border: 1px solid $border-default;
+                border-radius: vw(2);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    border-color: $theme-color;
+                }
+
+                .channel-icon-wrapper {
+                    position: relative;
+                    width: vw(70);
+                    height: vw(70);
+                    border-radius: vw(14);
+                    box-shadow: 0 0 vw(14) 0 rgba(0, 0, 0, 0.1);
+                    overflow: hidden;
+                    margin-bottom: vh(25);
+
+                    .channel-img {
+                        width: 100%;
+                        height: 100%;
+                        border-radius: vw(14);
+                    }
+
+                    .icon-mask {
+                        position: absolute;
+                        inset: 0;
+                        background: rgba(0, 0, 0, 0.5);
+                        border-radius: vw(14);
+                    }
+                }
+
+                .channel-name {
+                    font-family: 'PingFang SC', sans-serif;
+                    font-size: vw(16);
+                    font-weight: 600;
+                    color: $font-dark;
+                    line-height: vh(16);
+                    margin-bottom: vh(28);
+                }
+
+                .channel-status {
+                    font-family: 'PingFang SC', sans-serif;
+                    font-size: vw(14);
+                    font-weight: 600;
+                    color: $theme-color;
+                    line-height: vh(14);
+
+                    &.is-login {
+                        color: $font-middle;
+                    }
+                }
+            }
+        }
+    }
+}
+</style>
 <style lang="scss" scoped>
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
@@ -390,7 +554,6 @@ const handlePageSizeChange = (pageSize: number) => {
                             transform: translateY(0);
                         }
                     }
-
                 }
 
                 :deep(.ivu-select-dropdown) {
@@ -735,179 +898,6 @@ const handlePageSizeChange = (pageSize: number) => {
 
                             :deep(use) {
                                 fill: $theme-color;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        .pagination-wrapper {
-            width: 100%;
-            height: vh(70);
-            background: $white;
-            border-radius: vw(2);
-            margin-top: vh(10);
-            padding: 0 vw(20);
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            flex-shrink: 0;
-
-            .pagination-left {
-                display: flex;
-                align-items: center;
-            }
-
-            :deep(.page-size-select) {
-                width: vw(88);
-                height: vh(30);
-
-                .ivu-select-selection {
-                    height: 100%;
-                    border: 1px solid $border-default;
-                    border-radius: vw(2);
-                    padding: vh(3) vw(10);
-
-                    &:hover {
-                        border-color: $theme-color;
-                    }
-
-                    > div {
-                        height: 100%;
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-
-                        .ivu-select-selected-value {
-                            height: 100%;
-                            line-height: vh(24);
-                            font-size: vw(14);
-                            color: $font-middle;
-                            padding: 0;
-                        }
-
-                        .ivu-icon {
-                            position: unset;
-                            transform: translateY(0);
-                        }
-                    }
-                }
-
-                &.ivu-select-visible {
-                    .ivu-select-selection {
-                        border: 1px solid $theme-color !important;
-                    }
-
-                    .ivu-select-arrow {
-                        transform: rotate(180deg) !important;
-                    }
-                }
-            }
-
-            .total-text {
-                font-size: vw(12);
-                color: $font-dark;
-            }
-
-            :deep(.custom-page) {
-                display: flex;
-                align-items: center;
-                column-gap: vw(10);
-
-                li {
-                    margin: 0;
-                }
-
-                .ivu-page-item {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    width: vw(30);
-                    height: vw(30);
-                    border: 1px solid $border-default;
-                    border-radius: vw(2);
-                    font-size: vw(14);
-                    color: $font-middle;
-                    box-sizing: border-box;
-                    min-height: unset;
-                    min-width: unset;
-
-                    &:hover {
-                        border-color: $theme-color;
-
-                        a {
-                            color: $theme-color;
-                        }
-                    }
-                }
-
-                .ivu-page-item-active {
-                    border-color: $theme-color;
-                    background: transparent;
-
-                    a {
-                        color: $theme-color;
-                    }
-                }
-
-                .ivu-page-item-jump-next .ivu-icon-ios-arrow-forward, .ivu-page-item-jump-prev .ivu-icon-ios-arrow-back {
-                    color: $theme-color;
-                }
-
-                .ivu-page-prev,
-                .ivu-page-next {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    width: vw(30);
-                    height: vw(30);
-                    border: 1px solid $border-default;
-                    border-radius: vw(2);
-                    min-height: unset;
-                    min-width: unset;
-
-                    a {
-                        font-size: vw(14);
-                        color: $font-middle;
-                    }
-
-                    &:hover {
-                        border-color: $theme-color;
-
-                        a {
-                            color: $theme-color;
-                        }
-                    }
-                }
-
-                .ivu-page-options {
-                    display: flex;
-                    align-items: center;
-                    column-gap: vw(10);
-                    margin: 0;
-
-                    .ivu-page-options-sizer {
-                        display: none;
-                    }
-
-                    .ivu-page-options-elevator {
-                        display: flex;
-                        align-items: center;
-                        column-gap: vw(8);
-
-                        input {
-                            width: vw(30);
-                            height: vw(30);
-                            border: 1px solid $border-default !important;
-                            border-radius: vw(2);
-                            text-align: center;
-                            font-size: vw(14);
-                            color: $font-middle;
-                            margin: 0;
-
-                            &:focus, &:hover {
-                                border-color: $theme-color !important;
                             }
                         }
                     }
