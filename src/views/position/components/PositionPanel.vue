@@ -6,7 +6,15 @@ import Pagination from "@/components/pagination/index.vue";
 import bossIcon from '@/assets/images/boss.png'
 import zhilianIcon from '@/assets/images/zhilian.png'
 import guopinIcon from '@/assets/images/guopin.png'
+import CreateTaskModal from "@/views/position/components/CreateTaskModal.vue";
+import {useCompRef} from "@/hooks/useComponent";
+import PromptDialog from "@/components/promptDialog/index.vue";
+import {Modal} from "view-ui-plus";
 
+// 创建任务弹框实例
+const createTaskModalRef = useCompRef(CreateTaskModal)
+// 二次确认弹框
+const promptDialogRef = useCompRef(PromptDialog)
 const searchData = reactive({
     channel: '0',
     sort: '1',
@@ -44,6 +52,16 @@ const sortList = [
 
 const taskStatus = ref(true)
 const selectedId = ref(1)
+const currentTaskId = ref<string>('1')
+const showTaskDropdown = ref(false)
+const emptyModalVisible = ref(false)
+
+const taskList = ref([
+    {id: '1', name: 'Java开发工程师', location: '北京', experience: '3-5年'},
+    {id: '2', name: '产品经理', location: '北京', experience: '3-5年'},
+    {id: '3', name: 'Java开发工程师', location: '北京', experience: '3-5年'},
+    {id: '4', name: 'Java开发工程师', location: '北京', experience: '3-5年'},
+])
 
 const positionList = ref([
     {
@@ -141,6 +159,10 @@ const pagination = reactive({
     pageSize: 10,
     total: 80,
 })
+// 渠道登录弹窗
+const showChannelModal = ref(false)
+// 要删除的任务id
+const deleteTaskId = ref<string>()
 
 const handlePageChange = (page: number) => {
     pagination.current = page
@@ -151,7 +173,6 @@ const handlePageSizeChange = (pageSize: number) => {
     pagination.current = 1
 }
 
-const showChannelModal = ref(false)
 
 const channels = [
     {
@@ -175,9 +196,38 @@ const handleChannelLogin = () => {
     showChannelModal.value = true
 }
 
+const handleOpenCreateModal = () => {
+    console.log(createTaskModalRef, 'createTaskModalRef')
+    createTaskModalRef.value?.open()
+}
+
 const handleLogin = (channel: any) => {
     if (!channel.isLogin) {
         console.log('登录', channel.name)
+    }
+}
+
+const handleTaskSwitch = () => {
+    showTaskDropdown.value = !showTaskDropdown.value
+}
+
+const handleTaskDblClick = () => {
+    showTaskDropdown.value = false
+}
+
+const handleSelectTask = (taskId: string) => {
+    currentTaskId.value = taskId
+    showTaskDropdown.value = false
+}
+
+const handleDeleteClick = (taskId: string) => {
+    deleteTaskId.value = taskId
+    promptDialogRef.value?.open()
+}
+
+const handleDeleteTask = (id?: string) => {
+    if (id) {
+        taskList.value = taskList.value.filter(t => t.id !== id)
     }
 }
 </script>
@@ -225,11 +275,32 @@ const handleLogin = (channel: any) => {
                     </div>
                 </div>
                 <div class="task-actions">
-                    <div class="action-item">
-                        <SvgIcon name="icon-qiehuan" size="12"/>
-                        <span>切换任务</span>
-                    </div>
-                    <div class="action-item">
+                    <Dropdown :visible="showTaskDropdown" class="task-dropdown" placement="bottom-start"
+                              trigger="custom">
+                        <div class="action-item" @click="handleTaskSwitch">
+                            <SvgIcon name="icon-qiehuan" size="12"/>
+                            <span>切换任务</span>
+                        </div>
+                        <template #list>
+                            <DropdownMenu class="task-dropdown-menu">
+                                <div class="task-list">
+                                    <div v-for="task in taskList" :key="task.id"
+                                         :class="{ 'is-active': task.id === currentTaskId }"
+                                         class="task-item"
+                                         @click="handleSelectTask(task.id)">
+                                        <div v-if="task.id === currentTaskId" class="task-dot"></div>
+                                        <div class="task-info">
+                                            <div class="task-name">{{ task.name }}</div>
+                                            <div class="task-meta">{{ task.location }} ｜ {{ task.experience }}</div>
+                                        </div>
+                                        <SvgIcon class="delete-icon" name="icon-shanchu-xian" size="12"
+                                                 @click.stop="handleDeleteClick(task.id)"/>
+                                    </div>
+                                </div>
+                            </DropdownMenu>
+                        </template>
+                    </Dropdown>
+                    <div class="action-item" @click="handleOpenCreateModal">
                         <SvgIcon name="icon-xinzeng" size="12"/>
                         <span>新增任务</span>
                     </div>
@@ -297,7 +368,7 @@ const handleLogin = (channel: any) => {
                class-name="channel-modal">
             <div class="modal-header">
                 <span class="modal-title">渠道登录</span>
-                <SvgIcon class="close-icon" name="icon-cha" size="16" @click="showChannelModal = false"/>
+                <SvgIcon class="close-icon pointer" name="icon-cha" size="16" @click="showChannelModal = false"/>
             </div>
             <div class="modal-content">
                 <div class="modal-desc">
@@ -307,11 +378,11 @@ const handleLogin = (channel: any) => {
                 <div class="channel-list">
                     <div v-for="(channel, index) in channels" :key="index" class="channel-card"
                          @click="handleLogin(channel)">
-                        <div class="channel-icon-wrapper">
+                        <div class="channel-icon-wrapper mb-25">
                             <img :alt="channel.name" :src="channel.icon" class="channel-img"/>
                             <div v-if="!channel.isLogin" class="icon-mask"></div>
                         </div>
-                        <div class="channel-name">{{ channel.name }}</div>
+                        <div class="channel-name mb-40">{{ channel.name }}</div>
                         <div :class="{ 'is-login': channel.isLogin }" class="channel-status">
                             {{ channel.isLogin ? '已登录' : '立即登录' }}
                         </div>
@@ -319,134 +390,42 @@ const handleLogin = (channel: any) => {
                 </div>
             </div>
         </Modal>
+
+        <!-- 次数用完提示 -->
+        <Modal
+            v-model="emptyModalVisible"
+            :closable="true"
+            :footer-hide="true"
+            :mask-closable="false"
+            class-name="delete-confirm-modal"
+        >
+            <div class="delete-modal-content">
+                <div class="modal-header">
+                    <span class="modal-title">提示</span>
+                </div>
+                <div class="modal-body">
+                    <p>今日推荐次数已用完，请明日再来！</p>
+                </div>
+                <div class="modal-footer">
+                    <button style="visibility: hidden">取消</button>
+                    <button style="visibility: hidden">确定</button>
+                </div>
+            </div>
+        </Modal>
+
+        <!-- 创建新任务 -->
+        <CreateTaskModal ref="createTaskModalRef"/>
+
+        <!-- 删除任务确认弹框 -->
+        <PromptDialog
+            :id="deleteTaskId"
+            ref="promptDialogRef"
+            :confirm="handleDeleteTask"
+            content="该任务下的精选职位也将一并删除，不可恢复；确认是否删除此任务？"
+        />
     </div>
 </template>
 
-<style lang="scss">
-@use "@/assets/styles/variable.scss" as *;
-@use "@/assets/styles/compute.scss" as *;
-
-.channel-modal {
-    .ivu-modal {
-        width: vw(900) !important;
-    }
-
-    .ivu-modal-content {
-        border-radius: vw(2);
-        box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
-    }
-
-    .ivu-modal-body {
-        padding: 0;
-    }
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: vh(40) vw(40) 0 vw(40);
-
-        .modal-title {
-            font-family: 'YouSheBiaoTiHei';
-            font-size: vw(28);
-            color: $font-dark;
-            line-height: vh(28);
-        }
-
-        .close-icon {
-            cursor: pointer;
-
-            svg {
-                width: vw(16) !important;
-                height: vw(16) !important;
-            }
-        }
-    }
-
-    .modal-content {
-        padding: vh(28) vw(40) vh(40) vw(40);
-
-        .modal-desc {
-            margin-bottom: vh(30);
-
-            p {
-                font-family: 'PingFang SC', sans-serif;
-                font-size: vw(16);
-                font-weight: 600;
-                color: $font-dark;
-                line-height: vh(20);
-                margin: 0;
-            }
-        }
-
-        .channel-list {
-            display: flex;
-            gap: vw(40);
-
-            .channel-card {
-                width: vw(200);
-                height: vh(250);
-                border: 1px solid $border-default;
-                border-radius: vw(2);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all 0.3s ease;
-
-                &:hover {
-                    border-color: $theme-color;
-                }
-
-                .channel-icon-wrapper {
-                    position: relative;
-                    width: vw(70);
-                    height: vw(70);
-                    border-radius: vw(14);
-                    box-shadow: 0 0 vw(14) 0 rgba(0, 0, 0, 0.1);
-                    overflow: hidden;
-                    margin-bottom: vh(25);
-
-                    .channel-img {
-                        width: 100%;
-                        height: 100%;
-                        border-radius: vw(14);
-                    }
-
-                    .icon-mask {
-                        position: absolute;
-                        inset: 0;
-                        background: rgba(0, 0, 0, 0.5);
-                        border-radius: vw(14);
-                    }
-                }
-
-                .channel-name {
-                    font-family: 'PingFang SC', sans-serif;
-                    font-size: vw(16);
-                    font-weight: 600;
-                    color: $font-dark;
-                    line-height: vh(16);
-                    margin-bottom: vh(28);
-                }
-
-                .channel-status {
-                    font-family: 'PingFang SC', sans-serif;
-                    font-size: vw(14);
-                    font-weight: 600;
-                    color: $theme-color;
-                    line-height: vh(14);
-
-                    &.is-login {
-                        color: $font-middle;
-                    }
-                }
-            }
-        }
-    }
-}
-</style>
 <style lang="scss" scoped>
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
@@ -488,13 +467,14 @@ const handleLogin = (channel: any) => {
             .title-right {
                 display: flex;
                 align-items: center;
-                column-gap: vw(20);
+                column-gap: vw(40);
             }
 
             :deep(.filter-checkbox) {
                 .ivu-checkbox-wrapper {
                     display: flex;
                     align-items: center;
+                    margin-right: 0;
 
                     .ivu-checkbox-inner {
                         width: vw(14) !important;
@@ -547,6 +527,7 @@ const handleLogin = (channel: any) => {
                             display: flex;
                             align-items: center;
                             padding-right: vw(10);
+                            padding-left: 0;
                         }
 
                         .ivu-icon {
@@ -712,6 +693,7 @@ const handleLogin = (channel: any) => {
                 display: flex;
                 align-items: center;
                 column-gap: vw(20);
+
 
                 .action-item {
                     display: flex;
@@ -932,6 +914,110 @@ const handleLogin = (channel: any) => {
         background: $white;
         border-radius: vw(2);
         box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.10);
+    }
+}
+
+:deep(.ivu-select-dropdown) {
+    width: vw(300);
+    max-height: vh(196);
+    margin: vh(3) 0 0 0;
+    padding: vw(10);
+    box-shadow: 0 vw(2) vw(8) 0 rgba(0, 0, 0, 0.15);
+    border-radius: vw(4);
+
+    .task-dropdown-menu {
+        padding: 0;
+
+        .task-list {
+            max-height: vh(176);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: vh(4);
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
+            .task-item {
+                position: relative;
+                height: vh(45);
+                padding: vh(6) vw(10);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                cursor: pointer;
+                background: $white;
+                transition: all 0.2s;
+
+                &.is-active {
+                    background: $theme-color;
+                    padding-left: vw(26);
+
+                    .task-dot {
+                        display: block;
+                    }
+
+                    .task-info {
+                        .task-name,
+                        .task-meta {
+                            color: $white;
+                        }
+                    }
+
+                    .delete-icon use {
+                        fill: $white;
+                    }
+                }
+
+                &:hover:not(.is-active) {
+                    background: $hover-color;
+                    padding-left: vw(26);
+
+                    .delete-icon use {
+                        fill: $theme-color;
+                    }
+                }
+
+                .task-dot {
+                    display: none;
+                    position: absolute;
+                    left: vw(10);
+                    width: vw(6);
+                    height: vw(6);
+                    border-radius: 50%;
+                    background: $white;
+                }
+
+                .task-info {
+                    flex: 1;
+
+                    .task-name {
+                        font-family: 'PingFang SC', sans-serif;
+                        font-size: vw(14);
+                        line-height: vh(14);
+                        color: $font-dark;
+                        margin-bottom: vh(7);
+                    }
+
+                    .task-meta {
+                        font-family: 'PingFang SC', sans-serif;
+                        font-size: vw(12);
+                        line-height: vh(12);
+                        color: $font-dark;
+                    }
+                }
+
+                .delete-icon {
+                    flex-shrink: 0;
+                    cursor: pointer;
+
+                    use {
+                        fill: $icon-gray;
+                    }
+                }
+            }
+        }
     }
 }
 </style>

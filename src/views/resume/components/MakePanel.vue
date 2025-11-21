@@ -157,7 +157,7 @@ const handleCompositionEnd = () => {
 
 const handleInputChange = () => {
     if (isComposing.value) return;
-    
+
     if (formData.jobPosition) {
         stopPlaceholderRotation();
     } else {
@@ -194,9 +194,9 @@ onUnmounted(() => {
                     <Input v-model="formData.jobPosition" :max-length="20"
                            :placeholder="placeholderList[placeholderIdx]"
                            class="job-name"
-                           @on-change="handleInputChange"
+                           @compositionend="handleCompositionEnd"
                            @compositionstart="handleCompositionStart"
-                           @compositionend="handleCompositionEnd"/>
+                           @on-change="handleInputChange"/>
                 </FormItem>
                 <FormItem class="custom-form-item" prop="identity">
                     <RadioGroup v-model="formData.identity" class="custom-radio">
@@ -313,6 +313,7 @@ onUnmounted(() => {
 
             :deep(.job-name) {
                 .ivu-input {
+                    height: vh(50);
                     background-color: $white;
                     border: vw(1) solid $theme-color !important;
                 }

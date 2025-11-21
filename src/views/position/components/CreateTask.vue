@@ -161,7 +161,7 @@ onUnmounted(() => {
                            @on-change="handleInputChange"/>
                 </FormItem>
                 <FormItem prop="areaInfoBeanList">
-                    <AddressSelect v-model="formData.areaInfoBeanList" @change="handleChange"/>
+                    <AddressSelect v-model="formData.areaInfoBeanList" is-hot-city @change="handleChange"/>
                 </FormItem>
                 <FormItem prop="workExperience">
                     <Select v-model="formData.workExperience" class="custom-select" clearable
