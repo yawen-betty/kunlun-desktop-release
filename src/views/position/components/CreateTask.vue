@@ -11,6 +11,7 @@ import AddressSelect from "@/components/addressSelect/index.vue";
 import {CreateJobTaskInDto} from "@/api/job/dto/CreateJobTask.ts";
 import {GetMyResumeListInDto} from "@/api/resume/dto/GetMyResumeList.ts";
 import {MyResumeBean} from "@/api/resume/dto/bean/MyResumeBean.ts";
+import CustomSelect from '@/components/customSelect/index.vue'
 
 const router = useRouter();
 // 输入框提示词列表
@@ -191,9 +192,7 @@ onUnmounted(() => {
                     </Select>
                 </FormItem>
                 <FormItem prop="resumeUuid">
-                    <Select v-model="formData.resumeUuid" class="custom-select" clearable placeholder="请选择简历">
-                        <Option v-for="item in resumeList" :key="item.uuid" :label="item.name" :value="item.uuid"/>
-                    </Select>
+                    <CustomSelect :option-list="resumeList.map(item => ({label: item.name, value: item.uuid}))"/>
                 </FormItem>
             </Form>
             <div class="submit-btn" @click="submit">
