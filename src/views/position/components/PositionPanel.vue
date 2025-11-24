@@ -54,7 +54,7 @@ const taskStatus = ref(true)
 const selectedId = ref(1)
 const currentTaskId = ref<string>('1')
 const showTaskDropdown = ref(false)
-const emptyModalVisible = ref(false)
+const emptyModalVisible = ref(true)
 
 const taskList = ref([
     {id: '1', name: 'Java开发工程师', location: '北京', experience: '3-5年'},

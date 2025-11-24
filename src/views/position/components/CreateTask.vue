@@ -1,13 +1,16 @@
 <!-- 精选职位 制作页面 -->
 <script lang="ts" setup>
 import {computed, onActivated, onDeactivated, onMounted, onUnmounted, reactive, ref} from 'vue'
-import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload} from "view-ui-plus";
+import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload, Select, Option} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {ResumeService} from "@/service/ResumeService";
 import {debounce} from "@/utiles/debounce";
 import {useRouter} from "vue-router";
 import Ellipsis from '@/components/ellipsis/index.vue'
 import AddressSelect from "@/components/addressSelect/index.vue";
+import {CreateJobTaskInDto} from "@/api/job/dto/CreateJobTask.ts";
+import {GetMyResumeListInDto} from "@/api/resume/dto/GetMyResumeList.ts";
+import {MyResumeBean} from "@/api/resume/dto/bean/MyResumeBean.ts";
 
 const router = useRouter();
 // 输入框提示词列表
@@ -64,28 +67,32 @@ const placeholderTimer = ref<number | null>(null)
 const isComposing = ref(false)
 const formRef = ref();
 const formRules = {
-    jobPosition: [{required: true, message: '请输入求职岗位！', trigger: 'submit'}],
-    identity: [{type: 'number', required: true, message: '请选择身份！', trigger: 'submit'}],
+    jobTitle: [{required: true, message: '请输入求职岗位！', trigger: 'submit'}],
+    cityInfos: [{type: 'array', min: 1, required: true, message: '请选择期望城市！', trigger: 'submit'}],
+    experience: [{required: true, message: '请选择工作经验！', trigger: 'submit'}],
+    resumeUuid: [{required: true, message: '请选择简历！', trigger: 'submit'}]
 }
-const formData = reactive({
-    jobPosition: '',
-    areaInfoBeanList: [],
-    workExperience: '',
-})
-const resumeList = ref([])
+const formData = reactive<CreateJobTaskInDto>(new CreateJobTaskInDto())
+const resumeList = ref<MyResumeBean[]>([])
+const resumeService = new ResumeService()
 
 const emit = defineEmits<{
-    'resume-created': [data: { resumeId: string; resumeName: string; uploadedFile: File | null }]
+    'task-created': [data: { resumeId: string; resumeName: string; uploadedFile: File | null }]
 }>();
 
-const handleChange = () => {
-
-}
-
 const submit = debounce(async () => {
-    if (!formData.jobPosition.trim()) return Message.error('请输入求职岗位！')
+    const errors = []
+    if (!formData.jobTitle?.trim()) errors.push('求职岗位')
+    if (!formData.cityInfos?.length) errors.push('期望城市')
+    if (!formData.experience) errors.push('工作经验')
+    if (!formData.resumeUuid) errors.push('简历')
 
+    if (errors.length > 0) {
+        return Message.error(`请完善${errors.join('、') + '！'}`)
+    }
 
+    // 表单验证通过，执行提交逻辑
+    console.log('表单数据:', formData)
 }, 300)
 
 const startPlaceholderRotation = () => {
@@ -112,7 +119,7 @@ const handleCompositionStart = () => {
 
 const handleCompositionEnd = () => {
     isComposing.value = false;
-    if (!formData.jobPosition) {
+    if (!formData.jobTitle) {
         startPlaceholderRotation();
     }
 }
@@ -120,7 +127,7 @@ const handleCompositionEnd = () => {
 const handleInputChange = () => {
     if (isComposing.value) return;
 
-    if (formData.jobPosition) {
+    if (formData.jobTitle) {
         stopPlaceholderRotation();
     } else {
         startPlaceholderRotation();
@@ -135,9 +142,22 @@ onDeactivated(() => {
     stopPlaceholderRotation()
 })
 
-onMounted(() => {
+onMounted(async () => {
     startPlaceholderRotation()
+    await loadResumeList()
 })
+
+const loadResumeList = async () => {
+    try {
+        const params = new GetMyResumeListInDto()
+        const result = await resumeService.getMyResumeList(params)
+        if (result.code === 200 && result.data?.resumes) {
+            resumeList.value = result.data.resumes
+        }
+    } catch (error) {
+        console.error('获取简历列表失败:', error)
+    }
+}
 
 onUnmounted(() => {
     stopPlaceholderRotation()
@@ -152,27 +172,27 @@ onUnmounted(() => {
                 <span>发布求职任务</span>
             </div>
             <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form">
-                <FormItem prop="jobPosition">
-                    <Input v-model="formData.jobPosition" :max-length="20"
+                <FormItem prop="jobTitle">
+                    <Input v-model="formData.jobTitle" :max-length="20"
                            :placeholder="placeholderList[placeholderIdx]"
                            class="job-name"
                            @compositionend="handleCompositionEnd"
                            @compositionstart="handleCompositionStart"
                            @on-change="handleInputChange"/>
                 </FormItem>
-                <FormItem prop="areaInfoBeanList">
-                    <AddressSelect v-model="formData.areaInfoBeanList" is-hot-city @change="handleChange"/>
+                <FormItem prop="cityInfos">
+                    <AddressSelect v-model="formData.cityInfos" is-hot-city/>
                 </FormItem>
-                <FormItem prop="workExperience">
-                    <Select v-model="formData.workExperience" class="custom-select" clearable
+                <FormItem prop="experience">
+                    <Select v-model="formData.experience" class="custom-select" clearable
                             placeholder="请选择工作经验">
                         <Option v-for="item in workExperienceList" :key="item.value" :label="item.label"
                                 :value="item.value"/>
                     </Select>
                 </FormItem>
-                <FormItem prop="areaInfoBeanList">
-                    <Select class="custom-select" clearable placeholder="请选择简历">
-                        <Option v-for="item in resumeList"/>
+                <FormItem prop="resumeUuid">
+                    <Select v-model="formData.resumeUuid" class="custom-select" clearable placeholder="请选择简历">
+                        <Option v-for="item in resumeList" :key="item.uuid" :label="item.name" :value="item.uuid"/>
                     </Select>
                 </FormItem>
             </Form>
