@@ -1,52 +1,46 @@
 <template>
-  <div class="personal-info-sidebar">
-    <Menu :active-name="modelValue" @on-select="handleSelect">
-      <MenuItem v-for="item in menuItems" :key="item.name" :name="item.name">
-        <span class="menu-text">{{ item.label }}</span>
-      </MenuItem>
-    </Menu>
+    <div class="personal-info-sidebar">
+        <Menu :active-name="modelValue" @on-select="handleSelect">
+            <MenuItem v-for="item in menuItems" :key="item.name" :name="item.name">
+                <span class="menu-text">{{ item.label }}</span>
+            </MenuItem>
+        </Menu>
 
-    <div class="logout-btn" @click="logoutState = true">
-      <SvgIcon name="icon-tuichu-mian" size="14" color="#B0B7C7"/>
-      <span class="logout-text">退出登录</span>
+        <div class="logout-btn" @click="logoutState = true">
+            <SvgIcon name="icon-tuichu-mian" size="14" color="#B0B7C7" />
+            <span class="logout-text">退出登录</span>
+        </div>
     </div>
-  </div>
 
-  <Modal
-    v-model="logoutState"
-    :mask-closable="false"
-    :closable="false"
-    footer-hide
-    class="logout-modal"
-  >
-    <div class="logout-box">
-      <div class="logout-content">
-        <Icon type="md-close" class="logout-close-icon" @click="logoutState = false"/>
-        <h3 class="logout-title mb-40">提示</h3>
-        <div class="logout-html">退出登录后，下次需使用微信扫码登录；确认是否退出？</div>
-      </div>
+    <Modal v-model="logoutState" :mask-closable="false" :closable="false" footer-hide class="logout-modal">
+        <div class="logout-box">
+            <div class="logout-content">
+                <Icon type="md-close" class="logout-close-icon" @click="logoutState = false" />
+                <h3 class="logout-title mb-40">提示</h3>
+                <div class="logout-html">退出登录后，下次需使用微信扫码登录；确认是否退出？</div>
+            </div>
 
-      <div class="logout-footer">
-        <Button class="mr-10 cancel btn" @click="logoutState = false">取消</Button>
-        <Button type="primary" class="submit btn" @click="handleSubmitLogout">确定</Button>
-      </div>
-    </div>
-  </Modal>
+            <div class="logout-footer">
+                <Button class="mr-10 cancel btn" @click="logoutState = false">取消</Button>
+                <Button type="primary" class="submit btn" @click="handleSubmitLogout">确定</Button>
+            </div>
+        </div>
+    </Modal>
 </template>
 
 <script setup lang="ts">
 import SvgIcon from '@/components/svgIcon/index.vue';
-import {ref} from "vue";
-import {Button, Icon, Modal} from "view-ui-plus";
-import {AuthService} from "@/service/AuthService.ts";
-import {UserInfo} from "@/utiles/userInfo.ts";
+import {ref} from 'vue';
+import {Button, Icon, Modal} from 'view-ui-plus';
+import {AuthService} from '@/service/AuthService.ts';
+import {UserInfo} from '@/utiles/userInfo.ts';
 
 interface Props {
-  modelValue: string;
+    modelValue: string;
 }
 
 interface Emits {
-  (e: 'update:modelValue', value: string): void;
+    (e: 'update:modelValue', value: string): void;
 }
 
 defineProps<Props>();
@@ -58,236 +52,232 @@ const logoutState = ref<boolean>(false);
 const authService = new AuthService();
 
 const menuItems = [
-  {name: 'personal', label: '个人信息'},
-  {name: 'model', label: '模型账号'},
-  {name: 'cache', label: '清理缓存'},
-  {name: 'version', label: '版本更新'},
-  {name: 'feedback', label: '问题反馈'},
-  {name: 'help', label: '帮助中心'},
-  {name: 'about', label: '关于我们'},
-  {name: 'settings', label: '通用设置'}
+    {name: 'personal', label: '个人信息'},
+    {name: 'model', label: '模型账号'},
+    {name: 'cache', label: '清理缓存'},
+    {name: 'version', label: '版本更新'},
+    {name: 'feedback', label: '问题反馈'},
+    {name: 'help', label: '帮助中心'},
+    {name: 'about', label: '关于我们'},
+    {name: 'settings', label: '通用设置'}
 ];
 
 const handleSelect = (name: string) => {
-  emit('update:modelValue', name);
+    emit('update:modelValue', name);
 };
 
 // 退出登录
 const handleSubmitLogout = () => {
-  authService.logout().then(() => {
-    UserInfo.logout();
-  })
+    authService.logout().then(() => {
+        UserInfo.logout();
+    });
 };
-
 </script>
 
 <style scoped lang="scss">
-@use "@/assets/styles/variable.scss" as *;
-@use "@/assets/styles/compute.scss" as *;
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
 
 .personal-info-sidebar {
-  width: vw(360);
-  height: vh(570);
-  background: $white;
-  border-radius: vw(2);
-  position: relative;
-
-  :deep(.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu):after) {
-    background-color: $white;
-  }
-
-  :deep(.ivu-menu-vertical.ivu-menu-light:after) {
-    width: 0;
-    height: 0;
-  }
-
-  :deep(.ivu-menu) {
-    background: transparent;
-    border: none;
-    padding: vw(20);
-    margin: 0;
-    width: 100% !important;
-
-    .ivu-menu-item {
-      height: vh(50);
-      line-height: vh(50);
-      padding: 0 vw(20);
-      margin-bottom: 0;
-      border-radius: vw(2);
-      position: relative;
-      transition: padding-left 0.2s ease-in-out;
-
-      &:hover {
-        padding-left: vw(36);
-        background: linear-gradient(0deg, #FFF8F2 0%, #FFF8F2 100%), #E8EAEC;
-      }
-
-      &:before {
-        content: '';
-        position: absolute;
-        left: vw(20);
-        top: 50%;
-        transform: translateY(-50%);
-        width: vw(6);
-        height: vw(6);
-        border-radius: 50%;
-        background: transparent;
-      }
-
-      .menu-text {
-        color: $font-dark;
-        font-size: vw(16);
-        font-weight: 500;
-        margin-left: vw(20);
-        line-height: vw(20);
-      }
-
-      &.ivu-menu-item-active {
-        background: linear-gradient(90deg, $hover-color 0%, $hover-color 100%);
-
-        &:before {
-          background: $theme-color;
-        }
-
-        .menu-text {
-          color: $theme-color;
-        }
-      }
-
-      &:hover:not(.ivu-menu-item-active) {
-        background: rgba(0, 0, 0, 0.02);
-      }
-    }
-  }
-
-  .logout-btn {
-    position: absolute;
-    bottom: vh(20);
-    left: 50%;
-    transform: translateX(-50%);
-    width: vw(320);
-    height: vh(40);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: vw(10);
-    border: 1px solid $border-default;
+    width: vw(360);
+    height: vh(570);
+    background: $white;
     border-radius: vw(2);
-    cursor: pointer;
-    transition: all 0.2s;
+    position: relative;
 
-    .logout-text {
-      color: $font-light;
-      font-size: vw(14);
-      font-weight: 500;
+    :deep(.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu):after) {
+        background-color: $white;
     }
 
-    &:hover {
-      background: rgba(0, 0, 0, 0.02);
+    :deep(.ivu-menu-vertical.ivu-menu-light:after) {
+        width: 0;
+        height: 0;
     }
-  }
+
+    :deep(.ivu-menu) {
+        background: transparent;
+        border: none;
+        padding: vw(20);
+        margin: 0;
+        width: 100% !important;
+
+        .ivu-menu-item {
+            height: vh(50);
+            line-height: vh(50);
+            padding: 0 vw(20);
+            margin-bottom: 0;
+            border-radius: vw(2);
+            position: relative;
+            transition: padding-left 0.2s ease-in-out;
+
+            &:hover {
+                padding-left: vw(36);
+                background: linear-gradient(0deg, #fff8f2 0%, #fff8f2 100%), #e8eaec;
+            }
+
+            &:before {
+                content: '';
+                position: absolute;
+                left: vw(20);
+                top: 50%;
+                transform: translateY(-50%);
+                width: vw(6);
+                height: vw(6);
+                border-radius: 50%;
+                background: transparent;
+            }
+
+            .menu-text {
+                color: $font-dark;
+                font-size: vw(16);
+                font-weight: 500;
+                margin-left: vw(20);
+                line-height: vw(20);
+            }
+
+            &.ivu-menu-item-active {
+                background: linear-gradient(90deg, $hover-color 0%, $hover-color 100%);
+
+                &:before {
+                    background: $theme-color;
+                }
+
+                .menu-text {
+                    color: $theme-color;
+                }
+            }
+
+            &:hover:not(.ivu-menu-item-active) {
+                background: rgba(0, 0, 0, 0.02);
+            }
+        }
+    }
+
+    .logout-btn {
+        position: absolute;
+        bottom: vh(20);
+        left: 50%;
+        transform: translateX(-50%);
+        width: vw(320);
+        height: vh(40);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: vw(10);
+        border: 1px solid $border-default;
+        border-radius: vw(2);
+        cursor: pointer;
+        transition: all 0.2s;
+
+        .logout-text {
+            color: $font-light;
+            font-size: vw(14);
+            font-weight: 500;
+        }
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+    }
 }
 </style>
 
 <style lang="scss">
-@use "@/assets/styles/variable.scss" as *;
-@use "@/assets/styles/compute.scss" as *;
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
 
 .logout-modal {
-  width: vw(460) !important;
-  height: vh(260) !important;
+    width: vw(460) !important;
+    height: vh(260) !important;
 
-  .ivu-modal {
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  .ivu-modal-content {
-    border-radius: vw(2);
-    height: 100%;
-
-    .ivu-modal-body {
-      padding: vh(15) vw(20);
-      height: 100%;
+    .ivu-modal {
+        top: 50%;
+        transform: translateY(-50%);
     }
-  }
 
-  .logout-box {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
+    .ivu-modal-content {
+        border-radius: vw(2);
+        height: 100%;
 
-
-    .logout-content {
-      width: 100%;
-      background-color: $white;
-
-
-      .logout-close-icon {
-        position: absolute;
-        right: vw(20);
-        top: vh(18);
-        font-size: vw(20);
-        cursor: pointer;
-        color: $font-middle;
-
-        &:hover {
-          color: $font-dark;
+        .ivu-modal-body {
+            padding: vh(15) vw(20);
+            height: 100%;
         }
-      }
-
-      .logout-title {
-        color: $font-dark;
-        text-align: justify;
-        font-size: vw(14);
-        font-style: normal;
-        font-weight: 500;
-        line-height: vw(22)
-      }
-
-      .logout-html {
-        color: $font-dark;
-        text-align: justify;
-        font-size: vw(14);
-        font-style: normal;
-        font-weight: 400;
-        line-height: vw(20)
-      }
     }
-  }
 
-  .logout-footer {
-    display: flex;
-    justify-content: flex-end;
+    .logout-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
 
-    .btn {
-      width: vw(64);
-      height: vh(32);
-      padding: vh(10) 0;
-      color: var(--, var(--, #E8EAEC));
-      font-size: vw(12);
-      font-style: normal;
-      font-weight: 500;
-      line-height: vw(12);
-      text-align: center;
-      box-shadow: none;
-      border: 0;
-      outline: none;
+        .logout-content {
+            width: 100%;
+            background-color: $white;
 
-      &.cancel {
-        border: 1px solid $theme-color;
-        color: $theme-color;
-        background: $white;
-      }
+            .logout-close-icon {
+                position: absolute;
+                right: vw(20);
+                top: vh(18);
+                font-size: vw(20);
+                cursor: pointer;
+                color: $font-middle;
 
-      &.submit {
-        border: 0;
-        background: $theme-color;
-        color: $white;
-      }
+                &:hover {
+                    color: $font-dark;
+                }
+            }
+
+            .logout-title {
+                color: $font-dark;
+                text-align: justify;
+                font-size: vw(14);
+                font-style: normal;
+                font-weight: 500;
+                line-height: vw(22);
+            }
+
+            .logout-html {
+                color: $font-dark;
+                text-align: justify;
+                font-size: vw(14);
+                font-style: normal;
+                font-weight: 400;
+                line-height: vw(20);
+            }
+        }
     }
-  }
+
+    .logout-footer {
+        display: flex;
+        justify-content: flex-end;
+
+        .btn {
+            width: vw(64);
+            height: vh(32);
+            padding: vh(10) 0;
+            color: var(--, var(--, #e8eaec));
+            font-size: vw(12);
+            font-style: normal;
+            font-weight: 500;
+            line-height: vw(12);
+            text-align: center;
+            box-shadow: none;
+            border: 0;
+            outline: none;
+
+            &.cancel {
+                border: 1px solid $theme-color;
+                color: $theme-color;
+                background: $white;
+            }
+
+            &.submit {
+                border: 0;
+                background: $theme-color;
+                color: $white;
+            }
+        }
+    }
 }
-
 </style>
