@@ -69,11 +69,6 @@ const handlePageSizeChange = (pageSize: number) => {
     justify-content: flex-end;
     flex-shrink: 0;
 
-    .pagination-left {
-        display: flex;
-        align-items: center;
-    }
-
     :deep(.page-size-select) {
         width: vw(88);
         height: vh(30);
@@ -97,7 +92,7 @@ const handlePageSizeChange = (pageSize: number) => {
 
                 .ivu-select-selected-value {
                     height: 100%;
-                    line-height: vh(24);
+                    line-height: vh(22);
                     font-size: vw(14);
                     color: $font-middle;
                     padding: 0;

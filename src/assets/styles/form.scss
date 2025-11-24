@@ -143,7 +143,7 @@
                 margin-right: vw(10);
                 padding: 0 vw(10);
                 line-height: vh(32);
-                font-size: vw(14);
+                font-size: vw(14) !important;
                 color: $font-dark;
                 overflow: hidden;
                 text-overflow: ellipsis;

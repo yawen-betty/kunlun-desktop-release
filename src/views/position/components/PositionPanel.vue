@@ -466,19 +466,30 @@ const handleDeleteTask = (id?: string) => {
 
             .title-right {
                 display: flex;
-                align-items: center;
+                align-items: end;
                 column-gap: vw(40);
             }
 
             :deep(.filter-checkbox) {
+                display: flex;
+                align-items: end;
+                height: vh(32);
+
                 .ivu-checkbox-wrapper {
+                    margin-right: 0;
                     display: flex;
                     align-items: center;
-                    margin-right: 0;
 
-                    .ivu-checkbox-inner {
+                    .ivu-checkbox {
                         width: vw(14) !important;
                         height: vw(14) !important;
+                        min-width: 12px;
+                        min-height: 12px;
+                    }
+
+                    .ivu-checkbox-inner {
+                        width: 100%;
+                        height: 100%;
                         min-width: 12px;
                         min-height: 12px;
                         border-color: #B0B7C6 !important;
@@ -505,22 +516,23 @@ const handleDeleteTask = (id?: string) => {
                 }
 
                 :deep(.ivu-select-selection) {
+                    display: flex;
+                    align-items: end;
                     height: 100%;
                     padding: 0;
                     font-size: vw(16);
                     color: $font-middle;
-                    border-color: transparent;
                     background: transparent;
                     border: none;
 
                     > div {
                         display: flex;
                         align-items: center;
-                        height: 100%;
 
                         .ivu-select-selected-value {
                             flex-shrink: 0;
-                            height: 100%;
+                            height: fit-content;
+                            line-height: 1.5;
                             color: #9499A4;
                             font-size: vw(16);
                             font-weight: 600;
