@@ -182,7 +182,7 @@ onUnmounted(() => {
                            @on-change="handleInputChange"/>
                 </FormItem>
                 <FormItem prop="cityInfos">
-                    <AddressSelect v-model="formData.cityInfos" is-hot-city/>
+                    <AddressSelect v-model="formData.cityInfos" is-hot-city placeholder="请选择期望城市"/>
                 </FormItem>
                 <FormItem prop="experience">
                     <Select v-model="formData.experience" class="custom-select" clearable

@@ -4,7 +4,7 @@
         v-model="isDropDown"
         :disabled="props.disabled"
         class="address-custom_box"
-        placement="bottom"
+        placement="bottom-start"
     >
         <div v-if="hasDefaultSlot">
             <slot/>
