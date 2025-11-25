@@ -57,7 +57,7 @@
                     :rows="2"
                     placeholder="请输入"
                     type="textarea"
-                    @on-enter="handleSendMessage"
+                    @keydown="handleKeyDown"
                 ></Input>
                 <button :disabled="disabled || !sendContent" class="save-btn" @click="handleSendMessage">
                     <SvgIcon :color="disabled || !sendContent ? '#C5C8CE' : '#fff'" name="icon-fasong" size="10"/>
@@ -448,6 +448,14 @@ const askQuestion = () => {
         diagnoseResume('我将继续对简历进行诊断。', true)
     }
 }
+
+// 处理键盘事件
+const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        handleSendMessage();
+    }
+};
 
 // 发送消息
 const handleSendMessage = () => {
