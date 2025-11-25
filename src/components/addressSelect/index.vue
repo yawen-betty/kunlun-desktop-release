@@ -34,7 +34,7 @@
             </div>
             <svg-icon :style="{display:props.disabled && 'block'}" class="icon-svg icon-arrow" color="#9499A5"
                       name="icon-jiantou-xia"
-                      size="6" @click.stop="toggleDrop()"/>
+                      size="10" @click.stop="toggleDrop()"/>
 
             <svg-icon v-if="!isEmpty && !props.disabled" class="icon-svg icon-close" color="#9499A5" name="icon-cha"
                       size="10"
@@ -269,6 +269,8 @@ onMounted(() => {
         }
 
         .icon-arrow {
+            width: vw(10) !important;
+            height: vw(10) !important;
             transition: all .2s linear;
             transform-origin: center;
         }
