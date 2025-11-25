@@ -39,27 +39,27 @@ const infoList = [
 const workExperienceList = [
     {
         label: '在校/应届生',
-        value: '0'
-    },
-    {
-        label: '1年以下',
         value: '1'
     },
     {
-        label: '1-3年',
+        label: '1年以下',
         value: '2'
     },
     {
-        label: '3-5年',
+        label: '1-3年',
         value: '3'
     },
     {
-        label: '5-10年',
+        label: '3-5年',
         value: '4'
     },
     {
-        label: '10年以上',
+        label: '5-10年',
         value: '5'
+    },
+    {
+        label: '10年以上',
+        value: '6'
     }
 ]
 

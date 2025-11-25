@@ -1,8 +1,10 @@
-export class PositionBean {
+import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
+
+export class PositionInBean {
     /**
-     * 职位UUID
+     * 在源站的唯一ID
      */
-    uuid: string = '';
+    sourceId: string = '';
     
     /**
      * 职位名称
@@ -12,47 +14,47 @@ export class PositionBean {
     /**
      * 薪资范围
      */
-    salary: string = '';
+    salary?: string;
     
     /**
      * 区域信息
      */
-    areaName: string = '';
+    areaName?: string;
     
     /**
      * 详细工作地址列表
      */
-    addresses: string[] = [];
+    addresses?: string[];
     
     /**
      * 职位描述
      */
-    description: string = '';
+    description?: string;
     
     /**
      * 学历要求 (0:学历不限 1:大专 2:本科 3:硕士 4:博士及以上)
      */
-    educational: string = '';
+    educational?: string;
     
     /**
      * 工作经验 (1:在校/应届生 2:1年以下 3:1-3年 4:3-5年 5:5-10年 6:10年以上)
      */
-    workExperience: string = '';
+    workExperience?: string;
     
     /**
      * 职位标签
      */
-    labels: string[] = [];
+    labels?: string[];
     
     /**
      * 福利待遇
      */
-    benefits: string[] = [];
+    benefits?: string[];
     
     /**
      * 公司UUID
      */
-    companyId: string = '';
+    companyId?: string;
     
     /**
      * 公司名称
@@ -62,27 +64,27 @@ export class PositionBean {
     /**
      * 公司行业
      */
-    industry: string = '';
+    industry?: string;
     
     /**
      * 公司规模
      */
-    size: string = '';
+    size?: string;
     
     /**
      * 公司性质
      */
-    natures: string = '';
+    natures?: string;
     
     /**
      * 融资阶段
      */
-    financingStage: string = '';
+    financingStage?: string;
     
     /**
-     * 上架状态 (1:上架, 0:下架)
+     * 上架状态 (1:上架, 0:下架)，默认为1
      */
-    status: number = 1;
+    publishStatus?: number;
     
     /**
      * 来源渠道 (0: BOSS直聘, 1: 智联校园, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)
@@ -90,22 +92,36 @@ export class PositionBean {
     sourceChannel: number = 0;
     
     /**
-     * 匹配度 (0-100)
+     * 职位详情URL
      */
-    matchScore: number = 0;
+    jobDetailUrl: string = '';
     
     /**
-     * AI生成的总结建议
+     * 发布日期
      */
-    aiSummary: string = '';
+    publishDate: string = '';
+}
+
+export class CrawlPositionsInDto extends BaseInDto {
+    /**
+     * 关联的求职任务UUID
+     */
+    taskUuid: string = '';
     
     /**
-     * 用户是否标记为"感兴趣"
+     * 爬取到的职位数据列表
      */
-    isInterested: boolean = false;
+    positions: PositionInBean[] = [];
+}
+
+export class CrawlPositionsOutDto extends BaseOutDto {
+    /**
+     * 处理成功的数量
+     */
+    processedCount: number = 0;
     
     /**
-     * 推荐时间
+     * 处理失败的数量
      */
-    recommendedAt: string = '';
+    failedCount: number = 0;
 }

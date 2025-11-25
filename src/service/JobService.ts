@@ -10,6 +10,7 @@ import { QueryMatchedPositionsInDto, QueryMatchedPositionsOutDto } from '@/api/j
 import { MarkPositionInterestInDto, MarkPositionInterestOutDto } from '@/api/job/dto/MarkPositionInterest'
 import { SwitchJobTaskInDto, SwitchJobTaskOutDto } from '@/api/job/dto/SwitchJobTask'
 import { GetOtherJobTasksInDto, GetOtherJobTasksOutDto } from '@/api/job/dto/GetOtherJobTasks'
+import { CrawlPositionsInDto, CrawlPositionsOutDto } from '@/api/job/dto/CrawlPositions'
 import { Result } from '@/api/BaseDto'
 import { EmptyOutDto } from '@/api/HttpClient'
 
@@ -91,5 +92,12 @@ export class JobService {
      */
     public async getOtherJobTasks(params: GetOtherJobTasksInDto): Promise<Result<GetOtherJobTasksOutDto[]>> {
         return await this.http.request<Result<GetOtherJobTasksOutDto[]>>(JobPaths.getOtherJobTasks, params);
+    }
+    
+    /**
+     * 爬虫专用，批量入库职位数据
+     */
+    public async crawlPositions(params: CrawlPositionsInDto): Promise<Result<CrawlPositionsOutDto>> {
+        return await this.http.request<Result<CrawlPositionsOutDto>>(JobPaths.crawlPositions, params);
     }
 }
