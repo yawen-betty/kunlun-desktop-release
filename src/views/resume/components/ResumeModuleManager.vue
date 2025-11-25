@@ -133,6 +133,7 @@ import {ref, nextTick, computed, watch} from 'vue';
 import {Modal, Message} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import Sortable from 'sortablejs';
+import {message} from "@/utiles/Message.ts";
 
 interface ModuleItem {
     id: string;
@@ -310,7 +311,7 @@ const handleCustomModalClose = () => {
 const createCustomModule = () => {
     formRef.value?.validate((valid: boolean) => {
         if (!valid) {
-            Message.warning('请完善必填项！');
+            message.warning(Message, '请完善必填项！');
             return;
         }
 

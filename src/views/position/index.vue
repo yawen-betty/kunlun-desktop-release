@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import {ref, onMounted} from 'vue'
 import CreateTask from "@/views/position/components/CreateTask.vue";
 import PositionPanel from "@/views/position/components/PositionPanel.vue";
-import { JobService } from "@/service/JobService";
-import { GetDefaultJobTaskInDto } from "@/api/job/dto/GetDefaultJobTask";
+import {JobService} from "@/service/JobService";
+import {GetDefaultJobTaskInDto} from "@/api/job/dto/GetDefaultJobTask";
 
 const hasTask = ref(false)
-const jobService = JobService.getInstance()
+const jobService = new JobService()
 
 const checkDefaultTask = async () => {
     try {

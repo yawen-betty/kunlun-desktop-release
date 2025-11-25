@@ -176,6 +176,7 @@ import ModelUsageExhaustedModal from "@/views/resume/components/ModelUsageExhaus
 import {QuestionBean} from "@/api/ai/dto/bean/QuestionBean.ts";
 import {StreamItem} from "@/views/resume/components/ResumePreview.vue";
 import PromptDialog from '@/components/promptDialog/index.vue'
+import {message} from "@/utiles/Message.ts";
 
 const props = defineProps<{
     resumeId: string;
@@ -263,7 +264,7 @@ watch(
 
 onMounted(async () => {
     if (!props.resumeId) {
-        Message.error('简历ID不存在');
+        message.error(Message, '简历ID不存在');
         return;
     }
     // 从简历制作页面进入
@@ -336,10 +337,10 @@ const fetchResumeDetail = async (resumeId: string) => {
             resumeScore.value = result.data.score!;
             console.log(resumeScore.value, '分数')
         } else {
-            Message.error(result.msg || '获取简历详情失败');
+            message.error(Message, result.msg || '获取简历详情失败');
         }
     } catch (error) {
-        Message.error('获取简历详情失败');
+        message.error(Message, '获取简历详情失败');
         console.error(error);
     } finally {
     }
@@ -373,7 +374,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
 const handleConfirm = async () => {
     formRef.value.validate(async (valid: boolean) => {
         if (!valid) {
-            Message.warning('请完善必填项！');
+            message.warning(Message, '请完善必填项！');
             return;
         }
         try {
@@ -384,10 +385,10 @@ const handleConfirm = async () => {
             await resumeService.renameResume(params);
             resumeName.value = formData.resumeName;
             showRenameModal.value = false;
-            Message.success('重命名成功');
+            message.success(Message, '重命名成功');
             fetchResumeDetail(props.resumeId)
         } catch (error) {
-            Message.error('重命名失败');
+            message.error(Message, '重命名失败');
             console.error(error);
         }
     });
@@ -403,7 +404,7 @@ const saveResume = async () => {
         await resumeService.saveResume(params);
         showSaveSuccessAnimation();
     } catch (error) {
-        Message.error('保存失败');
+        message.error(Message, '保存失败');
         console.error(error);
     }
 };
@@ -454,7 +455,7 @@ const isEditing = computed(() => {
 // 手动保存
 const handleSave = debounce(async () => {
     if (isEditing.value) {
-        Message.warning('当前处于编辑中,请保存后再操作!');
+        message.warning(Message, '当前处于编辑中,请保存后再操作!');
         return;
     }
     await saveResume();
@@ -462,7 +463,7 @@ const handleSave = debounce(async () => {
 
 const handleDownload = debounce(() => {
     if (isEditing.value) {
-        Message.warning('当前处于编辑中,请保存后再操作!');
+        message.warning(Message, '当前处于编辑中,请保存后再操作!');
         return;
     }
     showDownloadModal.value = true;
@@ -470,7 +471,7 @@ const handleDownload = debounce(() => {
 
 const handleExit = debounce(async () => {
     if (isEditing.value) {
-        Message.warning('当前处于编辑中,请保存后再操作!');
+        message.warning(Message, '当前处于编辑中,请保存后再操作!');
         return;
     }
     if (!isGenerating.value) {
@@ -481,7 +482,7 @@ const handleExit = debounce(async () => {
 
 const toggleMode = debounce(() => {
     if (previewRef.value?.isStreaming) {
-        Message.warning('AI正在撰写中，请稍后！');
+        message.warning(Message, 'AI正在撰写中，请稍后！');
         return;
     }
     if (currentMode.value === 'ai') {

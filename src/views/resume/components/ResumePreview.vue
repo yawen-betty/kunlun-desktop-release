@@ -711,6 +711,7 @@ import {FieldUpdateBean} from '@/api/resume/dto/bean/FieldUpdateBean';
 import {UpdateModuleEntriesInDto} from '@/api/resume/dto/UpdateModuleEntries';
 import {EntryUpdateBean} from '@/api/resume/dto/bean/EntryUpdateBean';
 import {Config} from "@/Config.ts";
+import {message} from "@/utiles/Message.ts";
 
 const props = withDefaults(defineProps<{
     isGenerating?: boolean;
@@ -846,10 +847,10 @@ const handleModulesApply = async (modules: any[]) => {
         ];
 
         await resumeService.updateModules(params);
-        Message.success('模块更新成功');
+        message.success(Message, '模块更新成功');
         emit('update-modules');
     } catch (error) {
-        Message.error('模块更新失败');
+        message.error(Message, '模块更新失败');
         console.error(error);
     }
 };
@@ -919,10 +920,10 @@ const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
         });
 
         await resumeService.updateModuleEntries(params);
-        Message.success('条目更新成功');
+        message.success(Message, '条目更新成功');
         emit('update-modules');
     } catch (error) {
-        Message.error('条目更新失败');
+        message.error(Message, '条目更新失败');
         console.error(error);
     }
 };
@@ -962,10 +963,10 @@ const handleFieldsApply = async (fields: any[]) => {
             })
         ];
         await resumeService.updateModuleFields(params);
-        Message.success('字段更新成功');
+        message.success(Message, '字段更新成功');
         emit('update-modules');
     } catch (error) {
-        Message.error('字段更新失败');
+        message.error(Message, '字段更新失败');
         console.error(error);
     }
 };
@@ -1065,7 +1066,7 @@ const syncStreamValuesToResumeData = () => {
 
 const startEdit = (module: any) => {
     if (isEditingBasicInfo.value || editingEntryUuid.value || editingModuleUuid.value) {
-        Message.warning('当前处于编辑中，请保存后再操作！');
+        message.warning(Message, '当前处于编辑中，请保存后再操作！');
         return;
     }
     isEditingBasicInfo.value = true;
@@ -1093,7 +1094,7 @@ const saveEdit = (module: any) => {
 
 const startTextEdit = (module: any) => {
     if (isEditingBasicInfo.value || editingEntryUuid.value || editingModuleUuid.value) {
-        Message.warning('当前处于编辑中，请保存后再操作！');
+        message.warning(Message, '当前处于编辑中，请保存后再操作！');
         return;
     }
     editingModuleUuid.value = module.uuid;
@@ -1154,7 +1155,7 @@ const handleAiAction = (action: 'polish' | 'expand' | 'simplify' | 'summarize') 
 
 const startEntryEdit = (entry: any) => {
     if (isEditingBasicInfo.value || editingEntryUuid.value || editingModuleUuid.value) {
-        Message.warning('当前处于编辑中，请保存后再操作！');
+        message.warning(Message, '当前处于编辑中，请保存后再操作！');
         return;
     }
     editingEntryUuid.value = entry.entryUuid;
@@ -1191,7 +1192,7 @@ const handleAiOptimizeSubmit = (content: string) => {
 
 const handleAddEntry = (module: any) => {
     if (isEditingBasicInfo.value || editingEntryUuid.value || editingModuleUuid.value) {
-        Message.warning('当前处于编辑中，请保存后再操作！');
+        message.warning(Message, '当前处于编辑中，请保存后再操作！');
         return;
     }
 
@@ -1223,14 +1224,14 @@ const handlePhotoChange = async (e: Event) => {
 
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
-        Message.error('图片格式有误，仅支持jpg、jpeg、png！');
+        message.error(Message, '图片格式有误，仅支持jpg、jpeg、png！');
         target.value = '';
         return;
     }
 
     const maxSize = 1024 * 1024;
     if (file.size > maxSize) {
-        Message.error('图片大小不得超过1M！');
+        message.error(Message, '图片大小不得超过1M！');
         target.value = '';
         return;
     }
@@ -1261,12 +1262,12 @@ const handlePhotoChange = async (e: Event) => {
             }
 
             emit('data-change', props.resumeData);
-            Message.success('上传成功');
+            message.success(Message, '上传成功');
         } else {
-            Message.error('上传失败');
+            message.error(Message, '上传失败');
         }
     } catch (error) {
-        Message.error('上传失败');
+        message.error(Message, '上传失败');
         console.error(error);
     }
 
