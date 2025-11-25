@@ -1,6 +1,6 @@
 <template>
     <div :mode="mode" class="resume-preview">
-        <div :class="{ 'no-scroll': isGenerating }" class="preview-card">
+        <div ref="previewCardRef" :class="{ 'no-scroll': isGenerating }" class="preview-card">
             <!-- 模块管理按钮（人工模式） -->
             <div v-if="mode === 'manual'" class="module-manage-wrapper">
                 <ResumeModuleManager
@@ -698,7 +698,7 @@
 import SvgIcon from '@/components/svgIcon/index.vue';
 import ResumeModuleManager, {ItemType} from './ResumeModuleManager.vue';
 import ResumeAiOptimize from './ResumeAiOptimize.vue';
-import {computed, onMounted, ref, watch, withDefaults} from 'vue';
+import {computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch, withDefaults} from 'vue';
 import {Input, Message} from 'view-ui-plus';
 import {FileService} from '@/service/FileService';
 import {ResumeService} from '@/service/ResumeService';
@@ -742,6 +742,8 @@ const resumeService = new ResumeService();
 const photoInput = ref<HTMLInputElement>();
 const photoUrl = ref<string>('');
 const photoStyle = ref<any>({});
+const previewCardRef = ref<HTMLElement>();
+const scrollTop = ref(0);
 const showAiOptimize = ref(false);
 const aiOptimizeProps = ref<{
     resumeId: string;
@@ -1301,8 +1303,29 @@ watch(() => props.resumeData, () => {
     initFieldValues();
 }, {deep: true, immediate: true});
 
+const saveScrollPosition = () => {
+    if (previewCardRef.value) {
+        scrollTop.value = previewCardRef.value.scrollTop;
+    }
+};
+
 onMounted(async () => {
     allAvailableModules.value = await fetchAvailableModules();
+    if (previewCardRef.value) {
+        previewCardRef.value.addEventListener('scroll', saveScrollPosition);
+    }
+});
+
+onActivated(() => {
+    if (previewCardRef.value && scrollTop.value > 0) {
+        previewCardRef.value.scrollTop = scrollTop.value;
+    }
+});
+
+onBeforeUnmount(() => {
+    if (previewCardRef.value) {
+        previewCardRef.value.removeEventListener('scroll', saveScrollPosition);
+    }
 });
 
 defineExpose({
