@@ -5,28 +5,51 @@
         <Button type="primary" @click="handleGoToWebsite" class="website-btn">点击，前去官网</Button>
 
         <div class="agreements">
-            <span class="agreement-link" @click="handleServiceAgreement">《服务协议》</span>
-            <span class="agreement-link" @click="handlePrivacyAgreement">《隐私协议》</span>
+            <span class="agreement-link" @click="openAgreement(2)">《服务协议》</span>
+            <span class="agreement-link" @click="openAgreement(1)">《隐私协议》</span>
         </div>
     </div>
+
+    <AgreementModal
+        v-model:visible="showAgreement"
+        :title="agreementType === 1 ? '隐私协议' : '服务协议'"
+        @close="closeModal"
+        :agreementType="agreementType"
+    />
 </template>
 
 <script setup lang="ts">
+import {ref, onMounted} from 'vue';
 import {Button} from 'view-ui-plus';
+import AgreementModal from '@/views/login/components/AgreementModal.vue';
+import {AdminService} from '@/service/AdminService';
 
-const handleGoToWebsite = () => {
-    // 跳转到官网
-    window.open('https://www.example.com', '_blank');
+const showAgreement = ref<boolean>(false);
+const agreementType = ref<number>(1);
+const websiteUrl = ref<string>('');
+const adminService = new AdminService();
+
+const handleGoToWebsite = async () => {
+    if (websiteUrl.value) {
+        // open(websiteUrl.value);
+    }
 };
 
-const handleServiceAgreement = () => {
-    // 显示服务协议
-    console.log('显示服务协议');
+onMounted(() => {
+    adminService.getWebsiteUrl({}).then((res) => {
+        if (res.code === 200) {
+            websiteUrl.value = res.data.websiteUrl;
+        }
+    });
+});
+
+const openAgreement = (type: number) => {
+    showAgreement.value = true;
+    agreementType.value = type;
 };
 
-const handlePrivacyAgreement = () => {
-    // 显示隐私协议
-    console.log('显示隐私协议');
+const closeModal = () => {
+    showAgreement.value = false;
 };
 </script>
 
