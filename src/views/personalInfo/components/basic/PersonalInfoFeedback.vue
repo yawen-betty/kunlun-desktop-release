@@ -17,23 +17,20 @@
                     class="feedback-textarea"
                 />
             </FormItem>
-
             <FormItem label="问题截图" class="feedback-upload-item">
-                <Upload
-                    :file-list="fileList"
-                    :before-upload="beforeUpload"
-                    :on-success="handleUploadSuccess"
-                    :on-remove="handleRemove"
-                    multiple
-                    accept="image/jpeg,image/jpg,image/png"
-                    action=""
-                    list-type="picture-card"
-                    class="feedback-upload"
-                >
-                    <div class="upload-trigger" v-if="fileList.length < 3">
-                        <SvgIcon color="#9499A4" name="icon-xinzeng" size="20" />
+                <div class="upload-container">
+                    <div class="upload-image" v-for="(item, index) in fileList" :key="index">
+                        <Image :src="`${Config.baseUrl}${item}`" alt="上传图片" class="upload-img" fit="contain" />
+                        <div class="remove-icon" @click="removeImage(index)">
+                            <SvgIcon name="icon-cha" size="6" color="#fff" />
+                        </div>
                     </div>
-                </Upload>
+                    <Upload :before-upload="beforeUpload" :show-upload-list="false" class="feedback-upload" v-if="fileList.length < 3">
+                        <div class="upload-trigger">
+                            <SvgIcon color="#9499A4" name="icon-xinzeng" size="20" />
+                        </div>
+                    </Upload>
+                </div>
                 <div class="upload-tip">最多上传3张，支持JPG、JPEG、PNG格式</div>
             </FormItem>
             <div class="feedback-submit">
@@ -43,76 +40,136 @@
                 </Button>
             </div>
         </Form>
+
+        <FeedbackReplyModal v-model="showReplyModal" />
     </div>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive} from 'vue';
-import {Message} from 'view-ui-plus';
-// import type {FormInstance} from 'view-ui-plus';
+import {ref, reactive, onMounted} from 'vue';
+import {Image, Message} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
+import FeedbackReplyModal from '../feedback/FeedbackReplyModal.vue';
+import {FileService} from '@/service/FileService.ts';
+import {AdminService} from '@/service/AdminService.ts';
+import {AddFeedbackInDto} from '@/api/admin/dto/AddFeedback.ts';
+import {GetHelpCenterInDto} from '@/api/admin/dto/GetHelpCenter.ts';
+import {message} from '@/utiles/Message.ts';
+import {Config} from '@/Config.ts';
 
+// ==================== 服务实例 ====================
 const formRef = ref();
+const fileService = new FileService();
+const adminService = new AdminService();
 
+// ==================== 响应式数据 ====================
+/** 表单数据 */
 const formData = reactive({
     description: ''
 });
 
-const fileList = ref<any[]>([]);
+/** 上传的图片列表（最多3张） */
+const fileList = ref<string[]>([]);
 
+/** 帮助中心内容 */
+const helpContent = ref<string>('');
+
+/** 是否显示回复弹窗 */
+const showReplyModal = ref(false);
+
+/** 表单验证规则 */
 const rules = {
     description: [{required: true, message: '请输入问题描述', trigger: 'blur'}]
 };
 
-const vw = (px: number) => `${(px / 1920) * 100}vw`;
+// ==================== 图片上传相关 ====================
+/**
+ * 上传文件到服务器
+ * @param file - 要上传的文件
+ */
+const handleUploadFile = async (file: File) => {
+    const res = await fileService.upload(file);
+    const filePath = res.data.filePath;
+    fileList.value.push(filePath);
+};
 
+/**
+ * 上传前的校验
+ * @param file - 要上传的文件
+ * @returns false - 阻止默认上传行为
+ */
 const beforeUpload = (file: File) => {
+    // 校验数量限制
     if (fileList.value.length >= 3) {
         Message.error('最多只能上传3张图片');
         return false;
     }
 
+    // 校验文件类型
     const isValidType = ['image/jpeg', 'image/jpg', 'image/png'].includes(file.type);
     if (!isValidType) {
         Message.error('只支持JPG、JPEG、PNG格式');
         return false;
     }
 
-    const isLt5M = file.size / 1024 / 1024 < 5;
-    if (!isLt5M) {
-        Message.error('图片大小不能超过5MB');
-        return false;
-    }
-
-    return true;
+    handleUploadFile(file);
+    return false;
 };
 
-const handleUploadSuccess = (response: any, file: any) => {
-    fileList.value.push(file);
+/**
+ * 删除图片
+ * @param index - 图片索引
+ */
+const removeImage = (index: number) => {
+    fileList.value.splice(index, 1);
 };
 
-const handleRemove = (file: any, fileList: any[]) => {
-    const index = fileList.findIndex((item) => item.uid === file.uid);
-    if (index > -1) {
-        fileList.splice(index, 1);
-    }
-};
-
+// ==================== 表单提交 ====================
+/**
+ * 提交问题反馈
+ */
 const handleSubmit = () => {
-    formRef.value?.validate((valid: boolean) => {
-        if (valid) {
-            console.log('提交数据:', {
-                description: formData.description,
-                images: fileList.value
-            });
-            Message.success('提交成功');
+    formRef.value?.validate(async (valid: boolean) => {
+        if (!valid) return;
+
+        const params: AddFeedbackInDto = {
+            problem: formData.description,
+            problemImages: fileList.value.length > 0 ? fileList.value : undefined
+        };
+
+        const res = await adminService.addFeedback(params);
+        if (res.code === 200) {
+            message.success(Message, '提交成功');
+            // 清空表单
+            formData.description = '';
+            fileList.value = [];
         }
     });
 };
 
+// ==================== 弹窗相关 ====================
+/**
+ * 打开查看回复弹窗
+ */
 const handleViewReply = () => {
-    console.log('查看回复');
+    showReplyModal.value = true;
 };
+
+// ==================== 数据初始化 ====================
+/**
+ * 获取帮助中心内容
+ */
+const getHelpCenter = async () => {
+    const res = await adminService.getHelpCenter(new GetHelpCenterInDto());
+    if (res.code === 200) {
+        helpContent.value = res.data.content;
+    }
+};
+
+// 组件挂载时获取帮助中心内容
+onMounted(() => {
+    getHelpCenter();
+});
 </script>
 
 <style scoped lang="scss">
@@ -165,6 +222,10 @@ const handleViewReply = () => {
                 color: $remind-error;
             }
 
+            :deep(.ivu-form-item-error-tip) {
+                width: vw(800);
+            }
+
             .feedback-textarea {
                 width: vw(800);
                 :deep(.ivu-input) {
@@ -203,29 +264,61 @@ const handleViewReply = () => {
                 line-height: vh(16);
             }
 
-            .feedback-upload {
-                :deep(.ivu-upload-list-picture-card) {
-                    .ivu-upload-list-item {
-                        width: vw(100);
-                        height: vw(100);
-                        border-radius: 0;
-                    }
+            .upload-container {
+                display: flex;
+                gap: vw(20);
+                flex-wrap: wrap;
+            }
+
+            .upload-image {
+                position: relative;
+                width: vw(100);
+                height: vw(100);
+                background: $bg-gray;
+                border-radius: 0;
+                overflow: visible;
+
+                .upload-img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
                 }
 
-                :deep(.ivu-upload-select) {
+                .remove-icon {
+                    position: absolute;
+                    top: vw(-3);
+                    right: vw(-3);
+                    width: vw(12);
+                    height: vw(12);
+                    background: rgba(0, 0, 0, 0.5);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+
+                    &:hover {
+                        background: rgba(0, 0, 0, 0.7);
+                    }
+                }
+            }
+
+            .feedback-upload {
+                :deep(.ivu-upload) {
+                    width: vw(100);
+                    height: vw(100);
+                }
+
+                .upload-trigger {
                     width: vw(100);
                     height: vw(100);
                     background: $bg-gray;
                     border: none;
                     border-radius: 0;
-
-                    .upload-trigger {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        width: 100%;
-                        height: 100%;
-                    }
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
                 }
             }
 
