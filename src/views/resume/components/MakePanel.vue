@@ -7,6 +7,7 @@ import {ResumeService} from "@/service/ResumeService";
 import {debounce} from "@/utiles/debounce";
 import {useRouter} from "vue-router";
 import Ellipsis from '@/components/ellipsis/index.vue'
+import {message} from "@/utiles/Message.ts";
 
 const router = useRouter();
 // 输入框提示词列表
@@ -65,14 +66,14 @@ const emit = defineEmits<{
 }>();
 
 const submit = debounce(async () => {
-    if (!formData.jobPosition.trim()) return Message.error('请输入求职岗位！')
-    if (!formData.identity) return Message.error('请选择身份！')
+    if (!formData.jobPosition.trim()) return message.error(Message, '请输入求职岗位！')
+    if (!formData.identity) return message.error(Message, '请选择身份！')
 
     try {
         const result = await resumeService.initResume(formData);
         console.log(result, 'result')
         if (result.code === 200 && result.data) {
-            Message.success('简历创建成功！');
+            message.success(Message, '简历创建成功！');
             emit('resume-created', {
                 resumeId: result.data.resumeId!,
                 resumeName: result.data.resumeName!,
@@ -81,10 +82,10 @@ const submit = debounce(async () => {
         } else if (result.code === 2305) {
             showLimitModal.value = true;
         } else {
-            Message.error(result.msg || '简历创建失败！');
+            message.error(Message, result.msg || '简历创建失败！');
         }
     } catch (error) {
-        Message.error('简历创建失败！');
+        message.error(Message, '简历创建失败！');
         console.error(error);
     }
 }, 300)
@@ -96,13 +97,13 @@ const handleUploadChange = (file: File) => {
     const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
 
     if (!validTypes.includes(file.type) && !hasValidExtension) {
-        Message.error('文件格式有误，仅支持PDF、Word格式！');
+        message.error(Message, '文件格式有误，仅支持PDF、Word格式！');
         return false;
     }
 
     const maxSize = 1024 * 1024;
     if (file.size > maxSize) {
-        Message.error('文件大小不得超过1M！');
+        message.error(Message, '文件大小不得超过1M！');
         return false;
     }
 
@@ -157,7 +158,7 @@ const handleCompositionEnd = () => {
 
 const handleInputChange = () => {
     if (isComposing.value) return;
-    
+
     if (formData.jobPosition) {
         stopPlaceholderRotation();
     } else {
@@ -194,9 +195,9 @@ onUnmounted(() => {
                     <Input v-model="formData.jobPosition" :max-length="20"
                            :placeholder="placeholderList[placeholderIdx]"
                            class="job-name"
-                           @on-change="handleInputChange"
+                           @compositionend="handleCompositionEnd"
                            @compositionstart="handleCompositionStart"
-                           @compositionend="handleCompositionEnd"/>
+                           @on-change="handleInputChange"/>
                 </FormItem>
                 <FormItem class="custom-form-item" prop="identity">
                     <RadioGroup v-model="formData.identity" class="custom-radio">
@@ -313,6 +314,7 @@ onUnmounted(() => {
 
             :deep(.job-name) {
                 .ivu-input {
+                    height: vh(50);
                     background-color: $white;
                     border: vw(1) solid $theme-color !important;
                 }
