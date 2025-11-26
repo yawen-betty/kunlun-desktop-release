@@ -50,9 +50,9 @@ export class ChannelPositionBean {
     benefits?: string[];
     
     /**
-     * 公司UUID
+     * 薪资数 (单位:元)
      */
-    companyId?: string;
+    salaryNumber?: number;
     
     /**
      * 公司名称

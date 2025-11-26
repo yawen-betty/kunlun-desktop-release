@@ -3,15 +3,15 @@ import {ref, onMounted} from 'vue'
 import CreateTask from "@/views/position/components/CreateTask.vue";
 import PositionPanel from "@/views/position/components/PositionPanel.vue";
 import {JobService} from "@/service/JobService";
-import {GetDefaultJobTaskInDto} from "@/api/job/dto/GetDefaultJobTask";
+import {GetJobTaskInDto} from "@/api/job/dto/GetJobTask";
 
 const hasTask = ref(false)
 const jobService = new JobService()
 
 const checkDefaultTask = async () => {
     try {
-        const params = new GetDefaultJobTaskInDto()
-        const result = await jobService.getDefaultJobTask(params)
+        const params = new GetJobTaskInDto()
+        const result = await jobService.getJobTask(params)
         hasTask.value = result.code === 200 && !!result.data?.uuid
     } catch (error) {
         hasTask.value = false

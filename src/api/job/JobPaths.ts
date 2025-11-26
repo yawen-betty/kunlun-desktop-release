@@ -32,17 +32,8 @@ export class JobPaths {
    * 激活或停用一个求职任务
    */
   static activateJobTask: Path = {
-    url: '/job-tasks/{uuid}/activation',
+    url: '/job-tasks/activation',
     method: 'PUT',
-    prefix: 'job'
-  }
-
-  /**
-   * 获取用户的默认求职任务
-   */
-  static getDefaultJobTask: Path = {
-    url: '/job-tasks/default',
-    method: 'GET',
     prefix: 'job'
   }
 

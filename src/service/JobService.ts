@@ -5,7 +5,7 @@ import { CreateJobTaskInDto, CreateJobTaskOutDto } from '@/api/job/dto/CreateJob
 import { GetJobTaskInDto, GetJobTaskOutDto } from '@/api/job/dto/GetJobTask'
 import { DeleteJobTaskInDto, DeleteJobTaskOutDto } from '@/api/job/dto/DeleteJobTask'
 import { ActivateJobTaskInDto, ActivateJobTaskOutDto } from '@/api/job/dto/ActivateJobTask'
-import { GetDefaultJobTaskInDto, GetDefaultJobTaskOutDto } from '@/api/job/dto/GetDefaultJobTask'
+
 import { QueryMatchedPositionsInDto, QueryMatchedPositionsOutDto } from '@/api/job/dto/QueryMatchedPositions'
 import { MarkPositionInterestInDto, MarkPositionInterestOutDto } from '@/api/job/dto/MarkPositionInterest'
 import { SwitchJobTaskInDto, SwitchJobTaskOutDto } from '@/api/job/dto/SwitchJobTask'
@@ -48,8 +48,8 @@ export class JobService {
     /**
      * 删除一个求职任务
      */
-    public async deleteJobTask(params: DeleteJobTaskInDto): Promise<EmptyOutDto> {
-        return await this.http.request<EmptyOutDto>(JobPaths.deleteJobTask, params);
+    public async deleteJobTask(params: DeleteJobTaskInDto): Promise<Result<DeleteJobTaskOutDto>> {
+        return await this.http.request<Result<DeleteJobTaskOutDto>>(JobPaths.deleteJobTask, params);
     }
     
     /**
@@ -57,13 +57,6 @@ export class JobService {
      */
     public async activateJobTask(params: ActivateJobTaskInDto): Promise<Result<ActivateJobTaskOutDto>> {
         return await this.http.request<Result<ActivateJobTaskOutDto>>(JobPaths.activateJobTask, params);
-    }
-    
-    /**
-     * 获取用户的默认求职任务
-     */
-    public async getDefaultJobTask(params: GetDefaultJobTaskInDto): Promise<Result<GetDefaultJobTaskOutDto>> {
-        return await this.http.request<Result<GetDefaultJobTaskOutDto>>(JobPaths.getDefaultJobTask, params);
     }
     
     /**
