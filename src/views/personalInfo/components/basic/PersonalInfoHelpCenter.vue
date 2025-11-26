@@ -1,23 +1,31 @@
 <template>
     <div class="help-center">
         <h1 class="help-title">帮助中心</h1>
-        <div class="help-content">
-            <div class="content-text">
-                <p class="section-title">我是标题</p>
-                <ul class="help-list">
-                    <li>支持添加不同颜色便签，快捷记录灵感</li>
-                    <li>新增流程图、类图等更多图形，满足多场景需求</li>
-                    <li>支持拖拽气泡图形的端点调整其指向，编辑更灵活</li>
-                    <li>无需快速新建图形时，可隐藏图形四周端点以避免误操作</li>
-                </ul>
-            </div>
-            <div class="placeholder-image"></div>
-        </div>
+        <div class="help-content" v-html="content"></div>
     </div>
 </template>
 
 <script setup lang="ts">
-// 静态展示页面，无需额外逻辑
+import {ref, onMounted} from 'vue';
+import {AdminService} from '@/service/AdminService';
+import {GetHelpCenterInDto} from '@/api/admin/dto/GetHelpCenter';
+
+const adminService = AdminService.getInstance();
+const content = ref('');
+
+/**
+ * 获取帮助中心内容
+ */
+onMounted(async () => {
+    try {
+        const res = await adminService.getHelpCenter(new GetHelpCenterInDto());
+        if (res.code === 200 && res.data) {
+            content.value = res.data.content;
+        }
+    } catch (error) {
+        console.error('获取帮助中心内容失败:', error);
+    }
+});
 </script>
 
 <style scoped lang="scss">
@@ -63,7 +71,6 @@
     font-size: vw(16);
     line-height: vh(22);
     color: $font-dark;
-    // margin: 0 0 vh(10) 0;
     font-weight: normal;
 }
 
@@ -76,7 +83,6 @@
     padding-left: vw(24);
 
     li {
-        // margin-bottom: vh(8);
         list-style: disc;
 
         &:last-child {
@@ -92,5 +98,36 @@
     width: vw(981);
     height: vh(180);
     background: #ffe7e7;
+    overflow-y: auto;
+    padding: vh(10) vw(10);
+    font-family: 'PingFang SC', sans-serif;
+    font-size: vw(14);
+    line-height: vh(22);
+    color: $font-dark;
+
+    :deep(h1),
+    :deep(h2),
+    :deep(h3),
+    :deep(h4),
+    :deep(h5),
+    :deep(h6) {
+        margin: vh(10) 0 vh(5) 0;
+        font-weight: 600;
+    }
+
+    :deep(p) {
+        margin: vh(5) 0;
+    }
+
+    :deep(ul),
+    :deep(ol) {
+        margin: vh(5) 0;
+        padding-left: vw(20);
+    }
+
+    :deep(img) {
+        max-width: 100%;
+        height: auto;
+    }
 }
 </style>
