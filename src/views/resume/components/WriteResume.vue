@@ -6,14 +6,34 @@
             <div class="left-section">
                 <!-- 左侧顶部 -->
                 <div class="left-header align-between mb-20">
-                    <div class="title-section flex-column">
+                    <div class="title-section">
                         <SvgIcon class="ai-icon" name="icon-AI" size="30"/>
                         <p class="title">简历制作</p>
+                        <div v-if="currentMode === 'manual'" class="resume-name flex-column pointer">
+                            <span>{{ resumeName }}</span>
+                            <SvgIcon class="pointer" color="#9499A4" name="icon-bianji-xian" size="14"
+                                     @click="showRenameModal = true"/>
+                        </div>
                     </div>
-                    <div class="resume-name flex-column pointer">
+                    <div v-if="currentMode === 'ai'" class="resume-name flex-column pointer">
                         <span>{{ resumeName }}</span>
                         <SvgIcon class="pointer" color="#9499A4" name="icon-bianji-xian" size="14"
                                  @click="showRenameModal = true"/>
+                    </div>
+                    <div v-else class="score-wrapper flex flex-column">
+                        <div class="score-text mr-10">当前简历分数：{{ resumeScore }}</div>
+                        <Poptip v-if="scoreProblems.length" class="questions-pop flex-column mr-20" placement="bottom"
+                                trigger="hover">
+                            <SvgIcon class="tip" color="#FC8919" name="icon-tishi" size="14"/>
+                            <template #content>
+                                <ul class="problem-list">
+                                    <li v-for="(problem, index) in scoreProblems" :key="index">
+                                        <span class="problem-text">{{ problem }}</span>
+                                    </li>
+                                </ul>
+                            </template>
+                        </Poptip>
+                        <Loading v-if="scoreLoading"/>
                     </div>
                 </div>
                 <!-- 简历预览区 -->
@@ -53,6 +73,10 @@
                             <div ref="lottieContainer" class="lottie-icon flex"></div>
                             <span class="success-text">保存成功</span>
                         </div>
+                        <Button v-if="isShowToggleBtn" class="mode-btn" type="primary">
+                            <SvgIcon class="mr-5" color="#FFFFFF" name="icon-qiehuan" size="10"/>
+                            <span>简历诊断</span>
+                        </Button>
                         <Button v-if="isShowToggleBtn" class="mode-btn" type="primary" @click="toggleMode">
                             <SvgIcon class="mr-5" color="#FFFFFF" name="icon-qiehuan" size="10"/>
                             <span>{{ currentMode === 'ai' ? '人工' : 'AI' }}撰写</span>
@@ -608,6 +632,8 @@ defineExpose({reset})
 }
 
 .title-section {
+    display: flex;
+    align-items: end;
     gap: vw(4);
 
     :deep(.ai-icon) {

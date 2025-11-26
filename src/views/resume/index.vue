@@ -11,6 +11,7 @@ import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
 import {UserInfo} from "@/utiles/userInfo.ts";
 import {useCompRef} from "@/hooks/useComponent";
+import ResumeAiDiagnosis from "@/views/resume/components/ResumeAiDiagnosis.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -68,6 +69,7 @@ onActivated(() => {
 
 <template>
     <div class="resume-cont">
+        <ResumeAiDiagnosis/>
         <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
         <WriteResume v-else ref="writeResumeRef" :initial-mode="initialMode" :resume-id="resumeId"
                      :resume-name="resumeName" :uploaded-file="uploadedFile" @back-to-make="exit"/>

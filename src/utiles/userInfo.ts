@@ -10,6 +10,7 @@ export class UserInfo {
         userId: '', // 用户ID
         avatar: '',  // 头像,
         runningResumeId: '', // 正在制作的简历ID
+        resumeMap: {}, // { 'resumeId' : { trick: '话术', 'template': '模板' } }
     });
 
     static async logout() {
