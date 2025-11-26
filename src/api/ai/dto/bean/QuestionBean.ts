@@ -18,4 +18,9 @@ export class QuestionBean {
      * 问题id
      */
     questionUuid: string = ''
+
+    /**
+     * 问题状态
+     */
+    isEnquiry: boolean = false
 }
