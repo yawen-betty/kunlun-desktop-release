@@ -12,7 +12,8 @@
                     <SvgIcon class="icon-ai mr-5" color="515A6D" name="icon-ai-xing" size="16"></SvgIcon>
                     简历诊断
                 </div>
-                <SvgIcon class="cha pointer" color="#9499A4" name="icon-cha" size="20" @click="handleCancel"></SvgIcon>
+                <SvgIcon v-if="!isRequesting" class="cha pointer" color="#9499A4" name="icon-cha" size="20"
+                         @click="handleCancel"></SvgIcon>
             </div>
             <div class="optimize-content">
                 <div class="ai-content">
@@ -63,10 +64,9 @@ interface Emits {
 
 const aiService = new AiService();
 
-const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const visible = ref<boolean>(true);
+const visible = ref<boolean>(false);
 // 额外要求
 const requirement = ref<string>('');
 // 当前流程状态 1-生成之前 2-深度思考 3-生成中 4-生成结束
@@ -75,7 +75,7 @@ const state = ref<string>('1');
 const thinkContent = ref<string>('');
 // 生成内容
 const content = ref<string>('');
-
+const isRequesting = ref<boolean>(false);
 
 const handleCancel = () => {
     visible.value = false
@@ -83,63 +83,13 @@ const handleCancel = () => {
     content.value = '';
     requirement.value = '';
     state.value = '1'
-}
-
-// 开始ai 生成
-const handleSubmit = () => {
-    if (requirement.value.length > 0 && requirement.value.length < 20) return message.warning(Message, '请至少填写20个字！');
-
-    thinkContent.value = '';
-    content.value = '';
-    state.value = '1'
-
-    const params: PolishInDto = {
-        resumeId: props.resumeId,
-        fieldName: props.fieldName,
-        maxLength: props.maxLength,
-        mode: props.mode,
-        text: props.text,
-        requirement: requirement.value
-    }
-
-    aiService.polishStream(
-        params,
-        (data: string) => {
-            if (data.includes('event:thinking')) {
-                state.value = '2'
-                const str: string = extractDataContent(data, 'event:thinking')
-                if (str) {
-                    thinkContent.value += str;
-                    scrollToBottom('think-content');
-                }
-            } else {
-                state.value = '3'
-                const str: string = extractDataContent(data, 'event:content')
-
-                if (str) {
-                    content.value += str;
-                }
-            }
-        },
-        (error: any) => {
-            AiErrorHandler.handleError(error.status);
-        },
-        () => {
-            state.value = '4'
-        }
-    )
-}
-
-// 抛出数据
-const handleEmitData = () => {
-    emit('submit', content.value);
-    handleCancel();
+    isRequesting.value = false
 }
 
 const open = (resumeId: string) => {
+    visible.value = true;
     // 解析模板
     const msg: string = '接下来我会对简历进行诊断并询问一些问题。'
-
 
     const messages: AiMessageBean[] = [
         {
@@ -152,41 +102,34 @@ const open = (resumeId: string) => {
         resumeId,
         messages
     }
-
+    isRequesting.value = true
     aiService.diagnoseStream(
         params,
         (data) => {
-            const lastData = chatList.value[chatList.value.length - 1]
-
+            console.log(data, 'data')
             if (data.includes('event:thinking')) {
+                state.value = '2'
                 const str: string = extractDataContent(data, 'event:thinking')
-                lastData.thinking += str
-                scrollToBottom('deep-thinking-content');
-            } else if (data.includes('event:loadingContentStart')) {
-                lastData.thinkingStatus = '1';
-                lastData.loadingContentStart = true;
-            } else if (data.includes('event:loadingContentEnd')) {
-                lastData.loadingContentStart = false;
+                if (str) {
+                    thinkContent.value += str;
+                    scrollToBottom('think-content');
+                }
             } else {
-                setThinkState();
+                state.value = '3'
                 const str: string = extractDataContent(data, 'event:content')
 
-                diagnoseList.value = JSON.parse(str).issues;
-
-                if (reply) {
-                    diagnoseContent.value = JSON.parse(str).diagnosisResultMessage;
-                    diagnoseModal.value = true;
-                } else {
-                    askQuestion();
+                if (str) {
+                    content.value = JSON.parse(str).diagnosisResultMessage
+                    emit('submit', str)
                 }
             }
-            smartScrollToBottom();
         },
         (error) => {
-            showErrorMessage(error.status)
+            AiErrorHandler.handleError(error.status);
         },
         () => {
-            console.log('我真的诊断完了吗')
+            state.value = '4'
+            isRequesting.value = false
         }
     );
 }
