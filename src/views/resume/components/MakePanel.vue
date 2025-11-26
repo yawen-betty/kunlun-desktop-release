@@ -317,6 +317,11 @@ onUnmounted(() => {
                     height: vh(50);
                     background-color: $white;
                     border: vw(1) solid $theme-color !important;
+                    font-size: vw(18);
+
+                    &::placeholder {
+                        font-weight: 600;
+                    }
                 }
             }
 

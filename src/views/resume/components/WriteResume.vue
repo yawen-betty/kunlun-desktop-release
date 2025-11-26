@@ -9,7 +9,7 @@
                     <div class="title-section">
                         <SvgIcon class="ai-icon" name="icon-AI" size="30"/>
                         <p class="title">简历制作</p>
-                        <div v-if="currentMode === 'manual'" class="resume-name flex-column pointer">
+                        <div v-if="currentMode === 'manual'" class="resume-name flex-column pointer ml-20">
                             <span>{{ resumeName }}</span>
                             <SvgIcon class="pointer" color="#9499A4" name="icon-bianji-xian" size="14"
                                      @click="showRenameModal = true"/>
@@ -20,7 +20,7 @@
                         <SvgIcon class="pointer" color="#9499A4" name="icon-bianji-xian" size="14"
                                  @click="showRenameModal = true"/>
                     </div>
-                    <div v-else class="score-wrapper flex flex-column">
+                    <div v-if="showScoreAndMode && currentMode === 'manual'" class="score-wrapper flex flex-column">
                         <div class="score-text mr-10">当前简历分数：{{ resumeScore }}</div>
                         <Poptip v-if="scoreProblems.length" class="questions-pop flex-column mr-20" placement="bottom"
                                 trigger="hover">
@@ -73,7 +73,7 @@
                             <div ref="lottieContainer" class="lottie-icon flex"></div>
                             <span class="success-text">保存成功</span>
                         </div>
-                        <Button v-if="isShowToggleBtn" class="mode-btn" type="primary">
+                        <Button v-if="isShowToggleBtn" class="mode-btn" type="primary" @click="handleDiagnosis">
                             <SvgIcon class="mr-5" color="#FFFFFF" name="icon-qiehuan" size="10"/>
                             <span>简历诊断</span>
                         </Button>
@@ -115,7 +115,7 @@
                 <Transition name="slide-right">
                     <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :changeMode="changeMode"
                                 :hasAttachment="uploadedFile" :over="over" :resumeUuid="resumeId"
-                                :streamWrite="handleWriteStream" @listFinish="listFinish"
+                                :streamWrite="handleWriteStream" :updateCache="updateCache" @listFinish="listFinish"
                                 @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
                 </Transition>
             </div>
@@ -166,6 +166,9 @@
             :confirm="confirmModeSwitch"
             content="点击则视为结束AI撰写模式，确认是否切换？"
         />
+
+        <!-- ai诊断  -->
+        <ResumeAiDiagnosis ref="aiDiagnosisRef" @submit="getDiagnosisRes"/>
     </div>
 </template>
 
@@ -201,6 +204,8 @@ import {QuestionBean} from "@/api/ai/dto/bean/QuestionBean.ts";
 import {StreamItem} from "@/views/resume/components/ResumePreview.vue";
 import PromptDialog from '@/components/promptDialog/index.vue'
 import {message} from "@/utiles/Message.ts";
+import ResumeAiDiagnosis from "@/views/resume/components/ResumeAiDiagnosis.vue";
+import {UserInfo} from "@/utiles/userInfo.ts";
 
 const props = defineProps<{
     resumeId: string;
@@ -217,6 +222,7 @@ const resumeData = ref<any>({modules: []});
 const previewRef = useCompRef(ResumePreview);
 const resumeChatRef = useCompRef(ResumeChat)
 const promptDialogRef = useCompRef(PromptDialog)
+const aiDiagnosisRef = useCompRef(ResumeAiDiagnosis)
 // 左侧简历的loading状态
 const isGenerating = ref(true);
 // 重命名弹框 visible
@@ -311,6 +317,53 @@ const handleWriteStream = async (items: StreamItem[], speed?: number) => {
     await previewRef.value?.streamWrite(items, speed);
     isShowToggleBtn.value = true
 }
+
+/**
+ * 检查模板是否有变化
+ */
+const checkChanges = () => {
+    if (!UserInfo.info.resumeMap[props.resumeId]) return true
+
+    return UserInfo.info.resumeMap[props.resumeId].template !== JSON.stringify(resumeData.value.modules)
+}
+
+const handleDiagnosis = () => {
+    const isChanged = checkChanges();
+    if (currentMode.value === 'manual') {
+        // 人工模式，检查是否有变化
+        if (isChanged) {
+            aiDiagnosisRef.value?.open(props.resumeId)
+        } else {
+            message.warning(Message, '简历未变更，无需诊断！')
+        }
+    } else {
+        // ai模式
+        if (resumeChatRef.value?.isWorking) return message.warning(Message, 'Ai正在工作，请稍后再试！')
+        if (isChanged) {
+            resumeChatRef.value?.diagnoseResume()
+        } else {
+            message.warning(Message, '简历未变更，无需诊断！')
+        }
+    }
+}
+
+// 手动诊断完成后，更新并缓存分数和问题
+const getDiagnosisRes = (res: string) => {
+    sendDiagnose(res)
+    updateCache(res)
+}
+
+/**
+ * 更新缓存
+ * @param trick 诊断接口返回值
+ */
+const updateCache = (trick: string) => {
+    UserInfo.info.resumeMap[props.resumeId] = {
+        trick,
+        template: JSON.stringify(resumeData.value.modules)
+    }
+}
+
 
 /**
  * 结束AI撰写，
@@ -514,14 +567,17 @@ const toggleMode = debounce(() => {
     } else {
         currentMode.value = 'ai';
         showScoreAndMode.value = true
-        // nextTick(() => {
-        //     resumeChatRef.value?.diagnoseResume()
-        // })
     }
 }, 300);
 
 const listFinish = () => {
-    resumeChatRef.value?.diagnoseResume()
+    // 对比简历模板是否有变化
+    const isChanged = checkChanges()
+    if (isChanged) {
+        resumeChatRef.value?.diagnoseResume()
+    } else {
+        resumeChatRef.value?.sendLastDiagnose()
+    }
 }
 
 // 第一步传递的模板数据
