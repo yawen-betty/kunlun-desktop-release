@@ -16,7 +16,9 @@ const currentTab = ref<string>('basic'); // 默认激活"基础设置"
 
 // 异步组件映射
 const componentMap = {
+    // 基础设置
     basic: defineAsyncComponent(() => import('./components/basic/PersonalInfoBasic.vue')),
+    // 我的简历
     resume: defineAsyncComponent(() => import('./components/resume/PersonalInfoResume.vue'))
 };
 

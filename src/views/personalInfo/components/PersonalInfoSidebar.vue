@@ -30,10 +30,12 @@
 
 <script setup lang="ts">
 import SvgIcon from '@/components/svgIcon/index.vue';
-import {ref} from 'vue';
+import {ref, onMounted, computed, onActivated} from 'vue';
 import {Button, Icon, Modal} from 'view-ui-plus';
 import {AuthService} from '@/service/AuthService.ts';
 import {UserInfo} from '@/utiles/userInfo.ts';
+import {GetHelpCenterStatusInDto} from '@/api/admin/dto/GetHelpCenterStatus';
+import {AdminService} from '@/service/AdminService';
 
 interface Props {
     modelValue: string;
@@ -46,27 +48,46 @@ interface Emits {
 defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-// 退出登录弹窗
-const logoutState = ref<boolean>(false);
-
+const logoutState = ref(false);
+const showHelpCenter = ref(false);
+const adminService = AdminService.getInstance();
 const authService = new AuthService();
 
-const menuItems = [
+const allMenuItems = [
     {name: 'personal', label: '个人信息'},
     {name: 'model', label: '模型账号'},
     {name: 'cache', label: '清理缓存'},
     {name: 'version', label: '版本更新'},
     {name: 'feedback', label: '问题反馈'},
-    {name: 'help', label: '帮助中心'},
+    {name: 'help', label: '帮助中心', visible: () => showHelpCenter.value},
     {name: 'about', label: '关于我们'},
     {name: 'settings', label: '通用设置'}
 ];
 
+const menuItems = computed(() => allMenuItems.filter((item) => !item.visible || item.visible()));
+
+/**
+ * 组件挂载时获取帮助中心配置，根据 status 字段决定是否显示帮助中心菜单项
+ * status: '0' 启用, '1' 停用
+ */
+onMounted(async () => {
+    const res = await adminService.getHelpCenterStatus(new GetHelpCenterStatusInDto());
+    if (res.code === 200 && res.data) {
+        showHelpCenter.value = res.data.status === '0';
+    }
+});
+
+/**
+ * 处理菜单项选择，触发父组件更新
+ * @param name - 菜单项名称
+ */
 const handleSelect = (name: string) => {
     emit('update:modelValue', name);
 };
 
-// 退出登录
+/**
+ * 退出登录，清除用户信息并跳转到登录页
+ */
 const handleSubmitLogout = () => {
     authService.logout().then(() => {
         UserInfo.logout();
