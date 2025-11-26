@@ -1,13 +1,15 @@
 <template>
     <div class="added-services">
         <div class="services-grid">
-            <Card v-for="service in services" :key="service.id" class="service-card" :bordered="false">
+            <Card v-for="service in serviceList" :key="service.id" class="service-card" :bordered="false">
                 <div class="service-content">
-                    <h2 class="service-title">{{ service.title }}</h2>
-                    <div class="service-image"></div>
-                    <p class="service-description">{{ service.description }}</p>
-                    <div class="service-price">{{ service.price }}</div>
-                    <Button type="primary" class="consult-btn" @click="showModal = true">预约咨询</Button>
+                    <h2 class="service-title">{{ service.name }}</h2>
+                    <div class="service-image">
+                        <Image :src="`${Config.baseUrl}${service.image}`" alt="服务图片" fit="contain" />
+                    </div>
+                    <p class="service-description">{{ service.instructions }}</p>
+                    <div class="service-price">{{ service.price || '' }}</div>
+                    <Button type="primary" class="consult-btn" @click="handleConsultClick(service.id)">预约咨询</Button>
                 </div>
             </Card>
         </div>
@@ -16,55 +18,40 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import {Card, Button} from 'view-ui-plus';
 import BookingSuccessModal from './components/BookingSuccessModal.vue';
+import {AdminService} from '@/service/AdminService.ts';
+import {QueryValueAddedServiceListOutDto} from '@/api/admin/dto/QueryValueAddedServiceList';
+import {Config} from '@/Config.ts';
 
-interface ServiceItem {
-    id: number;
-    title: string;
-    description: string;
-    price: string;
-}
+const serviceList = ref<QueryValueAddedServiceListOutDto>(new QueryValueAddedServiceListOutDto());
+const adminService = new AdminService();
+const queryValueAddedServiceList = () => {
+    adminService.queryValueAddedServiceList({}).then((res) => {
+        if (res.code === 200) {
+            serviceList.value = res.data || [];
+        }
+    });
+};
+
+const handleConsultClick = (serviceId: string) => {
+    adminService
+        .getMakeAdvice({
+            uuid: serviceId
+        })
+        .then((res) => {
+            if (res.code === 200) {
+                console.log('%c 🛐: handleConsultClick -> res ', 'font-size:16px;background-color:#5cf015;color:black;', res);
+                showModal.value = true;
+            }
+        });
+};
+onMounted(() => {
+    queryValueAddedServiceList();
+});
 
 const showModal = ref(false);
-
-const services = ref<ServiceItem[]>([
-    {
-        id: 1,
-        title: '增值服务一',
-        description:
-            '服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明\n\n服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明',
-        price: '¥ 999起'
-    },
-    {
-        id: 2,
-        title: '增值服务二',
-        description:
-            '一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二',
-        price: '¥ 999起'
-    },
-    {
-        id: 3,
-        title: '增值服务三',
-        description: '服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明',
-        price: '¥ 999起'
-    },
-    {
-        id: 4,
-        title: '增值服务四',
-        description:
-            '服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明\n\n服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明',
-        price: '¥ 999起'
-    },
-    {
-        id: 5,
-        title: '增值服务四',
-        description:
-            '服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明\n\n服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明服务说明',
-        price: '¥ 999起'
-    }
-]);
 </script>
 
 <style lang="scss" scoped>
@@ -123,6 +110,11 @@ const services = ref<ServiceItem[]>([
     background-color: #ffe7e7;
     margin: vh(16) 0 vh(54);
     flex-shrink: 0;
+    .ivu-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 }
 
 .service-description {
@@ -150,6 +142,7 @@ const services = ref<ServiceItem[]>([
     color: $font-dark;
     text-align: center;
     margin: 0 0 vh(60);
+    min-height: vh(20);
 }
 
 .consult-btn {
