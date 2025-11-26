@@ -570,6 +570,9 @@ const toggleMode = debounce(() => {
     }
 }, 300);
 
+/**
+ * 人工切换ai的回调
+ */
 const listFinish = () => {
     // 对比简历模板是否有变化
     const isChanged = checkChanges()
