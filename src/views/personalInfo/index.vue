@@ -12,7 +12,7 @@
 import {ref, computed, defineAsyncComponent} from 'vue';
 import PersonalInfoTabs from './components/PersonalInfoTabs.vue';
 
-const currentTab = ref<string>('basic'); // 默认激活"基础设置"
+const currentTab = ref<string>('resume'); // 默认激活"我的简历"
 
 // 异步组件映射
 const componentMap = {
