@@ -698,7 +698,17 @@
 import SvgIcon from '@/components/svgIcon/index.vue';
 import ResumeModuleManager, {ItemType} from './ResumeModuleManager.vue';
 import ResumeAiOptimize from './ResumeAiOptimize.vue';
-import {computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch, withDefaults, onBeforeMount} from 'vue';
+import {
+    computed,
+    onActivated,
+    onBeforeUnmount,
+    onDeactivated,
+    onMounted,
+    ref,
+    watch,
+    withDefaults,
+    onBeforeMount
+} from 'vue';
 import {useRouter} from 'vue-router';
 import {Input, Message} from 'view-ui-plus';
 import {FileService} from '@/service/FileService';
@@ -850,6 +860,9 @@ const handleModulesApply = async (modules: any[]) => {
         ];
 
         await resumeService.updateModules(params);
+        isEditingBasicInfo.value = false;
+        editingEntryUuid.value = '';
+        editingModuleUuid.value = '';
         message.success(Message, '模块更新成功');
         emit('update-modules');
     } catch (error) {
@@ -923,6 +936,9 @@ const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
         });
 
         await resumeService.updateModuleEntries(params);
+        isEditingBasicInfo.value = false;
+        editingEntryUuid.value = '';
+        editingModuleUuid.value = '';
         message.success(Message, '条目更新成功');
         emit('update-modules');
     } catch (error) {
@@ -966,6 +982,9 @@ const handleFieldsApply = async (fields: any[]) => {
             })
         ];
         await resumeService.updateModuleFields(params);
+        isEditingBasicInfo.value = false;
+        editingEntryUuid.value = '';
+        editingModuleUuid.value = '';
         message.success(Message, '字段更新成功');
         emit('update-modules');
     } catch (error) {
