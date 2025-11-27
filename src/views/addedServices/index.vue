@@ -107,7 +107,7 @@ const showModal = ref(false);
 .service-image {
     width: vw(404);
     height: vh(220);
-    // background-color: #ffe7e7;
+    background-color: #ffe7e7;
     margin: vh(16) 0 vh(54);
     flex-shrink: 0;
     .ivu-image {
