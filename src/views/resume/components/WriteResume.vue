@@ -28,7 +28,7 @@
                             <template #content>
                                 <ul class="problem-list">
                                     <li v-for="(problem, index) in scoreProblems" :key="index">
-                                        <span class="problem-text">{{ problem }}</span>
+                                        <span class="problem-text">{{ problem.problem }}</span>
                                     </li>
                                 </ul>
                             </template>
@@ -59,7 +59,7 @@
                             <template #content>
                                 <ul class="problem-list">
                                     <li v-for="(problem, index) in scoreProblems" :key="index">
-                                        <span class="problem-text">{{ problem }}</span>
+                                        <span class="problem-text">{{ problem.problem }}</span>
                                     </li>
                                 </ul>
                             </template>
@@ -74,7 +74,7 @@
                             <span class="success-text">保存成功</span>
                         </div>
                         <Button v-if="isShowToggleBtn" class="mode-btn" type="primary" @click="handleDiagnosis">
-                            <SvgIcon class="mr-5" color="#FFFFFF" name="icon-qiehuan" size="10"/>
+                            <SvgIcon class="mr-5" color="#FFFFFF" name="icon-zhenduan" size="10"/>
                             <span>简历诊断</span>
                         </Button>
                         <Button v-if="isShowToggleBtn" class="mode-btn" type="primary" @click="toggleMode">
@@ -235,7 +235,7 @@ const currentMode = ref<'ai' | 'manual'>(props.initialMode || 'ai');
 // 简历分数
 const resumeScore = ref<number>();
 // 待优化问题列表
-const scoreProblems = ref<string[]>([]);
+const scoreProblems = ref<QuestionBean[]>([]);
 const resumeService = new ResumeService();
 // 保存成功状态
 const showSaveSuccess = ref(false);
@@ -314,6 +314,7 @@ onUnmounted(() => {
 });
 
 const handleWriteStream = async (items: StreamItem[], speed?: number) => {
+    console.log(items, speed, 'speed')
     await previewRef.value?.streamWrite(items, speed);
     isShowToggleBtn.value = true
 }
@@ -392,7 +393,7 @@ const sendDiagnose = (params: string) => {
         }, 2000)
         showScoreAndMode.value = true
         resumeScore.value = paramsObj.score;
-        scoreProblems.value = paramsObj.issues.map(item => item.problem)
+        scoreProblems.value = [...paramsObj.issues]
     } catch (e) {
         console.log('简历分数更新失败')
     }
@@ -579,7 +580,7 @@ const listFinish = () => {
     if (isChanged) {
         resumeChatRef.value?.diagnoseResume()
     } else {
-        resumeChatRef.value?.sendLastDiagnose()
+        resumeChatRef.value?.sendLastDiagnose(scoreProblems.value)
     }
 }
 
@@ -618,6 +619,7 @@ const handleUpdateModules = async () => {
  * 切换新的简历ID进入并且当前组件存在不会走 onMounted 时（keepAlive）
  */
 const reset = () => {
+    console.log('重新获取', props.resumeId)
     fetchResumeDetail(props.resumeId);
 }
 

@@ -6,8 +6,7 @@ export class JobPaths {
    */
   static createJobTask: Path = {
     url: '/job-tasks',
-    method: 'POST',
-    prefix: 'job'
+    method: 'POST'
   }
 
   /**
@@ -15,8 +14,7 @@ export class JobPaths {
    */
   static getJobTask: Path = {
     url: '/job-tasks',
-    method: 'GET',
-    prefix: 'job'
+    method: 'GET'
   }
 
   /**
@@ -24,8 +22,7 @@ export class JobPaths {
    */
   static deleteJobTask: Path = {
     url: '/job-tasks/{uuid}',
-    method: 'DELETE',
-    prefix: 'job'
+    method: 'DELETE'
   }
 
   /**
@@ -33,8 +30,7 @@ export class JobPaths {
    */
   static activateJobTask: Path = {
     url: '/job-tasks/activation',
-    method: 'PUT',
-    prefix: 'job'
+    method: 'PUT'
   }
 
   /**
@@ -42,8 +38,7 @@ export class JobPaths {
    */
   static queryMatchedPositions: Path = {
     url: '/matched-positions/query',
-    method: 'POST',
-    prefix: 'job'
+    method: 'POST'
   }
 
   /**
@@ -51,8 +46,7 @@ export class JobPaths {
    */
   static markPositionInterest: Path = {
     url: '/matched-positions/{uuid}/interest',
-    method: 'PUT',
-    prefix: 'job'
+    method: 'PUT'
   }
 
   /**
@@ -60,17 +54,15 @@ export class JobPaths {
    */
   static switchJobTask: Path = {
     url: '/job-tasks/{uuid}/switch',
-    method: 'PUT',
-    prefix: 'job'
+    method: 'PUT'
   }
 
   /**
    * 获取除当前执行任务外的所有求职任务
    */
   static getOtherJobTasks: Path = {
-    url: '/job-tasks/others',
-    method: 'GET',
-    prefix: 'job'
+    url: '/job-tasks/{uuid}/others',
+    method: 'GET'
   }
 
   /**
@@ -78,7 +70,6 @@ export class JobPaths {
    */
   static crawlPositions: Path = {
     url: '/job-tasks/positions/crawl',
-    method: 'POST',
-    prefix: 'job'
+    method: 'POST'
   }
 }

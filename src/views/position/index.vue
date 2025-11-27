@@ -1,5 +1,11 @@
+<script lang="ts">
+export default {
+    name: 'Position'
+}
+</script>
+
 <script lang="ts" setup>
-import {ref, onMounted} from 'vue'
+import {ref, onMounted, onActivated} from 'vue'
 import CreateTask from "@/views/position/components/CreateTask.vue";
 import PositionPanel from "@/views/position/components/PositionPanel.vue";
 import {JobService} from "@/service/JobService";
@@ -18,15 +24,23 @@ const checkDefaultTask = async () => {
     }
 }
 
-onMounted(() => {
+const handleTaskCreated = () => {
+    hasTask.value = true
+}
+
+const handleAllTasksDeleted = () => {
+    hasTask.value = false
+}
+
+onActivated(() => {
     checkDefaultTask()
 })
 </script>
 
 <template>
     <div class="position-cont">
-        <CreateTask v-if="!hasTask"/>
-        <PositionPanel v-else/>
+        <CreateTask v-if="!hasTask" @task-created="handleTaskCreated"/>
+        <PositionPanel v-else @all-tasks-deleted="handleAllTasksDeleted"/>
     </div>
 </template>
 

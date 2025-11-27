@@ -129,7 +129,7 @@ export enum ItemType {
 </script>
 
 <script lang="ts" setup>
-import {ref, nextTick, computed, watch} from 'vue';
+import {ref, nextTick, computed, watch, onMounted, onBeforeUnmount} from 'vue';
 import {Modal, Message} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import Sortable from 'sortablejs';
@@ -428,6 +428,24 @@ watch(() => props.availableModulesList, (newVal) => {
         customAvailableModules.value = [...newVal];
     }
 }, {deep: true});
+
+const handleGlobalClose = () => {
+    if (visible.value) {
+        handleCancel();
+    }
+};
+
+onMounted(() => {
+    window.addEventListener('close-all-dropdowns', handleGlobalClose);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('close-all-dropdowns', handleGlobalClose);
+});
+
+defineExpose({
+    handleCancel
+});
 
 
 </script>

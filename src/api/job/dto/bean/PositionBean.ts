@@ -60,9 +60,24 @@ export class PositionBean {
     companyName: string = '';
     
     /**
+     * 公司简介
+     */
+    introduce: string = '';
+    
+    /**
+     * 公司地址
+     */
+    companyAddress: string[] = [];
+    
+    /**
      * 公司行业
      */
     industry: string = '';
+    
+    /**
+     * 公司标签
+     */
+    companyLabel: string[] = [];
     
     /**
      * 公司规模

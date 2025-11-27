@@ -1,178 +1,106 @@
 <script lang="ts" setup>
-import {reactive, ref} from 'vue';
+import {reactive, ref, onMounted, computed, nextTick} from 'vue';
 import PositionDetail from "@/views/position/components/PositionDetail.vue";
+import {useCompRef} from "@/hooks/useComponent";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import Pagination from "@/components/pagination/index.vue";
 import bossIcon from '@/assets/images/boss.png'
 import zhilianIcon from '@/assets/images/zhilian.png'
 import guopinIcon from '@/assets/images/guopin.png'
 import CreateTaskModal from "@/views/position/components/CreateTaskModal.vue";
-import {useCompRef} from "@/hooks/useComponent";
 import PromptDialog from "@/components/promptDialog/index.vue";
-import {Modal} from "view-ui-plus";
+import {Message, Modal} from "view-ui-plus";
+import {JobService} from "@/service/JobService";
+import {GetJobTaskInDto, GetJobTaskOutDto} from "@/api/job/dto/GetJobTask";
+import {GetOtherJobTasksInDto, GetOtherJobTasksOutDto} from "@/api/job/dto/GetOtherJobTasks";
+import {ActivateJobTaskInDto} from "@/api/job/dto/ActivateJobTask";
+import {PositionBean} from "@/api/job/dto/bean/PositionBean";
+import {channelList, workExperienceList, enumEcho} from "@/enums/enumDict.ts";
+import {QueryMatchedPositionsInDto} from "@/api/job/dto/QueryMatchedPositions.ts";
+import {message} from "@/utiles/Message.ts";
 
 // 创建任务弹框实例
 const createTaskModalRef = useCompRef(CreateTaskModal)
+// 职位详情组件实例
+const positionDetailRef = useCompRef(PositionDetail)
 // 二次确认弹框
 const promptDialogRef = useCompRef(PromptDialog)
-const searchData = reactive({
-    channel: '0',
-    sort: '1',
-    type: undefined
+const jobService = new JobService()
+const searchData = reactive<QueryMatchedPositionsInDto>({
+    ...new QueryMatchedPositionsInDto(),
+    sortBy: 'recommendedAt',
+    sourceChannel: -1
 })
-const channelList = [
-    {
-        label: '全部渠道',
-        value: '0'
-    },
-    {
-        label: 'BOSS直聘',
-        value: '1'
-    },
-    {
-        label: '智联招聘',
-        value: '2'
-    },
-    {
-        label: '国聘网',
-        value: '3'
-    },
-]
 
+const emit = defineEmits<{
+    'all-tasks-deleted': []
+}>()
+
+const allList = [
+    {
+        value: -1,
+        key: '全部渠道'
+    },
+    ...channelList
+]
 const sortList = [
     {
         label: '按推荐时间排序',
-        value: '1'
+        value: 'recommendedAt'
     },
     {
         label: '按匹配度排序',
-        value: '2'
+        value: 'matchScore'
     },
 ]
 
-const taskStatus = ref(true)
-const selectedId = ref(1)
-const currentTaskId = ref<string>('1')
+const selectedId = ref('')
+
+const handleSelectPosition = (id: string) => {
+    selectedId.value = id
+    if (positionDetailRef.value) {
+        positionDetailRef.value.activeTab = 'analysis'
+    }
+}
 const showTaskDropdown = ref(false)
-const emptyModalVisible = ref(true)
+const emptyModalVisible = ref(false)
+const currentTask = ref<GetJobTaskOutDto>()
 
-const taskList = ref([
-    {id: '1', name: 'Java开发工程师', location: '北京', experience: '3-5年'},
-    {id: '2', name: '产品经理', location: '北京', experience: '3-5年'},
-    {id: '3', name: 'Java开发工程师', location: '北京', experience: '3-5年'},
-    {id: '4', name: 'Java开发工程师', location: '北京', experience: '3-5年'},
-])
+const currentTaskId = computed(() => currentTask.value?.uuid || '')
+const taskStatus = computed(() => currentTask.value?.status === 0)
 
-const positionList = ref([
-    {
-        id: 1,
-        name: 'Java开发工程师',
-        match: 95,
-        salary: '15-25K',
-        tags: ['五险一金', '带薪年假', '节日福利'],
-        location: '大连市·甘井子区',
-        company: '北京高徒云集教育科技有限公司',
-        publishTime: '2025.10.20 12:20',
-        channel: 'BOSS直聘',
-    },
-    {
-        id: 2,
-        name: 'Java高级开发工程师',
-        match: 88,
-        salary: '20-35K',
-        tags: ['五险一金', '股票期权', '弹性工作'],
-        location: '上海市·浦东新区',
-        company: '上海某某互联网公司',
-        publishTime: '2025.10.19 15:30',
-        channel: '智联招聘',
-    },
-    {
-        id: 3,
-        name: 'Python后端开发工程师',
-        match: 92,
-        salary: '18-30K',
-        tags: ['本科', '3-5年', '弹性工作'],
-        location: '深圳市·南山区',
-        company: '深圳腾讯计算机系统有限公司',
-        publishTime: '2025.10.20 10:15',
-        channel: 'BOSS直聘',
-    },
-    {
-        id: 4,
-        name: '前端开发工程师',
-        match: 85,
-        salary: '12-20K',
-        tags: ['五险一金', '周末双休', '年终奖'],
-        location: '杭州市·西湖区',
-        company: '杭州阿里巴巴网络技术有限公司',
-        publishTime: '2025.10.19 18:45',
-        channel: '智联招聘',
-    },
-    {
-        id: 5,
-        name: 'Go语言开发工程师',
-        match: 90,
-        salary: '25-40K',
-        tags: ['股票期权', '弹性工作', '带薪年假'],
-        location: '北京市·朝阳区',
-        company: '北京字节跳动科技有限公司',
-        publishTime: '2025.10.20 09:30',
-        channel: '国聘网',
-    },
-    {
-        id: 6,
-        name: 'Android开发工程师',
-        match: 83,
-        salary: '16-28K',
-        tags: ['五险一金', '补充医疗', '健身房'],
-        location: '成都市·高新区',
-        company: '成都某科技有限公司',
-        publishTime: '2025.10.18 16:20',
-        channel: 'BOSS直聘',
-    },
-    {
-        id: 7,
-        name: 'iOS开发工程师',
-        match: 87,
-        salary: '18-32K',
-        tags: ['本科', '5-10年', '项目奖金'],
-        location: '广州市·天河区',
-        company: '广州网易计算机系统有限公司',
-        publishTime: '2025.10.19 14:10',
-        channel: '智联招聘',
-    },
-    {
-        id: 8,
-        name: '数据库管理员DBA',
-        match: 78,
-        salary: '20-35K',
-        tags: ['五险一金', '年度旅游', '节日福利'],
-        location: '武汉市·光谷区',
-        company: '武汉某软件有限公司',
-        publishTime: '2025.10.17 11:30',
-        channel: '国聘网',
-    },
-])
+const taskList = ref<GetOtherJobTasksOutDto[]>([])
+
+const positionList = ref<PositionBean[]>([])
 
 const pagination = reactive({
     current: 1,
-    pageSize: 10,
-    total: 80,
+    pageSize: 20,
+    total: 0,
 })
 // 渠道登录弹窗
 const showChannelModal = ref(false)
 // 要删除的任务id
 const deleteTaskId = ref<string>()
 
-const handlePageChange = (page: number) => {
-    pagination.current = page
+const resetFilters = () => {
+    pagination.current = 1
+    pagination.pageSize = 20
+    searchData.isInterested = undefined
+    searchData.sourceChannel = -1
+    searchData.sortBy = 'recommendedAt'
 }
 
-const handlePageSizeChange = (pageSize: number) => {
+const handlePageChange = async (page: number) => {
+    pagination.current = page
+    await loadPositions()
+}
+
+const handlePageSizeChange = async (pageSize: number) => {
     pagination.pageSize = pageSize
     pagination.current = 1
+    await loadPositions()
 }
-
 
 const channels = [
     {
@@ -211,13 +139,43 @@ const handleTaskSwitch = () => {
     showTaskDropdown.value = !showTaskDropdown.value
 }
 
-const handleTaskDblClick = () => {
-    showTaskDropdown.value = false
+const handleToggleTaskStatus = async () => {
+    if (!currentTask.value?.uuid) return
+    try {
+        const params = new ActivateJobTaskInDto()
+        params.uuid = currentTask.value.uuid
+        params.status = taskStatus.value ? 1 : 0
+        const result = await jobService.activateJobTask(params)
+        if (result.code === 200) {
+            const taskParams = new GetJobTaskInDto()
+            const taskResult = await jobService.getJobTask(taskParams)
+            if (taskResult.code === 200 && taskResult.data) {
+                currentTask.value = taskResult.data
+            }
+        }
+    } catch (error) {
+        console.error('切换任务状态失败:', error)
+    }
 }
 
-const handleSelectTask = (taskId: string) => {
-    currentTaskId.value = taskId
+const handleSelectTask = async (taskId: string) => {
     showTaskDropdown.value = false
+    if (taskId === currentTaskId.value) {
+        return
+    }
+
+    try {
+        const result = await jobService.switchJobTask(taskId)
+        if (result.code === 200) {
+            resetFilters()
+            await loadCurrentTask()
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            await loadOtherTasks()
+        }
+    } catch (error) {
+        console.error('切换任务失败:', error)
+    }
+
 }
 
 const handleDeleteClick = (taskId: string) => {
@@ -225,11 +183,87 @@ const handleDeleteClick = (taskId: string) => {
     promptDialogRef.value?.open()
 }
 
-const handleDeleteTask = (id?: string) => {
-    if (id) {
-        taskList.value = taskList.value.filter(t => t.id !== id)
+const handleDeleteTask = async (uuid?: string) => {
+    if (!uuid) return
+    try {
+        const result = await jobService.deleteJobTask(uuid)
+        if (result.code === 200) {
+            const isCurrentTask = uuid === currentTaskId.value
+            taskList.value = taskList.value.filter(t => t.uuid !== uuid)
+            message.success(Message, '删除成功！')
+
+            // 如果列表为空，通知父组件切换到CreateTask
+            if (taskList.value.length === 0) {
+                emit('all-tasks-deleted')
+            } else if (isCurrentTask) {
+                // 如果删除的是当前任务但还有其他任务，切换到最近创建的任务（列表最后一个）
+                const nextTask = taskList.value[taskList.value.length - 1]
+                if (nextTask) {
+                    await jobService.switchJobTask(nextTask.uuid)
+                    resetFilters()
+                    await loadCurrentTask()
+                    await loadOtherTasks()
+                }
+            }
+        }
+    } catch (error) {
+        console.error('删除任务失败:', error)
     }
 }
+
+const loadCurrentTask = async () => {
+    try {
+        const params = new GetJobTaskInDto()
+        const result = await jobService.getJobTask(params)
+        if (result.code === 200 && result.data) {
+            currentTask.value = result.data
+            searchData.taskUuid = result.data.uuid
+            await loadPositions()
+        }
+    } catch (error) {
+        console.error('获取任务失败:', error)
+    }
+}
+
+const loadPositions = async () => {
+    try {
+        const params = {...searchData}
+        if (params.sourceChannel === -1) {
+            delete params.sourceChannel
+        }
+        const result = await jobService.queryMatchedPositions(params)
+        if (result.code === 200 && result.data) {
+            positionList.value = result.data.list
+            pagination.total = result.data.total
+        }
+    } catch (error) {
+        console.error('获取职位列表失败:', error)
+    }
+}
+
+const loadOtherTasks = async () => {
+    try {
+        if (!currentTask.value?.uuid) return
+        const result = await jobService.getOtherJobTasks(currentTask.value.uuid)
+        if (result.code === 200 && result.data) {
+            taskList.value = result.data
+            taskList.value.unshift(currentTask.value)
+        }
+    } catch (error) {
+        console.error('获取其他任务失败:', error)
+    }
+}
+
+const handleTaskUpdated = async () => {
+    resetFilters()
+    await loadCurrentTask()
+    await loadOtherTasks()
+}
+
+onMounted(async () => {
+    await loadCurrentTask()
+    await loadOtherTasks()
+})
 </script>
 
 <template>
@@ -241,15 +275,15 @@ const handleDeleteTask = (id?: string) => {
                     <span>精选职位</span>
                 </div>
                 <div class="title-right">
-                    <CheckboxGroup v-model="searchData.type" class="filter-checkbox">
-                        <Checkbox label="1">只看感兴趣</Checkbox>
-                    </CheckboxGroup>
-                    <Select v-model="searchData.channel" class="filter-select" placeholder="全部渠道"
-                            placement="bottom-end">
-                        <Option v-for="item in channelList" :key="item.value" :label="item.label" :value="item.value"/>
+                    <Checkbox v-model="searchData.isInterested" class="filter-checkbox" @on-change="loadPositions">
+                        只看感兴趣
+                    </Checkbox>
+                    <Select v-model="searchData.sourceChannel" class="filter-select" placeholder="全部渠道"
+                            placement="bottom-end" @on-change="loadPositions">
+                        <Option v-for="item in allList" :key="item.value" :label="item.key" :value="item.value"/>
                     </Select>
-                    <Select v-model="searchData.sort" class="filter-select" placeholder="按推荐时间排序"
-                            placement="bottom-end">
+                    <Select v-model="searchData.sortBy" class="filter-select" placeholder="按推荐时间排序"
+                            placement="bottom-end" @on-change="loadPositions">
                         <Option v-for="item in sortList" :key="item.value" :label="item.label" :value="item.value"/>
                     </Select>
                 </div>
@@ -258,8 +292,8 @@ const handleDeleteTask = (id?: string) => {
             <div class="task-card">
                 <div class="task-header align-between">
                     <div class="task-left">
-                        <span class="task-title">Java开发工程师</span>
-                        <div :class="{ 'is-active': taskStatus }" class="task-switch" @click="taskStatus = !taskStatus">
+                        <span class="task-title">{{ currentTask?.jobTitle }}</span>
+                        <div :class="{ 'is-active': taskStatus }" class="task-switch" @click="handleToggleTaskStatus">
                             <div class="switch-dot"></div>
                             <span class="switch-text">{{ taskStatus ? '任务进行中' : '任务已关闭' }}</span>
                         </div>
@@ -284,17 +318,19 @@ const handleDeleteTask = (id?: string) => {
                         <template #list>
                             <DropdownMenu class="task-dropdown-menu">
                                 <div class="task-list">
-                                    <div v-for="task in taskList" :key="task.id"
-                                         :class="{ 'is-active': task.id === currentTaskId }"
+                                    <div v-for="task in taskList" :key="task.uuid"
+                                         :class="{ 'is-active': task.uuid === currentTaskId }"
                                          class="task-item"
-                                         @click="handleSelectTask(task.id)">
-                                        <div v-if="task.id === currentTaskId" class="task-dot"></div>
+                                         @click="handleSelectTask(task.uuid)">
+                                        <div v-if="task.uuid === currentTaskId" class="task-dot"></div>
                                         <div class="task-info">
-                                            <div class="task-name">{{ task.name }}</div>
-                                            <div class="task-meta">{{ task.location }} ｜ {{ task.experience }}</div>
+                                            <div class="task-name">{{ task.jobTitle }}</div>
+                                            <div class="task-meta">{{ task.cityName }} ｜
+                                                {{ enumEcho(task.experience, workExperienceList, 'value', 'key') }}
+                                            </div>
                                         </div>
                                         <SvgIcon class="delete-icon" name="icon-shanchu-xian" size="12"
-                                                 @click.stop="handleDeleteClick(task.id)"/>
+                                                 @click.stop="handleDeleteClick(task.uuid)"/>
                                     </div>
                                 </div>
                             </DropdownMenu>
@@ -312,30 +348,30 @@ const handleDeleteTask = (id?: string) => {
             </div>
 
             <div v-if="positionList.length > 0" class="position-list">
-                <div v-for="(item) in positionList" :key="item.id"
-                     :class="{ 'is-active': selectedId === item.id }" class="position-item"
-                     @click="selectedId = item.id">
+                <div v-for="(item) in positionList" :key="item.uuid"
+                     :class="{ 'is-active': selectedId === item.uuid }" class="position-item"
+                     @click="handleSelectPosition(item.uuid)">
                     <div class="item-top">
                         <div class="top-left">
-                            <span class="item-title">{{ item.name }}</span>
+                            <span class="item-title">{{ item.title }}</span>
                             <div class="match-badge">
                                 <SvgIcon color="#FC8919" name="icon-pipei" size="14"/>
-                                <span>{{ item.match }}%</span>
+                                <span>{{ item.matchScore }}%</span>
                             </div>
                         </div>
                         <span class="item-salary">{{ item.salary }}</span>
                     </div>
                     <div class="item-middle">
                         <div class="item-tags">
-                            <span v-for="(tag, idx) in item.tags" :key="idx" class="tag-item">{{ tag }}</span>
+                            <span v-for="(tag, idx) in item.labels" :key="idx" class="tag-item">{{ tag }}</span>
                         </div>
-                        <span class="item-time">{{ item.publishTime }} <span class="separator">｜</span>{{
-                                item.channel
+                        <span class="item-time">{{ item.recommendedAt }} <span class="separator">｜</span>{{
+                                item.sourceChannel
                             }}</span>
                     </div>
                     <div class="item-bottom">
-                        <span class="company-info">{{ item.location }} <span class="separator">｜</span>{{
-                                item.company
+                        <span class="company-info">{{ item.areaName }} <span class="separator">｜</span>{{
+                                item.companyName
                             }}</span>
                         <div class="item-action pointer">
                             <SvgIcon color="#9499A4" name="icon-send" size="14"/>
@@ -361,7 +397,7 @@ const handleDeleteTask = (id?: string) => {
         </div>
 
         <div class="panel-right">
-            <PositionDetail/>
+            <PositionDetail ref="positionDetailRef"/>
         </div>
 
         <Modal v-model="showChannelModal" :closable="false" :footer-hide="true" :mask-closable="false"
@@ -414,7 +450,7 @@ const handleDeleteTask = (id?: string) => {
         </Modal>
 
         <!-- 创建新任务 -->
-        <CreateTaskModal ref="createTaskModalRef"/>
+        <CreateTaskModal ref="createTaskModalRef" @task-updated="handleTaskUpdated" @task-saved="loadOtherTasks"/>
 
         <!-- 删除任务确认弹框 -->
         <PromptDialog
@@ -472,35 +508,29 @@ const handleDeleteTask = (id?: string) => {
 
             :deep(.filter-checkbox) {
                 display: flex;
-                align-items: end;
-                height: vh(32);
+                align-items: center;
+                margin-right: 0;
 
-                .ivu-checkbox-wrapper {
-                    margin-right: 0;
-                    display: flex;
-                    align-items: center;
+                .ivu-checkbox {
+                    width: vw(14) !important;
+                    height: vw(14) !important;
+                    min-width: 12px;
+                    min-height: 12px;
+                }
 
-                    .ivu-checkbox {
-                        width: vw(14) !important;
-                        height: vw(14) !important;
-                        min-width: 12px;
-                        min-height: 12px;
-                    }
+                .ivu-checkbox-inner {
+                    width: 100%;
+                    height: 100%;
+                    min-width: 12px;
+                    min-height: 12px;
+                    border-color: #B0B7C6 !important;
+                    padding: 0;
+                }
 
-                    .ivu-checkbox-inner {
-                        width: 100%;
-                        height: 100%;
-                        min-width: 12px;
-                        min-height: 12px;
-                        border-color: #B0B7C6 !important;
-                        padding: 0;
-                    }
-
-                    .ivu-checkbox-label-text {
-                        font-weight: 600;
-                        font-size: vw(16);
-                        color: $font-middle;
-                    }
+                .ivu-checkbox-label-text {
+                    font-weight: 600;
+                    font-size: vw(16);
+                    color: $font-middle;
                 }
             }
 

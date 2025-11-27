@@ -11,7 +11,6 @@ import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
 import {UserInfo} from "@/utiles/userInfo.ts";
 import {useCompRef} from "@/hooks/useComponent";
-import ResumeAiDiagnosis from "@/views/resume/components/ResumeAiDiagnosis.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -49,8 +48,12 @@ onActivated(() => {
     const routeResumeId = route.query.resumeId as string;
     // 如果id和runningResumeId一致，则不进行任何操作，
     // 如果不一致，则进行人工模式的展示
+    console.log(routeResumeId, 'routeResumeId')
+    console.log(UserInfo.info.runningResumeId, 'UserInfo.info.runningResumeId')
     if (routeResumeId && routeResumeId !== UserInfo.info.runningResumeId) {
         resumeId.value = routeResumeId;
+        console.log(resumeId.value, 'resumeId.value')
+        console.log(showMakePanel.value, 'showMakePanel.value')
         if (showMakePanel.value) {
             showMakePanel.value = false;
             nextTick(() => {
@@ -58,7 +61,9 @@ onActivated(() => {
                 initialMode.value = 'manual';
             })
         } else {
-            writeResumeRef.value?.reset();
+            nextTick(() => {
+                writeResumeRef.value?.reset();
+            })
         }
         UserInfo.info.runningResumeId = resumeId.value
 
@@ -69,7 +74,6 @@ onActivated(() => {
 
 <template>
     <div class="resume-cont">
-        <ResumeAiDiagnosis/>
         <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
         <WriteResume v-else ref="writeResumeRef" :initial-mode="initialMode" :resume-id="resumeId"
                      :resume-name="resumeName" :uploaded-file="uploadedFile" @back-to-make="exit"/>

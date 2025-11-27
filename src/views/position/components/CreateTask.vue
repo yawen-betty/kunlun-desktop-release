@@ -4,6 +4,7 @@ import {computed, onActivated, onDeactivated, onMounted, onUnmounted, reactive, 
 import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload, Select, Option} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {ResumeService} from "@/service/ResumeService";
+import {JobService} from "@/service/JobService";
 import {debounce} from "@/utiles/debounce";
 import {useRouter} from "vue-router";
 import Ellipsis from '@/components/ellipsis/index.vue'
@@ -12,6 +13,8 @@ import {CreateJobTaskInDto} from "@/api/job/dto/CreateJobTask.ts";
 import {GetMyResumeListInDto} from "@/api/resume/dto/GetMyResumeList.ts";
 import {MyResumeBean} from "@/api/resume/dto/bean/MyResumeBean.ts";
 import CustomSelect from '@/components/customSelect/index.vue'
+import {message} from "@/utiles/Message.ts";
+import {workExperienceList} from "@/enums/enumDict.ts";
 
 const router = useRouter();
 // 输入框提示词列表
@@ -36,33 +39,6 @@ const infoList = [
     '筛职位的麻烦留给AI，等offer的期待留给自己'
 ]
 
-const workExperienceList = [
-    {
-        label: '在校/应届生',
-        value: '1'
-    },
-    {
-        label: '1年以下',
-        value: '2'
-    },
-    {
-        label: '1-3年',
-        value: '3'
-    },
-    {
-        label: '3-5年',
-        value: '4'
-    },
-    {
-        label: '5-10年',
-        value: '5'
-    },
-    {
-        label: '10年以上',
-        value: '6'
-    }
-]
-
 const placeholderIdx = ref<number>(0)
 const placeholderTimer = ref<number | null>(null)
 const isComposing = ref(false)
@@ -76,9 +52,10 @@ const formRules = {
 const formData = reactive<CreateJobTaskInDto>(new CreateJobTaskInDto())
 const resumeList = ref<MyResumeBean[]>([])
 const resumeService = new ResumeService()
+const jobService = new JobService()
 
 const emit = defineEmits<{
-    'task-created': [data: { resumeId: string; resumeName: string; uploadedFile: File | null }]
+    'task-created': []
 }>();
 
 const submit = debounce(async () => {
@@ -89,11 +66,19 @@ const submit = debounce(async () => {
     if (!formData.resumeUuid) errors.push('简历')
 
     if (errors.length > 0) {
-        return Message.error(`请完善${errors.join('、') + '！'}`)
+        return message.error(Message, `请完善${errors.join('、') + '！'}`)
     }
 
-    // 表单验证通过，执行提交逻辑
-    console.log('表单数据:', formData)
+    try {
+        formData.publish = true
+        formData.isDefault = true
+        const result = await jobService.createJobTask(formData)
+        if (result.code === 200) {
+            emit('task-created')
+        }
+    } catch (error) {
+        console.error('发布求职任务失败:', error)
+    }
 }, 300)
 
 const startPlaceholderRotation = () => {
@@ -187,7 +172,7 @@ onUnmounted(() => {
                 <FormItem prop="experience">
                     <Select v-model="formData.experience" class="custom-select" clearable
                             placeholder="请选择工作经验">
-                        <Option v-for="item in workExperienceList" :key="item.value" :label="item.label"
+                        <Option v-for="item in workExperienceList" :key="item.value" :label="item.key"
                                 :value="item.value"/>
                     </Select>
                 </FormItem>
@@ -197,7 +182,7 @@ onUnmounted(() => {
                 </FormItem>
             </Form>
             <div class="submit-btn" @click="submit">
-                <SvgIcon class="mr-5" name="icon-bianji" size="10"/>
+                <SvgIcon class="mr-5" name="icon-huojian" size="10"/>
                 立即发布
             </div>
         </div>

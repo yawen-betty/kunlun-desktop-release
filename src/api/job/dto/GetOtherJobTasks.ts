@@ -1,10 +1,6 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 
 export class GetOtherJobTasksInDto extends BaseInDto {
-    /**
-     * 按任务状态筛选 (1: 未激活, 2: 已归档)
-     */
-    status?: number;
 }
 
 export class GetOtherJobTasksOutDto extends BaseOutDto {

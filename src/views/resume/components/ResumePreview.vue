@@ -698,7 +698,8 @@
 import SvgIcon from '@/components/svgIcon/index.vue';
 import ResumeModuleManager, {ItemType} from './ResumeModuleManager.vue';
 import ResumeAiOptimize from './ResumeAiOptimize.vue';
-import {computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch, withDefaults} from 'vue';
+import {computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch, withDefaults, onBeforeMount} from 'vue';
+import {useRouter} from 'vue-router';
 import {Input, Message} from 'view-ui-plus';
 import {FileService} from '@/service/FileService';
 import {ResumeService} from '@/service/ResumeService';
@@ -1309,6 +1310,15 @@ const saveScrollPosition = () => {
     }
 };
 
+const router = useRouter();
+let unwatch: (() => void) | null = null;
+
+onBeforeMount(() => {
+    unwatch = router.beforeEach(() => {
+        window.dispatchEvent(new CustomEvent('close-all-dropdowns'));
+    });
+});
+
 onMounted(async () => {
     allAvailableModules.value = await fetchAvailableModules();
     if (previewCardRef.value) {
@@ -1325,6 +1335,9 @@ onActivated(() => {
 onBeforeUnmount(() => {
     if (previewCardRef.value) {
         previewCardRef.value.removeEventListener('scroll', saveScrollPosition);
+    }
+    if (unwatch) {
+        unwatch();
     }
 });
 

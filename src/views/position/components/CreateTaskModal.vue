@@ -3,6 +3,15 @@ import {Form, FormItem, Input} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import AddressSelect from "@/components/addressSelect/index.vue";
 import {reactive, ref} from "vue";
+import {workExperienceList} from "@/enums/enumDict.ts";
+import {CreateJobTaskInDto} from "@/api/job/dto/CreateJobTask.ts";
+import {MyResumeBean} from "@/api/resume/dto/bean/MyResumeBean.ts";
+import {GetMyResumeListInDto} from "@/api/resume/dto/GetMyResumeList.ts";
+import {ResumeService} from "@/service/ResumeService.ts";
+import {JobService} from "@/service/JobService.ts";
+import CustomSelect from "@/components/customSelect/index.vue";
+import {message} from "@/utiles/Message.ts";
+import {Message} from "view-ui-plus";
 
 const showAddTaskModal = ref(false)
 // 输入框提示词列表
@@ -19,47 +28,25 @@ const placeholderList = [
     '律师'
 ]
 
-const workExperienceList = [
-    {
-        label: '在校/应届生',
-        value: '0'
-    },
-    {
-        label: '1年以下',
-        value: '1'
-    },
-    {
-        label: '1-3年',
-        value: '2'
-    },
-    {
-        label: '3-5年',
-        value: '3'
-    },
-    {
-        label: '5-10年',
-        value: '4'
-    },
-    {
-        label: '10年以上',
-        value: '5'
-    }
-]
-
 const placeholderIdx = ref<number>(0)
 const placeholderTimer = ref<number | null>(null)
 const isComposing = ref(false)
 const formRef = ref();
 const formRules = {
-    jobPosition: [{required: true, message: '请输入求职岗位！', trigger: 'submit'}],
-    identity: [{type: 'number', required: true, message: '请选择身份！', trigger: 'submit'}],
+    jobTitle: [{required: true, message: '请输入求职岗位！', trigger: 'submit'}],
+    cityInfos: [{type: 'array', min: 1, required: true, message: '请选择期望城市！', trigger: 'submit'}],
+    experience: [{required: true, message: '请选择工作经验！', trigger: 'submit'}],
+    resumeUuid: [{required: true, message: '请选择简历！', trigger: 'submit'}]
 }
-const formData = reactive({
-    jobPosition: '',
-    areaInfoBeanList: [],
-    workExperience: '',
-})
-const resumeList = ref([])
+const formData = reactive<CreateJobTaskInDto>(new CreateJobTaskInDto())
+const resumeList = ref<MyResumeBean[]>([])
+const resumeService = new ResumeService()
+const jobService = new JobService()
+
+const emit = defineEmits<{
+    'task-updated': []
+    'task-saved': []
+}>()
 
 const startPlaceholderRotation = () => {
     if (placeholderTimer.value) return;
@@ -85,7 +72,7 @@ const handleCompositionStart = () => {
 
 const handleCompositionEnd = () => {
     isComposing.value = false;
-    if (!formData.jobPosition) {
+    if (!formData.jobTitle) {
         startPlaceholderRotation();
     }
 }
@@ -93,7 +80,7 @@ const handleCompositionEnd = () => {
 const handleInputChange = () => {
     if (isComposing.value) return;
 
-    if (formData.jobPosition) {
+    if (formData.jobTitle) {
         stopPlaceholderRotation();
     } else {
         startPlaceholderRotation();
@@ -103,11 +90,56 @@ const handleInputChange = () => {
 const open = () => {
     showAddTaskModal.value = true;
     startPlaceholderRotation()
+
+    loadResumeList()
 }
 
 const close = () => {
     showAddTaskModal.value = false
+    placeholderIdx.value = 0;
+    isComposing.value = false;
     stopPlaceholderRotation()
+    formRef.value.resetFields()
+}
+
+const loadResumeList = async () => {
+    try {
+        const params = new GetMyResumeListInDto()
+        const result = await resumeService.getMyResumeList(params)
+        if (result.code === 200 && result.data?.resumes) {
+            resumeList.value = result.data.resumes
+        }
+    } catch (error) {
+        console.error('获取简历列表失败:', error)
+    }
+}
+
+const handleSubmit = async (isApply: boolean) => {
+    const errors = []
+    if (!formData.jobTitle?.trim()) errors.push('求职岗位')
+    if (!formData.cityInfos?.length) errors.push('期望城市')
+    if (!formData.experience) errors.push('工作经验')
+    if (!formData.resumeUuid) errors.push('简历')
+
+    if (errors.length > 0) {
+        return message.error(Message, `请完善${errors.join('、')}！`)
+    }
+
+    try {
+        formData.publish = false
+        formData.isDefault = isApply
+        const result = await jobService.createJobTask(formData)
+        if (result.code === 200) {
+            if (isApply) {
+                emit('task-updated')
+            } else {
+                emit('task-saved')
+            }
+            close()
+        }
+    } catch (error) {
+        console.error('保存任务失败:', error)
+    }
 }
 
 defineExpose({
@@ -125,36 +157,35 @@ defineExpose({
         <div class="modal-content">
             <div class="content-left">
                 <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form">
-                    <FormItem prop="jobPosition">
-                        <Input v-model="formData.jobPosition" :max-length="20"
+                    <FormItem prop="jobTitle">
+                        <Input v-model="formData.jobTitle" :max-length="20"
                                :placeholder="placeholderList[placeholderIdx]"
                                class="job-name"
                                @compositionend="handleCompositionEnd"
                                @compositionstart="handleCompositionStart"
                                @on-change="handleInputChange"/>
                     </FormItem>
-                    <FormItem prop="areaInfoBeanList">
-                        <AddressSelect v-model="formData.areaInfoBeanList" is-hot-city/>
+                    <FormItem prop="cityInfos">
+                        <AddressSelect v-model="formData.cityInfos" is-hot-city placeholder="请选择期望城市"/>
                     </FormItem>
-                    <FormItem prop="workExperience">
-                        <Select v-model="formData.workExperience" class="custom-select" clearable
+                    <FormItem prop="experience">
+                        <Select v-model="formData.experience" class="custom-select" clearable
                                 placeholder="请选择工作经验">
-                            <Option v-for="item in workExperienceList" :key="item.value" :label="item.label"
+                            <Option v-for="item in workExperienceList" :key="item.value" :label="item.key"
                                     :value="item.value"/>
                         </Select>
                     </FormItem>
-                    <FormItem prop="areaInfoBeanList">
-                        <Select class="custom-select" clearable placeholder="请选择简历">
-                            <Option v-for="item in resumeList"/>
-                        </Select>
+                    <FormItem prop="resumeUuid">
+                        <CustomSelect v-model="formData.resumeUuid"
+                                      :option-list="resumeList.map(item => ({label: item.name, value: item.uuid}))"/>
                     </FormItem>
                 </Form>
                 <div class="btn-box mt-50">
-                    <div class="submit-btn mr-20">
+                    <div class="submit-btn mr-20" @click="handleSubmit(false)">
                         <SvgIcon class="mr-5" color="#fff" name="icon-baocun" size="12"/>
                         保存
                     </div>
-                    <div class="submit-btn">
+                    <div class="submit-btn" @click="handleSubmit(true)">
                         <SvgIcon class="mr-5" color="#fff" name="icon-duihao-main" size="12"/>
                         保存并应用
                     </div>
@@ -262,9 +293,9 @@ defineExpose({
         background: $white !important;
 
         .select-content {
-            height: 100%;
-            line-height: vh(48);
-            font-size: vw(18);
+            height: 100% !important;
+            line-height: vh(48) !important;
+            font-size: vw(18) !important;
         }
 
         .custom-content {

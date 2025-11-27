@@ -2,45 +2,37 @@
 import {computed, ref} from 'vue'
 import SvgIcon from '@/components/svgIcon/index.vue'
 import {debounce} from '@/utiles/debounce'
-
-interface PositionDetailData {
-    matchRate?: number
-    matchSummary?: string
-    analysisContent?: string
-    positionInfo?: {
-        companyName?: string
-        positionTitle?: string
-        salary?: string
-        tags?: string[]
-        workAddress?: {
-            area?: string
-            detail?: string
-        }
-        description?: string
-        benefits?: string[]
-        source?: string
-        recommendTime?: string
-    }
-    isInterested?: boolean
-}
+import {PositionBean} from '@/api/job/dto/bean/PositionBean'
+import {JobService} from '@/service/JobService'
 
 const props = withDefaults(defineProps<{
-    data?: PositionDetailData | null
+    data?: PositionBean | null
 }>(), {
-    data: () => null
+    data: null
 })
 
+const jobService = new JobService()
 const activeTab = ref<'analysis' | 'info'>('analysis')
-const isInterested = ref(false)
+const isInterested = computed(() => props.data?.isInterested ?? false)
+
+defineExpose({
+    activeTab
+})
 
 // 判断是否为空状态
 const isEmpty = computed(() => props.data === null || props.data === undefined)
 
 // 处理感兴趣按钮点击
 const handleInterestClick = debounce(async () => {
-    isInterested.value = !isInterested.value
-    // TODO: 调用接口
-    // await someApi.toggleInterest(positionId, isInterested.value)
+    if (!props.data?.uuid) return
+    try {
+        await jobService.markPositionInterest(props.data.uuid, !isInterested.value)
+        if (props.data) {
+            props.data.isInterested = !isInterested.value
+        }
+    } catch (error) {
+        console.error('标记感兴趣失败:', error)
+    }
 }, 300)
 
 // 处理文本格式，将纯文本转换为HTML
@@ -53,24 +45,14 @@ const formatDescription = (text: string) => {
         .join('')
 }
 
-// 计算属性
-const matchRate = computed(() => props.data?.matchRate ?? 82)
-const matchSummary = computed(() => props.data?.matchSummary ?? '经验丰富，技术栈匹配，但需深入理解Java核心机制和设计模式。')
-const analysisContent = computed(() => props.data?.analysisContent ?? '')
-const positionInfo = computed(() => ({
-    companyName: props.data?.positionInfo?.companyName ?? '北京高徒云集教育科技有限公司',
-    positionTitle: props.data?.positionInfo?.positionTitle ?? 'Java开发工程师',
-    salary: props.data?.positionInfo?.salary ?? '50-60K·14薪',
-    tags: props.data?.positionInfo?.tags ?? ['本科', '3-5年', '职位标签'],
-    workAddress: {
-        area: props.data?.positionInfo?.workAddress?.area ?? '辽宁省/大连市/中山区',
-        detail: props.data?.positionInfo?.workAddress?.detail ?? '黄浦路533g号，海创大厦C座'
-    },
-    description: formatDescription(props.data?.positionInfo?.description ?? ''),
-    benefits: props.data?.positionInfo?.benefits ?? ['弹性工作制', '周末双休', '有餐补'],
-    source: props.data?.positionInfo?.source ?? 'BOSS直聘',
-    recommendTime: props.data?.positionInfo?.recommendTime ?? '2025.10.20 12:20'
-}))
+const channelMap: Record<number, string> = {
+    0: 'BOSS直聘',
+    1: '智联校园',
+    2: '猎聘',
+    3: '国聘',
+    4: '应届生招聘',
+    5: '拉钩'
+}
 </script>
 
 <template>
@@ -111,15 +93,16 @@ const positionInfo = computed(() => ({
                 <!-- 匹配度卡片 -->
                 <div class="match-card mt-20 mb-40">
                     <div class="match-info">
-                        <div class="match-rate mb-10">{{ matchRate }}% <span class="match-label">匹配度</span></div>
-                        <div class="match-desc">{{ matchSummary }}</div>
+                        <div class="match-rate mb-10">{{ data?.matchScore ?? 0 }}% <span
+                            class="match-label">匹配度</span></div>
+                        <div class="match-desc">{{ data?.aiSummary ?? '' }}</div>
                     </div>
                     <img alt="" class="match-img" src="@/assets/images/position_detail.png"/>
                 </div>
 
                 <!-- 详细内容 -->
                 <div class="analysis-content">
-                    <div class="analysis-scroll" v-html="analysisContent"></div>
+                    <div class="analysis-scroll" v-html="formatDescription(data?.description ?? '')"></div>
                 </div>
             </template>
 
@@ -129,29 +112,28 @@ const positionInfo = computed(() => ({
 
                     <!-- 职位标题和薪资 -->
                     <div class="title-row">
-                        <div class="position-title">{{ positionInfo.positionTitle }}</div>
-                        <div class="salary">{{ positionInfo.salary }}</div>
+                        <div class="position-title">{{ data?.title ?? '' }}</div>
+                        <div class="salary">{{ data?.salary ?? '' }}</div>
                     </div>
 
                     <!-- 公司名称 -->
-                    <div class="company-name">{{ positionInfo.companyName }}</div>
+                    <div class="company-name">{{ data?.companyName ?? '' }}</div>
                     <!-- 标签组 -->
                     <div class="tags-row mb-20">
-                        <span v-for="(tag, index) in positionInfo.tags" :key="index" class="tag">{{ tag }}</span>
+                        <span v-for="(tag, index) in data?.labels" :key="index" class="tag">{{ tag }}</span>
                     </div>
 
                     <!-- 工作地址 -->
                     <div class="section">
                         <div class="section-title">工作地址</div>
-                        <div class="section-content">{{ positionInfo.workAddress.area }}</div>
+                        <div class="section-content">{{ data?.areaName ?? '' }}</div>
                     </div>
 
                     <!-- 详细地址 -->
                     <div class="section">
                         <div class="section-title">详细地址</div>
-                        <div class="section-content" style="white-space: pre-line">{{
-                                positionInfo.workAddress.detail
-                            }}
+                        <div class="section-content">
+                            <div v-for="(address, index) in data?.addresses" :key="index">{{ address }}</div>
                         </div>
                     </div>
 
@@ -159,7 +141,7 @@ const positionInfo = computed(() => ({
                     <div class="section description-section">
                         <div class="section-title">职位描述</div>
                         <div class="section-content scroll">
-                            <div v-html="positionInfo.description"></div>
+                            <div v-html="formatDescription(data?.description ?? '')"></div>
                         </div>
                     </div>
 
@@ -167,16 +149,16 @@ const positionInfo = computed(() => ({
                     <div class="section">
                         <div class="section-title">福利待遇</div>
                         <div class="tags-row mb-20">
-                        <span v-for="(benefit, index) in positionInfo.benefits" :key="index" class="tag">{{
-                                benefit
-                            }}</span>
+                            <span v-for="(benefit, index) in data?.benefits" :key="index" class="tag">{{
+                                    benefit
+                                }}</span>
                         </div>
                     </div>
 
                     <!-- 底部信息 -->
                     <div class="footer-info mt-20">
-                        <div>职位信息来源于：{{ positionInfo.source }}</div>
-                        <div>推荐时间：{{ positionInfo.recommendTime }}</div>
+                        <div>职位信息来源于：{{ channelMap[data?.sourceChannel ?? 0] ?? '' }}</div>
+                        <div>推荐时间：{{ data?.recommendedAt ?? '' }}</div>
                     </div>
                 </div>
             </template>
