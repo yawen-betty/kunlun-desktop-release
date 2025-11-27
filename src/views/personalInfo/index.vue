@@ -1,34 +1,34 @@
 <!--个人中心-->
 <template>
-  <div class="personal-info">
-    <PersonalInfoTabs v-model="currentTab"/>
-    <div class="personal-content">
-      <PersonalInfoBasic v-if="currentTab === 'basic'"/>
-      <PersonalInfoResume v-if="currentTab === 'resume'"/>
+    <div class="personal-info">
+        <PersonalInfoTabs v-model="currentTab" />
+        <div class="personal-content">
+            <component :is="currentComponent" />
+        </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {ref, computed, defineAsyncComponent} from 'vue';
 import PersonalInfoTabs from './components/PersonalInfoTabs.vue';
-import PersonalInfoBasic from './components/basic/PersonalInfoBasic.vue';
-import PersonalInfoResume from "@/views/personalInfo/components/resume/PersonalInfoResume.vue";
 
-const currentTab = ref<string>('resume'); // 默认激活"基础设置"
+const currentTab = ref<string>('basic'); // 默认激活"基础设置"
+
+// 异步组件映射
+const componentMap = {
+    // 基础设置
+    basic: defineAsyncComponent(() => import('./components/basic/PersonalInfoBasic.vue')),
+    // 我的简历
+    resume: defineAsyncComponent(() => import('./components/resume/PersonalInfoResume.vue'))
+};
+
+// 动态组件
+const currentComponent = computed(() => {
+    return componentMap[currentTab.value as keyof typeof componentMap];
+});
 </script>
 
-
 <style scoped lang="scss">
-@use "@/assets/styles/variable.scss" as *;
-@use "@/assets/styles/compute.scss" as *;
-
-
-.personal-info {
-  height: 100%;
-
-  .personal-content {
-    height: 100%;
-  }
-}
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
 </style>

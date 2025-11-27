@@ -11,8 +11,8 @@ const layout = function (meta: any) {
             icon: meta.icon
         },
         children: [{...meta}]
-    }
-}
+    };
+};
 const onlyHeader = function (meta: any) {
     return {
         path: meta.path,
@@ -22,8 +22,8 @@ const onlyHeader = function (meta: any) {
             title: meta.title
         },
         children: [{...meta}]
-    }
-}
+    };
+};
 
 // 展示菜单
 const all = [
@@ -56,10 +56,17 @@ const all = [
         title: '个人中心',
         icon: 'icon-gerenzhongxin',
         component: () => import('@/views/personalInfo/index.vue')
+    }),
+    // 增值服务
+    layout({
+        path: '/addedServices',
+        title: '增值服务',
+        icon: 'icon-gerenzhongxin',
+        component: () => import('@/views/addedServices/index.vue')
     })
-]
+];
 
 // 重新组织后导出
-const routes: any[] = [...all]
+const routes: any[] = [...all];
 
-export default routes
+export default routes;
