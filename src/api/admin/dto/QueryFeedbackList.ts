@@ -19,5 +19,5 @@ export class QueryFeedbackListOutDto extends BaseOutDto {
     /**
      * 反馈列表
      */
-    data: FeedbackBean[] = [];
+    list: FeedbackBean[] = [];
 }

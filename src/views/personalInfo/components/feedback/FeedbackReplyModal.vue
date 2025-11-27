@@ -8,10 +8,19 @@
         </template>
 
         <div class="modal-content" ref="scrollContainer" @scroll="handleScroll">
-            <div class="reply-section">
+            <!-- 空状态 -->
+            <div v-if="filteredFeedbackList.length === 0" class="empty-state">
+                <Image :src="emptyImage" class="empty-image" fit="contain" />
+                <p class="empty-text">暂无数据</p>
+            </div>
+
+            <!-- 有数据 -->
+            <div v-else class="reply-section">
                 <template v-for="(item, index) in filteredFeedbackList" :key="index">
                     <div class="reply-item">
                         <div class="reply-time">{{ formatTime(item.replyTime) }} 回复</div>
+                        <div class="reply-title" v-html="item.title"></div>
+
                         <div class="reply-content" v-html="item.reply"></div>
                         <div class="reply-images" v-if="item.replyImages?.length">
                             <Image
@@ -57,6 +66,7 @@ import {AdminService} from '@/service/AdminService';
 import {QueryFeedbackListInDto} from '@/api/admin/dto/QueryFeedbackList';
 import type {FeedbackBean} from '@/api/admin/dto/bean/FeedbackBean';
 import {Config} from '@/Config.ts';
+import emptyImage from '@/assets/images/empty.png';
 
 interface Props {
     modelValue: boolean;
@@ -74,7 +84,6 @@ const visible = computed({
     set: (value) => emit('update:modelValue', value)
 });
 
-const vw = (px: number) => `${(px / 1920) * 100}vw`;
 const adminService = AdminService.getInstance();
 const scrollContainer = ref<HTMLElement>();
 const feedbackList = ref<FeedbackBean[]>([]);
@@ -83,7 +92,8 @@ const feedbackList = ref<FeedbackBean[]>([]);
  * 过滤后的反馈列表 - 只显示有回复的项
  */
 const filteredFeedbackList = computed(() => {
-    return feedbackList.value.filter((item) => item.reply && item.reply.trim() !== '');
+    return feedbackList.value.filter((item) => item.status === '1');
+    // return [];
 });
 const pageNum = ref(1);
 const pageSize = 10;
@@ -221,6 +231,42 @@ const handleClose = () => {
     height: vh(936);
     overflow-y: auto;
     background: $white;
+    position: relative;
+
+    .empty-state {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+
+        .empty-image {
+            width: vw(140);
+            display: block;
+
+            :deep(.ivu-image) {
+                display: block;
+            }
+
+            :deep(img) {
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+        }
+
+        .empty-text {
+            font-size: vw(24);
+            color: $font-light;
+            line-height: vh(24);
+            // margin: vh(20) 0 0 0;
+        }
+    }
 
     .reply-section {
         padding: vw(40);
@@ -236,6 +282,16 @@ const handleClose = () => {
                 font-weight: 600;
                 line-height: vh(20);
                 margin-bottom: vh(10);
+            }
+
+            .reply-title {
+                font-size: vw(16);
+                color: $font-dark;
+                font-weight: 600;
+                line-height: vh(24);
+                margin-bottom: vh(10);
+                white-space: pre-wrap;
+                word-break: break-word;
             }
 
             .reply-content {

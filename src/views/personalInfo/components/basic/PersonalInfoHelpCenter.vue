@@ -47,7 +47,7 @@ onMounted(async () => {
     font-size: vw(28);
     line-height: vh(28);
     color: $font-dark;
-    margin: 0 0 vh(68) 0;
+    margin: 0 0 vh(40) 0;
     font-weight: normal;
 }
 
@@ -58,6 +58,7 @@ onMounted(async () => {
     border-radius: vw(2);
     padding: vh(20) vw(20);
     position: relative;
+    overflow-y: auto;
 }
 
 .content-text {

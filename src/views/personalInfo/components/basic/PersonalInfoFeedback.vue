@@ -6,6 +6,9 @@
         </div>
 
         <Form ref="formRef" :model="formData" :rules="rules" class="feedback-form" label-position="top">
+            <FormItem label="标题" prop="title" class="feedback-input">
+                <Input v-model="formData.title" placeholder="请输入" :maxlength="20" clearable></Input>
+            </FormItem>
             <FormItem prop="description" label="问题描述" class="feedback-item">
                 <Input
                     v-model="formData.description"
@@ -65,6 +68,7 @@ const adminService = new AdminService();
 // ==================== 响应式数据 ====================
 /** 表单数据 */
 const formData = reactive({
+    title: '',
     description: ''
 });
 
@@ -79,6 +83,7 @@ const showReplyModal = ref(false);
 
 /** 表单验证规则 */
 const rules = {
+    title: [{required: true, message: '请输入问题标题', trigger: 'blur'}],
     description: [{required: true, message: '请输入问题描述', trigger: 'blur'}]
 };
 
@@ -133,6 +138,7 @@ const handleSubmit = () => {
         if (!valid) return;
 
         const params: AddFeedbackInDto = {
+            title: formData.title,
             problem: formData.description,
             problemImages: fileList.value.length > 0 ? fileList.value : undefined
         };
@@ -141,6 +147,7 @@ const handleSubmit = () => {
         if (res.code === 200) {
             message.success(Message, '提交成功');
             // 清空表单
+            formData.title = '';
             formData.description = '';
             fileList.value = [];
         }
@@ -208,7 +215,11 @@ onMounted(() => {
     }
 
     .feedback-form {
+        .feedback-input {
+            width: vw(400);
+        }
         .feedback-item {
+            width: vw(800);
             margin-bottom: vh(30);
 
             :deep(.ivu-form-item-label) {
@@ -222,12 +233,7 @@ onMounted(() => {
                 color: $remind-error;
             }
 
-            :deep(.ivu-form-item-error-tip) {
-                width: vw(800);
-            }
-
             .feedback-textarea {
-                width: vw(800);
                 :deep(.ivu-input) {
                     height: vh(160);
                     background: $bg-gray;
@@ -255,7 +261,7 @@ onMounted(() => {
         }
 
         .feedback-upload-item {
-            margin-bottom: vh(30);
+            margin-bottom: vh(60);
 
             :deep(.ivu-form-item-label) {
                 font-size: vw(16);

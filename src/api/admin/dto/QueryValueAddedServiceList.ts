@@ -14,5 +14,5 @@ export class QueryValueAddedServiceListOutDto extends BaseOutDto {
     /**
      * 增值服务列表
      */
-    data: ValueAddedServiceBean[] = [];
+    list: ValueAddedServiceBean[] = [];
 }

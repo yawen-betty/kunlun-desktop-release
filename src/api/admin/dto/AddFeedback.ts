@@ -5,6 +5,11 @@ import {BaseInDto, BaseOutDto} from "@/api/BaseDto";
  */
 export class AddFeedbackInDto extends BaseInDto {
     /**
+     * 问题标题
+     */
+    title: string = '';
+
+    /**
      * 问题描述文本
      */
     problem: string = '';
