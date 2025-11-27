@@ -16,6 +16,11 @@ export class WriteInDto extends BaseInDto {
      * 消息列表
      */
     messages: AiMessageBean[] = [];
+
+    /**
+     * 是否追问
+     */
+    isFollowUp?: boolean;
 }
 
 export class WriteOutDto extends BaseOutDto {

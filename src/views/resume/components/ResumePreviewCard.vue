@@ -4,17 +4,16 @@
         <!-- 顶部个人信息 -->
         <div class="header-section">
             <div class="info-left">
-                <h1 class="name">{{ resumeData.name || '未命名' }}</h1>
-                <p class="job-position">{{ resumeData.jobPosition || '求职岗位' }}</p>
+                <h1 class="name">{{ contactInfo.name || '未命名' }}</h1>
+                <p class="job-position">{{ contactInfo.jobPosition || '求职岗位' }}</p>
                 <div class="contact-info">
-                    <span v-if="contactInfo.phone" class="contact-item">手机号码：{{ contactInfo.phone }}</span>
-                    <span v-if="contactInfo.email" class="contact-item">个人邮箱：{{ contactInfo.email }}</span>
+                    <span class="contact-item">手机号码：{{ contactInfo.phone }}</span>
+                    <span class="contact-item">个人邮箱：{{ contactInfo.email }}</span>
                 </div>
             </div>
             <div class="photo-wrapper">
                 <img v-if="contactInfo.photo" :src="`${Config.baseUrl}${contactInfo.photo}`" :style="photoStyle"
-                     alt="个人照片"
-                     class="photo"/>
+                     alt="个人照片" class="avatar"/>
                 <div v-else class="photo-placeholder"></div>
             </div>
         </div>
@@ -27,8 +26,8 @@
             </div>
             <div class="basic-info-grid">
                 <div v-for="field in getAllBasicFields(basicInfoModule)" :key="field.uuid" class="field-item">
-                    <span v-if="field.fieldValue" class="field-text">
-                        {{ field.fieldName }}：{{ field.fieldValue }}
+                    <span :class="{ 'placeholder': !field.fieldValue }" class="field-text">
+                        {{ field.fieldName }}：{{ field.fieldValue || '' }}
                     </span>
                 </div>
             </div>
@@ -100,6 +99,8 @@ const contactInfo = computed(() => {
     const basicModule = props.resumeData.modules?.find(m => m.moduleKey === 'basic_info');
     const fields = basicModule?.entries?.[0]?.fields || [];
     return {
+        name: fields.find(f => f.fieldKey === 'name')?.fieldValue,
+        jobPosition: fields.find(f => f.fieldKey === 'job_position')?.fieldValue,
         phone: fields.find(f => f.fieldKey === 'mobile')?.fieldValue,
         email: fields.find(f => f.fieldKey === 'email')?.fieldValue,
         photo: fields.find(f => f.fieldKey === 'personal_image')?.fieldValue
@@ -118,7 +119,7 @@ const topFieldKeys = ['name', 'job_position', 'mobile', 'email', 'personal_image
 
 const getAllBasicFields = (module: ResumeModuleBean): ResumeFieldBean[] => {
     const fields = module.entries?.[0]?.fields || [];
-    return fields.filter(f => !topFieldKeys.includes(f.fieldKey || '') && f.fieldValue);
+    return fields.filter(f => !topFieldKeys.includes(f.fieldKey || ''));
 };
 
 const getEntryTitle = (entry: ResumeEntryBean): string => {
@@ -138,12 +139,16 @@ const getEntryTitle = (entry: ResumeEntryBean): string => {
 
 const getEntryTime = (entry: ResumeEntryBean): string => {
     const fields = entry.fields || [];
-    return fields.find(f => f.fieldKey === 'end_time')?.fieldValue || '';
+    const startTime = fields.find(f => f.fieldKey === 'start_time')?.fieldValue || '';
+    const endTime = fields.find(f => f.fieldKey === 'end_time')?.fieldValue || '';
+    
+    if (!startTime && !endTime) return '';
+    if (startTime && endTime) return `${startTime} - ${endTime}`;
+    return startTime || endTime;
 };
 
 const getEntryTimeFieldName = (entry: ResumeEntryBean): string => {
-    const fields = entry.fields || [];
-    return fields.find(f => f.fieldKey === 'end_time')?.fieldName || '';
+    return '起止时间';
 };
 
 const getEntryDuties = (entry: ResumeEntryBean): string[] => {

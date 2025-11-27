@@ -1,12 +1,15 @@
 <!-- 简历制作默认页 | 采集求职岗位丶身份 -->
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue'
+import {computed, onActivated, onDeactivated, onMounted, onUnmounted, reactive, ref} from 'vue'
 import {Button, Form, FormItem, Input, Message, Modal, Radio, RadioGroup, Upload} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {ResumeService} from "@/service/ResumeService";
-import {InitResumeInDto} from "@/api/resume/dto/InitResume";
 import {debounce} from "@/utiles/debounce";
+import {useRouter} from "vue-router";
+import Ellipsis from '@/components/ellipsis/index.vue'
+import {message} from "@/utiles/Message.ts";
 
+const router = useRouter();
 // 输入框提示词列表
 const placeholderList = [
     '人工智能',
@@ -29,6 +32,8 @@ const infoList = [
     'AI简历定制，让Offer多来几封'
 ]
 const placeholderIdx = ref<number>(0)
+const placeholderTimer = ref<number | null>(null)
+const isComposing = ref(false)
 const formRef = ref();
 const formRules = {
     jobPosition: [{required: true, message: '请输入求职岗位！', trigger: 'submit'}],
@@ -45,6 +50,15 @@ const uploadFile = ref<{
     uploading: boolean;
     file: File;
 } | null>(null);
+
+const fileIcon = computed(() => {
+    if (!uploadFile.value) return 'icon-pdf';
+    const fileName = uploadFile.value.name.toLowerCase();
+    if (fileName.endsWith('.pdf')) return 'icon-pdf';
+    if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) return 'icon-word';
+    return 'icon-pdf';
+});
+
 const resumeService = new ResumeService();
 const showLimitModal = ref(false);
 const emit = defineEmits<{
@@ -52,14 +66,14 @@ const emit = defineEmits<{
 }>();
 
 const submit = debounce(async () => {
-    if (!formData.jobPosition.trim()) return Message.error('请输入求职岗位！')
-    if (!formData.identity) return Message.error('请选择身份！')
+    if (!formData.jobPosition.trim()) return message.error(Message, '请输入求职岗位！')
+    if (!formData.identity) return message.error(Message, '请选择身份！')
 
     try {
         const result = await resumeService.initResume(formData);
         console.log(result, 'result')
         if (result.code === 200 && result.data) {
-            Message.success('简历创建成功！');
+            message.success(Message, '简历创建成功！');
             emit('resume-created', {
                 resumeId: result.data.resumeId!,
                 resumeName: result.data.resumeName!,
@@ -68,10 +82,10 @@ const submit = debounce(async () => {
         } else if (result.code === 2305) {
             showLimitModal.value = true;
         } else {
-            Message.error(result.msg || '简历创建失败！');
+            message.error(Message, result.msg || '简历创建失败！');
         }
     } catch (error) {
-        Message.error('简历创建失败！');
+        message.error(Message, '简历创建失败！');
         console.error(error);
     }
 }, 300)
@@ -83,13 +97,13 @@ const handleUploadChange = (file: File) => {
     const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
 
     if (!validTypes.includes(file.type) && !hasValidExtension) {
-        Message.error('文件格式有误，仅支持PDF、Word格式！');
+        message.error(Message, '文件格式有误，仅支持PDF、Word格式！');
         return false;
     }
 
     const maxSize = 1024 * 1024;
     if (file.size > maxSize) {
-        Message.error('文件大小不得超过1M！');
+        message.error(Message, '文件大小不得超过1M！');
         return false;
     }
 
@@ -110,27 +124,80 @@ const handleRemoveFile = () => {
 
 const handleToDelete = () => {
     showLimitModal.value = false;
+    router.push('/personalInfo')
 }
 
-onMounted(() => {
-    setInterval(() => {
+const startPlaceholderRotation = () => {
+    if (placeholderTimer.value) return;
+    placeholderTimer.value = window.setInterval(() => {
         placeholderIdx.value++;
         if (placeholderIdx.value === placeholderList.length) {
             placeholderIdx.value = 0
         }
     }, 2000)
+}
+
+const stopPlaceholderRotation = () => {
+    if (placeholderTimer.value) {
+        clearInterval(placeholderTimer.value)
+        placeholderTimer.value = null
+    }
+}
+
+const handleCompositionStart = () => {
+    isComposing.value = true;
+    stopPlaceholderRotation();
+}
+
+const handleCompositionEnd = () => {
+    isComposing.value = false;
+    if (!formData.jobPosition) {
+        startPlaceholderRotation();
+    }
+}
+
+const handleInputChange = () => {
+    if (isComposing.value) return;
+
+    if (formData.jobPosition) {
+        stopPlaceholderRotation();
+    } else {
+        startPlaceholderRotation();
+    }
+}
+
+onActivated(() => {
+    startPlaceholderRotation()
+})
+
+onDeactivated(() => {
+    stopPlaceholderRotation()
+})
+
+onMounted(() => {
+    startPlaceholderRotation()
+})
+
+onUnmounted(() => {
+    stopPlaceholderRotation()
 })
 </script>
 
 <template>
     <div class="resume-prod-cont">
         <div class="prod-left">
-            <div class="title">简历制作</div>
+            <div class="title flex-column">
+                <SvgIcon class="ai-icon" color="#FC8719" name="icon-AI" size="40"/>
+                <span>简历制作</span>
+            </div>
             <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form">
                 <FormItem prop="jobPosition">
                     <Input v-model="formData.jobPosition" :max-length="20"
                            :placeholder="placeholderList[placeholderIdx]"
-                           class="job-name"/>
+                           class="job-name"
+                           @compositionend="handleCompositionEnd"
+                           @compositionstart="handleCompositionStart"
+                           @on-change="handleInputChange"/>
                 </FormItem>
                 <FormItem class="custom-form-item" prop="identity">
                     <RadioGroup v-model="formData.identity" class="custom-radio">
@@ -148,17 +215,18 @@ onMounted(() => {
                     </Upload>
                     <div v-if="uploadFile" class="file-box mt-10 pl-20 pr-15 flex-column align-between">
                         <div class="file-name flex-column">
-                            <SvgIcon name="icon-pdf" size="24"/>
+                            <SvgIcon :name="fileIcon" class="file-icon" size="24"/>
                             <div class="file-status ml-20">
-                                <p class="mb-10 name">{{ uploadFile.name }}</p>
-                                <p class="status">
+                                <Ellipsis :content="uploadFile.name" class="name"/>
+                                <!--                                <p class="mb-10 name">{{ uploadFile.name }}</p>-->
+                                <p class="status mt-10">
                                     {{ uploadFile.uploading ? '上传中...' : '上传完成' }}
                                     <span class="ml-5 mr-5"></span>
                                     {{ uploadFile.size }}
                                 </p>
                             </div>
                         </div>
-                        <SvgIcon class="pointer" color="#FC8719" name="icon-bufuhe" size="20"
+                        <SvgIcon class="close-icon pointer" color="#FC8719" name="icon-bufuhe" size="20"
                                  @click="handleRemoveFile"/>
                     </div>
                 </FormItem>
@@ -230,6 +298,15 @@ onMounted(() => {
             font-size: vw(38);
             font-style: normal;
             line-height: vh(50); /* 131.579% */
+
+            .ai-icon {
+                margin-right: vw(14.33);
+            }
+
+            svg {
+                width: vw(61) !important;
+                height: vh(45) !important;
+            }
         }
 
         .custom-form {
@@ -237,8 +314,14 @@ onMounted(() => {
 
             :deep(.job-name) {
                 .ivu-input {
+                    height: vh(50);
                     background-color: $white;
                     border: vw(1) solid $theme-color !important;
+                    font-size: vw(18);
+
+                    &::placeholder {
+                        font-weight: 600;
+                    }
                 }
             }
 
@@ -250,26 +333,38 @@ onMounted(() => {
                 background: $bg-gray;
                 line-height: normal;
 
-                .name {
-                    color: $font-dark;
-                    font-family: Inter;
-                    font-size: vw(14);
-                    font-weight: 500;
+                .file-name {
+                    max-width: 75%;
+
+                    .file-status {
+                        width: 100%;
+                    }
+
+                    .name {
+                        color: $font-dark;
+                        font-family: Inter;
+                        font-size: vw(14);
+                        font-weight: 500;
+                    }
+
+                    .status {
+                        display: flex;
+                        align-items: center;
+                        color: #B0B7C6;
+                        font-family: Inter;
+                        font-size: vw(12);
+                        font-weight: 500;
+
+                        span {
+                            width: vw(1);
+                            height: vh(12);
+                            background: #B0B7C6;
+                        }
+                    }
                 }
 
-                .status {
-                    display: flex;
-                    align-items: center;
-                    color: #B0B7C6;
-                    font-family: Inter;
-                    font-size: vw(12);
-                    font-weight: 500;
-
-                    span {
-                        width: vw(1);
-                        height: vh(12);
-                        background: #B0B7C6;
-                    }
+                .close-icon, .file-icon {
+                    flex-shrink: 0;
                 }
             }
         }

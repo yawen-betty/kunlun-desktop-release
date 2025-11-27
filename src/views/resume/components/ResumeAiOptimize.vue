@@ -65,6 +65,8 @@ import {message} from "@/utiles/Message.ts";
 import {PolishInDto} from "@/api/ai/dto/Polish.ts";
 import {extractDataContent} from "@/utiles/processing.ts";
 import {AiService} from "@/service/AiService.ts";
+import {scrollToBottom} from "@/utiles/domUtils.ts";
+import {AiErrorHandler} from "@/utiles/aiErrorHandler.ts";
 
 interface Props {
   modelValue: boolean; //弹窗状态
@@ -106,7 +108,7 @@ const handleCancel = () => {
 
 // 开始ai 生成
 const handleSubmit = () => {
-  if (requirement.value.length < 20) return message.warning(Message, '请至少填写20个字！');
+  if (requirement.value.length > 0 && requirement.value.length < 20) return message.warning(Message, '请至少填写20个字！');
 
   thinkContent.value = '';
   content.value = '';
@@ -124,14 +126,12 @@ const handleSubmit = () => {
   aiService.polishStream(
     params,
     (data: string) => {
-
-      console.log(data)
       if (data.includes('event:thinking')) {
         state.value = '2'
         const str: string = extractDataContent(data, 'event:thinking')
         if (str) {
           thinkContent.value += str;
-          scrollToBottom();
+          scrollToBottom('think-content');
         }
       } else {
         state.value = '3'
@@ -143,8 +143,7 @@ const handleSubmit = () => {
       }
     },
     (error: any) => {
-      console.error(error, 'error')
-      // 显示错误信息
+      AiErrorHandler.handleError(error.status);
     },
     () => {
       state.value = '4'
@@ -158,15 +157,7 @@ const handleEmitData = () => {
   handleCancel();
 }
 
-const scrollToBottom = () => {
-  nextTick(() => {
-    const elements = document.querySelectorAll('.think-content');
-    if (elements.length > 0) {
-      const lastElement = elements[elements.length - 1] as HTMLElement;
-      lastElement.scrollTop = lastElement.scrollHeight;
-    }
-  });
-};
+
 </script>
 
 <style lang="scss">
@@ -268,6 +259,7 @@ const scrollToBottom = () => {
             background: linear-gradient(92deg, rgba(196, 162, 252, 0.10) 3.76%, rgba(136, 233, 255, 0.10) 95.27%);
             max-height: vh(360);
             word-break: break-all;
+            white-space: pre-wrap;
 
             &::-webkit-scrollbar {
               display: none;
@@ -277,6 +269,7 @@ const scrollToBottom = () => {
           .content {
             height: vh(330);
             word-break: break-all;
+            white-space: pre-wrap;
             overflow-y: auto;
             margin-top: vh(13);
 

@@ -129,10 +129,11 @@ export enum ItemType {
 </script>
 
 <script lang="ts" setup>
-import {ref, nextTick, computed, watch, onMounted} from 'vue';
+import {ref, nextTick, computed, watch, onMounted, onBeforeUnmount} from 'vue';
 import {Modal, Message} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import Sortable from 'sortablejs';
+import {message} from "@/utiles/Message.ts";
 
 interface ModuleItem {
     id: string;
@@ -222,6 +223,7 @@ const rules = computed(() => ({
 }));
 const dropdownStyle = ref({});
 const showAvailableList = ref(false);
+const currentZIndex = ref(1000);
 
 const selectedModules = ref<ModuleItem[]>([...props.appliedModules]);
 const customAvailableModules = ref<ModuleItem[]>([...props.availableModulesList]);
@@ -284,11 +286,11 @@ const addModule = (id: string) => {
         const existingDisabledIds = selectedModules.value
             .filter(m => props.disabledDragIds.includes(m.id))
             .map(m => m.id);
-        
+
         const allDisabledIds = [...existingDisabledIds, id];
         const sortedDisabledIds = props.disabledDragIds.filter(did => allDisabledIds.includes(did));
         const insertIndex = sortedDisabledIds.indexOf(id);
-        
+
         selectedModules.value.splice(insertIndex, 0, {...module});
     } else {
         selectedModules.value.push({...module});
@@ -309,7 +311,7 @@ const handleCustomModalClose = () => {
 const createCustomModule = () => {
     formRef.value?.validate((valid: boolean) => {
         if (!valid) {
-            Message.warning('请完善必填项！');
+            message.warning(Message, '请完善必填项！');
             return;
         }
 
@@ -380,15 +382,29 @@ const updateDropdownPosition = () => {
             position: 'fixed',
             top: `${rect.bottom}px`,
             left: `${rect.left}px`,
-            zIndex: 1000
+            zIndex: currentZIndex.value
         };
     }
 };
 
+const getMaxZIndex = () => {
+    const dropdowns = document.querySelectorAll('.module-dropdown');
+    if (dropdowns.length < 1) return 1000;
+
+    let maxZ = 1000;
+    dropdowns.forEach(el => {
+        const z = parseInt(window.getComputedStyle(el).zIndex) || 1000;
+        if (z > maxZ) maxZ = z;
+    });
+    return maxZ + 1;
+};
+
 const toggleVisible = () => {
+    console.log(visible.value)
     if (visible.value) {
         handleCancel();
     } else {
+        currentZIndex.value = getMaxZIndex();
         visible.value = true;
         selectedModules.value = [...props.appliedModules];
         customAvailableModules.value = [...props.availableModulesList];
@@ -412,6 +428,24 @@ watch(() => props.availableModulesList, (newVal) => {
         customAvailableModules.value = [...newVal];
     }
 }, {deep: true});
+
+const handleGlobalClose = () => {
+    if (visible.value) {
+        handleCancel();
+    }
+};
+
+onMounted(() => {
+    window.addEventListener('close-all-dropdowns', handleGlobalClose);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('close-all-dropdowns', handleGlobalClose);
+});
+
+defineExpose({
+    handleCancel
+});
 
 
 </script>

@@ -320,19 +320,29 @@
               {
                 "uuid": "982e0b317d0d487c819e03cb34959123",
                 "fieldDefinitionUuid": "education_field_004",
-                "fieldKey": "end_time",
-                "fieldName": "起止时间",
+                "fieldKey": "start_time",
+                "fieldName": "开始时间",
                 "fieldSortOrder": 4,
                 "fieldValue": "",
                 "isCustom": 0,
                 "maxLength": 12
               },
               {
-                "uuid": "64da8173ba304dcd86afc4ba2e747995",
+                "uuid": "982e0b317d0d487c819e03cb34959124",
                 "fieldDefinitionUuid": "education_field_005",
+                "fieldKey": "end_time",
+                "fieldName": "结束时间",
+                "fieldSortOrder": 5,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "64da8173ba304dcd86afc4ba2e747995",
+                "fieldDefinitionUuid": "education_field_006",
                 "fieldKey": "description",
                 "fieldName": "在校经历",
-                "fieldSortOrder": 5,
+                "fieldSortOrder": 6,
                 "fieldValue": "",
                 "isCustom": 0,
                 "maxLength": 2000
@@ -376,19 +386,29 @@
               {
                 "uuid": "3c4b5a6f7e8d401234cd567890feab12",
                 "fieldDefinitionUuid": "internship_field_003",
-                "fieldKey": "end_time",
-                "fieldName": "起止时间",
+                "fieldKey": "start_time",
+                "fieldName": "开始时间",
                 "fieldSortOrder": 3,
                 "fieldValue": "",
                 "isCustom": 0,
                 "maxLength": 12
               },
               {
-                "uuid": "4b5a6f7e8d9c412345dc67890feab123",
+                "uuid": "3c4b5a6f7e8d401234cd567890feab13",
                 "fieldDefinitionUuid": "internship_field_004",
+                "fieldKey": "end_time",
+                "fieldName": "结束时间",
+                "fieldSortOrder": 4,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "4b5a6f7e8d9c412345dc67890feab123",
+                "fieldDefinitionUuid": "internship_field_005",
                 "fieldKey": "description",
                 "fieldName": "实习描述",
-                "fieldSortOrder": 4,
+                "fieldSortOrder": 5,
                 "fieldValue": "",
                 "isCustom": 0,
                 "maxLength": 2000
@@ -432,19 +452,29 @@
               {
                 "uuid": "03f8564434e34fb6b8f5e41ac4d8aa55",
                 "fieldDefinitionUuid": "work_field_003",
-                "fieldKey": "end_time",
-                "fieldName": "起止时间",
+                "fieldKey": "start_time",
+                "fieldName": "开始时间",
                 "fieldSortOrder": 3,
                 "fieldValue": "",
                 "isCustom": 0,
                 "maxLength": 12
               },
               {
-                "uuid": "01789c45e2064b5099b89d067cb25a62",
+                "uuid": "03f8564434e34fb6b8f5e41ac4d8aa56",
                 "fieldDefinitionUuid": "work_field_004",
+                "fieldKey": "end_time",
+                "fieldName": "结束时间",
+                "fieldSortOrder": 4,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "01789c45e2064b5099b89d067cb25a62",
+                "fieldDefinitionUuid": "work_field_005",
                 "fieldKey": "description",
                 "fieldName": "工作描述",
-                "fieldSortOrder": 4,
+                "fieldSortOrder": 5,
                 "fieldValue": "",
                 "isCustom": 0,
                 "maxLength": 2000
@@ -478,19 +508,29 @@
               {
                 "uuid": "19b3f158de424a2199c37472eb225f00",
                 "fieldDefinitionUuid": "project_field_002",
-                "fieldKey": "end_time",
-                "fieldName": "起止时间",
+                "fieldKey": "start_time",
+                "fieldName": "开始时间",
                 "fieldSortOrder": 2,
                 "fieldValue": "",
                 "isCustom": 0,
                 "maxLength": 12
               },
               {
-                "uuid": "d13ee70d62044e5584b7752a8e3a39ce",
+                "uuid": "19b3f158de424a2199c37472eb225f01",
                 "fieldDefinitionUuid": "project_field_003",
+                "fieldKey": "end_time",
+                "fieldName": "结束时间",
+                "fieldSortOrder": 3,
+                "fieldValue": "",
+                "isCustom": 0,
+                "maxLength": 12
+              },
+              {
+                "uuid": "d13ee70d62044e5584b7752a8e3a39ce",
+                "fieldDefinitionUuid": "project_field_004",
                 "fieldKey": "description",
                 "fieldName": "项目描述",
-                "fieldSortOrder": 3,
+                "fieldSortOrder": 4,
                 "fieldValue": "",
                 "isCustom": 0,
                 "maxLength": 2000

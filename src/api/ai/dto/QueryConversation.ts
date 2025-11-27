@@ -1,5 +1,6 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
-import { MessagesBean } from "./bean/MessagesBean";
+import { PageInfo, PageResult } from "./bean/PageInfo";
+import { AiConversationOutDto } from "./bean/AiConversationOutDto";
 
 export class QueryConversationInDto extends BaseInDto {
     /**
@@ -8,29 +9,14 @@ export class QueryConversationInDto extends BaseInDto {
     resumeUuid: string = '';
     
     /**
-     * 跳过条数(分页起始位置)
+     * 分页信息
      */
-    skip: number = 0;
-    
-    /**
-     * 查询条数(每页数量)
-     */
-    limit: number = 0;
+    pageInfo: PageInfo = new PageInfo();
 }
 
 export class QueryConversationOutDto extends BaseOutDto {
     /**
-     * 简历UUID
+     * 分页结果
      */
-    resumeUuid?: string;
-    
-    /**
-     * 会话类型
-     */
-    type?: string;
-    
-    /**
-     * 消息列表
-     */
-    messages?: MessagesBean[];
+    pageResult?: PageResult<AiConversationOutDto>;
 }

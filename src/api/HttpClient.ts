@@ -16,7 +16,7 @@ interface HttpRequestParams {
     field_name?: string;
     file_name?: string;
     file_bytes?: number[];
-    extra_fields?: Record<string, string>;
+    extra_fields?: Record<string, any>;
 }
 
 // 定义响应接口
@@ -91,11 +91,11 @@ export default class HttpClient {
             fullUrl = `http://${fullUrl}`;
         }
 
-        // 处理路径参数和查询参数
-        if (path.method === 'GET' && data && Object.keys(data).length > 0) {
+        // 处理路径参数
+        if (data && Object.keys(data).length > 0) {
             const remainingData = {...data};
 
-            // 先处理路径参数 (如 /agreements/{type})
+            // 先处理路径参数 (如 /job-tasks/{uuid})
             fullUrl = fullUrl.replace(/\{([^}]+)\}/g, (match, key) => {
                 if (remainingData[key] !== undefined) {
                     const value = remainingData[key];
@@ -105,8 +105,8 @@ export default class HttpClient {
                 return match; // 如果没有对应参数，保持原样
             });
 
-            // 再处理剩余的查询参数
-            if (Object.keys(remainingData).length > 0) {
+            // GET请求处理剩余的查询参数
+            if (path.method === 'GET' && Object.keys(remainingData).length > 0) {
                 const params = new URLSearchParams(remainingData).toString();
                 fullUrl += fullUrl.includes('?') ? `&${params}` : `?${params}`;
             }
@@ -168,8 +168,8 @@ export default class HttpClient {
         console.log('开始请求:', path);
         console.log('请求数据:', data);
 
-        // 对于GET请求，传递data参数用于构建URL（包括路径参数和查询参数）
-        const fullUrl = HttpClient.fixUrl(path, path.method === 'GET' ? data : undefined);
+        // 传递data参数用于构建URL（包括路径参数和查询参数）
+        const fullUrl = HttpClient.fixUrl(path, data);
         console.log('构建的URL:', fullUrl);
 
         // 请求头和认证逻辑
@@ -202,9 +202,16 @@ export default class HttpClient {
             requestParams.extra_fields = options.extraFields;
             delete requestParams.headers?.['Content-Type'];
         } else if (path.method !== 'GET' && data) {
-            // 普通 JSON 请求
-            requestParams.body = data;
-            console.log('请求体:', requestParams.body);
+            // 普通 JSON 请求 - 需要过滤掉路径参数
+            const bodyData = {...data};
+            // 移除URL中已使用的路径参数
+            const pathParams = path.url.match(/\{([^}]+)\}/g)?.map(p => p.slice(1, -1)) || [];
+            pathParams.forEach(param => delete bodyData[param]);
+            
+            if (Object.keys(bodyData).length > 0) {
+                requestParams.body = bodyData;
+                console.log('请求体:', requestParams.body);
+            }
         }
 
         return new Promise<T>(async (resolve, reject) => {

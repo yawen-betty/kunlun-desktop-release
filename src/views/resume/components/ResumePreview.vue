@@ -1,6 +1,6 @@
 <template>
     <div :mode="mode" class="resume-preview">
-        <div :class="{ 'no-scroll': isGenerating }" class="preview-card">
+        <div ref="previewCardRef" :class="{ 'no-scroll': isGenerating }" class="preview-card">
             <!-- 模块管理按钮（人工模式） -->
             <div v-if="mode === 'manual'" class="module-manage-wrapper">
                 <ResumeModuleManager
@@ -162,7 +162,7 @@
                                        class="field-input field-input-half"/>
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
-                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time"
                                            placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
@@ -184,19 +184,19 @@
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('polish')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('polish')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>润色</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('expand')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('expand')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>扩展</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('simplify')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('simplify')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>简化</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('summarize')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('summarize')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>总结</span>
                                     </div>
@@ -227,10 +227,9 @@
                                             getStreamValue(getFieldUuid(entry, 'degree')) || getFieldName(entry, 'degree')
                                         }}</span>
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }">
-                                    {{
-                                        getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
-                                    }}
+                                <span
+                                    :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'start_time')) && !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                    {{ getTimeRangeDisplay(entry) }}
                                 </span>
                             </div>
                             <div
@@ -246,10 +245,10 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="mode === 'manual'" class="add-entry-btn flex-column pointer"
+                    <div v-if="mode === 'manual'" class="add-entry-btn pointer"
                          @click="handleAddEntry(module)">
                         <SvgIcon color="#9499A4" name="icon-xinzeng-main" size="12"/>
-                        <span>增加新的经历</span>
+                        <span class="ml-10">增加新的经历</span>
                     </div>
                 </section>
 
@@ -289,7 +288,7 @@
                             <div class="entry-fields flex-column mt-10">
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
-                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time" placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
                                     <Input v-model="entryEditData.end_time"
@@ -309,19 +308,19 @@
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('polish')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('polish')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>润色</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('expand')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('expand')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>扩展</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('simplify')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('simplify')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>简化</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('summarize')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('summarize')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>总结</span>
                                     </div>
@@ -350,10 +349,9 @@
                                             getStreamValue(getFieldUuid(entry, 'position_name')) || getFieldName(entry, 'position_name')
                                         }}</span>
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }">
-                                    {{
-                                        getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
-                                    }}
+                                <span
+                                    :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'start_time')) && !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                    {{ getTimeRangeDisplay(entry) }}
                                 </span>
                             </div>
                             <div
@@ -368,9 +366,9 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="mode === 'manual'" class="add-entry-btn" @click="handleAddEntry(module)">
+                    <div v-if="mode === 'manual'" class="add-entry-btn pointer" @click="handleAddEntry(module)">
                         <SvgIcon class="pointer" color="#9499A4" name="icon-xinzeng-main" size="12"/>
-                        <span>增加新的经历</span>
+                        <span class="ml-10">增加新的经历</span>
                     </div>
                 </section>
 
@@ -409,7 +407,7 @@
                             <div class="entry-fields flex-column mt-10">
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
-                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time"
                                            placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
@@ -431,19 +429,19 @@
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('polish')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('polish')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>润色</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('expand')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('expand')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>扩展</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('simplify')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('simplify')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>简化</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('summarize')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('summarize')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>总结</span>
                                     </div>
@@ -472,10 +470,9 @@
                                             getStreamValue(getFieldUuid(entry, 'position_name')) || getFieldName(entry, 'position_name')
                                         }}</span>
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }">
-                                    {{
-                                        getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
-                                    }}
+                                <span
+                                    :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'start_time')) && !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                    {{ getTimeRangeDisplay(entry) }}
                                 </span>
                             </div>
                             <div
@@ -490,9 +487,9 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="mode === 'manual'" class="add-entry-btn" @click="handleAddEntry(module)">
+                    <div v-if="mode === 'manual'" class="add-entry-btn pointer" @click="handleAddEntry(module)">
                         <SvgIcon class="pointer" color="#9499A4" name="icon-xinzeng-main" size="12"/>
-                        <span>增加新的经历</span>
+                        <span class="ml-10">增加新的经历</span>
                     </div>
                 </section>
 
@@ -525,7 +522,7 @@
                                        class="field-input field-input-half"/>
                                 <div class="time-fields flex-column">
                                     <Input v-model="entryEditData.start_time"
-                                           :maxlength="getFieldMaxLength(entry, 'start_time')"
+                                           :maxlength="getFieldMaxLength(entry, 'end_time')"
                                            class="field-input field-input-time" placeholder="开始时间"/>
                                     <span class="time-separator">至</span>
                                     <Input v-model="entryEditData.end_time"
@@ -546,19 +543,19 @@
                             </div>
                             <div class="entry-edit-footer align-between flex-center">
                                 <div class="ai-actions flex-column">
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('polish')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('polish')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>润色</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('expand')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('expand')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>扩展</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('simplify')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('simplify')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>简化</span>
                                     </div>
-                                    <div class="ai-btn pointer flex-column" @click="handleAiAction('summarize')">
+                                    <div class="ai-btn pointer" @click="handleAiAction('summarize')">
                                         <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                         <span>总结</span>
                                     </div>
@@ -582,10 +579,9 @@
                                         getStreamValue(getFieldUuid(entry, 'project_name')) || getFieldName(entry, 'project_name')
                                     }}
                                 </span>
-                                <span :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'end_time')) }">
-                                    {{
-                                        getStreamValue(getFieldUuid(entry, 'end_time')) || getFieldName(entry, 'end_time')
-                                    }}
+                                <span
+                                    :class="{ 'time-placeholder': !getStreamValue(getFieldUuid(entry, 'start_time')) && !getStreamValue(getFieldUuid(entry, 'end_time')) }">
+                                    {{ getTimeRangeDisplay(entry) }}
                                 </span>
                             </div>
                             <div
@@ -600,9 +596,9 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="mode === 'manual'" class="add-entry-btn" @click="handleAddEntry(module)">
+                    <div v-if="mode === 'manual'" class="add-entry-btn pointer" @click="handleAddEntry(module)">
                         <SvgIcon class="pointer" color="#9499A4" name="icon-xinzeng-main" size="12"/>
-                        <span>增加新的经历</span>
+                        <span class="ml-10">增加新的经历</span>
                     </div>
                 </section>
 
@@ -631,19 +627,19 @@
                         </div>
                         <div class="text-edit-footer align-between flex-center">
                             <div class="ai-actions flex-column flex">
-                                <div class="ai-btn pointer flex-column" @click="handleAiAction('polish')">
+                                <div class="ai-btn pointer" @click="handleAiAction('polish')">
                                     <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                     <span>润色</span>
                                 </div>
-                                <div class="ai-btn pointer flex-column" @click="handleAiAction('expand')">
+                                <div class="ai-btn pointer" @click="handleAiAction('expand')">
                                     <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                     <span>扩展</span>
                                 </div>
-                                <div class="ai-btn pointer flex-column" @click="handleAiAction('simplify')">
+                                <div class="ai-btn pointer" @click="handleAiAction('simplify')">
                                     <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                     <span>简化</span>
                                 </div>
-                                <div class="ai-btn pointer flex-column" @click="handleAiAction('summarize')">
+                                <div class="ai-btn pointer" @click="handleAiAction('summarize')">
                                     <SvgIcon color="#FC8719" name="icon-ai-xing" size="16"/>
                                     <span>总结</span>
                                 </div>
@@ -702,7 +698,8 @@
 import SvgIcon from '@/components/svgIcon/index.vue';
 import ResumeModuleManager, {ItemType} from './ResumeModuleManager.vue';
 import ResumeAiOptimize from './ResumeAiOptimize.vue';
-import {computed, onMounted, ref, watch, withDefaults} from 'vue';
+import {computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, watch, withDefaults, onBeforeMount} from 'vue';
+import {useRouter} from 'vue-router';
 import {Input, Message} from 'view-ui-plus';
 import {FileService} from '@/service/FileService';
 import {ResumeService} from '@/service/ResumeService';
@@ -715,6 +712,7 @@ import {FieldUpdateBean} from '@/api/resume/dto/bean/FieldUpdateBean';
 import {UpdateModuleEntriesInDto} from '@/api/resume/dto/UpdateModuleEntries';
 import {EntryUpdateBean} from '@/api/resume/dto/bean/EntryUpdateBean';
 import {Config} from "@/Config.ts";
+import {message} from "@/utiles/Message.ts";
 
 const props = withDefaults(defineProps<{
     isGenerating?: boolean;
@@ -745,6 +743,8 @@ const resumeService = new ResumeService();
 const photoInput = ref<HTMLInputElement>();
 const photoUrl = ref<string>('');
 const photoStyle = ref<any>({});
+const previewCardRef = ref<HTMLElement>();
+const scrollTop = ref(0);
 const showAiOptimize = ref(false);
 const aiOptimizeProps = ref<{
     resumeId: string;
@@ -781,10 +781,12 @@ const fetchAvailableFields = async (basicInfoModuleId: string) => {
         const result = await resumeService.getModuleFields(params);
 
         if (result.code === 200 && result.data?.fields) {
-            return result.data.fields.map(f => ({
-                id: f.uuid,
-                name: f.fieldName
-            }));
+            return result.data.fields
+                .filter(f => !['姓名', '求职岗位'].includes(f.fieldName!))
+                .map(f => ({
+                    id: f.uuid,
+                    name: f.fieldName
+                }));
         }
         return [];
     } catch (error) {
@@ -848,10 +850,10 @@ const handleModulesApply = async (modules: any[]) => {
         ];
 
         await resumeService.updateModules(params);
-        Message.success('模块更新成功');
+        message.success(Message, '模块更新成功');
         emit('update-modules');
     } catch (error) {
-        Message.error('模块更新失败');
+        message.error(Message, '模块更新失败');
         console.error(error);
     }
 };
@@ -921,10 +923,10 @@ const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
         });
 
         await resumeService.updateModuleEntries(params);
-        Message.success('条目更新成功');
+        message.success(Message, '条目更新成功');
         emit('update-modules');
     } catch (error) {
-        Message.error('条目更新失败');
+        message.error(Message, '条目更新失败');
         console.error(error);
     }
 };
@@ -964,10 +966,10 @@ const handleFieldsApply = async (fields: any[]) => {
             })
         ];
         await resumeService.updateModuleFields(params);
-        Message.success('字段更新成功');
+        message.success(Message, '字段更新成功');
         emit('update-modules');
     } catch (error) {
-        Message.error('字段更新失败');
+        message.error(Message, '字段更新失败');
         console.error(error);
     }
 };
@@ -1002,13 +1004,25 @@ const getStreamValue = (fieldUuid: string) => {
     return streamValues.value.get(fieldUuid) || '';
 };
 
+const getTimeRangeDisplay = (entry: any) => {
+    const startTime = getStreamValue(getFieldUuid(entry, 'start_time'));
+    const endTime = getStreamValue(getFieldUuid(entry, 'end_time'));
+    if (!startTime && !endTime) {
+        return '起止时间';
+    }
+    if (startTime && endTime) {
+        return `${startTime} - ${endTime}`;
+    }
+    return startTime || endTime;
+};
+
 const isEntryStreaming = (entry: any) => {
     if (!currentStreamingField.value) return false;
     const fields = entry.fields || [];
     return fields.some((f: any) => f.uuid === currentStreamingField.value);
 };
 
-interface StreamItem {
+export interface StreamItem {
     fieldUuid: string;
     fieldValue: string;
 }
@@ -1028,14 +1042,34 @@ const streamWrite = async (items: StreamItem[], speed: number = 50) => {
             }
             currentStreamingField.value = '';
         }
+
+        // 流式写入完成后，同步数据到 resumeData
+        syncStreamValuesToResumeData();
     } finally {
         isStreaming.value = false;
     }
 };
 
+const syncStreamValuesToResumeData = () => {
+    if (!props.resumeData?.modules) return;
+
+    props.resumeData.modules.forEach((module: any) => {
+        module.entries?.forEach((entry: any) => {
+            entry.fields?.forEach((field: any) => {
+                const streamValue = streamValues.value.get(field.uuid);
+                if (streamValue !== undefined) {
+                    field.fieldValue = streamValue;
+                }
+            });
+        });
+    });
+
+    emit('data-change', props.resumeData);
+};
+
 const startEdit = (module: any) => {
     if (isEditingBasicInfo.value || editingEntryUuid.value || editingModuleUuid.value) {
-        Message.warning('当前处于编辑中，请保存后再操作！');
+        message.warning(Message, '当前处于编辑中，请保存后再操作！');
         return;
     }
     isEditingBasicInfo.value = true;
@@ -1063,7 +1097,7 @@ const saveEdit = (module: any) => {
 
 const startTextEdit = (module: any) => {
     if (isEditingBasicInfo.value || editingEntryUuid.value || editingModuleUuid.value) {
-        Message.warning('当前处于编辑中，请保存后再操作！');
+        message.warning(Message, '当前处于编辑中，请保存后再操作！');
         return;
     }
     editingModuleUuid.value = module.uuid;
@@ -1098,16 +1132,16 @@ const handleAiAction = (action: 'polish' | 'expand' | 'simplify' | 'summarize') 
 
     if (editingEntryUuid.value) {
         text = entryEditData.value.description || '';
-        fieldName = 'description';
         const module = props.resumeData?.modules?.find((m: any) =>
             m.entries?.some((e: any) => e.entryUuid === editingEntryUuid.value)
         );
         const entry = module?.entries?.find((e: any) => e.entryUuid === editingEntryUuid.value);
+        fieldName = getFieldName(entry, 'description');
         maxLength = getFieldMaxLength(entry, 'description');
     } else if (editingModuleUuid.value) {
         text = editTextContent.value;
         const module = props.resumeData?.modules?.find((m: any) => m.uuid === editingModuleUuid.value);
-        fieldName = module?.entries?.[0]?.fields?.[0]?.fieldKey || '';
+        fieldName = module?.entries?.[0]?.fields?.[0]?.fieldName || '';
         maxLength = getTextModuleMaxLength(module);
     }
 
@@ -1124,7 +1158,7 @@ const handleAiAction = (action: 'polish' | 'expand' | 'simplify' | 'summarize') 
 
 const startEntryEdit = (entry: any) => {
     if (isEditingBasicInfo.value || editingEntryUuid.value || editingModuleUuid.value) {
-        Message.warning('当前处于编辑中，请保存后再操作！');
+        message.warning(Message, '当前处于编辑中，请保存后再操作！');
         return;
     }
     editingEntryUuid.value = entry.entryUuid;
@@ -1161,7 +1195,7 @@ const handleAiOptimizeSubmit = (content: string) => {
 
 const handleAddEntry = (module: any) => {
     if (isEditingBasicInfo.value || editingEntryUuid.value || editingModuleUuid.value) {
-        Message.warning('当前处于编辑中，请保存后再操作！');
+        message.warning(Message, '当前处于编辑中，请保存后再操作！');
         return;
     }
 
@@ -1193,14 +1227,14 @@ const handlePhotoChange = async (e: Event) => {
 
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!validTypes.includes(file.type)) {
-        Message.error('图片格式有误，仅支持jpg、jpeg、png！');
+        message.error(Message, '图片格式有误，仅支持jpg、jpeg、png！');
         target.value = '';
         return;
     }
 
     const maxSize = 1024 * 1024;
     if (file.size > maxSize) {
-        Message.error('图片大小不得超过1M！');
+        message.error(Message, '图片大小不得超过1M！');
         target.value = '';
         return;
     }
@@ -1217,7 +1251,7 @@ const handlePhotoChange = async (e: Event) => {
 
             const img = new Image();
             img.onload = () => {
-                photoStyle.value = img.width > img.height ? { height: '100%' } : { width: '100%' };
+                photoStyle.value = img.width > img.height ? {height: '100%'} : {width: '100%'};
             };
             img.src = imageUrl;
 
@@ -1231,12 +1265,12 @@ const handlePhotoChange = async (e: Event) => {
             }
 
             emit('data-change', props.resumeData);
-            Message.success('上传成功');
+            message.success(Message, '上传成功');
         } else {
-            Message.error('上传失败');
+            message.error(Message, '上传失败');
         }
     } catch (error) {
-        Message.error('上传失败');
+        message.error(Message, '上传失败');
         console.error(error);
     }
 
@@ -1256,7 +1290,7 @@ const initFieldValues = () => {
                         photoUrl.value = imageUrl;
                         const img = new Image();
                         img.onload = () => {
-                            photoStyle.value = img.width > img.height ? { height: '100%' } : { width: '100%' };
+                            photoStyle.value = img.width > img.height ? {height: '100%'} : {width: '100%'};
                         };
                         img.src = imageUrl;
                     }
@@ -1270,8 +1304,41 @@ watch(() => props.resumeData, () => {
     initFieldValues();
 }, {deep: true, immediate: true});
 
+const saveScrollPosition = () => {
+    if (previewCardRef.value) {
+        scrollTop.value = previewCardRef.value.scrollTop;
+    }
+};
+
+const router = useRouter();
+let unwatch: (() => void) | null = null;
+
+onBeforeMount(() => {
+    unwatch = router.beforeEach(() => {
+        window.dispatchEvent(new CustomEvent('close-all-dropdowns'));
+    });
+});
+
 onMounted(async () => {
     allAvailableModules.value = await fetchAvailableModules();
+    if (previewCardRef.value) {
+        previewCardRef.value.addEventListener('scroll', saveScrollPosition);
+    }
+});
+
+onActivated(() => {
+    if (previewCardRef.value && scrollTop.value > 0) {
+        previewCardRef.value.scrollTop = scrollTop.value;
+    }
+});
+
+onBeforeUnmount(() => {
+    if (previewCardRef.value) {
+        previewCardRef.value.removeEventListener('scroll', saveScrollPosition);
+    }
+    if (unwatch) {
+        unwatch();
+    }
 });
 
 defineExpose({
@@ -1443,17 +1510,21 @@ defineExpose({
 }
 
 .add-entry-btn {
-    display: flex;
-    align-items: center;
-    gap: vw(10);
-    margin-top: vh(20);
-    cursor: pointer;
+    line-height: normal;
 
     span {
+        display: inline-block;
+        vertical-align: middle;
         font-family: 'PingFang SC', sans-serif;
         font-size: vw(14);
         line-height: vh(14);
         color: $font-middle;
+    }
+
+    svg {
+        width: vw(12) !important;
+        height: vw(12) !important;
+        vertical-align: middle;
     }
 }
 
@@ -1497,7 +1568,7 @@ defineExpose({
 .experience-desc {
     font-family: 'PingFangSCBold', sans-serif;
     font-size: vw(16);
-    line-height: vh(16);
+    line-height: vh(22);
     color: $font-dark;
 }
 
@@ -1540,9 +1611,13 @@ defineExpose({
     color: $placeholder-color;
 }
 
+.time-box {
+    width: vw(67);
+}
+
 .time-placeholder {
     color: $placeholder-color;
-    text-align: right;
+    //text-align: right;
     font-weight: 400;
 }
 
@@ -1725,17 +1800,26 @@ defineExpose({
 }
 
 .ai-btn {
-    gap: vw(5);
+    line-height: normal;
+
+    &:hover {
+        opacity: 0.8;
+    }
 
     span {
+        display: inline-block;
+        vertical-align: middle;
         font-family: 'PingFang SC', sans-serif;
         font-size: vw(14);
         line-height: vh(14);
         color: $theme-color;
+        margin-left: vw(5);
     }
 
-    &:hover {
-        opacity: 0.8;
+    svg {
+        vertical-align: middle;
+        width: vw(16) !important;
+        height: vw(16) !important;
     }
 }
 
@@ -1744,14 +1828,16 @@ defineExpose({
 }
 
 .action-item {
-    gap: vw(5);
     cursor: pointer;
 
     span {
+        display: inline-block;
+        vertical-align: middle;
         font-family: 'PingFangSCBold', sans-serif;
         font-size: vw(14);
         line-height: vh(14);
         color: $font-middle;
+        margin-left: vw(5);
     }
 
     &:hover {
@@ -1762,6 +1848,12 @@ defineExpose({
         :deep(.svg-icon > use) {
             fill: $theme-color;
         }
+    }
+
+    svg {
+        vertical-align: middle;
+        width: vw(12) !important;
+        height: vw(12) !important;
     }
 }
 

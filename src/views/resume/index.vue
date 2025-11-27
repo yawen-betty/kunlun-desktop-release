@@ -1,19 +1,31 @@
+<script lang="ts">
+export default {
+    name: 'Resume'
+}
+</script>
+
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue';
-import {useRoute} from 'vue-router';
+import {nextTick, onActivated, ref} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
 import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
+import {UserInfo} from "@/utiles/userInfo.ts";
+import {useCompRef} from "@/hooks/useComponent";
 
 const route = useRoute();
+const router = useRouter();
 const showMakePanel = ref(true);
-// const resumeId = ref('2635f18121ca43ababa0c78f29ce3e4e');
+// const resumeId = ref('4f11769e52304077bea5de854ecc4305');
 const resumeId = ref('');
 const resumeName = ref('');
 const uploadedFile = ref<File | null>(null);
 const initialMode = ref<'ai' | 'manual'>('ai');
+// 组件实例
+const writeResumeRef = useCompRef(WriteResume)
 
 const handleResumeCreated = (data: { resumeId: string; resumeName: string; uploadedFile: File | null }) => {
     resumeId.value = data.resumeId;
+    UserInfo.info.runningResumeId = resumeId.value
     resumeName.value = data.resumeName;
     uploadedFile.value = data.uploadedFile;
     showMakePanel.value = false;
@@ -23,16 +35,38 @@ const exit = () => {
     showMakePanel.value = true;
     resumeName.value = '';
     resumeId.value = '';
+    UserInfo.info.runningResumeId = '';
     uploadedFile.value = null;
     initialMode.value = 'ai';
+
+    if (route.query.resumeId) {
+        router.replace({query: {...route.query, resumeId: undefined}});
+    }
 };
 
-onMounted(() => {
+onActivated(() => {
     const routeResumeId = route.query.resumeId as string;
-    if (routeResumeId) {
+    // 如果id和runningResumeId一致，则不进行任何操作，
+    // 如果不一致，则进行人工模式的展示
+    console.log(routeResumeId, 'routeResumeId')
+    console.log(UserInfo.info.runningResumeId, 'UserInfo.info.runningResumeId')
+    if (routeResumeId && routeResumeId !== UserInfo.info.runningResumeId) {
         resumeId.value = routeResumeId;
-        showMakePanel.value = false;
-        initialMode.value = 'manual';
+        console.log(resumeId.value, 'resumeId.value')
+        console.log(showMakePanel.value, 'showMakePanel.value')
+        if (showMakePanel.value) {
+            showMakePanel.value = false;
+            nextTick(() => {
+                // 这里做
+                initialMode.value = 'manual';
+            })
+        } else {
+            nextTick(() => {
+                writeResumeRef.value?.reset();
+            })
+        }
+        UserInfo.info.runningResumeId = resumeId.value
+
     }
 });
 
@@ -41,8 +75,8 @@ onMounted(() => {
 <template>
     <div class="resume-cont">
         <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
-        <WriteResume v-else :initial-mode="initialMode" :resume-id="resumeId" :resume-name="resumeName"
-                     :uploaded-file="uploadedFile" @back-to-make="exit"/>
+        <WriteResume v-else ref="writeResumeRef" :initial-mode="initialMode" :resume-id="resumeId"
+                     :resume-name="resumeName" :uploaded-file="uploadedFile" @back-to-make="exit"/>
     </div>
 </template>
 
@@ -53,54 +87,5 @@ onMounted(() => {
 .resume-cont {
     height: 100%;
     padding: vh(40);
-}
-
-.test-drag-area {
-    position: fixed;
-    left: 300px;
-    top: 300px;
-    margin-top: 40px;
-    padding: 20px;
-    background: #f5f5f5;
-    border-radius: 8px;
-
-    h3 {
-        margin-bottom: 16px;
-    }
-}
-
-.test-list {
-    width: vw(400);
-    max-height: vh(268);
-    padding: vw(10) vw(10) 0;
-    background: $white;
-    overflow-y: auto;
-    -webkit-app-region: no-drag;
-}
-
-.test-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    margin-bottom: 8px;
-    background: white;
-    border-radius: 4px;
-    cursor: move !important;
-    user-select: none;
-    -webkit-app-region: no-drag;
-
-    .drag-handle {
-        cursor: move !important;
-        font-size: 18px;
-        color: #999;
-    }
-}
-
-:deep(.sortable-fallback) {
-    opacity: 1 !important;
-    background: white !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    border-radius: 4px !important;
 }
 </style>

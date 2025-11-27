@@ -50,8 +50,8 @@
                                     <span :class="{ 'placeholder': !part.value }">{{ part.value || part.name }}</span>
                                 </template>
                             </div>
-                            <div :class="{ 'placeholder': !getEntryFieldValue(entry, 'end_time') }" class="entry-time">
-                                {{ getEntryFieldValue(entry, 'end_time') || getEntryFieldName(entry, 'end_time') }}
+                            <div :class="{ 'placeholder': !getEntryTimeRange(entry) }" class="entry-time">
+                                {{ getEntryTimeRange(entry) || '起止时间' }}
                             </div>
                         </div>
                         <div :class="{ 'placeholder': !getEntryDescription(entry) }" class="entry-content">
@@ -76,7 +76,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, watch, onMounted, nextTick} from 'vue';
+import {computed, ref, watch, nextTick, onMounted} from 'vue';
 import type {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
 import type {ResumeModuleBean} from '@/api/resume/dto/bean/ResumeModuleBean';
 import type {ResumeEntryBean} from '@/api/resume/dto/bean/ResumeEntryBean';
@@ -149,9 +149,12 @@ const getEntryFieldValue = (entry: ResumeEntryBean, fieldKey: string): string =>
     return field?.fieldValue || '';
 };
 
-const getEntryFieldName = (entry: ResumeEntryBean, fieldKey: string): string => {
-    const field = entry.fields?.find(f => f.fieldKey === fieldKey);
-    return field?.fieldName || '';
+const getEntryTimeRange = (entry: ResumeEntryBean): string => {
+    const startTime = getEntryFieldValue(entry, 'start_time');
+    const endTime = getEntryFieldValue(entry, 'end_time');
+    if (!startTime && !endTime) return '';
+    if (startTime && endTime) return `${startTime} - ${endTime}`;
+    return startTime || endTime;
 };
 
 const topFieldKeys = ['name', 'job_position', 'mobile', 'email', 'personal_image'];

@@ -9,9 +9,9 @@
         <div class="modal-content">
             <Icon class="close-icon" type="md-close" @click="handleClose"/>
 
-            <h3 class="modal-title mb-40">免费模型次数已用完</h3>
+            <h3 class="modal-title mb-40">AI账号配置</h3>
 
-            <p class="description mb-20">您可以注册、配置自己的模型账号，免费使用AI撰写功能！</p>
+            <p class="description mb-20">您可以注册、配置自己的AI账号，免费使用AI撰写功能！</p>
 
             <div class="tutorial-link mb-40" @click="handleShowTutorial">
                 <Icon type="md-help-circle"/>
@@ -73,6 +73,7 @@ import {UserService} from '@/service/UserService';
 import {GetAiRegisterGuideInDto} from '@/api/admin/dto/GetAiRegisterGuide';
 import {SaveModelAccountInDto} from '@/api/user/dto/SaveModelAccount';
 import {debounce} from '@/utiles/debounce';
+import {message} from "@/utiles/Message.ts";
 
 interface Props {
     modelValue: boolean;
@@ -128,7 +129,7 @@ const handleShowTutorial = async () => {
             tutorialVisible.value = true;
         }
     } catch (error) {
-        Message.error('获取教程失败，请稍后重试');
+        message.error(Message, '获取教程失败，请稍后重试');
     }
 };
 
@@ -147,11 +148,11 @@ const handleSave = debounce(async () => {
 
         const result = await userService.saveModelAccount(params);
         if (result.code === 200) {
-            Message.success('配置保存成功');
+            message.success(Message, '配置保存成功');
             visible.value = false;
         }
     } catch (error) {
-        Message.error('保存失败，请稍后重试');
+        message.error(Message, '保存失败，请稍后重试');
     }
 }, 300);
 </script>
