@@ -19,7 +19,7 @@ export const download = async (el: string, ext: 'jpg' | 'pdf', name: string) => 
         if (imgEl && imgEl.src && !imgEl.src.startsWith('data:')) {
             imgEl.src = await image.toBase64(imgEl.src);
         }
-
+        console.log(imgEl.src, 'imgEl.src')
         const canvas = await html2canvas(previewEl, {
             scale: 2,
             backgroundColor: '#ffffff',

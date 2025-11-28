@@ -48,8 +48,12 @@ onActivated(() => {
     const routeResumeId = route.query.resumeId as string;
     // 如果id和runningResumeId一致，则不进行任何操作，
     // 如果不一致，则进行人工模式的展示
+    console.log(routeResumeId, 'routeResumeId')
+    console.log(UserInfo.info.runningResumeId, 'UserInfo.info.runningResumeId')
     if (routeResumeId && routeResumeId !== UserInfo.info.runningResumeId) {
         resumeId.value = routeResumeId;
+        console.log(resumeId.value, 'resumeId.value')
+        console.log(showMakePanel.value, 'showMakePanel.value')
         if (showMakePanel.value) {
             showMakePanel.value = false;
             nextTick(() => {
@@ -57,7 +61,9 @@ onActivated(() => {
                 initialMode.value = 'manual';
             })
         } else {
-            writeResumeRef.value?.reset();
+            nextTick(() => {
+                writeResumeRef.value?.reset();
+            })
         }
         UserInfo.info.runningResumeId = resumeId.value
 
@@ -70,8 +76,7 @@ onActivated(() => {
     <div class="resume-cont">
         <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
         <WriteResume v-else ref="writeResumeRef" :initial-mode="initialMode" :resume-id="resumeId"
-                     :resume-name="resumeName"
-                     :uploaded-file="uploadedFile" @back-to-make="exit"/>
+                     :resume-name="resumeName" :uploaded-file="uploadedFile" @back-to-make="exit"/>
     </div>
 </template>
 
@@ -82,54 +87,5 @@ onActivated(() => {
 .resume-cont {
     height: 100%;
     padding: vh(40);
-}
-
-.test-drag-area {
-    position: fixed;
-    left: 300px;
-    top: 300px;
-    margin-top: 40px;
-    padding: 20px;
-    background: #f5f5f5;
-    border-radius: 8px;
-
-    h3 {
-        margin-bottom: 16px;
-    }
-}
-
-.test-list {
-    width: vw(400);
-    max-height: vh(268);
-    padding: vw(10) vw(10) 0;
-    background: $white;
-    overflow-y: auto;
-    -webkit-app-region: no-drag;
-}
-
-.test-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    margin-bottom: 8px;
-    background: white;
-    border-radius: 4px;
-    cursor: move !important;
-    user-select: none;
-    -webkit-app-region: no-drag;
-
-    .drag-handle {
-        cursor: move !important;
-        font-size: 18px;
-        color: #999;
-    }
-}
-
-:deep(.sortable-fallback) {
-    opacity: 1 !important;
-    background: white !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    border-radius: 4px !important;
 }
 </style>

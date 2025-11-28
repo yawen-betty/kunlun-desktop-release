@@ -73,6 +73,7 @@ import {UserService} from '@/service/UserService';
 import {GetAiRegisterGuideInDto} from '@/api/admin/dto/GetAiRegisterGuide';
 import {SaveModelAccountInDto} from '@/api/user/dto/SaveModelAccount';
 import {debounce} from '@/utiles/debounce';
+import {message} from "@/utiles/Message.ts";
 
 interface Props {
     modelValue: boolean;
@@ -128,7 +129,7 @@ const handleShowTutorial = async () => {
             tutorialVisible.value = true;
         }
     } catch (error) {
-        Message.error('获取教程失败，请稍后重试');
+        message.error(Message, '获取教程失败，请稍后重试');
     }
 };
 
@@ -147,11 +148,11 @@ const handleSave = debounce(async () => {
 
         const result = await userService.saveModelAccount(params);
         if (result.code === 200) {
-            Message.success('配置保存成功');
+            message.success(Message, '配置保存成功');
             visible.value = false;
         }
     } catch (error) {
-        Message.error('保存失败，请稍后重试');
+        message.error(Message, '保存失败，请稍后重试');
     }
 }, 300);
 </script>

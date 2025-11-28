@@ -7,16 +7,16 @@
             <div class="form-section">
                 <div class="form-label mb-20">头像</div>
                 <div class="avatar-upload pointer">
-                    <Upload :show-upload-list="false" :before-upload="beforeAvatarUpload">
+                    <Upload :before-upload="beforeAvatarUpload" :show-upload-list="false">
                         <div class="avatar-container">
-                            <img :src="filePreviewUrl" v-if="filePreviewUrl" class="avatar-img" />
-                            <div class="avatar-circle" v-else>
+                            <img v-if="filePreviewUrl" :src="filePreviewUrl" class="avatar-img" />
+                            <div v-else class="avatar-circle">
                                 <span class="avatar-text">{{ hasChineseCharacters(UserInfo.info.userName || '') }}</span>
                             </div>
                         </div>
 
                         <div class="avatar-modal">
-                            <SvgIcon name="icon-bianji-xian" size="20" color="#fff" />
+                            <SvgIcon color="#fff" name="icon-bianji-xian" size="20" />
                         </div>
                     </Upload>
                 </div>
@@ -26,8 +26,8 @@
 
             <!-- 保存按钮 -->
             <div class="form-actions">
-                <Button type="primary" @click="handleSave" class="save-btn">
-                    <SvgIcon name="icon-baocun" size="12" color="#fff" />
+                <Button class="save-btn" type="primary" @click="handleSave">
+                    <SvgIcon color="#fff" name="icon-baocun" size="12" />
                     保存
                 </Button>
             </div>
@@ -35,7 +35,7 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue';
 import {Form, Image, Message} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
@@ -76,7 +76,6 @@ const ruleValidate = {
 };
 
 const beforeAvatarUpload = (file: File) => {
-    console.log('%c 🇸🇸: beforeAvatarUpload -> file ', 'font-size:16px;background-color:#c0c74d;color:black;', file);
     // 头像上传前验证
     const allowedTypes = ['image/jpg', 'image/jpeg', 'image/png'];
     const isValidFormat = allowedTypes.includes(file.type);
@@ -149,7 +148,7 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @use '@/assets/styles/variable.scss' as *;
 @use '@/assets/styles/compute.scss' as *;
 
@@ -183,6 +182,7 @@ onMounted(() => {
 
     .avatar-upload {
         position: relative;
+        width: fit-content;
 
         .avatar-modal {
             display: none;
