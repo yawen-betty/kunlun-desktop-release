@@ -2,6 +2,8 @@ import {reactive} from "vue";
 import {auth} from "@/utiles/tauriCommonds.ts";
 import router from "@/router/index.ts";
 
+type TResumeMap = Record<string, { trick: string; template: string; }>
+
 export class UserInfo {
 
     static info = reactive({
@@ -10,6 +12,7 @@ export class UserInfo {
         userId: '', // 用户ID
         avatar: '',  // 头像,
         runningResumeId: '', // 正在制作的简历ID
+        resumeMap: {} as TResumeMap, // { 'resumeId' : { trick: '话术', 'template': '模板' } }
     });
 
     static async logout() {
