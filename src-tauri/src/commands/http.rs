@@ -108,7 +108,7 @@ pub async fn http_request(req: HttpRequest) -> Result<HttpResponse, String> {
     }
 
     // 发送请求
-    let mut response = match request_builder.send().await {
+    let response = match request_builder.send().await {
         Ok(resp) => resp,
         Err(e) => {
             // 获取错误信息

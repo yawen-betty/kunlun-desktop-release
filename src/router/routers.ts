@@ -77,6 +77,13 @@ const all = [
         title: '增值服务',
         icon: 'icon-gerenzhongxin',
         component: () => import('@/views/addedServices/index.vue')
+    }),
+    // MCPdemo
+    layout({
+      path: '/mcpMananger',
+      title: 'mcp',
+      icon: 'icon-gerenzhongxin',
+      component: () => import('@/views/resume/mcpManager.vue')
     })
 ];
 

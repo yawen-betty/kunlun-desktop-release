@@ -39,6 +39,13 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
+    ],
+    "externalBin": [
+      "binaries/node"
+    ],
+    "resources": [
+      "binaries/mcp-entry.cjs",
+      "binaries/mcp-modules"
     ]
   },
   "plugins": {
@@ -55,6 +62,9 @@
       "scope": [
         "$LOG/*"
       ]
+    },
+    "shell": {
+      "open": true
     }
   }
 }

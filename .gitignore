@@ -27,3 +27,8 @@ dist-ssr
 /target/
 /src-tauri/keys/kunlun.key
 /src-tauri/keys/kunlun.key.pub
+
+# MCP modules (可重新下载)
+/src-tauri/binaries/mcp-modules/node_modules/
+/src-tauri/binaries/mcp-modules/.playwright-browsers/
+/src-tauri/binaries/mcp-modules/package-lock.json
