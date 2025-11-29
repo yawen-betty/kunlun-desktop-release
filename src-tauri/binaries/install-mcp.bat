@@ -1,26 +1,28 @@
 @echo off
-REM MCP 模块安装脚本 (Windows)
-REM 用于在首次克隆项目或 mcp-modules 被删除后重新安装依赖
+REM MCP modules installation script for Windows
 
-setlocal
+setlocal enabledelayedexpansion
 
 set "SCRIPT_DIR=%~dp0"
 set "MCP_DIR=%SCRIPT_DIR%mcp-modules"
 
-echo === 安装 MCP 模块 ===
+echo === Installing MCP Modules ===
 
-REM 检查是否已安装
+REM Check if already installed
 if exist "%MCP_DIR%\node_modules" (
-  echo ✅ MCP 模块已安装
+  echo [OK] MCP modules already installed
   exit /b 0
 )
 
-REM 创建目录
-if not exist "%MCP_DIR%" mkdir "%MCP_DIR%"
+REM Create directory
+if not exist "%MCP_DIR%" (
+  echo Creating directory: %MCP_DIR%
+  mkdir "%MCP_DIR%"
+)
 
-REM 创建 package.json（如果不存在）
+REM Create package.json if not exists
 if not exist "%MCP_DIR%\package.json" (
-  echo 创建 package.json...
+  echo Creating package.json...
   (
     echo {
     echo   "name": "mcp-modules",
@@ -33,14 +35,27 @@ if not exist "%MCP_DIR%\package.json" (
   ) > "%MCP_DIR%\package.json"
 )
 
-REM 安装依赖
-echo 安装 npm 依赖...
-cd /d "%MCP_DIR%"
-call npm install
+REM Install dependencies
+echo Installing npm dependencies...
+cd /d "%MCP_DIR%" || (
+  echo [ERROR] Cannot change to directory: %MCP_DIR%
+  exit /b 1
+)
 
-REM 安装 Playwright 浏览器
-echo 安装 Playwright 浏览器...
+call npm install
+if errorlevel 1 (
+  echo [ERROR] npm install failed
+  exit /b 1
+)
+
+REM Install Playwright browsers
+echo Installing Playwright browsers...
 set "PLAYWRIGHT_BROWSERS_PATH=%MCP_DIR%\.playwright-browsers"
 call npx playwright install chromium
+if errorlevel 1 (
+  echo [ERROR] Playwright browser installation failed
+  exit /b 1
+)
 
-echo ✅ MCP 模块安装完成
+echo [OK] MCP modules installation completed
+exit /b 0

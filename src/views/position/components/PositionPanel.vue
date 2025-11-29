@@ -18,6 +18,8 @@ import {PositionBean} from "@/api/job/dto/bean/PositionBean";
 import {channelList, workExperienceList, enumEcho} from "@/enums/enumDict.ts";
 import {QueryMatchedPositionsInDto} from "@/api/job/dto/QueryMatchedPositions.ts";
 import {message} from "@/utiles/Message.ts";
+import { executeLogin } from '@/robot/channelLogin/login.ts';
+import { channelAuth } from '@/robot/channelLogin/authManage.ts';
 
 // 创建任务弹框实例
 const createTaskModalRef = useCompRef(CreateTaskModal)
@@ -102,23 +104,26 @@ const handlePageSizeChange = async (pageSize: number) => {
     await loadPositions()
 }
 
-const channels = [
+const channels = ref([
     {
         name: 'BOSS直聘',
+        value: 'boss',
         icon: bossIcon,
         isLogin: true
     },
     {
         name: '智联招聘',
+        value: 'zhilian',
         icon: zhilianIcon,
         isLogin: true
     },
     {
         name: '国聘网',
+        value: 'guopin',
         icon: guopinIcon,
         isLogin: false
     }
-]
+])
 
 const handleChannelLogin = () => {
     showChannelModal.value = true
@@ -129,9 +134,21 @@ const handleOpenCreateModal = () => {
     createTaskModalRef.value?.open()
 }
 
-const handleLogin = (channel: any) => {
+const handleLogin = async (channel: any) => {
     if (!channel.isLogin) {
-        console.log('登录', channel.name)
+        try {
+            const loginResult = await executeLogin(channel.value)
+            if (loginResult.success) {
+                channel.isLogin = true
+                message.success(Message, '登录成功！')
+                showChannelModal.value = false
+            } else {
+                message.error(Message, `登录失败: ${loginResult.error}`)
+            }
+        } catch (error) {
+            console.error('登录异常:', error)
+            message.error(Message, '登录异常，请重试')
+        }
     }
 }
 
@@ -151,6 +168,12 @@ const handleToggleTaskStatus = async () => {
             const taskResult = await jobService.getJobTask(taskParams)
             if (taskResult.code === 200 && taskResult.data) {
                 currentTask.value = taskResult.data
+                if (taskResult.data.status === 0) {
+                    const allCookies = await channelAuth.getAllCookies()
+                    channels.value.forEach(channel => {
+                        channel.isLogin = !!allCookies[channel.value]
+                    })
+                }
             }
         }
     } catch (error) {
@@ -218,6 +241,14 @@ const loadCurrentTask = async () => {
         if (result.code === 200 && result.data) {
             currentTask.value = result.data
             searchData.taskUuid = result.data.uuid
+
+            if (result.data.status === 0) {
+                const allCookies = await channelAuth.getAllCookies()
+                channels.value.forEach(channel => {
+                    channel.isLogin = !!allCookies[channel.value]
+                })
+            }
+
             await loadPositions()
         }
     } catch (error) {
@@ -293,13 +324,21 @@ onMounted(async () => {
                 <div class="task-header align-between">
                     <div class="task-left">
                         <span class="task-title">{{ currentTask?.jobTitle }}</span>
-                        <div :class="{ 'is-active': taskStatus }" class="task-switch" @click="handleToggleTaskStatus">
+                        <div :class="{ 'is-active': taskStatus }" class="task-switch mr-20"
+                             @click="handleToggleTaskStatus">
                             <div class="switch-dot"></div>
                             <span class="switch-text">{{ taskStatus ? '任务进行中' : '任务已关闭' }}</span>
                         </div>
+                        <div class="new-pos-tip">
+                            <div class="new-pos-text mr-20">有新职位</div>
+                            <div class="refresh-con">
+                                <SvgIcon class="mr-5" color="#9499A5" name="icon-shuaxin" size="12"/>
+                                刷新
+                            </div>
+                        </div>
                     </div>
                     <div class="task-right">
-                        <Tooltip v-for="item in channels" :key="item.name" :content="item.name" placement="bottom"
+                        <Tooltip v-for="item in channels" :key="item.value" :content="item.name" placement="bottom"
                                  theme="dark" transfer>
                             <div class="channel-icon">
                                 <img :alt="item.name" :src="item.icon"/>
@@ -412,7 +451,7 @@ onMounted(async () => {
                     <p>渠道处于“登录状态”并且“任务已开启”，系统将自动为您匹配合适岗位。</p>
                 </div>
                 <div class="channel-list">
-                    <div v-for="(channel, index) in channels" :key="index" class="channel-card"
+                    <div v-for="channel in channels" :key="channel.value" class="channel-card"
                          @click="handleLogin(channel)">
                         <div class="channel-icon-wrapper mb-25">
                             <img :alt="channel.name" :src="channel.icon" class="channel-img"/>
@@ -664,6 +703,53 @@ onMounted(async () => {
                             line-height: vw(12);
                             color: $font-middle;
                             transition: color 0.2s ease;
+                        }
+                    }
+
+                    .new-pos-tip {
+                        display: flex;
+                        align-items: center;
+                        column-gap: vw(10);
+
+                        .new-pos-text {
+                            position: relative;
+                            padding-left: vw(18);
+                            font-family: 'PingFang SC', sans-serif;
+                            font-size: vw(14);
+                            font-weight: 500;
+                            line-height: vw(14);
+                            color: $remind-red;
+
+                            &::before {
+                                content: '';
+                                position: absolute;
+                                left: 0;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                width: vw(8);
+                                height: vw(8);
+                                background: $remind-red;
+                                border-radius: 50%;
+                            }
+                        }
+
+                        .refresh-con {
+                            display: flex;
+                            align-items: center;
+                            column-gap: vw(6);
+                            font-family: 'PingFang SC', sans-serif;
+                            font-size: vw(14);
+                            line-height: vw(12);
+                            color: $font-middle;
+                            cursor: pointer;
+
+                            &:hover {
+                                color: $theme-color;
+
+                                :deep(use) {
+                                    fill: $theme-color;
+                                }
+                            }
                         }
                     }
                 }

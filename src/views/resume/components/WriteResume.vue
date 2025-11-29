@@ -457,7 +457,7 @@ const handleConfirm = async () => {
         }
         try {
             const params = new RenameResumeInDto();
-            params.resumeId = resumeData.value.uuid || '';
+            params.resumeId = props.resumeId || '';
             params.name = formData.resumeName;
 
             await resumeService.renameResume(params);

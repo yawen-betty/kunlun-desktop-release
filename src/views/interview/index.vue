@@ -41,12 +41,16 @@ const websiteUrl = 'https://www.example.com'
 
                 <div class="feature-section">
                     <p class="feature-title">一、AI面试辅导：可在APP中开始辅导</p>
-                    <img alt="AI面试辅导" class="feature-img" src="../../assets/images/interview-feature1.png">
+                    <div class="img-wrapper">
+                        <img alt="AI面试辅导" class="feature-img" src="../../assets/images/interview-feature1.png">
+                    </div>
                 </div>
 
                 <div class="feature-section">
                     <p class="feature-title">二、AI面试间：可在APP中开始面试</p>
-                    <img alt="AI面试间" class="feature-img" src="../../assets/images/interview-feature2.png">
+                    <div class="img-wrapper">
+                        <img alt="AI面试间" class="feature-img" src="../../assets/images/interview-feature2.png">
+                    </div>
                 </div>
             </div>
             <div class="prod-right">
@@ -181,11 +185,18 @@ const websiteUrl = 'https://www.example.com'
                 margin: 0 0 vh(20) 0;
             }
 
-            .feature-img {
+            .img-wrapper {
                 width: vw(341);
                 height: vh(134);
-                border: vw(1) solid $border-default;
                 border-radius: vw(5);
+                border: vw(1) solid $border-default;
+                padding: vw(10);
+            }
+
+            .feature-img {
+                width: 100%;
+                height: 100%;
+                border: vw(1) solid $theme-color;
                 object-fit: cover;
             }
         }
