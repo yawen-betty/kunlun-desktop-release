@@ -1,20 +1,22 @@
-use tauri::State;
+use tauri::{AppHandle, State};
 use tokio::sync::Mutex;
 use std::sync::Arc;
 use crate::ai::{AIManager, TaskResult, AITaskConfig};
 
 #[tauri::command]
 pub async fn ai_execute_task(
+    app: AppHandle,
     api_key: String,
     task: String,
     state: State<'_, Arc<Mutex<AIManager>>>,
 ) -> Result<TaskResult, String> {
     let manager = state.lock().await;
-    manager.execute_task(api_key, task).await
+    manager.execute_task(api_key, task, &app).await
 }
 
 #[tauri::command]
 pub async fn ai_execute_task_with_config(
+    app: AppHandle,
     api_key: String,
     task: String,
     api_url: Option<String>,
@@ -37,7 +39,7 @@ pub async fn ai_execute_task_with_config(
     }
     
     let manager = state.lock().await;
-    manager.execute_task_with_config(task, config).await
+    manager.execute_task_with_config(task, config, &app).await
 }
 
 #[tauri::command]

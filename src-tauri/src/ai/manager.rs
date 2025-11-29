@@ -2,7 +2,9 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::sync::Mutex;
 use tokio::time::{timeout, Duration};
+use tauri::AppHandle;
 use crate::mcp::McpManager;
+use crate::mcp::browser::BrowserManager;
 use super::types::*;
 use super::config::AITaskConfig;
 use super::api_client::ApiClient;
@@ -68,6 +70,7 @@ impl AIManager {
     /// # 参数
     /// * `task` - 任务描述
     /// * `config` - 任务配置（API Key、URL、超时等）
+    /// * `app` - AppHandle 用于检查浏览器
     /// 
     /// # 返回
     /// 任务执行结果，包含成功状态、消息和统计信息
@@ -78,9 +81,10 @@ impl AIManager {
         &self,
         task: String,
         config: AITaskConfig,
+        app: &AppHandle,
     ) -> Result<TaskResult, String> {
         timeout(Duration::from_secs(config.timeout_secs), async {
-            self.execute_task_internal(task, config).await
+            self.execute_task_internal(task, config, app).await
         })
         .await
         .map_err(|_| "任务执行超时".to_string())?
@@ -91,14 +95,15 @@ impl AIManager {
     /// # 参数
     /// * `api_key` - API 密钥
     /// * `task` - 任务描述
-    /// * `headless` - 是否以无头模式运行浏览器
+    /// * `app` - AppHandle 用于检查浏览器
     pub async fn execute_task(
         &self,
         api_key: String,
         task: String,
+        app: &AppHandle,
     ) -> Result<TaskResult, String> {
         let config = AITaskConfig::new(api_key);
-        self.execute_task_with_config(task, config).await
+        self.execute_task_with_config(task, config, app).await
     }
     
     /// 任务执行的内部实现
@@ -113,6 +118,7 @@ impl AIManager {
         &self,
         task: String,
         config: AITaskConfig,
+        app: &AppHandle,
     ) -> Result<TaskResult, String> {
         // 获取任务锁，确保同一时间只执行一个任务
         let _lock = self.task_lock.lock().await;
@@ -123,7 +129,7 @@ impl AIManager {
         eprintln!("[AI] 开始执行任务: {}", task);
 
         // 检查浏览器是否已安装
-        self.check_browser_status().await?;
+        self.check_browser_status(app).await?;
 
         // 获取 MCP 工具列表
         let tools = self.get_mcp_tools().await?;
@@ -143,12 +149,10 @@ impl AIManager {
     /// 
     /// # 错误
     /// 如果浏览器未安装，返回错误提示
-    async fn check_browser_status(&self) -> Result<(), String> {
+    async fn check_browser_status(&self, app: &AppHandle) -> Result<(), String> {
         eprintln!("[AI] 检查浏览器状态...");
         
-        let mcp = self.mcp_manager.lock().await;
-        let browser_status = mcp.check_browser_installed();
-        drop(mcp);
+        let browser_status = BrowserManager::check_installed(app);
         
         if !browser_status.installed {
             eprintln!("[AI] 浏览器未安装，任务终止");

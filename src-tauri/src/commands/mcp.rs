@@ -23,10 +23,9 @@ pub async fn stop_mcp_server(
 
 #[tauri::command]
 pub fn check_mcp_browser(
-    state: State<'_, Mutex<McpManager>>,
+    app: AppHandle,
 ) -> Result<BrowserStatus, String> {
-    let manager = state.blocking_lock();
-    Ok(manager.check_browser_installed())
+    Ok(BrowserManager::check_installed(&app))
 }
 
 #[tauri::command]

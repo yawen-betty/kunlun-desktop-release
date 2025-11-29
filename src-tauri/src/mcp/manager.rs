@@ -31,10 +31,10 @@ impl McpManager {
     /// 启动 MCP Server
     pub async fn start(&mut self, app: &AppHandle, headless: bool) -> Result<String, String> {
         // 检查并安装浏览器
-        if !BrowserManager::check_installed().installed {
+        if !BrowserManager::check_installed(app).installed {
             eprintln!("[MCP] Browser not installed, starting installation...");
             BrowserManager::install(app).await?;
-            BrowserManager::wait_for_installation(300).await?;
+            BrowserManager::wait_for_installation(app, 300).await?;
         }
 
         // 启动进程
@@ -105,6 +105,12 @@ impl McpManager {
         
         // 清理所有 Chrome 进程
         eprintln!("[MCP] Cleaning up Chrome processes...");
+        #[cfg(target_os = "windows")]
+        let _ = std::process::Command::new("taskkill")
+            .args(&["/F", "/IM", "chrome.exe", "/T"])
+            .output();
+        
+        #[cfg(not(target_os = "windows"))]
         let _ = std::process::Command::new("pkill")
             .arg("-f")
             .arg("Google Chrome for Testing")
@@ -146,6 +152,13 @@ impl McpManager {
         eprintln!("[CDP] Searching for Chrome process with CDP port...");
         
         for _ in 0..10 {
+            #[cfg(target_os = "windows")]
+            let output = std::process::Command::new("wmic")
+                .args(&["process", "get", "commandline"])
+                .output()
+                .map_err(|e| format!("Failed to run wmic: {}", e))?;
+            
+            #[cfg(not(target_os = "windows"))]
             let output = std::process::Command::new("ps")
                 .args(&["aux"])
                 .output()
@@ -154,7 +167,7 @@ impl McpManager {
             let stdout = String::from_utf8_lossy(&output.stdout);
             
             for line in stdout.lines() {
-                if line.contains("Google Chrome for Testing") && line.contains("--remote-debugging-port=") {
+                if line.contains("chrome") && line.contains("--remote-debugging-port=") {
                     // 解析端口号
                     if let Some(port_str) = line.split("--remote-debugging-port=").nth(1) {
                         if let Some(port_str) = port_str.split_whitespace().next() {
@@ -193,10 +206,7 @@ impl McpManager {
         Err("Failed to get browser WebSocket URL".to_string())
     }
 
-    /// 检查浏览器安装状态
-    pub fn check_browser_installed(&self) -> BrowserStatus {
-        BrowserManager::check_installed()
-    }
+
 
     /// 列出可用工具
     pub async fn list_tools(&mut self) -> Result<serde_json::Value, String> {
