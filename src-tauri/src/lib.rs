@@ -32,6 +32,7 @@ pub fn run() {
             save_token,
             get_token,
             http_request,
+            download_pdf,
             image_to_base64,
             sse_request,
             start_mcp_server,

@@ -8,7 +8,7 @@ mod cdp;
 mod channel_auth;
 
 pub use auth::{save_token, get_token};
-pub use http::http_request;
+pub use http::{http_request, download_pdf};
 pub use image::image_to_base64;
 pub use sse::sse_request;
 pub use mcp::{start_mcp_server, stop_mcp_server, check_mcp_browser, install_mcp_browser, mcp_call_tool};

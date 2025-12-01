@@ -1,39 +1,85 @@
 <script lang="ts" setup>
-import {computed, ref} from 'vue'
+import {computed, ref, watch, onMounted} from 'vue'
 import SvgIcon from '@/components/svgIcon/index.vue'
 import {debounce} from '@/utiles/debounce'
-import {PositionBean} from '@/api/job/dto/bean/PositionBean'
 import {JobService} from '@/service/JobService'
+import {GetPositionDetailOutDto} from '@/api/job/dto/GetPositionDetail'
+import {GetPositionReportOutDto} from '@/api/job/dto/GetPositionReport'
 
 const props = withDefaults(defineProps<{
-    data?: PositionBean | null
+    id?: string
 }>(), {
-    data: null
+    id: ''
 })
 
 const jobService = new JobService()
 const activeTab = ref<'analysis' | 'info'>('analysis')
-const isInterested = computed(() => props.data?.isInterested ?? false)
+const detailData = ref<GetPositionDetailOutDto | null>(null)
+const reportData = ref<GetPositionReportOutDto | null>(null)
+const loading = ref(false)
+
+const isInterested = computed(() => (reportData.value?.isInterested ?? 0) === 1)
 
 defineExpose({
     activeTab
 })
 
 // 判断是否为空状态
-const isEmpty = computed(() => props.data === null || props.data === undefined)
+const isEmpty = computed(() => !props.id || (!detailData.value && !loading.value))
+
+// 加载数据
+const loadData = async () => {
+    if (!props.id) return
+
+    loading.value = true
+    try {
+        const [detailRes, reportRes] = await Promise.all([
+            jobService.getPositionDetail(props.id),
+            jobService.getPositionReport(props.id)
+        ])
+
+        if (detailRes.code === 200) {
+            detailData.value = detailRes.data
+        }
+        if (reportRes.code === 200) {
+            reportData.value = reportRes.data
+        }
+    } catch (error) {
+        console.error('加载职位数据失败:', error)
+    } finally {
+        loading.value = false
+    }
+}
 
 // 处理感兴趣按钮点击
 const handleInterestClick = debounce(async () => {
-    if (!props.data?.uuid) return
+    if (!props.id) return
     try {
-        await jobService.markPositionInterest(props.data.uuid, !isInterested.value)
-        if (props.data) {
-            props.data.isInterested = !isInterested.value
+        const newStatus = isInterested.value ? 0 : 1
+        await jobService.markPositionInterest(props.id, newStatus)
+        if (detailData.value) {
+            detailData.value.isInterested = newStatus
+        }
+        if (reportData.value) {
+            reportData.value.isInterested = newStatus
         }
     } catch (error) {
         console.error('标记感兴趣失败:', error)
     }
 }, 300)
+
+// 监听id变化
+watch(() => props.id, () => {
+    if (props.id) {
+        loadData()
+    }
+}, {immediate: true})
+
+onMounted(() => {
+    if (props.id) {
+        loadData()
+    }
+})
 
 // 处理文本格式，将纯文本转换为HTML
 const formatDescription = (text: string) => {
@@ -93,16 +139,22 @@ const channelMap: Record<number, string> = {
                 <!-- 匹配度卡片 -->
                 <div class="match-card mt-20 mb-40">
                     <div class="match-info">
-                        <div class="match-rate mb-10">{{ data?.matchScore ?? 0 }}% <span
+                        <div class="match-rate mb-10">{{ reportData?.matchScore ?? 0 }}% <span
                             class="match-label">匹配度</span></div>
-                        <div class="match-desc">{{ data?.aiSummary ?? '' }}</div>
+                        <div class="match-desc">{{ reportData?.aiSummary ?? '' }}</div>
                     </div>
                     <img alt="" class="match-img" src="@/assets/images/position_detail.png"/>
                 </div>
 
                 <!-- 详细内容 -->
                 <div class="analysis-content">
-                    <div class="analysis-scroll" v-html="formatDescription(data?.description ?? '')"></div>
+                    <div class="analysis-scroll">
+                        <div v-for="(item, index) in reportData?.aiReport" :key="index" class="analysis-item">
+                            <div class="dimension-name">{{ item.dimensionName }}</div>
+                            <div class="match-level">{{ item.matchLevel }}</div>
+                            <div class="analysis-result">{{ item.analysisResult }}</div>
+                        </div>
+                    </div>
                 </div>
             </template>
 
@@ -110,30 +162,29 @@ const channelMap: Record<number, string> = {
             <template v-else>
                 <div class="position-info mt-40">
 
-                    <!-- 职位标题和薪资 -->
+                    <!-- 职位标题 -->
                     <div class="title-row">
-                        <div class="position-title">{{ data?.title ?? '' }}</div>
-                        <div class="salary">{{ data?.salary ?? '' }}</div>
+                        <div class="position-title">{{ detailData?.title ?? '' }}</div>
                     </div>
 
                     <!-- 公司名称 -->
-                    <div class="company-name">{{ data?.companyName ?? '' }}</div>
+                    <div class="company-name">{{ detailData?.companyName ?? '' }}</div>
                     <!-- 标签组 -->
                     <div class="tags-row mb-20">
-                        <span v-for="(tag, index) in data?.labels" :key="index" class="tag">{{ tag }}</span>
+                        <span v-for="(tag, index) in detailData?.labels" :key="index" class="tag">{{ tag }}</span>
                     </div>
 
                     <!-- 工作地址 -->
                     <div class="section">
                         <div class="section-title">工作地址</div>
-                        <div class="section-content">{{ data?.areaName ?? '' }}</div>
+                        <div class="section-content">{{ detailData?.areaName ?? '' }}</div>
                     </div>
 
                     <!-- 详细地址 -->
                     <div class="section">
                         <div class="section-title">详细地址</div>
                         <div class="section-content">
-                            <div v-for="(address, index) in data?.addresses" :key="index">{{ address }}</div>
+                            <div v-for="(address, index) in detailData?.addresses" :key="index">{{ address }}</div>
                         </div>
                     </div>
 
@@ -141,7 +192,7 @@ const channelMap: Record<number, string> = {
                     <div class="section description-section">
                         <div class="section-title">职位描述</div>
                         <div class="section-content scroll">
-                            <div v-html="formatDescription(data?.description ?? '')"></div>
+                            <div v-html="formatDescription(detailData?.description ?? '')"></div>
                         </div>
                     </div>
 
@@ -149,7 +200,7 @@ const channelMap: Record<number, string> = {
                     <div class="section">
                         <div class="section-title">福利待遇</div>
                         <div class="tags-row mb-20">
-                            <span v-for="(benefit, index) in data?.benefits" :key="index" class="tag">{{
+                            <span v-for="(benefit, index) in detailData?.benefits" :key="index" class="tag">{{
                                     benefit
                                 }}</span>
                         </div>
@@ -157,8 +208,8 @@ const channelMap: Record<number, string> = {
 
                     <!-- 底部信息 -->
                     <div class="footer-info mt-20">
-                        <div>职位信息来源于：{{ channelMap[data?.sourceChannel ?? 0] ?? '' }}</div>
-                        <div>推荐时间：{{ data?.recommendedAt ?? '' }}</div>
+                        <div>职位信息来源于：{{ channelMap[detailData?.sourceChannel ?? 0] ?? '' }}</div>
+                        <div>推荐时间：{{ new Date(detailData?.recommendedAt ?? 0).toLocaleString() }}</div>
                     </div>
                 </div>
             </template>

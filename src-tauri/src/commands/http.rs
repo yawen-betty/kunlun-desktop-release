@@ -2,6 +2,25 @@ use tauri::command;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+#[command]
+pub async fn download_pdf(url: String) -> Result<Vec<u8>, String> {
+    let client = reqwest::Client::builder()
+        .danger_accept_invalid_certs(true)
+        .build()
+        .map_err(|e| format!("创建HTTP客户端失败: {}", e))?;
+
+    let response = client.get(&url)
+        .send()
+        .await
+        .map_err(|e| format!("下载失败: {}", e))?;
+
+    let bytes = response.bytes()
+        .await
+        .map_err(|e| format!("读取文件失败: {}", e))?;
+
+    Ok(bytes.to_vec())
+}
+
 // 请求参数结构体
 #[derive(Debug, Deserialize)]
 pub struct HttpRequest {

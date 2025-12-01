@@ -1,92 +1,23 @@
 <script lang="ts" setup>
-import {ref, reactive} from 'vue'
+import {ref, reactive, onMounted, computed} from 'vue'
 import SvgIcon from '@/components/svgIcon/index.vue'
 import Pagination from '@/components/pagination/index.vue'
+import PromptDialog from '@/components/promptDialog/index.vue'
+import {TutoringService} from '@/service/TutoringService'
+import {GetTutoringRecordsInDto} from '@/api/tutoring/dto/GetTutoringRecords'
+import {TutoringRecordBean} from '@/api/tutoring/dto/bean/TutoringRecordBean'
+import {Message} from 'view-ui-plus'
+import {message} from '@/utiles/Message'
+import {Config} from '@/Config'
+import {invoke} from '@tauri-apps/api/core'
 
-interface TutorshipRecord {
-    id: string
-    time: string
-    title: string
-    resumeInfo: string
-}
+const tutoringService = new TutoringService()
+const selectedId = ref('')
+const recordList = ref<TutoringRecordBean[]>([])
 
-const selectedId = ref('1')
-
-const recordList = ref<TutorshipRecord[]>([
-    {
-        id: '1',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '2',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '3',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '4',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '1',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '2',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '3',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '4',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '1',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '2',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '3',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-    {
-        id: '4',
-        time: '2025.10.20 12:20',
-        title: 'AI面试辅导',
-        resumeInfo: '我的简历-Java开发工程师'
-    },
-
-])
+const selectedRecord = computed(() => {
+    return recordList.value.find(item => item.uuid === selectedId.value)
+})
 
 const pagination = reactive({
     current: 1,
@@ -98,52 +29,130 @@ const handleSelectRecord = (id: string) => {
     selectedId.value = id
 }
 
-const handlePageChange = (page: number) => {
+const handlePageChange = async (page: number) => {
     pagination.current = page
+    await loadRecords()
 }
 
-const handlePageSizeChange = (pageSize: number) => {
+const handlePageSizeChange = async (pageSize: number) => {
     pagination.pageSize = pageSize
     pagination.current = 1
+    await loadRecords()
 }
+
+const loadRecords = async () => {
+    try {
+        const params = new GetTutoringRecordsInDto()
+        params.pageInfo.pageNum = pagination.current
+        params.pageInfo.pageSize = pagination.pageSize
+
+        const result = await tutoringService.getTutoringRecords(params)
+        if (result.code === 200 && result.data) {
+            recordList.value = result.data.list
+            pagination.total = result.data.total
+
+            if (recordList.value.length > 0 && !selectedId.value) {
+                selectedId.value = recordList.value[0].uuid
+            }
+        }
+    } catch (error) {
+        console.error('获取辅导记录失败:', error)
+    }
+}
+
+const deleteDialogRef = ref()
+const currentDeleteId = ref('')
 
 const handleDelete = (id: string) => {
-    console.log('删除记录:', id)
+    currentDeleteId.value = id
+    deleteDialogRef.value?.open()
+    document.body.click();
 }
 
-const handleDownload = (id: string) => {
-    console.log('下载记录:', id)
+const confirmDelete = async () => {
+    try {
+        await tutoringService.deleteTutoringRecord(currentDeleteId.value)
+        message.success(Message, '删除成功！')
+        await loadRecords()
+    } catch (error) {
+        console.error('删除辅导记录失败:', error)
+        message.error(Message, '删除失败，请重试')
+    }
+}
+
+const formatTime = (timestamp: number) => {
+    const date = new Date(timestamp)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `${year}.${month}.${day} ${hours}:${minutes}`
+}
+
+onMounted(async () => {
+    await loadRecords()
+})
+
+const handleDownload = async (id: string) => {
+    const fileName = `辅导记录_${formatTime(Date.now())}.pdf`
+
+    try {
+        const handle = await (window as any).showSaveFilePicker({
+            suggestedName: fileName,
+            types: [{description: 'PDF', accept: {'application/pdf': ['.pdf']}}]
+        })
+        const result = await tutoringService.downloadTutoringPdf(id)
+        if (result.code === 200 && result.data?.pdfUrl) {
+            document.body.click()
+            const url = Config.baseUrl + result.data.pdfUrl
+            // const url = 'https://hr-ai.dev.lingxizhifu.cn/assets/kunlun/resume/81704709-badc-4502-9d51-c435db729666.pdf'
+            const bytes: number[] = await invoke('download_pdf', {url})
+            const uint8Array = new Uint8Array(bytes)
+
+            const writable = await handle.createWritable()
+            await writable.write(uint8Array)
+            await writable.close()
+
+            message.success(Message, '辅导记录已下载')
+        }
+    } catch (error) {
+        if ((error as any).name !== 'AbortError') {
+            console.error('下载失败:', error)
+            message.error(Message, '下载失败，请重试')
+        }
+    }
 }
 </script>
 
 <template>
     <div class="tutorship-page">
         <div class="page-left">
-            <div class="record-list">
+            <div v-if="recordList.length > 0" class="record-list">
                 <div
                     v-for="item in recordList"
-                    :key="item.id"
-                    :class="{ 'is-active': selectedId === item.id }"
+                    :key="item.uuid"
+                    :class="{ 'is-active': selectedId === item.uuid }"
                     class="record-item"
-                    @click="handleSelectRecord(item.id)"
+                    @click="handleSelectRecord(item.uuid)"
                 >
                     <div class="item-content">
                         <div class="item-title">
-                            <span class="time">{{ item.time }}</span>-{{ item.title }}
+                            <span class="time">{{ formatTime(item.startTime) }}</span>-AI面试辅导
                         </div>
-                        <div class="item-subtitle">{{ item.resumeInfo }}</div>
+                        <div class="item-subtitle">{{ item.resumeName }}</div>
                     </div>
-                    <Poptip placement="bottom-end" @click.stop>
+                    <Poptip class="custom-poptip" placement="bottom-end">
                         <div class="more-icon">
                             <SvgIcon color="#9499A4" name="icon-gengduo" size="18"/>
                         </div>
                         <template #content>
                             <div class="action-list">
-                                <div class="action-item" @click="handleDownload(item.id)">
+                                <div class="action-item" @click="handleDownload(item.uuid)">
                                     <SvgIcon class="mr-10" color="#515A6D" name="icon-xiazai" size="12"/>
                                     <span class="download">下载</span>
                                 </div>
-                                <div class="action-item delete" @click="handleDelete(item.id)">
+                                <div class="action-item delete" @click="handleDelete(item.uuid)">
                                     <SvgIcon class="mr-10" color="#EC6B62" name="icon-lajitong-mian" size="12"/>
                                     <span>删除</span>
                                 </div>
@@ -152,7 +161,12 @@ const handleDownload = (id: string) => {
                     </Poptip>
                 </div>
             </div>
+            <div v-else class="empty-state">
+                <img alt="" src="@/assets/images/no-data.png">
+                <div class="empty-text">暂无数据</div>
+            </div>
             <Pagination
+                v-if="recordList.length > 0"
                 v-model:current="pagination.current"
                 v-model:page-size="pagination.pageSize"
                 :total="pagination.total"
@@ -161,8 +175,18 @@ const handleDownload = (id: string) => {
             />
         </div>
         <div class="page-right">
-            <!-- 右侧详情区域 -->
+            <iframe
+                v-if="selectedRecord?.htmlUrl"
+                :src="Config.baseUrl + selectedRecord.htmlUrl"
+                class="preview-iframe"
+                frameborder="0"
+            />
+            <div v-else class="empty-state">
+                <img alt="" src="@/assets/images/no-data.png">
+                <div class="empty-text">暂无数据</div>
+            </div>
         </div>
+        <PromptDialog ref="deleteDialogRef" :confirm="confirmDelete" content="删除后将无法恢复，确认是否删除？"/>
     </div>
 </template>
 
@@ -177,6 +201,27 @@ const handleDownload = (id: string) => {
     display: flex;
     column-gap: vw(40);
     box-sizing: border-box;
+
+    .empty-state {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        img {
+            width: vw(120);
+            height: vw(128);
+        }
+
+        .empty-text {
+            font-size: vw(18);
+            color: $font-middle;
+            margin-top: vh(20);
+        }
+    }
 
     .page-left {
         width: vw(1000);
@@ -247,6 +292,10 @@ const handleDownload = (id: string) => {
                     }
                 }
 
+                :deep(.custom-poptip) {
+                    height: vw(18);
+                }
+
                 .more-icon {
                     width: vw(18);
                     height: vw(18);
@@ -254,6 +303,11 @@ const handleDownload = (id: string) => {
                     align-items: center;
                     justify-content: center;
                     cursor: pointer;
+
+                    svg {
+                        width: 100%;
+                        height: 100%;
+                    }
 
                     &:hover {
                         :deep(use) {
@@ -270,6 +324,14 @@ const handleDownload = (id: string) => {
         background: $white;
         border-radius: vw(2);
         box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+
+        .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     }
 }
 

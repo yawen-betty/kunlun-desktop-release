@@ -58,11 +58,26 @@ export class ChannelPositionBean {
      * 公司名称
      */
     companyName: string = '';
+    
+    /**
+     * 公司简介
+     */
+    introduce: string = '';
+    
+    /**
+     * 公司地址
+     */
+    companyAddress?: string[];
 
     /**
      * 公司行业
      */
     industry?: string;
+    
+    /**
+     * 公司标签
+     */
+    companyLabel?: string[];
 
     /**
      * 公司规模
@@ -95,7 +110,7 @@ export class ChannelPositionBean {
     jobDetailUrl: string = '';
 
     /**
-     * 发布日期
+     * 发布日期 (时间戳)
      */
-    publishDate: string = '';
+    publishDate?: number;
 }
