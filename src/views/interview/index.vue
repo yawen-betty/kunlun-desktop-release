@@ -100,10 +100,13 @@ const websiteUrl = 'https://www.example.com'
             font-size: vw(38);
             line-height: vh(50);
 
+            .ai-icon {
+                margin-right: vw(14.33);
+            }
+
             svg {
-                width: vw(50) !important;
-                height: vw(50) !important;
-                margin-right: vw(20);
+                width: vw(61) !important;
+                height: vh(45) !important;
             }
         }
 

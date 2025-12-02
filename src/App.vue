@@ -78,49 +78,51 @@ const manualCheckUpdate = async () => {
             currentVersion
         });
     }
-};
+}
 
 // 获取用户信息
 const getUserInfo = (userService: UserService) => {
-    userService.getProfile(new GetProfileInDto()).then((res) => {
+    userService.getProfile(new GetProfileInDto()).then(res => {
         if (res.code === 200) {
             if (res.data.avatarUrl) {
                 UserInfo.info.avatar = Config.baseUrl + res.data.avatarUrl!;
             }
             UserInfo.info.userName = res.data.name!;
             UserInfo.info.userId = res.data.uuid!;
-
+            if (res.data.modelAccountBeanList && res.data.modelAccountBeanList.length)
+                UserInfo.info.modelList = res.data.modelAccountBeanList
             if (Config.env !== 'dev') {
                 if (res.data.profileCompleteFlag === '1') {
-                    router.push('/resume');
+                    router.push('/resume')
                 } else {
-                    router.push('/initProfile');
+                    router.push('/initProfile')
                 }
             }
         }
-    });
-};
+    })
+}
 
 // 获取系统配置
 const getConfigInfo = () => {
-    adminService.getConfig(new GetConfigInDto()).then((res) => {
+    adminService.getConfig(new GetConfigInDto()).then(res => {
         if (res.code === 200) {
-            SystemInfo.info.loginTitle = res.data.appName;
-            SystemInfo.info.loginBg = res.data.loginPageImage;
+            SystemInfo.info.loginTitle = res.data.appName
+            SystemInfo.info.loginBg = res.data.loginPageImage
         }
-    });
-};
+    })
+}
+
 </script>
 
 <template>
     <main class="container">
-        <router-view />
+        <router-view/>
     </main>
-    <UpdateDialog ref="updateDialogRef" />
+    <UpdateDialog ref="updateDialogRef"/>
 </template>
-<style scoped lang="scss">
-@use '@/assets/styles/variable.scss' as *;
-@use '@/assets/styles/compute.scss' as *;
+<style lang="scss" scoped>
+@use "@/assets/styles/variable.scss" as *;
+@use "@/assets/styles/compute.scss" as *;
 
 .container {
     height: 100vh;

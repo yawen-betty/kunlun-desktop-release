@@ -15,6 +15,11 @@ export class PositionBean {
     salary: string = '';
 
     /**
+     * 薪资数 (单位:元)
+     */
+    salaryNumber?: number;
+
+    /**
      * 区域信息
      */
     areaName: string = '';
@@ -48,6 +53,11 @@ export class PositionBean {
      * 福利待遇
      */
     benefits: string[] = [];
+
+    /**
+     * 公司ID
+     */
+    companyId?: string;
 
     /**
      * 公司名称
@@ -110,9 +120,9 @@ export class PositionBean {
     aiSummary: string = '';
 
     /**
-     * 用户是否标记为"感兴趣"
+     * 用户是否标记为"感兴趣" (1:是, 0:否)
      */
-    isInterested: boolean = false;
+    isInterested: number = 0;
 
     /**
      * 推荐时间
