@@ -4,11 +4,16 @@ import { channelAuth } from '@/robot/channelLogin/authManage.ts';
 import { executeLogin } from '@/robot/channelLogin/login.ts';
 import { executePositionSearch } from "@/robot/channelPositions/positionSearch.ts";
 import {robotManager} from "@/robot/service";
-import { checkLogin } from '@/robot/checkLogin/index.ts'
+import { checkLogin } from '@/robot/checkLogin/index.ts';
+import {openWeb} from "@/utiles/opnrWeb.ts";
 
 const channelName = ref('boss');
 const cookies = ref('sessionid=test123; token=abc456');
 const result = ref('');
+
+const openBaidu = async () => {
+  await openWeb('https://www.baidu.com/');
+}
 
 // 测试保存 Cookies
 async function testSave() {
@@ -159,6 +164,9 @@ const crPosition = async () => {
       <button @click="stop" class="btn-info">关闭</button>
       <button @click="check" class="btn-info">检测登录</button>
       {{logedChannels}}
+    </div>
+    <div class="button-group">
+      <button @click="openBaidu" class="btn-info">打开百度</button>
     </div>
 
 
