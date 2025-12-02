@@ -64,7 +64,7 @@ onMounted(() => {
             <template v-for="item in routes" :key="item.path">
                 <MenuItem :name="item.path" v-if="item.show">
                     <SvgIcon :name="item.meta.icon" :size="minSize ? '20px' : '16px'" />
-                    <span>{{ item.meta.title }}{{ showVersionUpdate }}</span>
+                    <span>{{ item.meta.title }}</span>
                     <template v-if="item.path === '/personalInfo' && showVersionUpdate">
                         <SvgIcon class="new-svg" name="icon-triangle" size="10px" />
                         <span class="new-badge">
