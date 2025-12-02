@@ -18,7 +18,7 @@ export function buildPositionData(data: any): any {
   Object.assign(position, {
     title: data.data.job_name,
     salary: parseSalary(data.data.min_wage, data.data.wage_unit_cn) + '-' + parseSalary(data.data.max_wage, data.data.wage_unit_cn),
-    salaryNumber: data.data.months === 12 ? null : data.data.months,
+    salaryNumber: data.data.months ? data.data.months + '薪' : '',
     description: data.data.contents,
     educational: data.data.education_cn,
     workExperience: data.data.experience_cn,
@@ -59,7 +59,7 @@ export function buildCompanyData(data: any): any {
     financingStage: '',   // 融资阶段
     companyAddress: [] as string[], // 公司地址
     companyLabel: [] as string[],   // 公司标签
-    sourceChannel: 0,        // 来源渠道 (0: BOSS直聘, 1: 智联校园, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)
+    sourceChannel: 3,        // 来源渠道 (0: BOSS直聘, 1: 智联校园, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)
   }
 
   Object.assign(company, {

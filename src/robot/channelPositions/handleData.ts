@@ -21,15 +21,15 @@ function getDataBuilder(channelName: string) {
 /**
  * 职位处理方法
  */
-export function buildPositionData(info: any, channelName: string): string {
+export async function buildPositionData(info: any, channelName: string): Promise<any> {
   const builder = getDataBuilder(channelName);
-  return builder.buildPositionData(info);
+  return await builder.buildPositionData(info);
 }
 
 /**
  * 公司处理方法
  */
-export function buildCompanyData(info: any, channelName: string): string {
+export async function buildCompanyData(info: any, channelName: string): Promise<any> {
   const builder = getDataBuilder(channelName);
-  return builder.buildCompanyData(info);
+  return await builder.buildCompanyData(info);
 }

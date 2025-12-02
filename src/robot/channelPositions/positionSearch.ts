@@ -7,6 +7,9 @@ import {check} from '@/robot/checkLogin/index.ts';
 import {buildTaskList, buildSingleTaskPrompt} from "@/robot/channelPositions/buildSearchPrompt.ts";
 import {buildPositionData, buildCompanyData} from "@/robot/channelPositions/handleData.ts";
 import {extractCompanyDetailByAI, extractPositionDetailByAI} from "@/robot/channelPositions/analysisData.ts";
+import {JobService} from "@/service/JobService.ts";
+import {CrawlPositionsInDto} from "@/api/job/dto/CrawlPositions.ts";
+import {ChannelPositionBean} from "@/api/job/dto/bean/ChannelPositionBean.ts";
 
 // 任务运行状态
 let isTaskRunning = false;
@@ -14,7 +17,7 @@ let isTaskRunning = false;
 /**
  * 执行职位搜索
  */
-export async function executePositionSearch(options: SearchOptions): Promise<SearchResult> {
+export async function executePositionSearch(options: SearchOptions, taskId: string): Promise<SearchResult> {
   // 并发控制
   if (isTaskRunning) {
     return { code: 500, message: '任务正在执行中，请稍后再试' };
@@ -30,12 +33,19 @@ export async function executePositionSearch(options: SearchOptions): Promise<Sea
       return { code: 500, message: `不支持的渠道: ${channelName}` };
     }
 
-    // 1. 启动 MCP + CDP
-    logger.info('[PositionSearch] 启动 MCP Server...');
-    await mcpService.start(true);
+    // 1、获取所有标签页
+    const countNow = await tabCount();
+    logger.info(`[PositionSearch] 当前有 ${countNow} 个标签页`);
 
-    logger.info('[PositionSearch] 初始化 CDP...');
-    await cdpService.init();
+    // 关闭除第一个外的所有标签页（从后往前关闭）
+    if (countNow > 1) {
+      for (let i = countNow - 1; i >= 1; i--) {
+        logger.info(`[PositionSearch] 关闭标签页 ${i}`);
+        await mcpService.callTool('browser_tabs', { action: 'close', index: i });
+        await robotManager.sleep(500);
+      }
+    }
+
 
     // 2. 验证登录
     logger.info('[PositionSearch] 获取 Cookies...');
@@ -45,8 +55,17 @@ export async function executePositionSearch(options: SearchOptions): Promise<Sea
 
     if (!isLogin) {
       await channelAuth.saveCookies(channelName, '');
-      await robotManager.cleanup();
+      await aiService.stopTask();
       return { code: 403, message: '未找到登录信息，请先登录' };
+    }
+
+    for (const cookie of JSON.parse(cookiesStr)) {
+      await cdpService.sendCommand('Network.setCookie',  {
+        name: cookie.name,
+        value: cookie.value,
+        domain: cookie.domain,
+        path: cookie.path
+      });
     }
 
     // 3. 跳转到搜索页面
@@ -56,40 +75,41 @@ export async function executePositionSearch(options: SearchOptions): Promise<Sea
     await robotManager.sleep(1000);
 
     // 4. AI 逐个执行搜索任务
-    // logger.info('[PositionSearch] 执行搜索任务...');
-    // const tasks = buildTaskList(channelName, searchParams);
-    //
-    // for (let i = 0; i < tasks.length; i++) {
-    //   const task = tasks[i];
-    //   logger.info(`[PositionSearch] 执行任务 ${i + 1}/${tasks.length}: ${task}`);
-    //
-    //   const taskPrompt = buildSingleTaskPrompt(task,channelName);
-    //   const taskResult = await executeAITask(taskPrompt, apiKey);
-    //
-    //   if (!taskResult.success) {
-    //     logger.warning(`[PositionSearch] 任务 ${i + 1} 失败: ${taskResult.message}`);
-    //     // 继续执行下一个任务
-    //   } else {
-    //     logger.info(`[PositionSearch] 任务 ${i + 1} 完成`);
-    //   }
-    //
-    //   await sleep(1000);
-    //   // 任务间短暂延迟
-    //   await sleep(200);
-    // }
-    //
-    // logger.info('[PositionSearch] 所有搜索任务执行完成')
+    logger.info('[PositionSearch] 执行搜索任务...');
+    const tasks = buildTaskList(channelName, searchParams);
+
+    for (let i = 0; i < tasks.length; i++) {
+      const task = tasks[i];
+      logger.info(`[PositionSearch] 执行任务 ${i + 1}/${tasks.length}: ${task}`);
+
+      const taskPrompt = buildSingleTaskPrompt(task,channelName);
+      const taskResult = await executeAITask(taskPrompt, apiKey);
+
+      if (!taskResult.success) {
+        logger.warning(`[PositionSearch] 任务 ${i + 1} 失败: ${taskResult.message}`);
+        // 继续执行下一个任务
+      } else {
+        logger.info(`[PositionSearch] 任务 ${i + 1} 完成`);
+      }
+
+      await robotManager.sleep(1000);
+      // 任务间短暂延迟
+      await robotManager.sleep(200);
+    }
+
+    logger.info('[PositionSearch] 所有搜索任务执行完成')
 
     // 5. AI 点击指定职位
-    const max = 1;  // 获取条数
+    const max = 2;  // 获取条数
 
     for (let i = 1; i <= max; i++) {
-      let dataInfo = {}; // 获取的数据
+      let dataInfo : ChannelPositionBean = new ChannelPositionBean(); // 获取的数据
       await cdpService.clearNetworkEvents(); // 执行任务前先清空网络监听
       logger.info(`[PositionClick] 执行第${i}条点击任务...`);
 
       // 点击职位打开职位详情
-      const clickPositionResult = await executeAITask(`请直接点击职位列表的第 ${i} 个职位项，不要点击任何筛选、清空或其他按钮`, apiKey);
+      const clickPositionResult = await executeAITask(
+        channelName === 'boss'? `请直接点击职位列表的第 ${i} 个职位项,然后点击页面右侧的'查看更多信息'` : `请直接点击职位列表的第 ${i} 个职位项`, apiKey);
       logger.info(`[PositionClick] 任务完成`,clickPositionResult);
       await robotManager.sleep(3000);
 
@@ -104,12 +124,10 @@ export async function executePositionSearch(options: SearchOptions): Promise<Sea
       logger.info('///////////////////////////////1',guopinPositionInfoList);
       if (guopinPositionInfoList.length > 0) {
         const guopinPositionInfo = guopinPositionInfoList.pop(); // 获取最后一个
-        if (channelName === 'guopin') {
-          if (guopinPositionInfo?.response_body) {
-            const position = buildPositionData(JSON.parse(guopinPositionInfo?.response_body),'guopin');
-            dataInfo = Object.assign(dataInfo,position)
-            logger.info('///////////////////////////////2',position);
-          }
+        if (guopinPositionInfo?.response_body) {
+          const position = await buildPositionData(JSON.parse(guopinPositionInfo?.response_body),channelName);
+          dataInfo = Object.assign(dataInfo,position)
+          logger.info('///////////////////////////////2',position);
         }
       }
       // 获取所有 targets（包括新打开的 tab）
@@ -146,17 +164,15 @@ export async function executePositionSearch(options: SearchOptions): Promise<Sea
       if (guopinCompanyInfoList.length > 0) {
         const guopinCompanyInfo = guopinCompanyInfoList.pop(); // 获取最后一个
 
-        if (channelName === 'guopin') {
-          if (guopinCompanyInfo?.response_body) {
-            const company = buildCompanyData(JSON.parse(guopinCompanyInfo.response_body),'guopin');
-            dataInfo = Object.assign(dataInfo,company)
-            logger.info('///////////////////////////////4',company);
-          }
+        if (guopinCompanyInfo?.response_body) {
+          const company = await buildCompanyData(JSON.parse(guopinCompanyInfo.response_body),channelName);
+          dataInfo = Object.assign(dataInfo,company)
+          logger.info('///////////////////////////////4',company);
         }
       }
 
-      // TODO 调用润扬提供的方法把 dataInfo 发送出去
-
+      // 发送数据给接口
+      crawlPositions(dataInfo, taskId);
 
       // 获取所有标签页
       const count = await tabCount();
@@ -220,17 +236,15 @@ export async function executePositionSearch(options: SearchOptions): Promise<Sea
     }
 
     await robotManager.sleep(1000); // 等待数据加载
-
-    await robotManager.cleanup();
-
+    await aiService.stopTask();
     return {
       code: 200,
-      message: '搜索成功'
+      message: '执行成功'
     };
 
   } catch (error) {
     logger.error('[PositionSearch] 执行失败:', error);
-    await robotManager.cleanup();
+    await aiService.stopTask();
     return {
       code: 500,
       message: String(error)
@@ -279,4 +293,16 @@ async function tabCount(): Promise<number> {
   const tabCount = tabLines.length;
 
   return tabCount || 0;
+}
+
+/**
+ * 调用接口上传数据
+ */
+function crawlPositions (data : ChannelPositionBean, taskId: string) {
+  const jobService = new JobService();
+  logger.info('///////////////////////////////5',jobService);
+  jobService.crawlPositions({
+    taskUuid: taskId,
+    positions: data
+  })
 }

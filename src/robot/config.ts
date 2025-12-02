@@ -14,9 +14,9 @@ export const CHANNEL_CONFIG = {
     /** Cookie 域名 */
     cookieDomain: '.zhipin.com',
     /** 监听职位的接口 */
-    positionNetUrl: '',
+    positionNetUrl: 'web/competitive/jobDetail.json',
     /** 监听公司的接口 */
-    companyNetUrl: ''
+    companyNetUrl: '/zpCommon/toggle/all'
   },
   zhilian: {
     homeUrl: 'https://www.zhaopin.com/',
@@ -24,8 +24,8 @@ export const CHANNEL_CONFIG = {
     loginCheckApi: '/user/detail',
     loginSuccessCode: 200,
     cookieDomain: '.zhaopin.com',
-    positionNetUrl: 'xiaoyuan.zhaopin.com/job',
-    companyNetUrl: 'www.zhaopin.com/companydetail'
+    positionNetUrl: 'experiment/config',
+    companyNetUrl: 'experiment/config'
   },
   guopin: {
     homeUrl: 'https://www.iguopin.com/',

@@ -56,23 +56,6 @@ export class AIRobotService {
   }
 
   /**
-   * 执行 AI 任务（简化版）
-   */
-  async executeTask(apiKey: string, task: string): Promise<TaskResult> {
-    // return await invoke('ai_execute_task', {
-    //   apiKey: apiKey,
-    //   task: task
-    // });
-    return await invoke('ai_execute_task_with_config', {
-      apiKey: '1eb39bbb-226a-4e2b-8c8f-012148bf27a8',
-      task,
-      apiUrl: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
-      model: 'ep-20251110093709-h4565',
-      enableThinking: true
-    });
-  }
-
-  /**
    * 执行 AI 任务（完整配置）
    *
    * @param {string} apiKey - AI 服务的 API 密钥
@@ -81,19 +64,20 @@ export class AIRobotService {
    * @param {string} model - 模型名称（可选）默认glm-4.5-flash
    * @param {boolean} enableThinking - 是否启用 thinking（可选） 默认禁用
    */
-  async executeTaskWithConfig(
+  async executeTask(
     apiKey: string,
     task: string,
     apiUrl?: string,
     model?: string,
     enableThinking?: boolean
   ): Promise<TaskResult> {
+
     return await invoke('ai_execute_task_with_config', {
-      api_key: apiKey,
+      apiKey,
       task,
-      api_url: apiUrl,
+      apiUrl,
       model,
-      enable_thinking: enableThinking
+      enableThinking
     });
   }
 

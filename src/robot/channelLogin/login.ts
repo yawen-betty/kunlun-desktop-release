@@ -118,20 +118,6 @@ export async function executeLogin(channelName: string): Promise<LoginResult> {
 }
 
 /**
- * 停止登录流程
- */
-export async function stopLogin(): Promise<void> {
-  logger.warning('[ChannelLogin] 手动停止登录流程');
-  isRunning = false;
-  try {
-    await cdpService.clearNetworkEvents();
-    await mcpService.stop();
-  } catch (e) {
-    logger.error('[ChannelLogin] 停止失败:', e);
-  }
-}
-
-/**
  * 等待用户登录
  */
 async function waitForLogin(channelName: string): Promise<void> {

@@ -14,6 +14,7 @@ pub struct McpManager {
     cdp_client: Option<CDPClient>,
     cdp_port: Option<u16>,
     initialized: bool,
+    app_handle: Option<AppHandle>,
 }
 
 impl McpManager {
@@ -25,11 +26,14 @@ impl McpManager {
             cdp_client: None,
             cdp_port: None,
             initialized: false,
+            app_handle: None,
         }
     }
 
     /// 启动 MCP Server
     pub async fn start(&mut self, app: &AppHandle, headless: bool) -> Result<String, String> {
+        // 保存 AppHandle
+        self.app_handle = Some(app.clone());
         // 检查并安装浏览器
         if !BrowserManager::check_installed(app).installed {
             eprintln!("[MCP] Browser not installed, starting installation...");
@@ -92,18 +96,28 @@ impl McpManager {
     pub fn stop(&mut self) -> Result<(), String> {
         eprintln!("[MCP] Stopping MCP Server...");
         
-        // 断开 CDP
+        // 1. 先断开 CDP（释放 WebSocket 连接）
         if self.cdp_client.is_some() {
             eprintln!("[MCP] Disconnecting CDP...");
             self.cdp_client = None;
         }
         
-        // 关闭 MCP 进程
+        // 2. 清理协议
+        if self.protocol.is_some() {
+            eprintln!("[MCP] Closing protocol...");
+            self.protocol = None;
+        }
+        
+        // 3. 关闭 MCP 进程
         if let Some(process) = self.process.take() {
+            eprintln!("[MCP] Killing MCP process...");
             process.kill()?;
         }
         
-        // 清理所有 Chrome 进程
+        // 4. 等待资源释放
+        std::thread::sleep(std::time::Duration::from_millis(500));
+        
+        // 5. 清理所有 Chrome 进程
         eprintln!("[MCP] Cleaning up Chrome processes...");
         #[cfg(target_os = "windows")]
         let _ = std::process::Command::new("taskkill")
@@ -116,9 +130,13 @@ impl McpManager {
             .arg("Google Chrome for Testing")
             .output();
         
-        self.protocol = None;
+        // 6. 重置所有状态
         self.cdp_port = None;
         self.initialized = false;
+        self.app_handle = None;
+        
+        // 7. 再等待一下确保进程完全退出
+        std::thread::sleep(std::time::Duration::from_millis(500));
         
         eprintln!("[MCP] Server stopped successfully");
         Ok(())
@@ -133,8 +151,8 @@ impl McpManager {
         // 获取 WebSocket URL
         let ws_url = self.get_cdp_websocket_url(port).await?;
         
-        // 连接 CDP
-        let cdp_client = CDPClient::connect(&ws_url).await?;
+        // 连接 CDP（传入 AppHandle）
+        let cdp_client = CDPClient::connect_with_app(&ws_url, self.app_handle.clone()).await?;
         self.cdp_client = Some(cdp_client);
         
         Ok(())
@@ -234,6 +252,11 @@ impl McpManager {
     
     /// 获取 CDP 客户端（懒加载）
     pub async fn get_cdp_client(&mut self) -> Result<&mut CDPClient, String> {
+        // 检查 MCP 是否已初始化
+        if !self.initialized {
+            return Err("MCP not initialized, cannot connect CDP".to_string());
+        }
+        
         // 如果已经连接，直接返回
         if self.cdp_client.is_some() {
             return Ok(self.cdp_client.as_mut().unwrap());

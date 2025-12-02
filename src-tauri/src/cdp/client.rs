@@ -6,6 +6,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
 use tokio::sync::{Mutex, RwLock, mpsc};
 use std::collections::HashMap;
+use tauri::{Manager, Emitter};
 use super::types::*;
 
 pub struct CDPClient {
@@ -17,11 +18,18 @@ pub struct CDPClient {
     active_target_id: Arc<RwLock<Option<String>>>, // 当前活跃的 target_id
     #[allow(dead_code)]
     attach_tx: mpsc::UnboundedSender<String>, // 用于发送需要附加的 target_id
+    #[allow(dead_code)]
+    app_handle: Option<tauri::AppHandle>, // Tauri AppHandle 用于发送事件
 }
 
 impl CDPClient {
     /// 连接到 CDP
     pub async fn connect(url: &str) -> Result<Self, String> {
+        Self::connect_with_app(url, None).await
+    }
+    
+    /// 连接到 CDP（带 AppHandle）
+    pub async fn connect_with_app(url: &str, app_handle: Option<tauri::AppHandle>) -> Result<Self, String> {
         eprintln!("[CDP] Connecting to: {}", url);
         
         let (ws, _) = connect_async(url)
@@ -112,6 +120,7 @@ impl CDPClient {
         let attach_tx_for_listener = attach_tx.clone();
         let active_target_id_for_listener = active_target_id.clone();
         let attached_sessions_for_listener = attached_sessions.clone();
+        let app_handle_for_listener = app_handle.clone();
         tokio::spawn(async move {
             Self::message_listener(
                 ws_receiver, 
@@ -121,7 +130,8 @@ impl CDPClient {
                 request_id_for_listener, 
                 attach_tx_for_listener,
                 active_target_id_for_listener,
-                attached_sessions_for_listener
+                attached_sessions_for_listener,
+                app_handle_for_listener
             ).await;
         });
         
@@ -133,6 +143,7 @@ impl CDPClient {
             attached_sessions,
             active_target_id,
             attach_tx,
+            app_handle,
         };
         
         // 启用 Target 发现
@@ -181,9 +192,11 @@ impl CDPClient {
         attach_tx: mpsc::UnboundedSender<String>,
         active_target_id: Arc<RwLock<Option<String>>>,
         attached_sessions: Arc<RwLock<HashMap<String, String>>>,
+        app_handle: Option<tauri::AppHandle>,
     ) {
         while let Some(msg) = ws_receiver.next().await {
-            if let Ok(Message::Text(text)) = msg {
+            match msg {
+                Ok(Message::Text(text)) => {
                 // 尝试解析为响应
                 if let Ok(response) = serde_json::from_str::<CDPResponse>(&text) {
                     let mut responses = pending_responses.write().await;
@@ -210,8 +223,27 @@ impl CDPClient {
                     ).await;
                 }
             }
+            Ok(Message::Close(_)) => {
+                eprintln!("[CDP] WebSocket closed by remote");
+                break;
+            }
+            Err(e) => {
+                eprintln!("[CDP] WebSocket error: {}", e);
+                break;
+            }
+            _ => {}
         }
-        eprintln!("[CDP] Connection closed");
+        }
+        
+        eprintln!("[CDP] Connection closed - Browser may have been closed manually");
+        
+        // 发送浏览器关闭事件到前端
+        if let Some(app) = app_handle {
+            let _ = app.emit("browser-closed", serde_json::json!({
+                "message": "Browser connection closed"
+            }));
+            eprintln!("[CDP] Emitted browser-closed event to frontend");
+        }
     }
     
     /// 附加到指定 Target
