@@ -65,12 +65,22 @@ export class GetPositionDetailOutDto extends BaseOutDto {
     sourceChannel: number = 0;
     
     /**
+     * 薪资范围
+     */
+    salary: string = '';
+    
+    /**
+     * 薪资数
+     */
+    salaryNumber: number = 0;
+    
+    /**
      * 推荐时间 (时间戳)
      */
     recommendedAt: number = 0;
     
     /**
-     * 用户是否标记为"感兴趣"
+     * 用户是否标记为"感兴趣" (1:是, 0:否)
      */
-    isInterested: boolean = false;
+    isInterested: number = 0;
 }

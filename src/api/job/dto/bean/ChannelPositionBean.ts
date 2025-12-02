@@ -55,6 +55,11 @@ export class ChannelPositionBean {
     salaryNumber?: number;
 
     /**
+     * 公司ID
+     */
+    companyId: string = '';
+
+    /**
      * 公司名称
      */
     companyName: string = '';

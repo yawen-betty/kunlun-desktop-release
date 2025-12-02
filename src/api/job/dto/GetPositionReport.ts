@@ -36,7 +36,7 @@ export class GetPositionReportOutDto extends BaseOutDto {
     aiReport: RelatedDimensionAnalysisBean[] = [];
     
     /**
-     * 用户是否标记为"感兴趣"
+     * 用户是否标记为"感兴趣" (1:是, 0:否)
      */
-    isInterested: boolean = false;
+    isInterested: number = 0;
 }

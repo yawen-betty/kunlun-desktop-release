@@ -1,5 +1,6 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 import { AreaInfoBean } from "@/api/user/dto/bean/AreaInfoBean";
+import { ModelAccountBean } from "@/api/user/dto/bean/ModelAccountBean";
 
 /**
  * 获取当前用户信息请求DTO
@@ -56,4 +57,9 @@ export class GetProfileOutDto extends BaseOutDto {
      * 个人信息是否已补全 (0:否, 1:是)
      */
     profileCompleteFlag: string = '';
+    
+    /**
+     * 模型账号列表
+     */
+    modelAccountBeanList?: ModelAccountBean[];
 }

@@ -60,9 +60,9 @@ export class MatchedPositionBean {
     educational: string = '';
     
     /**
-     * 用户是否标记为"感兴趣"
+     * 用户是否标记为"感兴趣" (1:是, 0:否)
      */
-    isInterested: boolean = false;
+    isInterested: number = 0;
     
     /**
      * 来源渠道 (0: BOSS直聘, 1: 智联校园, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)

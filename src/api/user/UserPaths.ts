@@ -58,4 +58,13 @@ export class UserPaths {
         method: 'POST',
         prefix: 'user'
     };
+
+    /**
+     * 注销账号
+     */
+    static deactivate: Path = {
+        url: '/deactivate',
+        method: 'POST',
+        prefix: 'user'
+    };
 }

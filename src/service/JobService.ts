@@ -72,7 +72,7 @@ export class JobService {
     /**
      * 标记或取消标记感兴趣的职位
      */
-    public async markPositionInterest(uuid: string, isInterested: boolean): Promise<EmptyOutDto> {
+    public async markPositionInterest(uuid: string, isInterested: number): Promise<EmptyOutDto> {
         return await this.http.request<EmptyOutDto>(JobPaths.markPositionInterest, {uuid, isInterested});
     }
 

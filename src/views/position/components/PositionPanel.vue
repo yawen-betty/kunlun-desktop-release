@@ -473,10 +473,14 @@ onBeforeUnmount(() => {
                                 <span>{{ item.matchScore }}%</span>
                             </div>
                         </div>
-                        <span class="item-salary">{{ item.salary }}</span>
+                        <span class="item-salary">{{
+                                [item.salary, `${item.salaryNumber}薪`].filter(Boolean).join('·')
+                            }}</span>
                     </div>
                     <div class="item-middle">
                         <div class="item-tags">
+                            <span v-if="item.educational" class="tag-item">{{ item.educational }}</span>
+                            <span v-if="item.workExperience" class="tag-item">{{ item.workExperience }}</span>
                             <span v-for="(tag, idx) in item.labels" :key="idx" class="tag-item">{{ tag }}</span>
                         </div>
                         <span class="item-time">{{ item.recommendedAt }} <span class="separator">｜</span>{{

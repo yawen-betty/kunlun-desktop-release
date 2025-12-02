@@ -4,7 +4,7 @@
         <!-- 顶部个人信息 -->
         <div class="header-section">
             <div class="info-left">
-                <h1 class="name">{{ contactInfo.name || '未命名' }}</h1>
+                <h1 class="name">{{ contactInfo.name || '姓名' }}</h1>
                 <p class="job-position">{{ contactInfo.jobPosition || '求职岗位' }}</p>
                 <div class="contact-info">
                     <span class="contact-item">手机号码：{{ contactInfo.phone }}</span>
@@ -141,7 +141,7 @@ const getEntryTime = (entry: ResumeEntryBean): string => {
     const fields = entry.fields || [];
     const startTime = fields.find(f => f.fieldKey === 'start_time')?.fieldValue || '';
     const endTime = fields.find(f => f.fieldKey === 'end_time')?.fieldValue || '';
-    
+
     if (!startTime && !endTime) return '';
     if (startTime && endTime) return `${startTime} - ${endTime}`;
     return startTime || endTime;

@@ -165,12 +165,17 @@ const channelMap: Record<number, string> = {
                     <!-- 职位标题 -->
                     <div class="title-row">
                         <div class="position-title">{{ detailData?.title ?? '' }}</div>
+                        <div class="salary">
+                            {{ [detailData?.salary, `${detailData?.salaryNumber}薪`].filter(Boolean).join('·') }}
+                        </div>
                     </div>
 
                     <!-- 公司名称 -->
                     <div class="company-name">{{ detailData?.companyName ?? '' }}</div>
                     <!-- 标签组 -->
                     <div class="tags-row mb-20">
+                        <span v-if="detailData?.educational" class="tag">{{ detailData.educational }}</span>
+                        <span v-if="detailData?.workExperience" class="tag">{{ detailData.workExperience }}</span>
                         <span v-for="(tag, index) in detailData?.labels" :key="index" class="tag">{{ tag }}</span>
                     </div>
 
