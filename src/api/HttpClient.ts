@@ -1,11 +1,11 @@
-import type {App} from "vue";
-import {Config} from "@/Config.ts";
-import {UserInfo} from "@/utiles/userInfo.ts";
+import type {App} from 'vue';
+import {Config} from '@/Config.ts';
+import {UserInfo} from '@/utiles/userInfo.ts';
 import {invoke} from '@tauri-apps/api/core';
 import {listen} from '@tauri-apps/api/event';
-import type {Path} from "@/api/Path.ts";
-import {message} from "@/utiles/Message.ts";
-import {Message} from "view-ui-plus";
+import type {Path} from '@/api/Path.ts';
+import {message} from '@/utiles/Message.ts';
+import {Message} from 'view-ui-plus';
 
 // 定义请求参数接口
 interface HttpRequestParams {
@@ -26,9 +26,7 @@ interface HttpResponse {
     body: any;
 }
 
-export interface EmptyOutDto {
-
-}
+export interface EmptyOutDto {}
 
 export default class HttpClient {
     static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
@@ -41,10 +39,10 @@ export default class HttpClient {
     static create(): any {
         return {
             install: (app: App) => {
-                app.provide('$http', new HttpClient())
+                app.provide('$http', new HttpClient());
             }
-        }
-    };
+        };
+    }
 
     // 接口URL拼接
     private static fixUrl(path: Path, data?: any): string {
@@ -140,7 +138,7 @@ export default class HttpClient {
                     // 其他错误码的通用处理
                     // TODO 白名单
                     if (code !== 200) {
-                        console.log(responseBody, 'responseBodyresponseBody')
+                        console.log(responseBody, 'responseBodyresponseBody');
                         const msg = responseBody.msg || '请求失败';
                         message.error(Message, msg);
                         throw new Error(msg);
@@ -175,13 +173,21 @@ export default class HttpClient {
         // 请求头和认证逻辑
         let defaultHeaders: Record<string, string> = {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'version': Config.version
+            Accept: 'application/json',
+            // version: Config.version
+            version: '1.0.0'
         };
 
         if (HttpClient.token) {
             defaultHeaders['Admin-Token'] = HttpClient.token;
         }
+
+        // 为版本管理接口添加额外的header
+        if (/get(Release)?VersionInfo/.test(path.url)) {
+            if (data?.type) defaultHeaders['type'] = data.type;
+            if (data?.version) defaultHeaders['version'] = data.version;
+        }
+
         console.log('请求头:', defaultHeaders);
 
         // 构建请求参数
@@ -205,9 +211,9 @@ export default class HttpClient {
             // 普通 JSON 请求 - 需要过滤掉路径参数
             const bodyData = {...data};
             // 移除URL中已使用的路径参数
-            const pathParams = path.url.match(/\{([^}]+)\}/g)?.map(p => p.slice(1, -1)) || [];
-            pathParams.forEach(param => delete bodyData[param]);
-            
+            const pathParams = path.url.match(/\{([^}]+)\}/g)?.map((p) => p.slice(1, -1)) || [];
+            pathParams.forEach((param) => delete bodyData[param]);
+
             if (Object.keys(bodyData).length > 0) {
                 requestParams.body = bodyData;
                 console.log('请求体:', requestParams.body);
@@ -230,7 +236,6 @@ export default class HttpClient {
                 HttpClient.handleSpecialCode(response.body);
                 resolve(response.body as T);
             } else {
-
                 reject(new Error(`请求失败: ${response.status} ${JSON.stringify(response.body)}`));
             }
             // } catch (error) {
@@ -267,8 +272,8 @@ export default class HttpClient {
 
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
-            'Accept': 'text/event-stream',
-            'version': Config.version
+            Accept: 'text/event-stream',
+            version: Config.version
         };
 
         if (HttpClient.token) {
@@ -334,5 +339,4 @@ export default class HttpClient {
             }
         }
     }
-
 }

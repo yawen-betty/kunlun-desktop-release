@@ -12,7 +12,7 @@ export class QueryValueAddedServiceListInDto extends BaseInDto {
  */
 export class QueryValueAddedServiceListOutDto extends BaseOutDto {
     /**
-     * 增值服务列表
+     * 增值服务列表（直接返回数组）
      */
-    list: ValueAddedServiceBean[] = [];
+    data: ValueAddedServiceBean[] = [];
 }

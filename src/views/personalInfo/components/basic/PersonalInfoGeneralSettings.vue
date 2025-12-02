@@ -5,10 +5,17 @@
         <p class="action-link" @click="handleCalculate">开始计算</p>
         <div class="divider"></div>
         <p class="action-link" @click="handleLogout">注销账号</p>
+        
+        <LogoutModal v-model="showLogoutModal" @confirm="confirmLogout" />
     </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+import LogoutModal from '../LogoutModal.vue';
+
+const showLogoutModal = ref(false);
+
 /**
  * 开始计算缓存
  */
@@ -20,7 +27,15 @@ const handleCalculate = () => {
  * 注销账号
  */
 const handleLogout = () => {
-    console.log('注销账号');
+    showLogoutModal.value = true;
+};
+
+/**
+ * 确认注销
+ */
+const confirmLogout = () => {
+    console.log('确认注销账号');
+    // TODO: 实现注销逻辑
 };
 </script>
 

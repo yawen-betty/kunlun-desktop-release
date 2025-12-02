@@ -3,7 +3,10 @@
         <h1 class="title">版本更新</h1>
         <div class="version-info">
             <span class="current-version">当前版本：V1.0.0</span>
-            <span class="new-version">发现新版本！<span class="update-link" @click="handleUpdate">立即更新</span></span>
+            <span class="new-version">
+                发现新版本！
+                <span class="update-link" @click="handleUpdate">立即更新</span>
+            </span>
         </div>
         <p class="update-time">更新时间：2025.05.09 12:30</p>
         <p class="update-title">更新详情：</p>
@@ -23,12 +26,26 @@
 </template>
 
 <script setup lang="ts">
+import {platform} from '@tauri-apps/plugin-os';
+import {onMounted} from 'vue';
+import {AdminService} from '@/service/AdminService';
+import {GetVersionInfoInDto, GetVersionInfoOutDto} from '@/api/admin/dto/GetVersionInfo';
+const versionInformation = new GetVersionInfoInDto();
+const adminService = new AdminService();
+onMounted(async () => {
+    const os = platform();
+    versionInformation.type = os;
+    adminService.getVersionInfo(versionInformation).then((res) => {
+        if (res.code === 200) {
+            console.log('%c 🇵🇼: res ', 'font-size:16px;background-color:#0fa3a1;color:white;', res);
+        }
+    });
+});
+
 /**
  * 立即更新
  */
-const handleUpdate = () => {
-    console.log('立即更新');
-};
+const handleUpdate = () => {};
 </script>
 
 <style scoped lang="scss">
@@ -49,14 +66,14 @@ const handleUpdate = () => {
     font-size: vw(28);
     line-height: vh(28);
     color: $font-dark;
-    margin: 0 0 vh(28) 0;
+    margin: 0 0 vh(40) 0;
     font-weight: normal;
 }
 
 .version-info {
     display: flex;
     gap: vw(20);
-    margin-bottom: vh(32);
+    margin-bottom: vh(10);
 }
 
 .current-version {
@@ -89,7 +106,7 @@ const handleUpdate = () => {
     font-size: vw(16);
     line-height: vh(22);
     color: $font-dark;
-    margin: 0 0 vh(32) 0;
+    margin: 0 0 vh(10) 0;
     font-weight: 500;
 }
 
@@ -98,13 +115,13 @@ const handleUpdate = () => {
     font-size: vw(16);
     line-height: vh(22);
     color: $font-dark;
-    margin: 0 0 vh(22) 0;
+    margin: 0 0 vh(20) 0;
     font-weight: 500;
 }
 
 .update-details {
     width: vw(1199);
-    height: vh(350);
+    height: vh(676);
     background: $bg-gray;
     border-radius: vw(2);
     padding: vh(20) vw(20);
