@@ -7,6 +7,7 @@ import {robotManager} from "@/robot/service";
 import {checkLogin} from '@/robot/checkLogin/index.ts';
 import {openWeb} from "@/utiles/opnrWeb.ts";
 import {UserInfo} from "@/utiles/userInfo.ts";
+import {invoke} from "@tauri-apps/api/core";
 
 const channelName = ref('boss');
 const cookies = ref('sessionid=test123; token=abc456');
@@ -127,6 +128,16 @@ const crPosition = async () => {
         experience: '10K-20K'
     }, '145b19cf73e749efac73a6f05827bead')
 }
+
+const getCacheSize = async () => {
+  const cacheInfo = await invoke('get_cache_size');
+  console.info('//////////1212121212',JSON.stringify(cacheInfo));
+}
+
+const clearCache = async () => {
+  const result = await invoke('clear_cache');
+  console.info('//////////34343434',JSON.stringify(result));
+}
 </script>
 
 <template>
@@ -169,6 +180,11 @@ const crPosition = async () => {
         <div class="button-group">
             <button class="btn-info" @click="openBaidu">打开百度</button>
         </div>
+
+      <div class="button-group">
+        <button class="btn-info" @click="getCacheSize">计算</button>
+        <button class="btn-info" @click="clearCache">清理</button>
+      </div>
 
 
         <div v-if="result" class="result-box">

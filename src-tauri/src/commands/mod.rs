@@ -6,6 +6,7 @@ mod mcp;
 mod ai;
 mod cdp;
 mod channel_auth;
+mod cache;
 
 pub use auth::{save_token, get_token};
 pub use http::{http_request, download_pdf};
@@ -18,4 +19,5 @@ pub use cdp::{
     cdp_enable_network, cdp_get_network_events, cdp_clear_network_events, cdp_get_response_body, cdp_send_command
 };
 pub use channel_auth::{save_channel_cookies, get_channel_cookies};
+pub use cache::{get_cache_size, clear_cache};
 

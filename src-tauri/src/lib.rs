@@ -53,7 +53,9 @@ pub fn run() {
             cdp_get_response_body,
             cdp_send_command,
             save_channel_cookies,
-            get_channel_cookies
+            get_channel_cookies,
+            get_cache_size,
+            clear_cache
         ])
         .setup(|app| {
             // 初始化 AIManager - 使用已经注册的 McpManager
