@@ -22,7 +22,7 @@ export class MatchedPositionBean {
     /**
      * 薪资数
      */
-    salaryNumber: number = 0;
+    salaryNumber: string = '';
     
     /**
      * 职位标签

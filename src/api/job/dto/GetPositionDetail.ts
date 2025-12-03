@@ -72,7 +72,7 @@ export class GetPositionDetailOutDto extends BaseOutDto {
     /**
      * 薪资数
      */
-    salaryNumber: number = 0;
+    salaryNumber: string = '';
     
     /**
      * 推荐时间 (时间戳)

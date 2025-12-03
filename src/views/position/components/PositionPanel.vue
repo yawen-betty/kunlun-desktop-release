@@ -359,6 +359,22 @@ const openBaidu = async (url: string) => {
     }
 }
 
+// 计算可显示的标签
+const getVisibleTags = (item: MatchedPositionBean) => {
+    const tags: string[] = []
+    if (item.educational) tags.push(item.educational)
+    if (item.workExperience) tags.push(item.workExperience)
+    if (item.labels) tags.push(...item.labels)
+
+    // 根据标签内容长度动态估算，时间信息占约25%宽度，每个标签平均占8%宽度
+    const timeWidthPercent = 25
+    const avgTagWidthPercent = 8
+    const availablePercent = 100 - timeWidthPercent
+    const maxTags = Math.floor(availablePercent / avgTagWidthPercent)
+
+    return tags.slice(0, Math.max(1, maxTags))
+}
+
 onMounted(async () => {
     await loadCurrentTask()
     await loadOtherTasks()
@@ -487,9 +503,9 @@ onBeforeUnmount(() => {
                     </div>
                     <div class="item-middle">
                         <div class="item-tags">
-                            <span v-if="item.educational" class="tag-item">{{ item.educational }}</span>
-                            <span v-if="item.workExperience" class="tag-item">{{ item.workExperience }}</span>
-                            <span v-for="(tag, idx) in item.labels" :key="idx" class="tag-item">{{ tag }}</span>
+                            <span v-for="(tag, idx) in getVisibleTags(item)" :key="idx" class="tag-item">{{
+                                    tag
+                                }}</span>
                         </div>
                         <span class="item-time">{{ parseDate(item.recommendedAt, '{y}-{m}-{d} {h}:{i}') }} <span
                             class="separator">｜</span>{{
@@ -1040,6 +1056,7 @@ onBeforeUnmount(() => {
                         display: flex;
                         align-items: center;
                         column-gap: vw(10);
+                        flex-wrap: nowrap;
 
                         .tag-item {
                             padding: vw(5);
@@ -1047,6 +1064,7 @@ onBeforeUnmount(() => {
                             font-size: vw(12);
                             color: $font-dark;
                             line-height: vw(12);
+                            white-space: nowrap;
                         }
                     }
 
@@ -1093,6 +1111,11 @@ onBeforeUnmount(() => {
                             font-size: vw(14);
                             color: $font-dark;
                             line-height: vw(14);
+                        }
+
+                        svg {
+                            width: vw(14) !important;
+                            height: vw(14) !important;
                         }
 
                         &:hover {

@@ -52,7 +52,7 @@ export class ChannelPositionBean {
     /**
      * 薪资数 (单位:元)
      */
-    salaryNumber?: number;
+    salaryNumber?: string;
 
     /**
      * 公司ID
