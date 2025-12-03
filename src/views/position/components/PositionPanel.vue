@@ -22,7 +22,8 @@ import {executeLogin} from '@/robot/channelLogin/login.ts';
 import {channelAuth} from '@/robot/channelLogin/authManage.ts';
 import {onBeforeUnmount} from 'vue';
 import {MatchedPositionBean} from "@/api/job/dto/bean/MatchedPositionBean.ts";
-import {UserInfo} from "@/utiles/userInfo.ts";
+import {openWeb} from "@/utiles/opnrWeb.ts";
+import {parseDate} from "@/utiles/DateUtils.ts";
 
 // 创建任务弹框实例
 const createTaskModalRef = useCompRef(CreateTaskModal)
@@ -352,6 +353,12 @@ const stopCheckTimer = () => {
     }
 }
 
+const openBaidu = async (url: string) => {
+    if (url) {
+        await openWeb(url);
+    }
+}
+
 onMounted(async () => {
     await loadCurrentTask()
     await loadOtherTasks()
@@ -369,7 +376,7 @@ onBeforeUnmount(() => {
             <div class="title-row align-between">
                 <div class="title-left flex-column">
                     <SvgIcon class="ai-icon" color="#FC8719" name="icon-AI" size="40"/>
-                    <span>精选职位{{ UserInfo.info.token }}</span>
+                    <span>精选职位</span>
                 </div>
                 <div class="title-right">
                     <Checkbox v-model="searchData.isInterested" :false-value="0" :true-value="1" class="filter-checkbox"
@@ -475,7 +482,7 @@ onBeforeUnmount(() => {
                             </div>
                         </div>
                         <span class="item-salary">{{
-                                [item.salary, `${item.salaryNumber}薪`].filter(Boolean).join('·')
+                                [item.salary, item.salaryNumber].filter(Boolean).join('·')
                             }}</span>
                     </div>
                     <div class="item-middle">
@@ -484,7 +491,8 @@ onBeforeUnmount(() => {
                             <span v-if="item.workExperience" class="tag-item">{{ item.workExperience }}</span>
                             <span v-for="(tag, idx) in item.labels" :key="idx" class="tag-item">{{ tag }}</span>
                         </div>
-                        <span class="item-time">{{ item.recommendedAt }} <span class="separator">｜</span>{{
+                        <span class="item-time">{{ parseDate(item.recommendedAt, '{y}-{m}-{d} {h}:{i}') }} <span
+                            class="separator">｜</span>{{
                                 enumEcho(item.sourceChannel, channelList, 'value', 'key')
                             }}</span>
                     </div>
@@ -492,7 +500,7 @@ onBeforeUnmount(() => {
                         <span class="company-info">{{ item.areaName }} <span class="separator">｜</span>{{
                                 item.companyName
                             }}</span>
-                        <div class="item-action pointer">
+                        <div class="item-action pointer" @click="openBaidu(item.jobDetailUrl)">
                             <SvgIcon color="#9499A4" name="icon-send" size="14"/>
                             <span>去投递</span>
                         </div>

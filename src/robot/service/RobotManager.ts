@@ -133,13 +133,13 @@ export class RobotManager {
                 if (cookiesStr && cookiesStr !== 'no cookies') {
                     logger.info(`[RobotManager] 开始爬取 ${channel} 渠道`);
 
-          try {
-            await executePositionSearch({
-              channelName: channel,
-              searchParams: searchParams,
-              apiKey: '2f8832011b8142c88355c47e436a371d.dxOs4FN5VORHJGbI'
-            },
-            taskId);
+                    try {
+                        await executePositionSearch({
+                                channelName: channel,
+                                searchParams: searchParams,
+                                apiKey: 'ad9708dda52f413a835e494771d2529e.MSrNVUZb277yeac8'
+                            },
+                            taskId);
 
                         logger.info(`[RobotManager] ${channel} 渠道爬取完成`);
                     } catch (error) {
