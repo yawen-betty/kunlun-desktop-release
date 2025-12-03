@@ -68,4 +68,9 @@ export class MatchedPositionBean {
      * 来源渠道 (0: BOSS直聘, 1: 智联校园, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)
      */
     sourceChannel: number = 0;
+    
+    /**
+     * 职位详情地址
+     */
+    jobDetailUrl: string = '';
 }

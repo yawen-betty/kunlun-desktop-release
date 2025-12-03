@@ -22,6 +22,7 @@ import {executeLogin} from '@/robot/channelLogin/login.ts';
 import {channelAuth} from '@/robot/channelLogin/authManage.ts';
 import {onBeforeUnmount} from 'vue';
 import {MatchedPositionBean} from "@/api/job/dto/bean/MatchedPositionBean.ts";
+import {UserInfo} from "@/utiles/userInfo.ts";
 
 // 创建任务弹框实例
 const createTaskModalRef = useCompRef(CreateTaskModal)
@@ -368,7 +369,7 @@ onBeforeUnmount(() => {
             <div class="title-row align-between">
                 <div class="title-left flex-column">
                     <SvgIcon class="ai-icon" color="#FC8719" name="icon-AI" size="40"/>
-                    <span>精选职位</span>
+                    <span>精选职位{{ UserInfo.info.token }}</span>
                 </div>
                 <div class="title-right">
                     <Checkbox v-model="searchData.isInterested" :false-value="0" :true-value="1" class="filter-checkbox"
