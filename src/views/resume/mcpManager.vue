@@ -130,13 +130,13 @@ const crPosition = async () => {
 }
 
 const getCacheSize = async () => {
-  const cacheInfo = await invoke('get_cache_size');
-  console.info('//////////1212121212',JSON.stringify(cacheInfo));
+    const cacheInfo = await invoke('get_cache_size');
+    console.info('//////////1212121212', JSON.stringify(cacheInfo));
 }
 
 const clearCache = async () => {
-  const result = await invoke('clear_cache');
-  console.info('//////////34343434',JSON.stringify(result));
+    const result = await invoke('clear_cache');
+    console.info('//////////34343434', JSON.stringify(result));
 }
 </script>
 
@@ -181,10 +181,10 @@ const clearCache = async () => {
             <button class="btn-info" @click="openBaidu">打开百度</button>
         </div>
 
-      <div class="button-group">
-        <button class="btn-info" @click="getCacheSize">计算</button>
-        <button class="btn-info" @click="clearCache">清理</button>
-      </div>
+        <div class="button-group">
+            <button class="btn-info" @click="getCacheSize">计算</button>
+            <button class="btn-info" @click="clearCache">清理</button>
+        </div>
 
 
         <div v-if="result" class="result-box">

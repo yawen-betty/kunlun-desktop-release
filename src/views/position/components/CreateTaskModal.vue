@@ -12,6 +12,7 @@ import {JobService} from "@/service/JobService.ts";
 import CustomSelect from "@/components/customSelect/index.vue";
 import {message} from "@/utiles/Message.ts";
 import {Message} from "view-ui-plus";
+import {debounce} from "@/utiles/debounce.ts";
 
 const showAddTaskModal = ref(false)
 // 输入框提示词列表
@@ -114,7 +115,7 @@ const loadResumeList = async () => {
     }
 }
 
-const handleSubmit = async (isApply: boolean) => {
+const handleSubmit = debounce(async (isApply: boolean) => {
     const errors = []
     if (!formData.jobTitle?.trim()) errors.push('求职岗位')
     if (!formData.cityInfos?.length) errors.push('期望城市')
@@ -140,7 +141,7 @@ const handleSubmit = async (isApply: boolean) => {
     } catch (error) {
         console.error('保存任务失败:', error)
     }
-}
+}, 300)
 
 defineExpose({
     open
