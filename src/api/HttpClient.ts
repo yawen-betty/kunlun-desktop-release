@@ -6,7 +6,7 @@ import {listen} from '@tauri-apps/api/event';
 import type {Path} from '@/api/Path.ts';
 import {message} from '@/utiles/Message.ts';
 import {Message} from 'view-ui-plus';
-
+import {platform} from '@tauri-apps/plugin-os';
 // 定义请求参数接口
 interface HttpRequestParams {
     url: string;
@@ -174,8 +174,8 @@ export default class HttpClient {
         let defaultHeaders: Record<string, string> = {
             'Content-Type': 'application/json',
             Accept: 'application/json',
-            // version: Config.version
-            version: '1.0.0'
+            version: Config.version
+            // version: '1.0.0'
         };
 
         if (HttpClient.token) {
@@ -184,8 +184,15 @@ export default class HttpClient {
 
         // 为版本管理接口添加额外的header
         if (/get(Release)?VersionInfo/.test(path.url)) {
-            if (data?.type) defaultHeaders['type'] = data.type;
-            if (data?.version) defaultHeaders['version'] = data.version;
+            const platformMap: Record<string, string> = {
+                android: '1',
+                ios: '2',
+                macos: '3',
+                windows: '4'
+            };
+            const os = platform();
+            defaultHeaders['x_type'] = platformMap[os] || os;
+            defaultHeaders['x_version'] = '1.0.0';
         }
 
         console.log('请求头:', defaultHeaders);

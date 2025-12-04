@@ -1,51 +1,60 @@
 <template>
     <div class="version-update">
+        <!-- <span class="update-link" @click="handleUpdate">立即更新</span> -->
+
         <h1 class="title">版本更新</h1>
         <div class="version-info">
-            <span class="current-version">当前版本：V1.0.0</span>
-            <span class="new-version">
+            <span class="current-version">当前版本：{{ versionData?.versionNum }}</span>
+            <span class="new-version" v-if="versionData.isLatestVersion === '0'">
                 发现新版本！
                 <span class="update-link" @click="handleUpdate">立即更新</span>
             </span>
         </div>
-        <p class="update-time">更新时间：2025.05.09 12:30</p>
+        <p class="update-time">更新时间：{{ versionData?.releaseTime }}</p>
         <p class="update-title">更新详情：</p>
         <div class="update-details">
-            <div class="update-content">
-                <p>我是标题</p>
-                <ul>
-                    <li>支持添加不同颜色便签，快捷记录灵感</li>
-                    <li>新增流程图、类图等更多图形，满足多场景需求</li>
-                    <li>支持拖拽气泡图形的端点调整其指向，编辑更灵活</li>
-                    <li>无需快速新建图形时，可隐藏图形四周端点以避免误操作</li>
-                </ul>
+            <p v-html="versionData?.content"></p>
+            <!-- <div class="update-content">
             </div>
-            <div class="placeholder"></div>
+            <div class="placeholder"></div> -->
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import {platform} from '@tauri-apps/plugin-os';
-import {onMounted} from 'vue';
+import {onMounted, ref} from 'vue';
 import {AdminService} from '@/service/AdminService';
 import {GetVersionInfoInDto, GetVersionInfoOutDto} from '@/api/admin/dto/GetVersionInfo';
+import {Config} from '@/Config';
+import {checkForUpdates, performUpdate} from '@/updater';
 const versionInformation = new GetVersionInfoInDto();
 const adminService = new AdminService();
+const currentVersion = Config.version; // 从 package.json 或 tauri.conf.json 读取
+const versionData = ref<GetVersionInfoOutDto>(new GetVersionInfoOutDto());
 onMounted(async () => {
-    const os = platform();
-    versionInformation.type = os;
-    adminService.getVersionInfo(versionInformation).then((res) => {
+    adminService.getVersionInfo({}).then((res) => {
         if (res.code === 200) {
-            console.log('%c 🇵🇼: res ', 'font-size:16px;background-color:#0fa3a1;color:white;', res);
+            versionData.value = res.data;
         }
     });
 });
 
-/**
- * 立即更新
- */
-const handleUpdate = () => {};
+const progress = ref(0);
+
+// 执行更新
+const handleUpdate = async () => {
+    const result = await checkForUpdates(currentVersion, true);
+    const updateInstance = result?.update;
+    if (!updateInstance) return;
+
+    try {
+        await performUpdate(updateInstance, (p) => {
+            progress.value = p;
+        });
+    } catch (error) {
+        alert('更新失败，请稍后重试');
+    }
+};
 </script>
 
 <style scoped lang="scss">
@@ -126,6 +135,7 @@ const handleUpdate = () => {};
     border-radius: vw(2);
     padding: vh(20) vw(20);
     position: relative;
+    overflow: auto;
 }
 
 .update-content {

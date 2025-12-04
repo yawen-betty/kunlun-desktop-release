@@ -23,6 +23,7 @@ import {ref, onMounted} from 'vue';
 import {Button} from 'view-ui-plus';
 import AgreementModal from '@/views/login/components/AgreementModal.vue';
 import {AdminService} from '@/service/AdminService';
+import {openWeb} from '@/utiles/openWeb';
 
 const showAgreement = ref<boolean>(false);
 const agreementType = ref<number>(1);
@@ -30,9 +31,10 @@ const websiteUrl = ref<string>('');
 const adminService = new AdminService();
 
 const handleGoToWebsite = async () => {
-    if (websiteUrl.value) {
-        // open(websiteUrl.value);
-    }
+    console.log('%c 🎥: handleGoToWebsite -> websiteUrl.value ', 'font-size:16px;background-color:#17c306;color:white;', websiteUrl.value);
+    await openWeb('https://www.baidu.com/');
+    // if (websiteUrl.value) {
+    // }
 };
 
 onMounted(() => {

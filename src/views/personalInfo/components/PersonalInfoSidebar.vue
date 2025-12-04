@@ -56,7 +56,7 @@ const authService = new AuthService();
 const allMenuItems = [
     {name: 'personal', label: '个人信息'},
     {name: 'model', label: '模型账号'},
-    {name: 'cache', label: '清理缓存'},
+    // {name: 'cache', label: '清理缓存'},
     {name: 'version', label: '版本更新'},
     {name: 'feedback', label: '问题反馈'},
     {name: 'help', label: '帮助中心', visible: () => showHelpCenter.value},
