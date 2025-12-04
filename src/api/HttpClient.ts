@@ -183,17 +183,17 @@ export default class HttpClient {
         }
 
         // 为版本管理接口添加额外的header
-        if (/get(Release)?VersionInfo/.test(path.url)) {
-            const platformMap: Record<string, string> = {
-                android: '1',
-                ios: '2',
-                macos: '3',
-                windows: '4'
-            };
-            const os = platform();
-            defaultHeaders['x_type'] = platformMap[os] || os;
-            defaultHeaders['x_version'] = '1.0.0';
-        }
+        // if (/get(Release)?VersionInfo/.test(path.url)) {
+        //     const platformMap: Record<string, string> = {
+        //         android: '1',
+        //         ios: '2',
+        //         macos: '3',
+        //         windows: '4'
+        //     };
+        //     const os = platform();
+        //     defaultHeaders['x_type'] = platformMap[os] || os;
+        //     defaultHeaders['x_version'] = '1.0.0';
+        // }
 
         console.log('请求头:', defaultHeaders);
 
