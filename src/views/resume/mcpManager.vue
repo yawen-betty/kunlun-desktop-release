@@ -5,7 +5,7 @@ import {executeLogin} from '@/robot/channelLogin/login.ts';
 import {executePositionSearch} from "@/robot/channelPositions/positionSearch.ts";
 import {robotManager} from "@/robot/service";
 import {checkLogin} from '@/robot/checkLogin/index.ts';
-import {openWeb} from "@/utiles/opnrWeb.ts";
+import {openWeb} from "@/utiles/openWeb.ts";
 import {UserInfo} from "@/utiles/userInfo.ts";
 import {invoke} from "@tauri-apps/api/core";
 

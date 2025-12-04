@@ -31,6 +31,8 @@ export interface EmptyOutDto {}
 export default class HttpClient {
     static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
 
+    static osPlatform = platform();
+
     // 动态获取token，确保每次请求都使用最新的token
     static get token(): string | undefined {
         return UserInfo.info?.token;
@@ -174,8 +176,9 @@ export default class HttpClient {
         let defaultHeaders: Record<string, string> = {
             'Content-Type': 'application/json',
             Accept: 'application/json',
-            version: Config.version
-            // version: '1.0.0'
+            'x-version': Config.version,
+            'x-source': HttpClient.osPlatform === 'macos' ? 'mac' : HttpClient.osPlatform
+            // x-version: '1.0.0'
         };
 
         if (HttpClient.token) {
@@ -280,7 +283,8 @@ export default class HttpClient {
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
             Accept: 'text/event-stream',
-            version: Config.version
+            'x-version': Config.version,
+            'x-source': HttpClient.osPlatform === 'macos' ? 'mac' : HttpClient.osPlatform
         };
 
         if (HttpClient.token) {

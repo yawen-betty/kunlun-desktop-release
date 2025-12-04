@@ -253,8 +253,10 @@ fn calculate_playwright_profiles_size(playwright_dir: &PathBuf) -> u64 {
 }
 
 /// 清理 Playwright Profile 目录（只清理 mcp-*-profile）
+/// 遇到被占用的文件会跳过，继续清理其他文件
 fn clear_playwright_profiles(playwright_dir: &PathBuf) -> Result<u64, String> {
     let mut freed_space = 0u64;
+    let mut skipped_count = 0;
     
     if let Ok(entries) = fs::read_dir(playwright_dir) {
         for entry in entries.flatten() {
@@ -265,10 +267,19 @@ fn clear_playwright_profiles(playwright_dir: &PathBuf) -> Result<u64, String> {
                     if name_str.starts_with("mcp-") && name_str.ends_with("-profile") {
                         if path.is_dir() {
                             let size = calculate_dir_size(&path);
-                            if let Err(e) = fs::remove_dir_all(&path) {
-                                return Err(format!("删除 {} 失败: {}", name_str, e));
+                            
+                            // 尝试删除，失败则跳过
+                            match fs::remove_dir_all(&path) {
+                                Ok(_) => {
+                                    freed_space += size;
+                                    eprintln!("[Cache] 清理 Playwright Profile: {}", name_str);
+                                }
+                                Err(e) => {
+                                    // 跳过被占用的目录
+                                    eprintln!("[Cache] 跳过 {}（被占用）: {}", name_str, e);
+                                    skipped_count += 1;
+                                }
                             }
-                            freed_space += size;
                         }
                     }
                 }
@@ -276,12 +287,18 @@ fn clear_playwright_profiles(playwright_dir: &PathBuf) -> Result<u64, String> {
         }
     }
     
+    if skipped_count > 0 {
+        eprintln!("[Cache] 跳过了 {} 个被占用的 Profile 目录", skipped_count);
+    }
+    
     Ok(freed_space)
 }
 
 /// 清理目录（删除目录内所有内容，但保留目录本身）
+/// 遇到被占用的文件会跳过，继续清理其他文件
 fn clear_directory(dir: &PathBuf) -> Result<u64, String> {
     let mut freed_space = 0u64;
+    let mut skipped_count = 0;
     
     if !dir.exists() {
         return Ok(0);
@@ -300,26 +317,40 @@ fn clear_directory(dir: &PathBuf) -> Result<u64, String> {
                 calculate_dir_size(&path)
             };
             
-            if path.is_file() {
-                if let Err(e) = fs::remove_file(&path) {
-                    return Err(format!("删除文件失败: {}", e));
-                }
+            // 尝试删除，失败则跳过
+            let delete_result = if path.is_file() {
+                fs::remove_file(&path)
             } else if path.is_dir() {
-                if let Err(e) = fs::remove_dir_all(&path) {
-                    return Err(format!("删除目录失败: {}", e));
+                fs::remove_dir_all(&path)
+            } else {
+                continue;
+            };
+            
+            match delete_result {
+                Ok(_) => {
+                    freed_space += size;
+                }
+                Err(e) => {
+                    // 跳过被占用的文件，继续清理其他文件
+                    eprintln!("[Cache] 跳过文件（被占用）: {:?} - {}", path, e);
+                    skipped_count += 1;
                 }
             }
-            
-            freed_space += size;
         }
+    }
+    
+    if skipped_count > 0 {
+        eprintln!("[Cache] 跳过了 {} 个被占用的文件", skipped_count);
     }
     
     Ok(freed_space)
 }
 
 /// 清理旧日志
+/// 遇到被占用的文件会跳过，继续清理其他文件
 fn clear_old_logs(log_dir: &PathBuf, days: u64) -> Result<u64, String> {
     let mut freed_space = 0u64;
+    let mut skipped_count = 0;
     let cutoff_time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -334,16 +365,28 @@ fn clear_old_logs(log_dir: &PathBuf, days: u64) -> Result<u64, String> {
                         if let Ok(duration) = modified.duration_since(UNIX_EPOCH) {
                             if duration.as_secs() < cutoff_time {
                                 let size = metadata.len();
-                                if let Err(e) = fs::remove_file(entry.path()) {
-                                    return Err(format!("删除日志文件失败: {}", e));
+                                
+                                // 尝试删除，失败则跳过
+                                match fs::remove_file(entry.path()) {
+                                    Ok(_) => {
+                                        freed_space += size;
+                                    }
+                                    Err(e) => {
+                                        // 跳过被占用的文件
+                                        eprintln!("[Cache] 跳过日志文件（被占用）: {:?} - {}", entry.path(), e);
+                                        skipped_count += 1;
+                                    }
                                 }
-                                freed_space += size;
                             }
                         }
                     }
                 }
             }
         }
+    }
+    
+    if skipped_count > 0 {
+        eprintln!("[Cache] 跳过了 {} 个被占用的日志文件", skipped_count);
     }
     
     Ok(freed_space)
