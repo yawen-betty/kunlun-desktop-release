@@ -166,11 +166,28 @@ impl AIManager {
     /// 获取并转换 MCP 工具列表
     /// 
     /// # 返回
-    /// 转换为 AI API 格式的工具列表（所有工具）
+    /// 转换为 AI API 格式的工具列表（仅白名单工具）
     async fn get_mcp_tools(&self) -> Result<Vec<Tool>, String> {
         let mut mcp = self.mcp_manager.lock().await;
         let tools_response = mcp.list_tools().await?;
         drop(mcp);
+
+        // 定义允许的工具白名单
+        let allowed_tools = vec![
+            "browser_snapshot",        // 获取页面可访问性快照
+            "browser_click",           // 点击元素
+            "browser_type",            // 输入文本
+            "browser_evaluate",        // 执行JavaScript（数据提取）
+            "browser_hover",           // 鼠标悬停
+            "browser_select_option",   // 选择下拉选项
+            "browser_press_key",       // 按键盘按键
+            "browser_wait_for",        // 等待
+            "browser_take_screenshot", // 截图
+            "browser_close",           // 关闭浏览器
+            "browser_tabs",            // 管理标签
+            "browser_handle_dialog",   // 处理弹窗
+            "browser_console_messages", // 获取控制台日志
+        ];
 
         // 解析 MCP 返回的工具列表
         let tools_array = tools_response
@@ -178,10 +195,15 @@ impl AIManager {
             .and_then(|t| t.as_array())
             .ok_or("无法获取工具列表")?;
 
-        // 转换为 AI API 格式（所有工具）
+        // 转换为 AI API 格式（仅白名单工具）
         let mut tools = Vec::new();
         for tool in tools_array {
             if let Some(name) = tool.get("name").and_then(|n| n.as_str()) {
+                // 白名单过滤
+                if !allowed_tools.contains(&name) {
+                    continue;
+                }
+                
                 let description = tool
                     .get("description")
                     .and_then(|d| d.as_str())
@@ -206,7 +228,7 @@ impl AIManager {
             }
         }
 
-        eprintln!("[AI] 加载了 {} 个工具", tools.len());
+        eprintln!("[AI] 加载了 {} 个工具（白名单过滤）", tools.len());
         Ok(tools)
     }
     
