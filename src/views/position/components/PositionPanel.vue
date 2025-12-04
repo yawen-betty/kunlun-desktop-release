@@ -157,17 +157,17 @@ const handleLogin = debounce(async (channel: any) => {
                 message.success(Message, '登录成功！')
                 showChannelModal.value = false
 
-                // // 登录成功后，如果任务在进行中，重启爬取
-                // if (currentTask.value?.status === 0 && currentTask.value.uuid) {
-                //     await robotManager.cleanup()
-                //     UserInfo.info.isRunningTask = false
-                //     await robotManager.crawlPosition({
-                //         jobTitle: currentTask.value.jobTitle,
-                //         cityInfos: currentTask.value.cityName,
-                //         experience: enumEcho(currentTask.value.experience, workExperienceList, 'value', 'key')
-                //     }, currentTask.value.uuid)
-                //     UserInfo.info.isRunningTask = true
-                // }
+                // 登录成功后，如果任务在进行中，重启爬取
+                if (currentTask.value?.status === 0 && currentTask.value.uuid) {
+                    await robotManager.cleanup()
+                    UserInfo.info.isRunningTask = false
+                    await robotManager.crawlPosition({
+                        jobTitle: currentTask.value.jobTitle,
+                        cityInfos: currentTask.value.cityName,
+                        experience: enumEcho(currentTask.value.experience, workExperienceList, 'value', 'key')
+                    }, currentTask.value.uuid)
+                    UserInfo.info.isRunningTask = true
+                }
             } else {
                 message.error(Message, `登录失败: ${loginResult.error}`)
             }
