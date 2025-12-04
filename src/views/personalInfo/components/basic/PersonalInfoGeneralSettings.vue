@@ -19,7 +19,7 @@ import {ref, computed} from 'vue';
 import {invoke} from '@tauri-apps/api/core';
 import {UserInfo} from '@/utiles/userInfo.ts';
 import {Message} from 'view-ui-plus';
-import {withLoading} from '@/utils/loading';
+import {withLoading} from '@/utiles/loading';
 
 import LogoutModal from '../LogoutModal.vue';
 

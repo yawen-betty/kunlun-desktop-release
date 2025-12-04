@@ -31,12 +31,12 @@ export class GetReleaseVersionInfoOutDto extends BaseOutDto {
     /**
      * 版本号
      */
-    versionNum: string = '';
+    version: string = '';
 
     /**
-     * 平台类型（1Android，2ios，3mac，4windows）
+     * 平台类型（Android，ios，mac，windows）
      */
-    type: string = '';
+    source: string = '';
 
     /**
      * 是否强制更新（0.不强制1.强制更新）

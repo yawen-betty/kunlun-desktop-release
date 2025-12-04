@@ -7,6 +7,8 @@ import type {Path} from '@/api/Path.ts';
 import {message} from '@/utiles/Message.ts';
 import {Message} from 'view-ui-plus';
 import {platform} from '@tauri-apps/plugin-os';
+import emitter from '@/utiles/eventBus';
+
 // 定义请求参数接口
 interface HttpRequestParams {
     url: string;
@@ -134,6 +136,12 @@ export default class HttpClient {
                 // 简历数量已达上限
                 case 2305:
                     message.error(Message, responseBody.msg);
+                    break;
+
+                // 强制更新版本
+                case 417:
+                    message.error(Message, responseBody.msg);
+                    emitter.emit('forcedUpdate');
                     break;
 
                 default:

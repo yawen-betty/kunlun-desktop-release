@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref, provide} from 'vue';
+import {onMounted, ref, provide, readonly, onUnmounted} from 'vue';
 import {checkForUpdates} from '@/updater';
 import UpdateDialog from '@/components/updateDialog/index.vue';
 import {Config} from '@/Config.ts';
@@ -11,14 +11,14 @@ import {useRouter} from 'vue-router';
 import {GetConfigInDto} from '@/api/admin/dto/GetConfig.ts';
 import {SystemInfo} from '@/utiles/systemInfo.ts';
 import {AdminService} from '@/service/AdminService.ts';
-import {platform} from '@tauri-apps/plugin-os';
-import {GetReleaseVersionInfoInDto} from '@/api/admin/dto/GetReleaseVersionInfo';
+import emitter from '@/utiles/eventBus';
 
 const adminService = new AdminService();
 const userService = new UserService();
 const updateDialogRef = ref();
 const currentVersion = Config.version; // 从 package.json 或 tauri.conf.json 读取
-
+// 检测最新版本
+const newVersion = ref('');
 const router = useRouter();
 
 // 提供给子组件的配置状态
@@ -27,30 +27,10 @@ const showVersionUpdate = ref(false);
 const versionUpdateDetails = ref('');
 provide('showVersionUpdate', showVersionUpdate);
 
-// 启动获取最新版本信息
-const theCheckForUpdates = async () => {
-    const res = await adminService.getReleaseVersionInfo({});
-    // 检查是否有新版本
-    showVersionUpdate.value = res.data.isLatestVersion === '0';
-    versionUpdateDetails.value = res.data.content || '';
-};
-
 // 应用启动时自动检查更新
 onMounted(async () => {
-    try {
-        const result = await checkForUpdates(currentVersion, false);
-        await theCheckForUpdates();
-        if (result) {
-            updateDialogRef.value?.show({
-                ...result,
-                currentVersion,
-                versionUpdateDetails: versionUpdateDetails.value
-            });
-        }
-    } catch (e) {
-        console.info('=====检测更新失败====', e);
-    }
-
+    // manualCheckUpdate();
+    emitter.on('forcedUpdate', manualCheckUpdate);
     auth.getToken().then((token) => {
         if (token) {
             UserInfo.info.token = token;
@@ -63,15 +43,33 @@ onMounted(async () => {
     getConfigInfo();
 });
 
-// 手动检查更新（绑定到菜单或按钮）
-const manualCheckUpdate = async () => {
-    const result = await checkForUpdates(currentVersion, true);
+onUnmounted(() => {
+    emitter.off('forcedUpdate', manualCheckUpdate);
+});
 
-    if (result) {
-        updateDialogRef.value?.show({
-            ...result,
-            currentVersion
-        });
+// 启动获取最新版本信息
+const theCheckForUpdates = async () => {
+    const res = await adminService.getReleaseVersionInfo({});
+    // 检查是否有新版本
+    showVersionUpdate.value = currentVersion !== newVersion.value;
+    versionUpdateDetails.value = res.data.content || '';
+};
+
+// 检查更新
+const manualCheckUpdate = async () => {
+    try {
+        const result = await checkForUpdates(currentVersion, false);
+        newVersion.value = result?.newVersion || '';
+        await theCheckForUpdates();
+        if (result) {
+            updateDialogRef.value?.show({
+                ...result,
+                currentVersion,
+                versionUpdateDetails: versionUpdateDetails.value
+            });
+        }
+    } catch (e) {
+        console.info('=====检测更新失败====', e);
     }
 };
 
