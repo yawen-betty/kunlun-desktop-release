@@ -20,19 +20,12 @@ use ai::AIManager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let mut builder = tauri::Builder::default()
+    tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_http::init())
-        .plugin(tauri_plugin_os::init());
-
-    #[cfg(desktop)]
-    {
-        builder = builder.plugin(tauri_plugin_updater::Builder::new().build());
-    }
-
-    builder
+        .plugin(tauri_plugin_os::init())
         .manage(Mutex::new(McpManager::new()))
         .invoke_handler(tauri::generate_handler![
             greet,
@@ -78,10 +71,8 @@ pub fn run() {
             let ai_manager = AIManager::new(mcp_manager_clone);
             app.manage(Arc::new(Mutex::new(ai_manager)));
 
-//             #[cfg(desktop)]
-//              if let Err(e) = app.handle().plugin(tauri_plugin_updater::Builder::new().build()) {
-//                eprintln!("Failed to initialize updater plugin: {}", e);
-//              }
+            #[cfg(desktop)]
+            app.handle().plugin(tauri_plugin_updater::Builder::new().build());
             Ok(())
         })
         .run(tauri::generate_context!())
