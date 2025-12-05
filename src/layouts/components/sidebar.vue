@@ -66,10 +66,10 @@ onMounted(() => {
                     <SvgIcon :name="item.meta.icon" :size="minSize ? '20px' : '16px'" />
                     <span>{{ item.meta.title }}</span>
                     <template v-if="item.path === '/personalInfo' && showVersionUpdate">
-                        <SvgIcon class="new-svg" name="icon-triangle" size="10px" @click="showVersionUpdate = false" />
+                        <SvgIcon class="new-svg" name="icon-triangle" size="10px" />
                         <span class="new-badge">
                             <span style="width: 94px">NEW 新版本！</span>
-                            <SvgIcon class="new-close" name="icon-cha" size="10px" color="#fff" />
+                            <SvgIcon class="new-close" name="icon-cha" size="10px" color="#fff" @click="showVersionUpdate = false" />
                         </span>
                     </template>
                 </MenuItem>
