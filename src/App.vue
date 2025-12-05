@@ -49,7 +49,7 @@ onUnmounted(() => {
 
 // 启动获取最新版本信息
 const theCheckForUpdates = async () => {
-    const res = await adminService.getReleaseVersionInfo({});
+    const res = await adminService.getVersionInfo({});
     // 检查是否有新版本
     showVersionUpdate.value = currentVersion !== newVersion.value;
     versionUpdateDetails.value = res.data.content || '';
