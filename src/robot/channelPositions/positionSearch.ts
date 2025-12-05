@@ -9,9 +9,12 @@ import {buildPositionData, buildCompanyData} from "@/robot/channelPositions/hand
 import {extractCompanyDetailByAI, extractPositionDetailByAI} from "@/robot/channelPositions/analysisData.ts";
 import HttpClient from '@/api/HttpClient';
 import {JobPaths} from '@/api/job/JobPaths';
-import {CrawlPositionsInDto} from "@/api/job/dto/CrawlPositions.ts";
+import {CrawlPositionsInDto, CrawlPositionsOutDto} from "@/api/job/dto/CrawlPositions.ts";
 import {ChannelPositionBean} from "@/api/job/dto/bean/ChannelPositionBean.ts";
 import {invoke} from "@tauri-apps/api/core";
+import {Result} from "@/api/BaseDto.ts";
+import {CreateJobTaskOutDto} from "@/api/job/dto/CreateJobTask.ts";
+import emitter from "@/utiles/eventBus.ts";
 
 // 任务运行状态
 let isTaskRunning = false;
@@ -141,7 +144,8 @@ export async function executePositionSearch(options: SearchOptions, taskId: stri
                 t.type === 'page' &&
                 t.url.includes('detail') // 根据 URL 特征判断
             );
-
+            console.log('newTab ==>', newTab)
+            logger.info('newTab ==> ', newTab)
             logger.info('新 tab URL:', newTab.url);
             dataInfo = Object.assign(dataInfo, {
                 jobDetailUrl: newTab.url
@@ -175,7 +179,7 @@ export async function executePositionSearch(options: SearchOptions, taskId: stri
             }
 
             // 发送数据给接口
-            crawlPositions(dataInfo, taskId);
+            // crawlPositions(dataInfo, taskId);
 
             // 获取所有标签页
             const count = await tabCount();
@@ -302,50 +306,59 @@ async function tabCount(): Promise<number> {
  * 调用接口上传数据
  */
 async function crawlPositions(data: ChannelPositionBean, taskId: string) {
-    await http.request(JobPaths.crawlPositions, {
+    const res = await http.request<Result<CrawlPositionsOutDto>>(JobPaths.crawlPositions, {
         taskUuid: taskId,
         positions: data
     });
+
+    // 推荐职位已达上限
+    if (res.errCode === 'E2601') {
+        // 停止机器人爬取；同时弹出「今日推荐次数已用完，请明日再来！」弹窗。
+        emitter.emit('exhaustedOfAttempts')
+    } else if (res.code === 200) {
+        // 入库成功，通知页面UI更新
+        emitter.emit('updateNewPosition')
+    }
 }
 
 /**
  * 匹配
  */
-async function matchJob(apiKey:string):Promise<any> {
-  const message = [
-    {
-      "role": "system",
-      "content": "你是一个有用的AI助手。"
-    },
-    {
-      "role": "user",
-      "content": "请介绍一下人工智能的发展历程。"
-    }
-  ];
-  const response = await invoke('http_request', {
-    req: {
-      url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      data: JSON.stringify({
-        "model": 'glm-4.5-flash',
-        "temperature": 0.8,
-        "max_tokens": 65536,
-        "stream": false,
-        "thinking": {
-          "type": "enabled"
+async function matchJob(apiKey: string): Promise<any> {
+    const message = [
+        {
+            "role": "system",
+            "content": "你是一个有用的AI助手。"
         },
-        "do_sample": true,
-        "top_p": 0.6,
-        "tool_stream": false,
-        "response_format": {
-          "type": "text"
-        },
-        "messages": message
-      })
-    }
-  });
+        {
+            "role": "user",
+            "content": "请介绍一下人工智能的发展历程。"
+        }
+    ];
+    const response = await invoke('http_request', {
+        req: {
+            url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                "model": 'glm-4.5-flash',
+                "temperature": 0.8,
+                "max_tokens": 65536,
+                "stream": false,
+                "thinking": {
+                    "type": "enabled"
+                },
+                "do_sample": true,
+                "top_p": 0.6,
+                "tool_stream": false,
+                "response_format": {
+                    "type": "text"
+                },
+                "messages": message
+            })
+        }
+    });
 }

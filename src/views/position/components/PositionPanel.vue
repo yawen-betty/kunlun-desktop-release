@@ -27,6 +27,8 @@ import {parseDate} from "@/utiles/DateUtils.ts";
 import {robotManager} from "@/robot/service";
 import {UserInfo} from "@/utiles/userInfo.ts";
 import {debounce} from "@/utiles/debounce.ts";
+import mitt from "mitt";
+import emitter from "@/utiles/eventBus.ts";
 
 // 创建任务弹框实例
 const createTaskModalRef = useCompRef(CreateTaskModal)
@@ -216,12 +218,9 @@ const handleToggleTaskStatus = debounce(async () => {
                     // 关闭状态，停止爬取
                     await robotManager.cleanup()
                     UserInfo.info.isRunningTask = false
+                    message.success(Message, '任务已关闭，将不再推送精选职位！')
                 }
             }
-        } else if (result.errCode === 'E2601') {
-            // TODO 满额情况
-            message.error(Message, '今日推荐次数已用完，请明日再来！')
-            UserInfo.info.isRunningTask = false
         }
     } catch (error) {
         console.error('切换任务状态失败:', error)
@@ -297,15 +296,15 @@ const loadCurrentTask = async () => {
 
                 // 如果有登录的渠道，直接开始爬取
                 const hasLoggedIn = channels.value.some(channel => channel.isLogin)
-                // TODO 每次切换之后 都要先关闭之前的机器人，重新启动
-                // if (hasLoggedIn && result.data.uuid) {
-                //     await robotManager.crawlPosition({
-                //         jobTitle: result.data.jobTitle,
-                //         cityInfos: result.data.cityName,
-                //         experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
-                //     }, result.data.uuid)
-                //     UserInfo.info.isRunningTask = true
-                // }
+                // 每次切换之后 都要先关闭之前的机器人，重新启动
+                if (hasLoggedIn && result.data.uuid) {
+                    await robotManager.crawlPosition({
+                        jobTitle: result.data.jobTitle,
+                        cityInfos: result.data.cityName,
+                        experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
+                    }, result.data.uuid)
+                    UserInfo.info.isRunningTask = true
+                }
             }
 
             await loadPositions()
@@ -367,44 +366,6 @@ const handleRefresh = async () => {
     await loadPositions()
 }
 
-const checkNewPositions = async () => {
-    console.log('检查更新')
-    if (!currentTask.value?.uuid || !firstPositionTime.value) return
-
-    try {
-        const params = new CheckNewPositionsInDto()
-        params.taskUuid = currentTask.value.uuid
-        params.latestRecommendedAt = firstPositionTime.value
-
-        const result = await jobService.checkNewPositions(params)
-        if (result.code === 200 && result.data) {
-            hasNewPositions.value = result.data.hasNew
-            // 如果达到上限，关闭爬取
-            if (result.data.upperLimit) {
-                await robotManager.cleanup()
-                UserInfo.info.isRunningTask = false
-            }
-        }
-    } catch (error) {
-        console.error('检查新职位失败:', error)
-    }
-}
-
-const startCheckTimer = () => {
-    console.log('执行')
-    stopCheckTimer()
-    checkTimer = window.setInterval(() => {
-        checkNewPositions()
-    }, 3 * 60 * 1000) // 3分钟
-}
-
-const stopCheckTimer = () => {
-    if (checkTimer) {
-        clearInterval(checkTimer)
-        checkTimer = null
-    }
-}
-
 const openBaidu = async (url: string) => {
     if (url) {
         await openWeb(url);
@@ -427,14 +388,39 @@ const getVisibleTags = (item: MatchedPositionBean) => {
     return tags.slice(0, Math.max(1, maxTags))
 }
 
+/**
+ * 显示有新职位
+ */
+const handleUpdateNewPosition = () => {
+    hasNewPositions.value = true;
+}
+
+/**
+ * 今日推荐次数用完，进行中 改为 已关闭
+ */
+const handleExhaustedOfAttempts = async () => {
+    await robotManager.cleanup()
+    UserInfo.info.isRunningTask = false
+    message.info(Message, '今日推荐次数已用完，请明日再来！')
+
+    const params = new ActivateJobTaskInDto()
+    params.uuid = currentTask.value?.uuid!
+    params.status = 1
+    await jobService.activateJobTask(params)
+}
+
 onMounted(async () => {
-    startCheckTimer()
     await loadCurrentTask()
     await loadOtherTasks()
+
+    emitter.on('updateNewPosition', handleUpdateNewPosition)
+    emitter.on('exhaustedOfAttempts', handleExhaustedOfAttempts)
 })
 
 onBeforeUnmount(() => {
-    stopCheckTimer()
+    emitter.off('updateNewPosition', handleUpdateNewPosition)
+    emitter.off('exhaustedOfAttempts', handleExhaustedOfAttempts)
+
 })
 </script>
 

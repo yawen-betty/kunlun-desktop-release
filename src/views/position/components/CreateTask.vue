@@ -77,7 +77,7 @@ const submit = debounce(async () => {
         const result = await jobService.createJobTask(formData)
         if (result.code === 200) {
             emit('task-created')
-        } else if (result.errCode === '') {
+        } else if (result.errCode === 'E2603') {  // 模型账号不存在
             modelVisible.value = true
         }
     } catch (error) {
