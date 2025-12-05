@@ -71,14 +71,13 @@ jobs:
           # 完整的 endpoint URL
           ENDPOINT_URL="$BASE_URL/$LATEST_FILE"
           
-          # 替换整个 endpoints 数组
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            # macOS
-            sed -i '' "s|\"endpoints\": \[.*\]|\"endpoints\": [\"$ENDPOINT_URL\"]|g" "$CONFIG_FILE"
-          else
-            # Linux/Windows
-            sed -i "s|\"endpoints\": \[.*\]|\"endpoints\": [\"$ENDPOINT_URL\"]|g" "$CONFIG_FILE"
-          fi
+          # 使用 Node.js 替换 endpoints（处理多行 JSON）
+          node -e "
+            const fs = require('fs');
+            const config = JSON.parse(fs.readFileSync('$CONFIG_FILE', 'utf8'));
+            config.plugins.updater.endpoints = ['$ENDPOINT_URL'];
+            fs.writeFileSync('$CONFIG_FILE', JSON.stringify(config, null, 2));
+          "
           
           echo "✅ Updated endpoints to: $ENDPOINT_URL"
           grep '"endpoints"' -A 3 "$CONFIG_FILE" || true
@@ -86,11 +85,12 @@ jobs:
           # 确保 DevTools 在 dev 和 test 分支启用
           if [[ "$BRANCH" == "dev" ]] || [[ "$BRANCH" == "test" ]]; then
             echo "Enabling DevTools for $BRANCH branch"
-            if [[ "$OSTYPE" == "darwin"* ]]; then
-              sed -i '' 's|"devtools": [^,]*|"devtools": true|g' "$CONFIG_FILE"
-            else
-              sed -i 's|"devtools": [^,]*|"devtools": true|g' "$CONFIG_FILE"
-            fi
+            node -e "
+              const fs = require('fs');
+              const config = JSON.parse(fs.readFileSync('$CONFIG_FILE', 'utf8'));
+              config.app.windows[0].devtools = true;
+              fs.writeFileSync('$CONFIG_FILE', JSON.stringify(config, null, 2));
+            "
             echo "✅ DevTools enabled"
             grep '"devtools"' "$CONFIG_FILE" || true
           fi
