@@ -145,8 +145,16 @@ const getConfigInfo = () => {
     adminService.getConfig(new GetConfigInDto()).then((res) => {
         if (res.code === 200) {
             Object.assign(configInfo, res.data);
+            // 拼接域名
+            if (res.data.appIcon && !res.data.appIcon.startsWith('http')) {
+                configInfo.appIcon = `${Config.baseUrl}${res.data.appIcon}`;
+            }
+            if (res.data.loginPageImage && !res.data.loginPageImage.startsWith('http')) {
+                SystemInfo.info.loginBg = `${Config.baseUrl}${res.data.loginPageImage}`;
+            } else {
+                SystemInfo.info.loginBg = res.data.loginPageImage;
+            }
             SystemInfo.info.loginTitle = res.data.appName;
-            SystemInfo.info.loginBg = res.data.loginPageImage;
             generateQRCode();
         }
     });
@@ -177,7 +185,10 @@ const getUserInfo = () => {
     userService.getProfile(new GetProfileInDto()).then((res) => {
         if (res.code === 200) {
             if (res.data.avatarUrl) {
-                UserInfo.info.avatar = res.data.avatarUrl!;
+                // 拼接域名
+                UserInfo.info.avatar = res.data.avatarUrl.startsWith('http') 
+                    ? res.data.avatarUrl 
+                    : `${Config.baseUrl}${res.data.avatarUrl}`;
             }
             UserInfo.info.userName = res.data.name!;
             UserInfo.info.userId = res.data.uuid!;
