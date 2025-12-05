@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {onMounted, ref, provide, readonly, onUnmounted} from 'vue';
 import {checkForUpdates} from '@/updater';
 import UpdateDialog from '@/components/updateDialog/index.vue';
@@ -9,6 +9,7 @@ import {UserService} from '@/service/UserService.ts';
 import {auth} from '@/utiles/tauriCommonds.ts';
 import {useRouter} from 'vue-router';
 import {GetConfigInDto} from '@/api/admin/dto/GetConfig.ts';
+import {GetMatchAnalysisPromptInDto} from '@/api/admin/dto/GetMatchAnalysisPrompt.ts';
 import {SystemInfo} from '@/utiles/systemInfo.ts';
 import {AdminService} from '@/service/AdminService.ts';
 import emitter from '@/utiles/eventBus';
@@ -41,6 +42,7 @@ onMounted(async () => {
     });
 
     getConfigInfo();
+    getMatchAnalysisPrompt();
 });
 
 onUnmounted(() => {
@@ -103,13 +105,24 @@ const getConfigInfo = () => {
         }
     });
 };
+
+// 获取简历匹配分析提示词
+const getMatchAnalysisPrompt = () => {
+    adminService.getMatchAnalysisPrompt(new GetMatchAnalysisPromptInDto()).then((res) => {
+        if (res.code === 200) {
+            UserInfo.info.matchAnalysisPrompt = res.data.content
+        }
+    });
+};
+
+
 </script>
 
 <template>
     <main class="container">
-        <router-view />
+        <router-view/>
     </main>
-    <UpdateDialog ref="updateDialogRef" />
+    <UpdateDialog ref="updateDialogRef"/>
 </template>
 <style lang="scss" scoped>
 @use '@/assets/styles/variable.scss' as *;

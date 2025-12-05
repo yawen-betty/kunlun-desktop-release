@@ -11,6 +11,7 @@ import CreateTaskModal from "@/views/position/components/CreateTaskModal.vue";
 import PromptDialog from "@/components/promptDialog/index.vue";
 import {Message, Modal} from "view-ui-plus";
 import {JobService} from "@/service/JobService";
+import {ResumeService} from "@/service/ResumeService";
 import {GetJobTaskInDto, GetJobTaskOutDto} from "@/api/job/dto/GetJobTask";
 import {GetOtherJobTasksOutDto} from "@/api/job/dto/GetOtherJobTasks";
 import {ActivateJobTaskInDto} from "@/api/job/dto/ActivateJobTask";
@@ -37,6 +38,7 @@ const positionDetailRef = useCompRef(PositionDetail)
 // 二次确认弹框
 const promptDialogRef = useCompRef(PromptDialog)
 const jobService = new JobService()
+const resumeService = new ResumeService()
 const searchData = reactive<QueryMatchedPositionsInDto>({
     ...new QueryMatchedPositionsInDto(),
     sortBy: 'recommendedAt',
@@ -97,10 +99,11 @@ const deleteTaskId = ref<string>()
 const showChannelTip = ref(false)
 // 是否有新职位
 const hasNewPositions = ref(false)
-// 定时器
-let checkTimer: number | null = null
 // 第一页第一条数据的推荐时间
 const firstPositionTime = ref<number>(0)
+// 简历文本
+const resumeText = ref<string>('')
+
 
 const resetFilters = () => {
     pagination.current = 1
@@ -167,7 +170,7 @@ const handleLogin = debounce(async (channel: any) => {
                         jobTitle: currentTask.value.jobTitle,
                         cityInfos: currentTask.value.cityName,
                         experience: enumEcho(currentTask.value.experience, workExperienceList, 'value', 'key')
-                    }, currentTask.value.uuid)
+                    }, currentTask.value.uuid, resumeText.value)
                     UserInfo.info.isRunningTask = true
                 }
             } else {
@@ -181,7 +184,8 @@ const handleLogin = debounce(async (channel: any) => {
 }, 300)
 
 const handleTaskSwitch = () => {
-    showTaskDropdown.value = !showTaskDropdown.value
+    if (taskList.value.length)
+        showTaskDropdown.value = !showTaskDropdown.value
 }
 
 const handleToggleTaskStatus = debounce(async () => {
@@ -210,7 +214,7 @@ const handleToggleTaskStatus = debounce(async () => {
                             jobTitle: taskResult.data.jobTitle,
                             cityInfos: taskResult.data.cityName,
                             experience: enumEcho(taskResult.data.experience, workExperienceList, 'value', 'key')
-                        }, taskResult.data.uuid)
+                        }, taskResult.data.uuid, resumeText.value)
                         UserInfo.info.isRunningTask = true
                     }
                     message.success(Message, '任务已开启，请至少登录一个招聘渠道！')
@@ -286,28 +290,34 @@ const loadCurrentTask = async () => {
         if (result.code === 200 && result.data) {
             currentTask.value = result.data
             searchData.taskUuid = result.data.uuid
+            // 调用获取简历文本接口
+            if (result.data.resumeUuid) {
+                const res = await resumeService.getResumeText(result.data.resumeUuid)
+                resumeText.value = res.data as string;
+                if (result.data.status === 0) {
+                    const allCookies = await channelAuth.getAllCookies()
+                    channels.value.forEach(channel => {
+                        channel.isLogin = !!allCookies[channel.value]
+                    })
+                    showChannelTip.value = channels.value.every(channel => !channel.isLogin)
 
-            if (result.data.status === 0) {
-                const allCookies = await channelAuth.getAllCookies()
-                channels.value.forEach(channel => {
-                    channel.isLogin = !!allCookies[channel.value]
-                })
-                showChannelTip.value = channels.value.every(channel => !channel.isLogin)
-
-                // 如果有登录的渠道，直接开始爬取
-                const hasLoggedIn = channels.value.some(channel => channel.isLogin)
-                // 每次切换之后 都要先关闭之前的机器人，重新启动
-                if (hasLoggedIn && result.data.uuid) {
-                    await robotManager.crawlPosition({
-                        jobTitle: result.data.jobTitle,
-                        cityInfos: result.data.cityName,
-                        experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
-                    }, result.data.uuid)
-                    UserInfo.info.isRunningTask = true
+                    // 如果有登录的渠道，直接开始爬取
+                    const hasLoggedIn = channels.value.some(channel => channel.isLogin)
+                    // 每次切换之后 都要先关闭之前的机器人，重新启动
+                    if (hasLoggedIn && result.data.uuid) {
+                        await robotManager.crawlPosition({
+                            jobTitle: result.data.jobTitle,
+                            cityInfos: result.data.cityName,
+                            experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
+                        }, result.data.uuid, resumeText.value)
+                        UserInfo.info.isRunningTask = true
+                    }
                 }
             }
 
             await loadPositions()
+        } else if (result.code === 2306) { // 简历id不存在
+            message.error(Message, '')
         }
     } catch (error) {
         console.error('获取任务失败:', error)

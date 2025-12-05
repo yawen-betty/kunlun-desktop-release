@@ -312,7 +312,7 @@ async function crawlPositions(data: ChannelPositionBean, taskId: string) {
     });
 
     // 推荐职位已达上限
-    if (res.errCode === 'E2601') {
+    if (res.code === 2601) {
         // 停止机器人爬取；同时弹出「今日推荐次数已用完，请明日再来！」弹窗。
         emitter.emit('exhaustedOfAttempts')
     } else if (res.code === 200) {
