@@ -124,10 +124,12 @@ export default class HttpClient {
             const code = responseBody.code;
 
             switch (code) {
-                // ai账号没有配置
+                // 满额
                 case 2601:
-                case 2606:
+                // 简历ID不存在
+                case 2306:
                     break;
+                // ai账号没有配置
                 case 2603:
                     message.error(Message, responseBody.msg);
                     break;

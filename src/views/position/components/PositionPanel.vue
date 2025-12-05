@@ -228,6 +228,8 @@ const handleToggleTaskStatus = debounce(async () => {
         } else if (result.code === 2601) { // 满额
             UserInfo.info.isRunningTask = false
             message.info(Message, '今日推荐次数已用完，请明日再来！')
+        } else if (result.code === 2306) { // 简历id不存在
+            message.error(Message, '求职简历不存在，任务开启失败!')
         }
     } catch (error) {
         console.error('切换任务状态失败:', error)
@@ -322,7 +324,7 @@ const loadCurrentTask = async () => {
 
             await loadPositions()
         } else if (result.code === 2306) { // 简历id不存在
-            message.error(Message, '')
+            message.error(Message, '求职简历不存在，任务开启失败!')
         }
     } catch (error) {
         console.error('获取任务失败:', error)
