@@ -63,39 +63,58 @@ class LatestGenerator {
 
   private findPlatformFiles() {
     const platforms: { [key: string]: PlatformInfo } = {};
-    const bundleDir = this.bundlePath;
-
-    if (!fs.existsSync(bundleDir)) {
-      console.warn(`Bundle directory not found: ${bundleDir}`);
-      return platforms;
-    }
-
-    // macOS: Prioritize .app.tar.gz for updater
-    const macosAppTar = path.join(bundleDir, 'macos', `Kunlun.app.tar.gz`);
-    const appTarInfo = this.getFileInfo(macosAppTar);
+    
+    // 优先扫描根目录（CI/CD 产物位置）
+    const rootDir = '.';
+    
+    // macOS: 根目录
+    let macosAppTar = path.join(rootDir, 'Kunlun.app.tar.gz');
+    let appTarInfo = this.getFileInfo(macosAppTar);
     if (appTarInfo) {
-        platforms['darwin-x86_64'] = { ...appTarInfo, url: `${this.downloadUrl}/${path.basename(macosAppTar)}` };
+      platforms['darwin-x86_64'] = { ...appTarInfo, url: `${this.downloadUrl}/${path.basename(macosAppTar)}` };
     }
-
-    // Windows
-    const windowsMsi = path.join(bundleDir, 'msi', `Kunlun_${this.package.version}_x64_en-US.msi`);
-    const winInfo = this.getFileInfo(windowsMsi);
+    
+    // Windows: 根目录
+    let windowsMsi = path.join(rootDir, `Kunlun_${this.package.version}_x64_en-US.msi`);
+    let winInfo = this.getFileInfo(windowsMsi);
     if (winInfo) {
       platforms['windows-x86_64'] = { ...winInfo, url: `${this.downloadUrl}/${path.basename(windowsMsi)}` };
     }
-
-    // Linux
-    const linuxAppImage = path.join(bundleDir, 'appimage', `Kunlun_${this.package.version}_amd64.AppImage`);
-    const appImageInfo = this.getFileInfo(linuxAppImage);
-    if (appImageInfo) {
-      platforms['linux-x86_64'] = { ...appImageInfo, url: `${this.downloadUrl}/${path.basename(linuxAppImage)}` };
+    
+    // 如果根目录没找到，扫描 bundle 目录
+    const bundleDir = this.bundlePath;
+    if (fs.existsSync(bundleDir)) {
+      // macOS: bundle 目录
+      if (!platforms['darwin-x86_64']) {
+        macosAppTar = path.join(bundleDir, 'macos', 'Kunlun.app.tar.gz');
+        appTarInfo = this.getFileInfo(macosAppTar);
+        if (appTarInfo) {
+          platforms['darwin-x86_64'] = { ...appTarInfo, url: `${this.downloadUrl}/${path.basename(macosAppTar)}` };
+        }
+      }
+      
+      // Windows: bundle 目录
+      if (!platforms['windows-x86_64']) {
+        windowsMsi = path.join(bundleDir, 'msi', `Kunlun_${this.package.version}_x64_en-US.msi`);
+        winInfo = this.getFileInfo(windowsMsi);
+        if (winInfo) {
+          platforms['windows-x86_64'] = { ...winInfo, url: `${this.downloadUrl}/${path.basename(windowsMsi)}` };
+        }
+      }
+      
+      // Linux: bundle 目录
+      const linuxAppImage = path.join(bundleDir, 'appimage', `Kunlun_${this.package.version}_amd64.AppImage`);
+      const appImageInfo = this.getFileInfo(linuxAppImage);
+      if (appImageInfo) {
+        platforms['linux-x86_64'] = { ...appImageInfo, url: `${this.downloadUrl}/${path.basename(linuxAppImage)}` };
+      }
     }
-
+    
     return platforms;
   }
 
   public generate() {
-    console.log('Scanning for bundles in:', this.bundlePath);
+    console.log('Scanning for bundles in root directory and:', this.bundlePath);
     const platforms = this.findPlatformFiles();
 
     if (Object.keys(platforms).length === 0) {

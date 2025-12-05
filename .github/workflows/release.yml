@@ -117,7 +117,15 @@ jobs:
         shell: bash
 
       - name: Generate latest.json
-        run: npm run generate-latest
+        run: |
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            APP_ENV=prod npm run generate-latest
+          elif [[ "${{ github.ref_name }}" == "test" ]]; then
+            APP_ENV=test npm run generate-latest
+          elif [[ "${{ github.ref_name }}" == "dev" ]]; then
+            APP_ENV=dev npm run generate-latest
+          fi
+        shell: bash
         env:
           RELEASE_TAG: ${{ github.ref_name }}-build-${{ github.run_number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -125,11 +133,23 @@ jobs:
       - name: Package all artifacts
         run: |
           mkdir -p staging
-          find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.exe" \) -exec cp {} staging/ \;
-          find src-tauri/target/release/bundle/macos -type f -name "*.tar.gz" -exec cp {} staging/ \; 2>/dev/null || true
-          find src-tauri/target/release/bundle -type f -name "*.sig" ! -name "*deb.sig" ! -name "*rpm.sig" -exec cp {} staging/ \;
           
-          # 复制所有 latest 文件
+          # 从 bundle 目录复制安装包
+          find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.exe" \) -exec cp {} staging/ \; 2>/dev/null || true
+          
+          # 从 bundle/macos 复制更新包
+          find src-tauri/target/release/bundle/macos -type f -name "*.tar.gz" -exec cp {} staging/ \; 2>/dev/null || true
+          find src-tauri/target/release/bundle/macos -type f -name "*.tar.gz.sig" -exec cp {} staging/ \; 2>/dev/null || true
+          
+          # 从 bundle/msi 复制 Windows 更新包
+          find src-tauri/target/release/bundle/msi -type f -name "*.msi" -exec cp {} staging/ \; 2>/dev/null || true
+          find src-tauri/target/release/bundle/msi -type f -name "*.msi.sig" -exec cp {} staging/ \; 2>/dev/null || true
+          
+          # 从 bundle/nsis 复制 Windows 安装程序
+          find src-tauri/target/release/bundle/nsis -type f -name "*.exe" -exec cp {} staging/ \; 2>/dev/null || true
+          find src-tauri/target/release/bundle/nsis -type f -name "*.exe.sig" -exec cp {} staging/ \; 2>/dev/null || true
+          
+          # 复制所有 latest JSON 文件
           cp latest*.json staging/ 2>/dev/null || true
           
           echo "--- Files to package ---"
