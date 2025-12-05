@@ -72,7 +72,7 @@ pub fn run() {
             app.manage(Arc::new(Mutex::new(ai_manager)));
 
             #[cfg(desktop)]
-            app.handle().plugin(tauri_plugin_updater::Builder::new().build());
+            app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
             Ok(())
         })
         .run(tauri::generate_context!())

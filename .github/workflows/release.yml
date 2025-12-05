@@ -50,6 +50,15 @@ jobs:
           
           echo "Updating endpoints for branch: $BRANCH, platform: $PLATFORM"
           
+          # 根据分支设置基础 URL
+          if [[ "$BRANCH" == "master" ]]; then
+            BASE_URL="https://hr-ai.qianniaohudong.cn/assets/kunlun"
+          elif [[ "$BRANCH" == "test" ]]; then
+            BASE_URL="https://hr-ai.test.lingxizhifu.cn/assets/kunlun"
+          else
+            BASE_URL="https://hr-ai.dev.lingxizhifu.cn/assets/kunlun"
+          fi
+          
           # 根据平台设置文件名
           if [[ "$PLATFORM" == "macos-latest" ]]; then
             LATEST_FILE="latest-macos.json"
@@ -59,16 +68,19 @@ jobs:
             LATEST_FILE="latest-linux.json"
           fi
           
-          # 替换 endpoints
+          # 完整的 endpoint URL
+          ENDPOINT_URL="$BASE_URL/$LATEST_FILE"
+          
+          # 替换整个 endpoints 数组
           if [[ "$OSTYPE" == "darwin"* ]]; then
             # macOS
-            sed -i '' "s|kunlun/[^/]*/latest[^\"]*\.json|kunlun/$BRANCH/$LATEST_FILE|g" "$CONFIG_FILE"
+            sed -i '' "s|\"endpoints\": \[.*\]|\"endpoints\": [\"$ENDPOINT_URL\"]|g" "$CONFIG_FILE"
           else
             # Linux/Windows
-            sed -i "s|kunlun/[^/]*/latest[^\"]*\.json|kunlun/$BRANCH/$LATEST_FILE|g" "$CONFIG_FILE"
+            sed -i "s|\"endpoints\": \[.*\]|\"endpoints\": [\"$ENDPOINT_URL\"]|g" "$CONFIG_FILE"
           fi
           
-          echo "✅ Updated endpoints to: http://update.liangjiyuren.cn/kunlun/$BRANCH/$LATEST_FILE"
+          echo "✅ Updated endpoints to: $ENDPOINT_URL"
           grep '"endpoints"' -A 3 "$CONFIG_FILE" || true
           
           # 确保 DevTools 在 dev 和 test 分支启用
