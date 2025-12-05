@@ -116,7 +116,7 @@ const stop = async () => {
     await robotManager.cleanup();
 }
 
-const logedChannels = ref([]);
+const logedChannels = ref([] as string[]);
 const check = async () => {
     logedChannels.value = await checkLogin();
 }
