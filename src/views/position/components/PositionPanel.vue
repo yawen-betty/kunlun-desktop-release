@@ -225,6 +225,9 @@ const handleToggleTaskStatus = debounce(async () => {
                     message.success(Message, '任务已关闭，将不再推送精选职位！')
                 }
             }
+        } else if (result.code === 2601) { // 满额
+            UserInfo.info.isRunningTask = false
+            message.info(Message, '今日推荐次数已用完，请明日再来！')
         }
     } catch (error) {
         console.error('切换任务状态失败:', error)
@@ -305,6 +308,7 @@ const loadCurrentTask = async () => {
                     const hasLoggedIn = channels.value.some(channel => channel.isLogin)
                     // 每次切换之后 都要先关闭之前的机器人，重新启动
                     if (hasLoggedIn && result.data.uuid) {
+                        await robotManager.cleanup()
                         await robotManager.crawlPosition({
                             jobTitle: result.data.jobTitle,
                             cityInfos: result.data.cityName,

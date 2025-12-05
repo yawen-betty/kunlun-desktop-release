@@ -151,7 +151,7 @@ const handleSave = debounce(async () => {
         if (result.code === 200) {
             message.success(Message, '配置保存成功');
             visible.value = false;
-            UserInfo.info.modelList.push(params)
+            UserInfo.info.modelList = [params]
         }
     } catch (error) {
         message.error(Message, '保存失败，请稍后重试');
