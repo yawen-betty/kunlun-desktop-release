@@ -42,33 +42,41 @@ jobs:
           fi
         shell: bash
 
-      - name: Update tauri.conf.json endpoints based on branch
+      - name: Update tauri.conf.json endpoints based on branch and platform
         run: |
           BRANCH="${{ github.ref_name }}"
           CONFIG_FILE="src-tauri/tauri.conf.json"
+          PLATFORM="${{ matrix.platform }}"
           
-          echo "Updating endpoints for branch: $BRANCH"
+          echo "Updating endpoints for branch: $BRANCH, platform: $PLATFORM"
           
-          # 替换 endpoints 中的分支路径
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            # macOS
-            sed -i '' "s|kunlun/[^/]*/latest-{{target}}|kunlun/$BRANCH/latest-{{target}}|g" "$CONFIG_FILE"
+          # 根据平台设置文件名
+          if [[ "$PLATFORM" == "macos-latest" ]]; then
+            LATEST_FILE="latest-macos.json"
+          elif [[ "$PLATFORM" == "windows-latest" ]]; then
+            LATEST_FILE="latest-windows.json"
           else
-            # Linux/Windows
-            sed -i "s|kunlun/[^/]*/latest-{{target}}|kunlun/$BRANCH/latest-{{target}}|g" "$CONFIG_FILE"
+            LATEST_FILE="latest-linux.json"
           fi
           
-          echo "✅ Updated endpoints to: http://update.liangjiyuren.cn/kunlun/$BRANCH/latest-{{target}}.json"
+          # 替换 endpoints
+          if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS
+            sed -i '' "s|kunlun/[^/]*/latest[^\"]*\.json|kunlun/$BRANCH/$LATEST_FILE|g" "$CONFIG_FILE"
+          else
+            # Linux/Windows
+            sed -i "s|kunlun/[^/]*/latest[^\"]*\.json|kunlun/$BRANCH/$LATEST_FILE|g" "$CONFIG_FILE"
+          fi
+          
+          echo "✅ Updated endpoints to: http://update.liangjiyuren.cn/kunlun/$BRANCH/$LATEST_FILE"
           grep '"endpoints"' -A 3 "$CONFIG_FILE" || true
           
           # 确保 DevTools 在 dev 和 test 分支启用
           if [[ "$BRANCH" == "dev" ]] || [[ "$BRANCH" == "test" ]]; then
             echo "Enabling DevTools for $BRANCH branch"
             if [[ "$OSTYPE" == "darwin"* ]]; then
-              # macOS: 强制设置 devtools 为 true
               sed -i '' 's|"devtools": [^,]*|"devtools": true|g' "$CONFIG_FILE"
             else
-              # Windows/Linux: 强制设置 devtools 为 true
               sed -i 's|"devtools": [^,]*|"devtools": true|g' "$CONFIG_FILE"
             fi
             echo "✅ DevTools enabled"

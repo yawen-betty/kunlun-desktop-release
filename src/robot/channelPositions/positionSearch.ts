@@ -15,6 +15,7 @@ import {invoke} from "@tauri-apps/api/core";
 import {Result} from "@/api/BaseDto.ts";
 import {CreateJobTaskOutDto} from "@/api/job/dto/CreateJobTask.ts";
 import emitter from "@/utiles/eventBus.ts";
+import {UserInfo} from "@/utiles/userInfo.ts";
 
 // 任务运行状态
 let isTaskRunning = false;
@@ -23,7 +24,7 @@ const http = new HttpClient();
 /**
  * 执行职位搜索
  */
-export async function executePositionSearch(options: SearchOptions, taskId: string): Promise<SearchResult> {
+export async function executePositionSearch(options: SearchOptions,resumeText: string, taskId: string, propmt?: string): Promise<SearchResult> {
     // 并发控制
     if (isTaskRunning) {
         return {code: 500, message: '任务正在执行中，请稍后再试'};
@@ -80,28 +81,28 @@ export async function executePositionSearch(options: SearchOptions, taskId: stri
         await mcpService.callTool('browser_navigate', {url: config.searchUrl});
         await robotManager.sleep(1000);
 
-        // 4. AI 逐个执行搜索任务
-        logger.info('[PositionSearch] 执行搜索任务...');
-        const tasks = buildTaskList(channelName, searchParams);
-
-        for (let i = 0; i < tasks.length; i++) {
-            const task = tasks[i];
-            logger.info(`[PositionSearch] 执行任务 ${i + 1}/${tasks.length}: ${task}`);
-
-            const taskPrompt = buildSingleTaskPrompt(task, channelName);
-            const taskResult = await executeAITask(taskPrompt, apiKey);
-
-            if (!taskResult.success) {
-                logger.warning(`[PositionSearch] 任务 ${i + 1} 失败: ${taskResult.message}`);
-                // 继续执行下一个任务
-            } else {
-                logger.info(`[PositionSearch] 任务 ${i + 1} 完成`);
-            }
-
-            await robotManager.sleep(1000);
-            // 任务间短暂延迟
-            await robotManager.sleep(200);
-        }
+        // // 4. AI 逐个执行搜索任务
+        // logger.info('[PositionSearch] 执行搜索任务...');
+        // const tasks = buildTaskList(channelName, searchParams);
+        //
+        // for (let i = 0; i < tasks.length; i++) {
+        //     const task = tasks[i];
+        //     logger.info(`[PositionSearch] 执行任务 ${i + 1}/${tasks.length}: ${task}`);
+        //
+        //     const taskPrompt = buildSingleTaskPrompt(task, channelName);
+        //     const taskResult = await executeAITask(taskPrompt, apiKey);
+        //
+        //     if (!taskResult.success) {
+        //         logger.warning(`[PositionSearch] 任务 ${i + 1} 失败: ${taskResult.message}`);
+        //         // 继续执行下一个任务
+        //     } else {
+        //         logger.info(`[PositionSearch] 任务 ${i + 1} 完成`);
+        //     }
+        //
+        //     await robotManager.sleep(1000);
+        //     // 任务间短暂延迟
+        //     await robotManager.sleep(200);
+        // }
 
         logger.info('[PositionSearch] 所有搜索任务执行完成')
 
@@ -180,6 +181,7 @@ export async function executePositionSearch(options: SearchOptions, taskId: stri
 
             // 发送数据给接口
             // crawlPositions(dataInfo, taskId);
+            await matchJob(apiKey, resumeText, dataInfo, propmt || '');
 
             // 获取所有标签页
             const count = await tabCount();
@@ -324,17 +326,66 @@ async function crawlPositions(data: ChannelPositionBean, taskId: string) {
 /**
  * 匹配
  */
-async function matchJob(apiKey: string): Promise<any> {
+async function matchJob(apiKey: string, resumeText: string, positionInfo:any, propmt:string): Promise<any> {
+    const parts: string[] = [];
+
+    if (positionInfo.title) {
+      parts.push(`职位名称：${positionInfo.title}`);
+    }
+    if (positionInfo.areaName) {
+      parts.push(`工作地址：${positionInfo.areaName}`);
+    }
+    if (positionInfo.educational) {
+      parts.push(`学历要求：${positionInfo.educational}`);
+    }
+    if (positionInfo.workExperience) {
+      parts.push(`工作经验：${positionInfo.workExperience}`);
+    }
+    if (positionInfo.salary) {
+      parts.push(`薪资范围：${positionInfo.salary}`);
+    }
+    if (positionInfo.salaryNumber) {
+      parts.push(`薪资结构：${positionInfo.salaryNumber}`);
+    }
+    if (positionInfo.labels?.length) {
+      parts.push(`职位标签：${positionInfo.labels.join(',')}`);
+    }
+    if (positionInfo.description) {
+      parts.push(`职位描述：${positionInfo.description}`);
+    }
+
+    const positionContent = parts.join('\n');
+
+  // const positionContent = `
+  //   职位名称：${positionInfo.title} \n
+  //   工作地址：${positionInfo.areaName} \n
+  //   学历要求：${positionInfo.educational} \n
+  //   工作经验：${positionInfo.workExperience} \n
+  //   薪资范围：${positionInfo.salary} \n
+  //   薪资结构：${positionInfo.salaryNumber} \n
+  //   职位标签：${positionInfo.labels.join(',')} \n
+  //   职位描述：${positionInfo.description} \n
+  //   `;
+    const userContent =  `
+    简历文本：
+    ${resumeText}
+    职位要求：
+    ${positionContent}`;
+
     const message = [
         {
             "role": "system",
-            "content": "你是一个有用的AI助手。"
+            "content": propmt
         },
         {
             "role": "user",
-            "content": "请介绍一下人工智能的发展历程。"
+            "content": userContent
         }
     ];
+
+
+  console.info('========================msg',message)
+
     const response = await invoke('http_request', {
         req: {
             url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
@@ -343,22 +394,24 @@ async function matchJob(apiKey: string): Promise<any> {
                 Authorization: `Bearer ${apiKey}`,
                 'Content-Type': 'application/json'
             },
-            data: JSON.stringify({
-                "model": 'glm-4.5-flash',
-                "temperature": 0.8,
-                "max_tokens": 65536,
-                "stream": false,
-                "thinking": {
-                    "type": "enabled"
-                },
-                "do_sample": true,
-                "top_p": 0.6,
-                "tool_stream": false,
-                "response_format": {
-                    "type": "text"
-                },
-                "messages": message
-            })
+            data: {
+              "model": 'glm-4.5-flash',
+              "temperature": 0.8,
+              "max_tokens": 65536,
+              "stream": false,
+              "thinking": {
+                "type": "enabled"
+              },
+              "do_sample": true,
+              "top_p": 0.6,
+              "tool_stream": false,
+              "response_format": {
+                "type": "text"
+              },
+              "messages": message
+            }
         }
     });
+
+    console.info('========================匹配',response)
 }

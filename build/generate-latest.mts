@@ -124,8 +124,8 @@ class LatestGenerator {
 
     const pubDate = new Date().toISOString();
 
-    // 生成按 target 命名的文件（Tauri 2 使用 {{target}} 变量）
-    // Windows: latest-x86_64-pc-windows-msvc.json
+    // 生成简化的文件名
+    // Windows: latest-windows.json
     if (platforms['windows-x86_64']) {
       const windowsJson: LatestJson = {
         version: this.package.version,
@@ -135,12 +135,12 @@ class LatestGenerator {
           'windows-x86_64': platforms['windows-x86_64']
         },
       };
-      const windowsPath = path.join('latest-x86_64-pc-windows-msvc.json');
+      const windowsPath = path.join('latest-windows.json');
       fs.writeFileSync(windowsPath, JSON.stringify(windowsJson, null, 2), this.encoding);
-      console.log('✅ Generated latest-x86_64-pc-windows-msvc.json');
+      console.log('✅ Generated latest-windows.json');
     }
 
-    // macOS: latest-x86_64-apple-darwin.json
+    // macOS: latest-macos.json
     if (platforms['darwin-x86_64']) {
       const macJson: LatestJson = {
         version: this.package.version,
@@ -150,12 +150,12 @@ class LatestGenerator {
           'darwin-x86_64': platforms['darwin-x86_64']
         },
       };
-      const macPath = path.join('latest-x86_64-apple-darwin.json');
+      const macPath = path.join('latest-macos.json');
       fs.writeFileSync(macPath, JSON.stringify(macJson, null, 2), this.encoding);
-      console.log('✅ Generated latest-x86_64-apple-darwin.json');
+      console.log('✅ Generated latest-macos.json');
     }
 
-    // Linux: latest-x86_64-unknown-linux-gnu.json
+    // Linux: latest-linux.json
     if (platforms['linux-x86_64']) {
       const linuxJson: LatestJson = {
         version: this.package.version,
@@ -165,9 +165,9 @@ class LatestGenerator {
           'linux-x86_64': platforms['linux-x86_64']
         },
       };
-      const linuxPath = path.join('latest-x86_64-unknown-linux-gnu.json');
+      const linuxPath = path.join('latest-linux.json');
       fs.writeFileSync(linuxPath, JSON.stringify(linuxJson, null, 2), this.encoding);
-      console.log('✅ Generated latest-x86_64-unknown-linux-gnu.json');
+      console.log('✅ Generated latest-linux.json');
     }
 
     // 保留原有的 latest.json（包含所有平台）
@@ -182,9 +182,9 @@ class LatestGenerator {
     console.log('✅ Generated latest.json (all platforms)');
 
     console.log('\n📦 Summary:');
-    console.log('- latest-x86_64-pc-windows-msvc.json:', platforms['windows-x86_64'] ? '✅' : '❌');
-    console.log('- latest-x86_64-apple-darwin.json:', platforms['darwin-x86_64'] ? '✅' : '❌');
-    console.log('- latest-x86_64-unknown-linux-gnu.json:', platforms['linux-x86_64'] ? '✅' : '❌');
+    console.log('- latest-windows.json:', platforms['windows-x86_64'] ? '✅' : '❌');
+    console.log('- latest-macos.json:', platforms['darwin-x86_64'] ? '✅' : '❌');
+    console.log('- latest-linux.json:', platforms['linux-x86_64'] ? '✅' : '❌');
     console.log('- latest.json: ✅ (all platforms)');
   }
 }
