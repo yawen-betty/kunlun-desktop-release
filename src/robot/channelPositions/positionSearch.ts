@@ -180,13 +180,16 @@ export async function executePositionSearch(options: SearchOptions,resumeText: s
                 }
             }
 
-            // 发送数据给接口
-            // crawlPositions(dataInfo, taskId);
+            // 匹配
             const matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt);
             if (matchJobRes === 1305) {
                 logger.warning('[PositionSearch] AI 请求频率限制，等待 60 秒');
                 await robotManager.sleep(1000 * 60);
+                await matchJob(apiKey, resumeText, dataInfo, prompt); // 重试
             }
+
+            // 发送数据给接口
+            // crawlPositions(dataInfo, taskId);
 
             // 获取所有标签页
             const count = await tabCount();
