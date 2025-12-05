@@ -30,8 +30,9 @@ provide('showVersionUpdate', showVersionUpdate);
 
 // 应用启动时自动检查更新
 onMounted(async () => {
-    // manualCheckUpdate();
     emitter.on('forcedUpdate', manualCheckUpdate);
+    manualCheckUpdate();
+    getConfigInfo();
     auth.getToken().then((token) => {
         if (token) {
             UserInfo.info.token = token;
@@ -40,8 +41,6 @@ onMounted(async () => {
             router.push('/login');
         }
     });
-
-    getConfigInfo();
     getMatchAnalysisPrompt();
 });
 
@@ -110,19 +109,17 @@ const getConfigInfo = () => {
 const getMatchAnalysisPrompt = () => {
     adminService.getMatchAnalysisPrompt(new GetMatchAnalysisPromptInDto()).then((res) => {
         if (res.code === 200) {
-            UserInfo.info.matchAnalysisPrompt = res.data.content
+            UserInfo.info.matchAnalysisPrompt = res.data.content;
         }
     });
 };
-
-
 </script>
 
 <template>
     <main class="container">
-        <router-view/>
+        <router-view />
     </main>
-    <UpdateDialog ref="updateDialogRef"/>
+    <UpdateDialog ref="updateDialogRef" />
 </template>
 <style lang="scss" scoped>
 @use '@/assets/styles/variable.scss' as *;

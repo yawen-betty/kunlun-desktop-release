@@ -76,8 +76,7 @@ defineExpose({show});
             <div class="button-group">
                 <Button ghost @click="handleSubmitLogout" class="btn-cancel">退出登录</Button>
                 <Button type="primary" :loading="downloading" @click="handleUpdate" class="btn-confirm">
-                    <!-- {{ downloading ? '更新中...' : '立即更新' }} -->
-                    立即更新
+                    {{ downloading ? '更新中...' : '立即更新' }}
                 </Button>
             </div>
         </div>
