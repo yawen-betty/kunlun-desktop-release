@@ -42,14 +42,14 @@ const websiteUrl = 'https://www.example.com'
                 <div class="feature-section">
                     <p class="feature-title">一、AI面试辅导：可在APP中开始辅导</p>
                     <div class="img-wrapper">
-                        <img alt="AI面试辅导" class="feature-img" src="../../assets/images/interview-feature1.png">
+                        <img alt="AI面试辅导" class="feature-img" src="">
                     </div>
                 </div>
 
                 <div class="feature-section">
                     <p class="feature-title">二、AI面试间：可在APP中开始面试</p>
                     <div class="img-wrapper">
-                        <img alt="AI面试间" class="feature-img" src="../../assets/images/interview-feature2.png">
+                        <img alt="AI面试间" class="feature-img" src="">
                     </div>
                 </div>
             </div>
