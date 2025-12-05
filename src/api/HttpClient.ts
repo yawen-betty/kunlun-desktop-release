@@ -28,7 +28,8 @@ interface HttpResponse {
     body: any;
 }
 
-export interface EmptyOutDto {}
+export interface EmptyOutDto {
+}
 
 export default class HttpClient {
     static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
@@ -123,6 +124,14 @@ export default class HttpClient {
             const code = responseBody.code;
 
             switch (code) {
+                // ai账号没有配置
+                case 2601:
+                case 2606:
+                    break;
+                case 2603:
+                    message.error(Message, responseBody.msg);
+                    break;
+
                 case 302:
                     message.error(Message, responseBody.msg);
                     UserInfo.logout();

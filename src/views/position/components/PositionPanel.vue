@@ -166,11 +166,11 @@ const handleLogin = debounce(async (channel: any) => {
                 if (currentTask.value?.status === 0 && currentTask.value.uuid) {
                     await robotManager.cleanup()
                     UserInfo.info.isRunningTask = false
-                    // await robotManager.crawlPosition({
-                    //     jobTitle: currentTask.value.jobTitle,
-                    //     cityInfos: currentTask.value.cityName,
-                    //     experience: enumEcho(currentTask.value.experience, workExperienceList, 'value', 'key')
-                    // }, currentTask.value.uuid, resumeText.value)
+                    await robotManager.crawlPosition({
+                        jobTitle: currentTask.value.jobTitle,
+                        cityInfos: currentTask.value.cityName,
+                        experience: enumEcho(currentTask.value.experience, workExperienceList, 'value', 'key')
+                    }, currentTask.value.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
                     UserInfo.info.isRunningTask = true
                 }
             } else {
@@ -210,11 +210,11 @@ const handleToggleTaskStatus = debounce(async () => {
                     // 如果有登录的渠道，直接开始爬取
                     const hasLoggedIn = channels.value.some(channel => channel.isLogin)
                     if (hasLoggedIn && taskResult.data.uuid) {
-                        // await robotManager.crawlPosition({
-                        //     jobTitle: taskResult.data.jobTitle,
-                        //     cityInfos: taskResult.data.cityName,
-                        //     experience: enumEcho(taskResult.data.experience, workExperienceList, 'value', 'key')
-                        // }, taskResult.data.uuid, resumeText.value)
+                        await robotManager.crawlPosition({
+                            jobTitle: taskResult.data.jobTitle,
+                            cityInfos: taskResult.data.cityName,
+                            experience: enumEcho(taskResult.data.experience, workExperienceList, 'value', 'key')
+                        }, taskResult.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
                         UserInfo.info.isRunningTask = true
                     }
                     message.success(Message, '任务已开启，请至少登录一个招聘渠道！')
@@ -308,12 +308,13 @@ const loadCurrentTask = async () => {
                     const hasLoggedIn = channels.value.some(channel => channel.isLogin)
                     // 每次切换之后 都要先关闭之前的机器人，重新启动
                     if (hasLoggedIn && result.data.uuid) {
+                        console.log(UserInfo.info.matchAnalysisPrompt, 'prompt')
                         await robotManager.cleanup()
-                        // await robotManager.crawlPosition({
-                        //     jobTitle: result.data.jobTitle,
-                        //     cityInfos: result.data.cityName,
-                        //     experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
-                        // }, result.data.uuid, resumeText.value)
+                        await robotManager.crawlPosition({
+                            jobTitle: result.data.jobTitle,
+                            cityInfos: result.data.cityName,
+                            experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
+                        }, result.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
                         UserInfo.info.isRunningTask = true
                     }
                 }

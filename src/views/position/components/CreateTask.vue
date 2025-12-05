@@ -75,6 +75,7 @@ const submit = debounce(async () => {
         formData.publish = true
         formData.isDefault = true
         const result = await jobService.createJobTask(formData)
+        console.log(result, 'result')
         if (result.code === 200) {
             emit('task-created')
         } else if (result.code === 2603) {  // 模型账号不存在
