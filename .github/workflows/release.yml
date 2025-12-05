@@ -60,6 +60,16 @@ jobs:
           
           echo "✅ Updated endpoints to: http://update.liangjiyuren.cn/kunlun/$BRANCH/latest-{{target}}.json"
           grep '"endpoints"' -A 3 "$CONFIG_FILE" || true
+          
+          # 确保 DevTools 在 dev 和 test 分支启用
+          if [[ "$BRANCH" == "dev" ]] || [[ "$BRANCH" == "test" ]]; then
+            echo "Enabling DevTools for $BRANCH branch"
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+              sed -i '' 's|"devtools": false|"devtools": true|g' "$CONFIG_FILE"
+            else
+              sed -i 's|"devtools": false|"devtools": true|g' "$CONFIG_FILE"
+            fi
+          fi
         shell: bash
 
       - name: Build the application
