@@ -1,37 +1,22 @@
 {
-  "name": "tauri_test",
-  "private": true,
-  "version": "1.1.0",
-  "type": "module",
-  "scripts": {
-    "config": "tsx AppConf.mts",
-    "config:dev": "cross-env APP_ENV=dev npm run config",
-    "config:test": "cross-env APP_ENV=test npm run config",
-    "config:prod": "cross-env APP_ENV=prod npm run config",
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri",
-    "generate-latest": "tsx build/generate-latest.mts"
-  },
   "config": {
     "build": {
       "name": "kunlun"
     },
     "dev": {
-      "baseUrl": "https://hr-ai.dev.lingxizhifu.cn/",
       "basePath": "/",
+      "baseUrl": "https://hr-ai.dev.lingxizhifu.cn/",
       "downloadUrl": "http://update.liangjiyuren.cn/kunlun/dev"
     },
-    "test": {
-      "baseUrl": "https://hr-ai.test.lingxizhifu.cn/",
-      "basePath": "/",
-      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/test"
-    },
     "prod": {
-      "baseUrl": "https://hr-ai.lingxizhifu.cn",
       "basePath": "/",
+      "baseUrl": "https://hr-ai.lingxizhifu.cn",
       "downloadUrl": "http://update.liangjiyuren.cn/kunlun/master"
+    },
+    "test": {
+      "basePath": "/",
+      "baseUrl": "https://hr-ai.test.lingxizhifu.cn/",
+      "downloadUrl": "http://update.liangjiyuren.cn/kunlun/test"
     }
   },
   "dependencies": {
@@ -69,5 +54,20 @@
     "vite-plugin-svg-icons": "^2.0.1",
     "vite-plugin-vue-setup-extend": "^0.4.0",
     "vue-tsc": "^2.1.10"
-  }
+  },
+  "name": "tauri_test",
+  "private": true,
+  "scripts": {
+    "build": "vue-tsc --noEmit && vite build",
+    "config": "tsx AppConf.mts",
+    "config:dev": "cross-env APP_ENV=dev npm run config",
+    "config:prod": "cross-env APP_ENV=prod npm run config",
+    "config:test": "cross-env APP_ENV=test npm run config",
+    "dev": "vite",
+    "generate-latest": "tsx build/generate-latest.mts",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "type": "module",
+  "version": "1.0.0"
 }
