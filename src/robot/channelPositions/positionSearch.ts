@@ -11,6 +11,7 @@ import HttpClient from '@/api/HttpClient';
 import {JobPaths} from '@/api/job/JobPaths';
 import {CrawlPositionsInDto} from "@/api/job/dto/CrawlPositions.ts";
 import {ChannelPositionBean} from "@/api/job/dto/bean/ChannelPositionBean.ts";
+import {invoke} from "@tauri-apps/api/core";
 
 // 任务运行状态
 let isTaskRunning = false;
@@ -305,4 +306,46 @@ async function crawlPositions(data: ChannelPositionBean, taskId: string) {
         taskUuid: taskId,
         positions: data
     });
+}
+
+/**
+ * 匹配
+ */
+async function matchJob(apiKey:string):Promise<any> {
+  const message = [
+    {
+      "role": "system",
+      "content": "你是一个有用的AI助手。"
+    },
+    {
+      "role": "user",
+      "content": "请介绍一下人工智能的发展历程。"
+    }
+  ];
+  const response = await invoke('http_request', {
+    req: {
+      url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      data: JSON.stringify({
+        "model": 'glm-4.5-flash',
+        "temperature": 0.8,
+        "max_tokens": 65536,
+        "stream": false,
+        "thinking": {
+          "type": "enabled"
+        },
+        "do_sample": true,
+        "top_p": 0.6,
+        "tool_stream": false,
+        "response_format": {
+          "type": "text"
+        },
+        "messages": message
+      })
+    }
+  });
 }
