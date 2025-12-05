@@ -9,7 +9,7 @@
 import {ref, onMounted} from 'vue';
 import {AdminService} from '@/service/AdminService';
 import {GetHelpCenterInDto} from '@/api/admin/dto/GetHelpCenter';
-
+//
 const adminService = AdminService.getInstance();
 const content = ref('');
 
