@@ -31,7 +31,7 @@ provide('showVersionUpdate', showVersionUpdate);
 // 应用启动时自动检查更新
 onMounted(async () => {
     emitter.on('forcedUpdate', manualCheckUpdate);
-    manualCheckUpdate();
+    // manualCheckUpdate();
     getConfigInfo();
     auth.getToken().then((token) => {
         if (token) {
@@ -60,6 +60,7 @@ const theCheckForUpdates = async () => {
 const manualCheckUpdate = async () => {
     try {
         const result = await checkForUpdates(currentVersion, false);
+        console.log('%c 🐞: manualCheckUpdate -> result ', 'font-size:16px;background-color:#ac6afe;color:white;', result);
         newVersion.value = result?.newVersion || '';
         await theCheckForUpdates();
         if (result) {
