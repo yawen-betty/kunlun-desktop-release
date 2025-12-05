@@ -26,6 +26,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(Mutex::new(McpManager::new()))
         .invoke_handler(tauri::generate_handler![
             greet,
@@ -67,14 +68,14 @@ pub fn run() {
             // 增加引用计数，避免被释放
             let mcp_manager_clone = Arc::clone(&mcp_manager_arc);
             std::mem::forget(mcp_manager_arc);
-            
+
             let ai_manager = AIManager::new(mcp_manager_clone);
             app.manage(Arc::new(Mutex::new(ai_manager)));
 
-            #[cfg(desktop)]
-             if let Err(e) = app.handle().plugin(tauri_plugin_updater::Builder::new().build()) {
-               eprintln!("Failed to initialize updater plugin: {}", e);
-             }
+//             #[cfg(desktop)]
+//              if let Err(e) = app.handle().plugin(tauri_plugin_updater::Builder::new().build()) {
+//                eprintln!("Failed to initialize updater plugin: {}", e);
+//              }
             Ok(())
         })
         .run(tauri::generate_context!())

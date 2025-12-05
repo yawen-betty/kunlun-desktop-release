@@ -142,7 +142,9 @@ export class RobotManager {
                                 apiKey: 'ca9112c0753043ae9c2f9647892f49e7.bfZ2cqxbzv7duOph'
                             },
                             resumeText,
-                            taskId);
+                            taskId,
+                            prompt
+                          );
 
                         logger.info(`[RobotManager] ${channel} 渠道爬取完成`);
                     } catch (error) {
