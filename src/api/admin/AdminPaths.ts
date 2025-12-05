@@ -112,4 +112,13 @@ export class AdminPaths {
         method: 'GET',
         prefix: 'admin'
     };
+
+    /**
+     * 获取简历匹配分析提示词
+     */
+    static getMatchAnalysisPrompt: Path = {
+        url: '/getMatchAnalysisPrompt',
+        method: 'GET',
+        prefix: 'admin'
+    };
 }

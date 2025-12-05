@@ -16,6 +16,7 @@ export class UserInfo {
         resumeMap: {} as TResumeMap, // { 'resumeId' : { trick: '话术', 'template': '模板' } }
         modelList: [] as ModelAccountBean[], // 模型列表
         isRunningTask: false, // 是否执行任务中
+        matchAnalysisPrompt: '', // 匹配分析提示词
     });
 
     static async logout() {
@@ -27,6 +28,7 @@ export class UserInfo {
         UserInfo.info.resumeMap = {};
         UserInfo.info.modelList = [];
         UserInfo.info.isRunningTask = false
+        UserInfo.info.matchAnalysisPrompt = '';
         await auth.saveToken('');
         await router.replace('/login');
     }

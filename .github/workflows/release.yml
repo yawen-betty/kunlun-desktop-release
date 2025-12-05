@@ -65,10 +65,14 @@ jobs:
           if [[ "$BRANCH" == "dev" ]] || [[ "$BRANCH" == "test" ]]; then
             echo "Enabling DevTools for $BRANCH branch"
             if [[ "$OSTYPE" == "darwin"* ]]; then
-              sed -i '' 's|"devtools": false|"devtools": true|g' "$CONFIG_FILE"
+              # macOS: 强制设置 devtools 为 true
+              sed -i '' 's|"devtools": [^,]*|"devtools": true|g' "$CONFIG_FILE"
             else
-              sed -i 's|"devtools": false|"devtools": true|g' "$CONFIG_FILE"
+              # Windows/Linux: 强制设置 devtools 为 true
+              sed -i 's|"devtools": [^,]*|"devtools": true|g' "$CONFIG_FILE"
             fi
+            echo "✅ DevTools enabled"
+            grep '"devtools"' "$CONFIG_FILE" || true
           fi
         shell: bash
 

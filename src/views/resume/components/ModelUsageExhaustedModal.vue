@@ -74,6 +74,7 @@ import {GetAiRegisterGuideInDto} from '@/api/admin/dto/GetAiRegisterGuide';
 import {SaveModelAccountInDto} from '@/api/user/dto/SaveModelAccount';
 import {debounce} from '@/utiles/debounce';
 import {message} from "@/utiles/Message.ts";
+import {UserInfo} from "@/utiles/userInfo.ts";
 
 interface Props {
     modelValue: boolean;
@@ -150,6 +151,7 @@ const handleSave = debounce(async () => {
         if (result.code === 200) {
             message.success(Message, '配置保存成功');
             visible.value = false;
+            UserInfo.info.modelList.push(params)
         }
     } catch (error) {
         message.error(Message, '保存失败，请稍后重试');

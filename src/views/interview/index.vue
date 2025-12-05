@@ -42,14 +42,16 @@ const websiteUrl = 'https://www.example.com'
                 <div class="feature-section">
                     <p class="feature-title">一、AI面试辅导：可在APP中开始辅导</p>
                     <div class="img-wrapper">
-                        <img alt="AI面试辅导" class="feature-img" src="">
+                        <div class="feature-img">
+                            <img alt="AI面试辅导" src="@/assets/images/ai-interview-tutorship.png">
+                        </div>
                     </div>
                 </div>
 
                 <div class="feature-section">
                     <p class="feature-title">二、AI面试间：可在APP中开始面试</p>
                     <div class="img-wrapper">
-                        <img alt="AI面试间" class="feature-img" src="">
+                        <img alt="AI面试间" class="feature-img" src="@/assets/images/ai-interview.png">
                     </div>
                 </div>
             </div>
@@ -189,8 +191,8 @@ const websiteUrl = 'https://www.example.com'
             }
 
             .img-wrapper {
-                width: vw(341);
-                height: vh(134);
+                width: vw(375);
+                height: vh(200);
                 border-radius: vw(5);
                 border: vw(1) solid $border-default;
                 padding: vw(10);
@@ -200,7 +202,13 @@ const websiteUrl = 'https://www.example.com'
                 width: 100%;
                 height: 100%;
                 border: vw(1) solid $theme-color;
-                object-fit: cover;
+                border-radius: vw(5);
+                padding: vw(5);
+
+                img {
+                    height: 100%;
+                    object-fit: cover;
+                }
             }
         }
     }

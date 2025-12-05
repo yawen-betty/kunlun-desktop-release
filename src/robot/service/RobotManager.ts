@@ -3,6 +3,7 @@ import {mcpService, aiService, cdpService} from '@/robot/service';
 import {channelAuth} from "@/robot/channelLogin/authManage.ts";
 import {executePositionSearch} from "@/robot/channelPositions/positionSearch.ts";
 import {listen} from '@tauri-apps/api/event';
+import {UserInfo} from "@/utiles/userInfo.ts";
 
 
 /**
@@ -137,7 +138,7 @@ export class RobotManager {
                         await executePositionSearch({
                                 channelName: channel,
                                 searchParams: searchParams,
-                                apiKey: 'ad9708dda52f413a835e494771d2529e.MSrNVUZb277yeac8'
+                                apiKey: UserInfo.info.modelList[0].apiKey!
                             },
                             taskId);
 

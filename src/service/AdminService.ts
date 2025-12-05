@@ -13,6 +13,7 @@ import {GetHelpCenterStatusInDto, GetHelpCenterStatusOutDto} from '@/api/admin/d
 import {GetWebsiteUrlInDto, GetWebsiteUrlOutDto} from '@/api/admin/dto/GetWebsiteUrl';
 import {GetVersionInfoInDto, GetVersionInfoOutDto} from '@/api/admin/dto/GetVersionInfo';
 import {GetReleaseVersionInfoInDto, GetReleaseVersionInfoOutDto} from '@/api/admin/dto/GetReleaseVersionInfo';
+import {GetMatchAnalysisPromptInDto, GetMatchAnalysisPromptOutDto} from '@/api/admin/dto/GetMatchAnalysisPrompt';
 import {Result} from '@/api/BaseDto';
 
 export class AdminService {
@@ -112,5 +113,12 @@ export class AdminService {
      */
     public async getReleaseVersionInfo(params: GetReleaseVersionInfoInDto): Promise<Result<GetReleaseVersionInfoOutDto>> {
         return await this.http.request<Result<GetReleaseVersionInfoOutDto>>(AdminPaths.getReleaseVersionInfo, params);
+    }
+
+    /**
+     * 获取简历匹配分析提示词
+     */
+    public async getMatchAnalysisPrompt(params: GetMatchAnalysisPromptInDto): Promise<Result<GetMatchAnalysisPromptOutDto>> {
+        return await this.http.request<Result<GetMatchAnalysisPromptOutDto>>(AdminPaths.getMatchAnalysisPrompt, params);
     }
 }

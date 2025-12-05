@@ -1,3 +1,5 @@
+import {MatchInfoBean} from "@/api/job/dto/bean/MatchInfoBean.ts";
+
 export class ChannelPositionBean {
     /**
      * 在源站的唯一ID
@@ -63,12 +65,12 @@ export class ChannelPositionBean {
      * 公司名称
      */
     companyName: string = '';
-    
+
     /**
      * 公司简介
      */
     introduce: string = '';
-    
+
     /**
      * 公司地址
      */
@@ -78,7 +80,7 @@ export class ChannelPositionBean {
      * 公司行业
      */
     industry?: string;
-    
+
     /**
      * 公司标签
      */
@@ -118,4 +120,9 @@ export class ChannelPositionBean {
      * 发布日期 (时间戳)
      */
     publishDate?: number;
+
+    /**
+     * 匹配结果
+     */
+    matchInfo?: MatchInfoBean;
 }
