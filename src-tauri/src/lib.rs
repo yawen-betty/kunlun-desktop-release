@@ -26,6 +26,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_os::init())
+        #[cfg(desktop)]
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(Mutex::new(McpManager::new()))
         .invoke_handler(tauri::generate_handler![
