@@ -1,4 +1,4 @@
-import { ResumeModuleBean } from "./ResumeModuleBean";
+import {ResumeModuleBean} from './ResumeModuleBean';
 
 export class MyResumeBean {
     /**
@@ -20,4 +20,9 @@ export class MyResumeBean {
      * 模块列表
      */
     modules?: ResumeModuleBean[];
+
+    /**
+     * AI是否正在处理中，0-否，1-是
+     */
+    aiProcessing: string;
 }
