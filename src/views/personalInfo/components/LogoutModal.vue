@@ -73,7 +73,7 @@ const handleClose = () => {
  */
 const handleConfirm = async () => {
     // 注销账号
-    await userService.deactivateAccount({});
+    await userService.deactivate({});
     // 推出登录
     await authService.logout();
     UserInfo.logout();
