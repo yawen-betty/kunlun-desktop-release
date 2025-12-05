@@ -3,7 +3,10 @@ import {ref} from 'vue';
 import {performUpdate} from '@/updater';
 import {Button, Modal, Progress, Image} from 'view-ui-plus';
 import updateVersionImg from '@/assets/images/update-version.png';
+import {AuthService} from '@/service/AuthService.ts';
+import {UserInfo} from '@/utiles/userInfo.ts';
 
+const authService = new AuthService();
 const visible = ref(false);
 const forceUpdate = ref(false);
 const currentVersion = ref('');
@@ -39,6 +42,13 @@ const handleUpdate = async () => {
     }
 };
 
+const handleSubmitLogout = () => {
+    authService.logout().then(() => {
+        UserInfo.logout();
+        visible.value = false;
+    });
+};
+
 defineExpose({show});
 </script>
 
@@ -64,7 +74,7 @@ defineExpose({show});
                 </div>
             </div>
             <div class="button-group">
-                <Button ghost @click="visible = false" class="btn-cancel">退出登录</Button>
+                <Button ghost @click="handleSubmitLogout" class="btn-cancel">退出登录</Button>
                 <Button type="primary" :loading="downloading" @click="handleUpdate" class="btn-confirm">
                     <!-- {{ downloading ? '更新中...' : '立即更新' }} -->
                     立即更新
