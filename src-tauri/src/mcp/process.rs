@@ -27,9 +27,15 @@ impl McpProcess {
         eprintln!("[MCP] Browsers path: {}", browsers_path.display());
         eprintln!("[MCP] Browsers path exists: {}", browsers_path.exists());
 
-        // 获取 sidecar node 路径
+        // 获取 sidecar node 路径（Windows 为 node.exe）
+        let node_filename = if cfg!(target_os = "windows") {
+            "binaries/node.exe"
+        } else {
+            "binaries/node"
+        };
+        
         let node_path = app.path()
-            .resolve("binaries/node", BaseDirectory::Resource)
+            .resolve(node_filename, BaseDirectory::Resource)
             .map_err(|e| format!("Failed to resolve node path: {}", e))?;
         
         // Windows: 移除 UNC 路径前缀 \\?\

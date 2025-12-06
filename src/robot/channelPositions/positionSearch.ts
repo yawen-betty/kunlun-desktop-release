@@ -82,28 +82,28 @@ export async function executePositionSearch(options: SearchOptions,resumeText: s
         await mcpService.callTool('browser_navigate', {url: config.searchUrl});
         await robotManager.sleep(1000);
 
-        // // 4. AI 逐个执行搜索任务
-        // logger.info('[PositionSearch] 执行搜索任务...');
-        // const tasks = buildTaskList(channelName, searchParams);
-        //
-        // for (let i = 0; i < tasks.length; i++) {
-        //     const task = tasks[i];
-        //     logger.info(`[PositionSearch] 执行任务 ${i + 1}/${tasks.length}: ${task}`);
-        //
-        //     const taskPrompt = buildSingleTaskPrompt(task, channelName);
-        //     const taskResult = await executeAITask(taskPrompt, apiKey);
-        //
-        //     if (!taskResult.success) {
-        //         logger.warning(`[PositionSearch] 任务 ${i + 1} 失败: ${taskResult.message}`);
-        //         // 继续执行下一个任务
-        //     } else {
-        //         logger.info(`[PositionSearch] 任务 ${i + 1} 完成`);
-        //     }
-        //
-        //     await robotManager.sleep(1000);
-        //     // 任务间短暂延迟
-        //     await robotManager.sleep(200);
-        // }
+        // 4. AI 逐个执行搜索任务
+        logger.info('[PositionSearch] 执行搜索任务...');
+        const tasks = buildTaskList(channelName, searchParams);
+
+        for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i];
+            logger.info(`[PositionSearch] 执行任务 ${i + 1}/${tasks.length}: ${task}`);
+
+            const taskPrompt = buildSingleTaskPrompt(task, channelName);
+            const taskResult = await executeAITask(taskPrompt, apiKey);
+
+            if (!taskResult.success) {
+                logger.warning(`[PositionSearch] 任务 ${i + 1} 失败: ${taskResult.message}`);
+                // 继续执行下一个任务
+            } else {
+                logger.info(`[PositionSearch] 任务 ${i + 1} 完成`);
+            }
+
+            await robotManager.sleep(1000);
+            // 任务间短暂延迟
+            await robotManager.sleep(200);
+        }
 
         logger.info('[PositionSearch] 所有搜索任务执行完成')
 

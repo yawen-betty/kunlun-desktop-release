@@ -50,9 +50,15 @@ impl BrowserManager {
         let mcp_modules = resource_dir.join("binaries/mcp-modules");
         let browsers_path = mcp_modules.join(".playwright-browsers");
         
-        // 获取 sidecar node 路径
+        // 打包后统一使用 node (Windows 为 node.exe)
+        let node_filename = if cfg!(target_os = "windows") {
+            "binaries/node.exe"
+        } else {
+            "binaries/node"
+        };
+        
         let node_path = app.path()
-            .resolve("binaries/node", BaseDirectory::Resource)
+            .resolve(node_filename, BaseDirectory::Resource)
             .map_err(|e| format!("Failed to resolve node path: {}", e))?;
         
         // playwright CLI 真实路径（不使用符号链接）

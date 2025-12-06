@@ -18,27 +18,46 @@ fn main() {
         let binaries_dir = target_dir.join("binaries");
         fs::create_dir_all(&binaries_dir).ok();
         
-        // 查找系统 node
-        if let Ok(output) = std::process::Command::new("which").arg("node").output() {
-            if output.status.success() {
-                let node_path = String::from_utf8_lossy(&output.stdout).trim().to_string();
-                let dest = binaries_dir.join("node");
-                
-                // 复制或创建符号链接
-                #[cfg(unix)]
-                {
-                    use std::os::unix::fs::symlink;
-                    let _ = fs::remove_file(&dest);
-                    symlink(&node_path, &dest).ok();
-                    println!("cargo:warning=Created symlink: {:?} -> {:?}", dest, node_path);
-                }
-                
-                #[cfg(windows)]
-                {
-                    fs::copy(&node_path, &dest).ok();
-                    println!("cargo:warning=Copied node: {:?} -> {:?}", node_path, dest);
+        // 根据平台选择正确的 node 文件
+        let node_filename = if cfg!(target_os = "macos") {
+            if cfg!(target_arch = "aarch64") {
+                "node-aarch64-apple-darwin"
+            } else {
+                "node-x86_64-apple-darwin"
+            }
+        } else if cfg!(target_os = "windows") {
+            "node-x86_64-pc-windows-msvc.exe"
+        } else {
+            "node" // fallback
+        };
+        
+        let source = binaries_dir.join(node_filename);
+        let dest = if cfg!(target_os = "windows") {
+            binaries_dir.join("node.exe")
+        } else {
+            binaries_dir.join("node")
+        };
+        
+        // 如果源文件存在，创建符号链接或复制
+        if source.exists() {
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::symlink;
+                let _ = fs::remove_file(&dest);
+                if let Ok(_) = symlink(&source, &dest) {
+                    println!("cargo:warning=Created symlink: {:?} -> {:?}", dest, source);
                 }
             }
+            
+            #[cfg(windows)]
+            {
+                let _ = fs::remove_file(&dest);
+                if let Ok(_) = fs::copy(&source, &dest) {
+                    println!("cargo:warning=Copied node: {:?} -> {:?}", source, dest);
+                }
+            }
+        } else {
+            println!("cargo:warning=Node file not found: {:?}", source);
         }
     }
     
