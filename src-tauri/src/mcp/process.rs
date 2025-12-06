@@ -27,11 +27,11 @@ impl McpProcess {
         eprintln!("[MCP] Browsers path: {}", browsers_path.display());
         eprintln!("[MCP] Browsers path exists: {}", browsers_path.exists());
 
-        // 获取 sidecar node 路径（Windows 为 node.exe）
+        // externalBin 打包后在根目录，不在 binaries 下
         let node_filename = if cfg!(target_os = "windows") {
-            "binaries/node.exe"
+            "node.exe"
         } else {
-            "binaries/node"
+            "node"
         };
         
         let node_path = app.path()
