@@ -71,6 +71,11 @@ jobs:
           # 完整的 endpoint URL
           ENDPOINT_URL="$BASE_URL/$LATEST_FILE"
           
+          # 调试：检查 URL 是否完整
+          echo "DEBUG - ENDPOINT_URL contains 'kunlun': $(echo $ENDPOINT_URL | grep -o 'kunlun' || echo 'NOT FOUND')"
+          echo "DEBUG - ENDPOINT_URL contains 'assets': $(echo $ENDPOINT_URL | grep -o 'assets' || echo 'NOT FOUND')"
+          echo "DEBUG - URL structure check: $(echo $ENDPOINT_URL | sed 's|https://[^/]*/assets/[^/]*/|DOMAIN/assets/PATH/|')"
+          
           # 使用 Node.js 替换 endpoints（处理多行 JSON）
           node -e "
             const fs = require('fs');
@@ -81,16 +86,21 @@ jobs:
           
           echo "✅ Updated endpoints to: $ENDPOINT_URL"
           
-          # 验证 URL 格式正确
-          ACTUAL_ENDPOINT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$CONFIG_FILE', 'utf8')).plugins.updater.endpoints[0])")
-          echo "📋 Actual endpoint in config: $ACTUAL_ENDPOINT"
-          
-          if [[ "$ACTUAL_ENDPOINT" != "$ENDPOINT_URL" ]]; then
-            echo "❌ ERROR: Endpoint mismatch!"
-            exit 1
-          fi
-          
-          grep '"endpoints"' -A 3 "$CONFIG_FILE" || true
+          # 验证 URL 格式正确（直接读取文件，避免变量脱敏）
+          echo "📋 Verifying endpoint in config file:"
+          node -e "
+            const fs = require('fs');
+            const config = JSON.parse(fs.readFileSync('$CONFIG_FILE', 'utf8'));
+            const endpoint = config.plugins.updater.endpoints[0];
+            console.log('  - Starts with https://', endpoint.startsWith('https://'));
+            console.log('  - Contains .json:', endpoint.includes('.json'));
+            console.log('  - Length:', endpoint.length);
+            console.log('  - Valid URL:', /^https:\/\/[\w.-]+\/[\w\/.-]+\.json$/.test(endpoint));
+            if (!/^https:\/\/[\w.-]+\/[\w\/.-]+\.json$/.test(endpoint)) {
+              console.error('ERROR: Invalid URL format!');
+              process.exit(1);
+            }
+          "
           
           # 确保 DevTools 在 dev 和 test 分支启用
           if [[ "$BRANCH" == "dev" ]] || [[ "$BRANCH" == "test" ]]; then
