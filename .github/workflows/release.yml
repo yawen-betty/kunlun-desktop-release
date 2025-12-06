@@ -80,6 +80,16 @@ jobs:
           "
           
           echo "✅ Updated endpoints to: $ENDPOINT_URL"
+          
+          # 验证 URL 格式正确
+          ACTUAL_ENDPOINT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$CONFIG_FILE', 'utf8')).plugins.updater.endpoints[0])")
+          echo "📋 Actual endpoint in config: $ACTUAL_ENDPOINT"
+          
+          if [[ "$ACTUAL_ENDPOINT" != "$ENDPOINT_URL" ]]; then
+            echo "❌ ERROR: Endpoint mismatch!"
+            exit 1
+          fi
+          
           grep '"endpoints"' -A 3 "$CONFIG_FILE" || true
           
           # 确保 DevTools 在 dev 和 test 分支启用
