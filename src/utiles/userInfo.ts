@@ -1,22 +1,21 @@
-import {reactive} from "vue";
-import {auth} from "@/utiles/tauriCommonds.ts";
-import router from "@/router/index.ts";
-import {ModelAccountBean} from "@/api/user/dto/bean/ModelAccountBean.ts";
+import {reactive} from 'vue';
+import {auth} from '@/utiles/tauriCommonds.ts';
+import router from '@/router/index.ts';
+import {ModelAccountBean} from '@/api/user/dto/bean/ModelAccountBean.ts';
 
-type TResumeMap = Record<string, { trick: string; template: string; }>
+type TResumeMap = Record<string, {trick: string; template: string}>;
 
 export class UserInfo {
-
     static info = reactive({
-        token: '4b0ad73a282f43af969e503aed65c06f', // token
+        token: '', // token
         userName: '', // 用户名
         userId: '', // 用户ID
-        avatar: '',  // 头像,
+        avatar: '', // 头像,
         runningResumeId: '', // 正在制作的简历ID
         resumeMap: {} as TResumeMap, // { 'resumeId' : { trick: '话术', 'template': '模板' } }
         modelList: [] as ModelAccountBean[], // 模型列表
         isRunningTask: false, // 是否执行任务中
-        matchAnalysisPrompt: '', // 匹配分析提示词
+        matchAnalysisPrompt: '' // 匹配分析提示词
     });
 
     static async logout() {
@@ -27,7 +26,7 @@ export class UserInfo {
         UserInfo.info.runningResumeId = '';
         UserInfo.info.resumeMap = {};
         UserInfo.info.modelList = [];
-        UserInfo.info.isRunningTask = false
+        UserInfo.info.isRunningTask = false;
         UserInfo.info.matchAnalysisPrompt = '';
         await auth.saveToken('');
         await router.replace('/login');
