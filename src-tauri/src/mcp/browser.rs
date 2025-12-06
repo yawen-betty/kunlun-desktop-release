@@ -1,6 +1,7 @@
 use std::io::{BufRead, BufReader};
 use std::process::Stdio;
 use tauri::{AppHandle, Manager};
+use tauri::path::BaseDirectory;
 use super::types::BrowserStatus;
 
 /// 浏览器管理器
@@ -49,10 +50,20 @@ impl BrowserManager {
         let mcp_modules = resource_dir.join("binaries/mcp-modules");
         let browsers_path = mcp_modules.join(".playwright-browsers");
         
+        // 获取 sidecar node 路径
+        let node_path = app.path()
+            .resolve("binaries/node", BaseDirectory::Resource)
+            .map_err(|e| format!("Failed to resolve node path: {}", e))?;
+        
+        // playwright CLI 真实路径（不使用符号链接）
+        let playwright_bin = mcp_modules.join("node_modules/playwright/cli.js");
+        
         eprintln!("[Browser] Installing to: {:?}", browsers_path);
+        eprintln!("[Browser] Using node: {:?}", node_path);
+        eprintln!("[Browser] Playwright CLI: {:?}", playwright_bin);
 
-        let mut child = std::process::Command::new("npx")
-            .arg("playwright")
+        let mut child = std::process::Command::new(&node_path)
+            .arg(playwright_bin)
             .arg("install")
             .arg("chromium")
             .current_dir(&mcp_modules)
