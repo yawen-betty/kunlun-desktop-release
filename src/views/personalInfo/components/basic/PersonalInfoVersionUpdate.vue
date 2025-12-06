@@ -3,7 +3,7 @@
         <h1 class="title">版本更新</h1>
         <div class="version-info">
             <span class="current-version">当前版本：{{ currentVersion }}</span>
-            <span class="new-version" v-if="newVersion === null || currentVersion !== newVersion">
+            <span class="new-version" v-if="!!newVersion || (newVersion && currentVersion !== newVersion)">
                 发现新版本！
                 <span class="update-link" @click="handleUpdate">立即更新</span>
             </span>
