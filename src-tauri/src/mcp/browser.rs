@@ -65,7 +65,13 @@ impl BrowserManager {
         let playwright_str = playwright_bin.to_string_lossy().to_string();
         let playwright_clean = playwright_str.strip_prefix(r"\\?\").unwrap_or(&playwright_str);
         
-        eprintln!("[Browser] Installing to: {:?}", browsers_path);
+        let browsers_path_str = browsers_path.to_string_lossy().to_string();
+        let browsers_path_clean = browsers_path_str.strip_prefix(r"\\?\").unwrap_or(&browsers_path_str);
+        
+        let mcp_modules_str = mcp_modules.to_string_lossy().to_string();
+        let mcp_modules_clean = mcp_modules_str.strip_prefix(r"\\?\").unwrap_or(&mcp_modules_str);
+        
+        eprintln!("[Browser] Installing to: {}", browsers_path_clean);
         eprintln!("[Browser] Using node: {}", node_path_clean);
         eprintln!("[Browser] Playwright CLI: {}", playwright_clean);
 
@@ -73,8 +79,8 @@ impl BrowserManager {
             .arg(playwright_clean)
             .arg("install")
             .arg("chromium")
-            .current_dir(&mcp_modules)
-            .env("PLAYWRIGHT_BROWSERS_PATH", &browsers_path)
+            .current_dir(mcp_modules_clean)
+            .env("PLAYWRIGHT_BROWSERS_PATH", browsers_path_clean)
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()
