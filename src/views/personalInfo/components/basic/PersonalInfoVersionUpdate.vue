@@ -1,10 +1,9 @@
 <template>
     <div class="version-update">
-        <!-- <span class="update-link" @click="handleUpdate">立即更新</span> -->
-
         <h1 class="title">版本更新</h1>
         <div class="version-info">
             <span class="current-version">当前版本：{{ versionData?.version }}</span>
+            <!-- 判断当前版本是否需要更新 -->
             <span class="new-version" v-if="currentVersion !== newVersion">
                 发现新版本！
                 <span class="update-link" @click="handleUpdate">立即更新</span>
@@ -14,9 +13,6 @@
         <p class="update-title">更新详情：</p>
         <div class="update-details">
             <p v-html="versionData?.content"></p>
-            <!-- <div class="update-content">
-            </div>
-            <div class="placeholder"></div> -->
         </div>
     </div>
 </template>
@@ -28,12 +24,40 @@ import {GetVersionInfoInDto, GetVersionInfoOutDto} from '@/api/admin/dto/GetVers
 import {Config} from '@/Config';
 import {checkForUpdates, performUpdate} from '@/updater';
 
+/**
+ * 版本信息请求 DTO
+ */
 const versionInformation = new GetVersionInfoInDto();
+
+/**
+ * 管理服务实例
+ */
 const adminService = new AdminService();
-const currentVersion = Config.version; // 从 package.json 或 tauri.conf.json 读取
+
+/**
+ * 当前应用版本号
+ */
+const currentVersion = Config.version;
+
+/**
+ * 版本详情数据
+ */
 const versionData = ref<GetVersionInfoOutDto>(new GetVersionInfoOutDto());
+
+/**
+ * 最新版本号
+ */
 const newVersion = ref('');
 
+/**
+ * 更新进度（0-100）
+ */
+const progress = ref(0);
+
+/**
+ * 组件挂载时初始化
+ * 检查更新并获取版本信息
+ */
 onMounted(async () => {
     const result = await checkForUpdates(currentVersion, true);
     newVersion.value = result?.newVersion || '';
@@ -44,9 +68,10 @@ onMounted(async () => {
     });
 });
 
-const progress = ref(0);
-
-// 执行更新
+/**
+ * 处理版本更新
+ * 检查更新并执行下载安装流程
+ */
 const handleUpdate = async () => {
     const result = await checkForUpdates(currentVersion, true);
     const updateInstance = result?.update;

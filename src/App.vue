@@ -13,20 +13,19 @@ import {GetMatchAnalysisPromptInDto} from '@/api/admin/dto/GetMatchAnalysisPromp
 import {SystemInfo} from '@/utiles/systemInfo.ts';
 import {AdminService} from '@/service/AdminService.ts';
 import emitter from '@/utiles/eventBus';
+import {GetVersionInfoOutDto} from './api/admin/dto/GetVersionInfo';
 
 const adminService = new AdminService();
 const userService = new UserService();
 const updateDialogRef = ref();
 const currentVersion = Config.version; // 从 package.json 或 tauri.conf.json 读取
 // 检测最新版本
-const newVersion = ref('');
 const router = useRouter();
 
 // 提供给子组件的配置状态
 
-const showVersionUpdate = ref(false);
-const versionUpdateDetails = ref('');
-provide('showVersionUpdate', showVersionUpdate);
+const versionUpdateInfo = ref<GetVersionInfoOutDto>(new GetVersionInfoOutDto());
+// provide('versionUpdateInfo', versionUpdateInfo);
 
 // 应用启动时自动检查更新
 onMounted(async () => {
@@ -52,8 +51,7 @@ onUnmounted(() => {
 const theCheckForUpdates = async () => {
     const res = await adminService.getVersionInfo({});
     // 检查是否有新版本
-    showVersionUpdate.value = currentVersion !== newVersion.value;
-    versionUpdateDetails.value = res.data.content || '';
+    versionUpdateInfo.value = res.data;
 };
 
 // 检查更新
@@ -61,13 +59,12 @@ const manualCheckUpdate = async () => {
     try {
         const result = await checkForUpdates(currentVersion, false);
         console.log('%c 🐞: manualCheckUpdate -> result ', 'font-size:16px;background-color:#ac6afe;color:white;', result);
-        newVersion.value = result?.newVersion || '';
         await theCheckForUpdates();
         if (result) {
             updateDialogRef.value?.show({
                 ...result,
                 currentVersion,
-                versionUpdateDetails: versionUpdateDetails.value
+                versionUpdateDetails: versionUpdateInfo.value.content || ''
             });
         }
     } catch (e) {
