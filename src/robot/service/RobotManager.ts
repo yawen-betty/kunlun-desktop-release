@@ -113,9 +113,12 @@ export class RobotManager {
             return;
         }
 
-        // 外层循环：持续执行直到被停止
-        while (this.isRunning) {
-            logger.info('[RobotManager] 新一轮爬取开始');
+        // 外层循环：持续执行直到被停止（最多10轮）
+        let roundCount = 0;
+        const maxRounds = 10;
+        while (this.isRunning && roundCount < maxRounds) {
+            roundCount++;
+            logger.info(`[RobotManager] 第 ${roundCount}/${maxRounds} 轮爬取开始`);
 
             // 获取所有渠道的 Cookie
             const cookies = await channelAuth.getAllCookies();
@@ -158,7 +161,7 @@ export class RobotManager {
                 }
             }
 
-            logger.info('[RobotManager] 本轮爬取完成，等待下一轮...');
+            logger.info(`[RobotManager] 第 ${roundCount}/${maxRounds} 轮爬取完成，等待下一轮...`);
 
             // 检查是否被停止
             if (!this.isRunning) {
@@ -181,7 +184,11 @@ export class RobotManager {
                 }
             }
         }
-        logger.info('[RobotManager] 爬取循环结束');
+        if (roundCount >= maxRounds) {
+            logger.info(`[RobotManager] 已完成最大轮次 ${maxRounds}，爬取结束`);
+        } else {
+            logger.info('[RobotManager] 爬取循环结束');
+        }
     }
 
     /**

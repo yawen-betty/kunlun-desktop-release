@@ -188,7 +188,10 @@ export async function executePositionSearch(options: SearchOptions,resumeText: s
                 await matchJob(apiKey, resumeText, dataInfo, prompt); // 重试
             }
 
-            // 发送数据给接口
+            dataInfo = Object.assign(dataInfo, {
+                matchInfo: matchJobRes
+            });
+            // 发送数据给接口 TODO
             // crawlPositions(dataInfo, taskId);
 
             // 获取所有标签页
