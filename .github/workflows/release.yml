@@ -52,11 +52,11 @@ jobs:
           
           # 根据分支设置基础 URL
           if [[ "$BRANCH" == "master" ]]; then
-            BASE_URL="https://hr-ai.qianniaohudong.cn/assets/kunlun"
+            BASE_URL="https://hr-ai.qianniaohudong.cn/assets/kl-desktop"
           elif [[ "$BRANCH" == "test" ]]; then
-            BASE_URL="https://hr-ai.test.lingxizhifu.cn/assets/kunlun"
+            BASE_URL="https://hr-ai.test.lingxizhifu.cn/assets/kl-desktop"
           else
-            BASE_URL="https://hr-ai.dev.lingxizhifu.cn/assets/kunlun"
+            BASE_URL="https://hr-ai.dev.lingxizhifu.cn/assets/kl-desktop"
           fi
           
           # 根据平台设置文件名
@@ -71,10 +71,7 @@ jobs:
           # 完整的 endpoint URL
           ENDPOINT_URL="$BASE_URL/$LATEST_FILE"
           
-          # 调试：检查 URL 是否完整
-          echo "DEBUG - ENDPOINT_URL contains 'kunlun': $(echo $ENDPOINT_URL | grep -o 'kunlun' || echo 'NOT FOUND')"
-          echo "DEBUG - ENDPOINT_URL contains 'assets': $(echo $ENDPOINT_URL | grep -o 'assets' || echo 'NOT FOUND')"
-          echo "DEBUG - URL structure check: $(echo $ENDPOINT_URL | sed 's|https://[^/]*/assets/[^/]*/|DOMAIN/assets/PATH/|')"
+
           
           # 使用 Node.js 替换 endpoints（处理多行 JSON）
           node -e "
