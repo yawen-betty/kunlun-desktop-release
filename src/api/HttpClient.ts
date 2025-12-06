@@ -28,8 +28,7 @@ interface HttpResponse {
     body: any;
 }
 
-export interface EmptyOutDto {
-}
+export interface EmptyOutDto {}
 
 export default class HttpClient {
     static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
@@ -162,7 +161,7 @@ export default class HttpClient {
                         console.log(responseBody, 'responseBodyresponseBody');
                         const msg = responseBody.msg || '请求失败';
                         message.error(Message, msg);
-                        throw new Error(msg);
+                        // throw new Error(msg);
                     }
             }
         }

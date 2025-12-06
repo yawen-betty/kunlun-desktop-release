@@ -2,9 +2,8 @@
     <div class="version-update">
         <h1 class="title">版本更新</h1>
         <div class="version-info">
-            <span class="current-version">当前版本：{{ versionData?.version }}</span>
-            <!-- 判断当前版本是否需要更新 -->
-            <span class="new-version" v-if="currentVersion !== newVersion">
+            <span class="current-version">当前版本：{{ currentVersion }}</span>
+            <span class="new-version" v-if="newVersion === null || currentVersion !== newVersion">
                 发现新版本！
                 <span class="update-link" @click="handleUpdate">立即更新</span>
             </span>
@@ -60,12 +59,16 @@ const progress = ref(0);
  */
 onMounted(async () => {
     const result = await checkForUpdates(currentVersion, true);
+    console.log('%c 🕋: result ', 'font-size:16px;background-color:#b45944;color:white;', result);
     newVersion.value = result?.newVersion || '';
-    adminService.getVersionInfo({}).then((res) => {
+    try {
+        const res = await adminService.getVersionInfo({});
         if (res.code === 200) {
             versionData.value = res.data;
         }
-    });
+    } catch (error) {
+        console.error('获取版本信息失败:', error);
+    }
 });
 
 /**

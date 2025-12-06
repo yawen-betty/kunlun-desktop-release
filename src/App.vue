@@ -20,6 +20,7 @@ const userService = new UserService();
 const updateDialogRef = ref();
 const currentVersion = Config.version; // 从 package.json 或 tauri.conf.json 读取
 // 检测最新版本
+
 const router = useRouter();
 
 // 提供给子组件的配置状态
@@ -49,9 +50,11 @@ onUnmounted(() => {
 
 // 启动获取最新版本信息
 const theCheckForUpdates = async () => {
-    const res = await adminService.getVersionInfo({});
-    // 检查是否有新版本
-    versionUpdateInfo.value = res.data;
+    try {
+        const res = await adminService.getVersionInfo({});
+
+        versionUpdateInfo.value = res.data;
+    } catch (error) {}
 };
 
 // 检查更新
@@ -60,11 +63,12 @@ const manualCheckUpdate = async () => {
         const result = await checkForUpdates(currentVersion, false);
         console.log('%c 🐞: manualCheckUpdate -> result ', 'font-size:16px;background-color:#ac6afe;color:white;', result);
         await theCheckForUpdates();
+        console.log('%c 👳‍♂️: manualCheckUpdate -> result ', 'font-size:16px;background-color:#cadd01;color:black;', result);
         if (result) {
             updateDialogRef.value?.show({
                 ...result,
                 currentVersion,
-                versionUpdateDetails: versionUpdateInfo.value.content || ''
+                versionUpdateDetails: versionUpdateInfo.value?.content || ''
             });
         }
     } catch (e) {
