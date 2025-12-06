@@ -58,12 +58,19 @@ impl BrowserManager {
         // playwright CLI 真实路径（不使用符号链接）
         let playwright_bin = mcp_modules.join("node_modules/playwright/cli.js");
         
+        // Windows: 移除 UNC 路径前缀 \\?\
+        let node_path_str = node_path.to_string_lossy().to_string();
+        let node_path_clean = node_path_str.strip_prefix(r"\\?\").unwrap_or(&node_path_str);
+        
+        let playwright_str = playwright_bin.to_string_lossy().to_string();
+        let playwright_clean = playwright_str.strip_prefix(r"\\?\").unwrap_or(&playwright_str);
+        
         eprintln!("[Browser] Installing to: {:?}", browsers_path);
-        eprintln!("[Browser] Using node: {:?}", node_path);
-        eprintln!("[Browser] Playwright CLI: {:?}", playwright_bin);
+        eprintln!("[Browser] Using node: {}", node_path_clean);
+        eprintln!("[Browser] Playwright CLI: {}", playwright_clean);
 
-        let mut child = std::process::Command::new(&node_path)
-            .arg(playwright_bin)
+        let mut child = std::process::Command::new(node_path_clean)
+            .arg(playwright_clean)
             .arg("install")
             .arg("chromium")
             .current_dir(&mcp_modules)
