@@ -30,8 +30,7 @@
     "active": true,
     "createUpdaterArtifacts": true,
     "externalBin": [
-      "binaries/node",
-      "binaries/node.exe"
+      "binaries/node"
     ],
     "icon": [
       "icons/32x32.png",
