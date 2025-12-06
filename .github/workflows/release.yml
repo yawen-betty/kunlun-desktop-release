@@ -31,6 +31,12 @@ jobs:
       - name: Install frontend dependencies
         run: npm install
 
+      - name: Install MCP modules dependencies
+        run: |
+          cd src-tauri/binaries/mcp-modules
+          npm install
+        shell: bash
+
       - name: Generate config file based on branch
         run: |
           if [[ "${{ github.ref_name }}" == "master" ]]; then
