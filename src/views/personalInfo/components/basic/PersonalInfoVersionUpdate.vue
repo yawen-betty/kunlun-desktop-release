@@ -74,6 +74,7 @@ onMounted(async () => {
  */
 const handleUpdate = async () => {
     const result = await checkForUpdates(currentVersion, true);
+    console.log('%c 🐖: handleUpdate -> result ', 'font-size:16px;background-color:#ad0c1d;color:white;', result);
     const updateInstance = result?.update;
     if (!updateInstance) return;
 
@@ -82,6 +83,7 @@ const handleUpdate = async () => {
             progress.value = p;
         });
     } catch (error) {
+        console.log('%c 🛴: handleUpdate -> error ', 'font-size:16px;background-color:#a06cf8;color:white;', error);
         alert('更新失败，请稍后重试');
     }
 };
