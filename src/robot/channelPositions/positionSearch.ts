@@ -416,7 +416,7 @@ async function matchJob(apiKey: string, resumeText: string, positionInfo:any, pr
 
     // 配置超时重试
     if (response.body.error) {
-        if (response.body.error.code === 1305) { // API 请求过多
+        if (response.body.error.code === '1305') { // API 请求过多
             return 1305;
         } else {
             return new MatchInfoBean();
@@ -438,20 +438,25 @@ async function matchJob(apiKey: string, resumeText: string, positionInfo:any, pr
 }
 
 function parseMatchInfo(content: string): MatchInfoBean {
-  // 1. 提取 JSON 部分（在 ```json 和 ``` 之间）
-  const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+  // 1. 提取 JSON 部分（支持代码块格式或直接JSON字符串）
+  const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) ||
+                   content.match(/(\{[\s\S]*})/);
 
-  if (!jsonMatch || !jsonMatch[1]) {
-    throw new Error('无法从响应中提取 JSON 数据');
+  let jsonStr = '';
+  if (jsonMatch && jsonMatch[1]) {
+    jsonStr = jsonMatch[1];
+  } else {
+    // 如果没有匹配到，直接使用原始内容
+    jsonStr = content;
   }
 
-  // 2. 获取 JSON 字符串并去除转义字符
-  let jsonStr = jsonMatch[1]
-    .replace(/\\"/g, '"')  // 将 \" 替换为 "
-    .replace(/\\\\/g, '\\'); // 将 \\ 替换为 \
+  // 2. 使用浏览器原生 HTML 解码器
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = jsonStr;
+  const decodedStr = textarea.value;
 
   // 3. 解析 JSON
-  const data = JSON.parse(jsonStr);
+  const data = JSON.parse(decodedStr);
 
   // 4. 转换为 MatchInfoBean
   const matchInfo = new MatchInfoBean();

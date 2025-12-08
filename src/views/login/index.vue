@@ -186,8 +186,8 @@ const getUserInfo = () => {
         if (res.code === 200) {
             if (res.data.avatarUrl) {
                 // 拼接域名
-                UserInfo.info.avatar = res.data.avatarUrl.startsWith('http') 
-                    ? res.data.avatarUrl 
+                UserInfo.info.avatar = res.data.avatarUrl.startsWith('http')
+                    ? res.data.avatarUrl
                     : `${Config.baseUrl}${res.data.avatarUrl}`;
             }
             UserInfo.info.userName = res.data.name!;
