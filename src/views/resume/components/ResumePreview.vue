@@ -1433,7 +1433,6 @@ defineExpose({
 .name {
     height: vh(48);
     font-family: 'PingFangSCBold', sans-serif;
-    font-weight: 600;
     font-size: vw(32);
     line-height: vh(48);
     color: $font-dark;
@@ -1443,7 +1442,6 @@ defineExpose({
 .job-title {
     height: vh(38);
     font-family: 'PingFangSCBold', sans-serif;
-    font-weight: 600;
     font-size: vw(20);
     line-height: vh(38);
     color: $font-dark;
@@ -1519,7 +1517,6 @@ defineExpose({
 
 .section-title {
     font-family: 'PingFangSCBold', sans-serif;
-    font-weight: 600;
     font-size: vw(20);
     line-height: vh(22);
     color: $font-dark;
@@ -1601,7 +1598,6 @@ defineExpose({
 
 .experience-header {
     font-family: 'PingFangSCBold', sans-serif;
-    font-weight: 600;
     font-size: vw(16);
     line-height: vh(16);
     margin-bottom: vh(16);
@@ -1678,7 +1674,6 @@ defineExpose({
 
 .loading-text {
     font-family: 'PingFangSCBold', sans-serif;
-    font-weight: 600;
     font-size: vw(20);
     line-height: vh(60);
     color: transparent;
@@ -1704,7 +1699,6 @@ defineExpose({
         background: $bg-gray;
         border: none;
         font-family: 'PingFangSCBold', sans-serif;
-        font-weight: 600;
         font-size: vw(32);
         color: $font-dark;
         padding: 0 vw(10);
@@ -1723,7 +1717,6 @@ defineExpose({
         background: $bg-gray;
         border: none;
         font-family: 'PingFangSCBold', sans-serif;
-        font-weight: 600;
         font-size: vw(22);
         color: $font-dark;
         padding: 0 vw(10);
@@ -1939,7 +1932,6 @@ defineExpose({
 
 .time-separator {
     font-family: 'PingFangSCBold', sans-serif;
-    font-weight: 600;
     font-size: vw(16);
     line-height: vh(16);
     color: $font-dark;

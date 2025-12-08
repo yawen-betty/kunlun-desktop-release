@@ -424,6 +424,7 @@ const handleExhaustedOfAttempts = async () => {
     params.uuid = currentTask.value?.uuid!
     params.status = 1
     await jobService.activateJobTask(params)
+    loadCurrentTask()
 }
 
 onMounted(async () => {
