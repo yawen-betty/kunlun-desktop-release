@@ -43,13 +43,6 @@ export const validateEmail = (rule: any, value: string, callback: any) => {
  * 处理用户名 开始
  */
 
-// 使用正则表达式匹配中文字符
-const chinesePattern = /[\u4e00-\u9fa5]/;
 export const hasChineseCharacters = (str: string) => {
-    // 检查字符串中是否包含中文字符
-    if (chinesePattern.test(str)) {
-        return str && str.length && str.length >= 2 ? str.substring(str?.length - 2) : str.substring(str?.length - 1);
-    } else {
-        return str.substring(0, 1);
-    }
+    return str.length >= 2 ? str.substring(str.length - 2) : str;
 };
