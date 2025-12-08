@@ -14,7 +14,6 @@
             <div class="photo-wrapper">
                 <img v-if="contactInfo.photo" :src="`${Config.baseUrl}${contactInfo.photo}`" :style="photoStyle"
                      alt="个人照片" class="avatar"/>
-                <div v-else class="photo-placeholder"></div>
             </div>
         </div>
 
