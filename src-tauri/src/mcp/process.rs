@@ -2,6 +2,8 @@ use std::io::{BufRead, BufReader};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
 use tauri::{AppHandle, Manager};
 use tauri::path::BaseDirectory;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 
 /// MCP 进程管理器
 ///
@@ -33,15 +35,15 @@ impl McpProcess {
         } else {
             "node"
         };
-        
+
         let node_path = app.path()
             .resolve(node_filename, BaseDirectory::Resource)
             .map_err(|e| format!("Failed to resolve node path: {}", e))?;
-        
+
         // Windows: 移除 UNC 路径前缀 \\?\
         let node_path_str = node_path.to_string_lossy().to_string();
         let node_path_clean = node_path_str.strip_prefix(r"\\?\").unwrap_or(&node_path_str);
-        
+
         eprintln!("[MCP] Using node: {}", node_path_clean);
         let mut cmd = Command::new(node_path_clean);
         let entry_str = mcp_entry.to_string_lossy().to_string();
@@ -57,6 +59,9 @@ impl McpProcess {
             eprintln!("[MCP] Starting in HEADLESS mode");
             cmd.arg("--headless");
         }
+
+        #[cfg(target_os = "windows")]
+        cmd.creation_flags(0x08000000);
 
         let mut child = cmd.env("PLAYWRIGHT_BROWSERS_PATH", browsers_path.to_str().unwrap())
             .stdin(Stdio::piped())
