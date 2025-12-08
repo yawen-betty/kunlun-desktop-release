@@ -1,6 +1,6 @@
 [package]
 name = "kunlun"
-version = "1.0.1"
+version = "1.1.0"
 description = "昆仑桌面端"
 authors = ["fzxs"]
 edition = "2021"
@@ -18,7 +18,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2.9.0", features = [] }
+tauri = { version = "2.9.0", features = ["devtools"] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -29,7 +29,12 @@ tauri-plugin-store = "2.4.0"
 tauri-plugin-os = "2.3.1"
 tauri-plugin-updater = "2.9.0"
 tauri-plugin-process = "2.0.0-beta.5"
+tauri-plugin-shell = "2"
 base64 = "0.22"
+tokio = { version = "1", features = ["sync", "rt-multi-thread", "macros"] }
+dirs = "5"
+tokio-tungstenite = "0.21"
+url = "2.5"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.
@@ -39,7 +44,7 @@ codegen-units = 1 # Allows LLVM to perform better optimization.
 lto = true # Enables link-time-optimizations.
 opt-level = "s" # Prioritizes small binary size. Use `3` if you prefer speed.
 panic = "abort" # Higher performance by disabling panic handlers.
-strip = true # Ensures debug symbols are removed.
+strip = false # Keep debug symbols for devtools
 
 [target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
 tauri-plugin-updater = "2.9.0"

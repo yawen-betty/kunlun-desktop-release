@@ -8,6 +8,7 @@ import {EmptyOutDto} from '@/api/HttpClient';
 import {UpdateProfileInDto} from "@/api/user/dto/UpdateProfile.ts";
 import {GetModelAccountInDto, GetModelAccountOutDto} from "@/api/user/dto/GetModelAccount.ts";
 import {SaveModelAccountInDto, SaveModelAccountOutDto} from "@/api/user/dto/SaveModelAccount.ts";
+import {DeactivateInDto, DeactivateOutDto} from "@/api/user/dto/Deactivate.ts";
 
 export class UserService {
     private http: HttpClient;
@@ -57,5 +58,12 @@ export class UserService {
      */
     public async saveModelAccount(params: SaveModelAccountInDto): Promise<Result<SaveModelAccountOutDto>> {
         return await this.http.request<Result<SaveModelAccountOutDto>>(UserPaths.saveModelAccount, params);
+    }
+
+    /**
+     * 注销账号
+     */
+    public async deactivate(params: DeactivateInDto): Promise<EmptyOutDto> {
+        return await this.http.request<EmptyOutDto>(UserPaths.deactivate, params);
     }
 }

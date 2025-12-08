@@ -83,7 +83,13 @@ cd kunlun-desktop
 # 3. 安装前端依赖
 npm install
 
-# 4. 启动桌面应用开发模式
+# 4. 安装 MCP 模块（首次运行或 mcp-modules 被删除后）
+# macOS/Linux:
+bash src-tauri/binaries/install-mcp.sh
+# Windows:
+src-tauri\binaries\install-mcp.bat
+
+# 5. 启动桌面应用开发模式
 npm run tauri dev
 ```
 

@@ -7,7 +7,9 @@
                     <div class="service-image">
                         <Image :src="`${Config.baseUrl}${service.image}`" alt="服务图片" fit="contain" />
                     </div>
-                    <p class="service-description">{{ service.instructions }}</p>
+                    <div class="service-warp">
+                        <p class="service-description">{{ service.instructions }}</p>
+                    </div>
                     <div class="service-price">{{ service.price || '' }}</div>
                     <Button type="primary" class="consult-btn" @click="handleConsultClick(service.id)">预约咨询</Button>
                 </div>
@@ -107,7 +109,7 @@ const showModal = ref(false);
 .service-image {
     width: vw(404);
     height: vh(220);
-    background-color: #ffe7e7;
+    // background-color: #ffe7e7;
     margin: vh(16) 0 vh(54);
     flex-shrink: 0;
     .ivu-image {
@@ -116,22 +118,26 @@ const showModal = ref(false);
         object-fit: cover;
     }
 }
-
-.service-description {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.service-warp {
     width: vw(300);
     height: vh(180);
+    overflow: hidden; // 外层不滚动
+    display: flex;
+    align-items: center; // 垂直居中文字块
+    justify-content: center;
+}
+
+.service-description {
+    max-height: 100%;
+    overflow-y: auto; // 滚动放到内层
+    text-align: center;
     font-family: 'PingFang SC', sans-serif;
     font-weight: 600;
     font-size: vw(16);
     line-height: vh(20);
     color: $font-middle;
-    text-align: center;
-    margin: 0 0 vh(41);
     white-space: pre-line;
-    overflow: auto;
+    padding: 2px 0; // 防止首行被裁掉（更稳）
 }
 
 .service-price {
@@ -141,7 +147,7 @@ const showModal = ref(false);
     line-height: vh(20);
     color: $font-dark;
     text-align: center;
-    margin: 0 0 vh(60);
+    margin: vh(42) 0 vh(60);
     min-height: vh(20);
 }
 

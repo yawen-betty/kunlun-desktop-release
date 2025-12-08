@@ -56,3 +56,58 @@ export const image = {
     }
   }
 };
+
+
+/**
+ * MCP (Model Context Protocol) 相关命令
+ */
+export const mcp = {
+  /**
+   * 检查是否有浏览器
+   */
+  checkBrowser: async (): Promise<{ installed: boolean; path?: string }> => {
+    try {
+      return await invoke('check_mcp_browser');
+    } catch (error) {
+      console.error('检查浏览器失败:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * 安装浏览器
+   */
+  installBrowser: async (): Promise<void> => {
+    try {
+      await invoke('install_mcp_browser');
+    } catch (error) {
+      console.error('安装浏览器失败:', error);
+      throw error;
+    }
+  },
+  /**
+   * 启动 MCP Server
+   * @param headless 是否以无头模式运行（默认 true）
+   */
+  startServer: async (headless: boolean = true): Promise<string> => {
+    try {
+      return await invoke<string>('start_mcp_server', { headless });
+    } catch (error) {
+      console.error('启动 MCP Server 失败:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * 停止 MCP Server
+   */
+  stopServer: async (): Promise<void> => {
+    try {
+      await invoke('stop_mcp_server');
+    } catch (error) {
+      console.error('停止 MCP Server 失败:', error);
+      throw error;
+    }
+  },
+};
+

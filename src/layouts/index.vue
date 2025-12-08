@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import Top from '@/layouts/components/header.vue';
-import LeftMenu from "@/layouts/components/sidebar.vue";
-import {onMounted, ref} from "vue";
+import LeftMenu from '@/layouts/components/sidebar.vue';
+import {onMounted, ref} from 'vue';
 
 /**
  * 监听窗口大小,调整尺寸 开始
  */
 const minSize = ref(false);
-const cachePages = ['Resume', 'Position']
+const cachePages = ['Resume', 'Position'];
 const listenerResize = () => {
     minSize.value = window.innerWidth < 1500;
 };
@@ -29,9 +29,9 @@ onMounted(() => {
         <Layout class="layout">
             <LeftMenu :minSize="minSize"></LeftMenu>
             <Content class="content">
-                <router-view v-slot="{ Component }">
+                <router-view v-slot="{Component}">
                     <keep-alive :include="cachePages">
-                        <component :is="Component"/>
+                        <component :is="Component" />
                     </keep-alive>
                 </router-view>
             </Content>
@@ -40,8 +40,8 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/styles/variable.scss" as *;
-@use "@/assets/styles/compute.scss" as *;
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
 
 .layout {
     height: 100vh;
@@ -63,7 +63,6 @@ onMounted(() => {
     }
 
     .content {
-
     }
 }
 </style>

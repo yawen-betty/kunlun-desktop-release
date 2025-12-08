@@ -10,7 +10,7 @@
  * @param pattern 格式化字符
  * @returns 格式化后的时间
  */
-export function parseDate(time: number | string, pattern: string) {
+export function parseDate(time: number | string, pattern?: string) {
     if (arguments.length === 0 || !time) {
         return null;
     }

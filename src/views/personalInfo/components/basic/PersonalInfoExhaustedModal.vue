@@ -67,6 +67,7 @@ import {aiModal} from "@/enums/enumDict.ts";
 import {AdminService} from "@/service/AdminService.ts";
 import {GetAiRegisterGuideInDto} from "@/api/admin/dto/GetAiRegisterGuide.ts";
 import {GetModelAccountInDto} from "@/api/user/dto/GetModelAccount.ts";
+import {UserInfo} from "@/utiles/userInfo.ts";
 
 const formRef = ref<any>(null);
 
@@ -102,6 +103,7 @@ const handleSave = async () => {
         userService.saveModelAccount(formData).then(res => {
             if (res.code === 200) {
                 message.success(Message, '配置保存成功！')
+                UserInfo.info.modelList = [formData]
             }
         })
     } else {

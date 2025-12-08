@@ -2,6 +2,7 @@ import {image} from "@/utiles/tauriCommonds.ts";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import {Message} from "view-ui-plus";
+import {message} from "@/utiles/Message.ts";
 
 /**
  * 下载文件
@@ -19,7 +20,6 @@ export const download = async (el: string, ext: 'jpg' | 'pdf', name: string) => 
         if (imgEl && imgEl.src && !imgEl.src.startsWith('data:')) {
             imgEl.src = await image.toBase64(imgEl.src);
         }
-        console.log(imgEl.src, 'imgEl.src')
         const canvas = await html2canvas(previewEl, {
             scale: 2,
             backgroundColor: '#ffffff',
@@ -52,10 +52,10 @@ export const download = async (el: string, ext: 'jpg' | 'pdf', name: string) => 
         await writable.write(blob);
         await writable.close();
 
-        Message.success('下载成功');
+        message.success(Message, '下载成功');
     } catch (error) {
         if ((error as any).name !== 'AbortError') {
-            Message.error('下载失败');
+            message.success(Message, '下载失败');
         }
     }
 };

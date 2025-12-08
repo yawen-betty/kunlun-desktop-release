@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {reactive, ref, onMounted, computed, nextTick} from 'vue';
+import {reactive, ref, onMounted, computed} from 'vue';
 import PositionDetail from "@/views/position/components/PositionDetail.vue";
 import {useCompRef} from "@/hooks/useComponent";
 import SvgIcon from "@/components/svgIcon/index.vue";
@@ -11,13 +11,25 @@ import CreateTaskModal from "@/views/position/components/CreateTaskModal.vue";
 import PromptDialog from "@/components/promptDialog/index.vue";
 import {Message, Modal} from "view-ui-plus";
 import {JobService} from "@/service/JobService";
+import {ResumeService} from "@/service/ResumeService";
 import {GetJobTaskInDto, GetJobTaskOutDto} from "@/api/job/dto/GetJobTask";
-import {GetOtherJobTasksInDto, GetOtherJobTasksOutDto} from "@/api/job/dto/GetOtherJobTasks";
+import {GetOtherJobTasksOutDto} from "@/api/job/dto/GetOtherJobTasks";
 import {ActivateJobTaskInDto} from "@/api/job/dto/ActivateJobTask";
-import {PositionBean} from "@/api/job/dto/bean/PositionBean";
 import {channelList, workExperienceList, enumEcho} from "@/enums/enumDict.ts";
 import {QueryMatchedPositionsInDto} from "@/api/job/dto/QueryMatchedPositions.ts";
+import {CheckNewPositionsInDto} from "@/api/job/dto/CheckNewPositions.ts";
 import {message} from "@/utiles/Message.ts";
+import {executeLogin} from '@/robot/channelLogin/login.ts';
+import {channelAuth} from '@/robot/channelLogin/authManage.ts';
+import {onBeforeUnmount} from 'vue';
+import {MatchedPositionBean} from "@/api/job/dto/bean/MatchedPositionBean.ts";
+import {openWeb} from "@/utiles/openWeb.ts";
+import {parseDate} from "@/utiles/DateUtils.ts";
+import {robotManager} from "@/robot/service";
+import {UserInfo} from "@/utiles/userInfo.ts";
+import {debounce} from "@/utiles/debounce.ts";
+import mitt from "mitt";
+import emitter from "@/utiles/eventBus.ts";
 
 // 创建任务弹框实例
 const createTaskModalRef = useCompRef(CreateTaskModal)
@@ -26,6 +38,7 @@ const positionDetailRef = useCompRef(PositionDetail)
 // 二次确认弹框
 const promptDialogRef = useCompRef(PromptDialog)
 const jobService = new JobService()
+const resumeService = new ResumeService()
 const searchData = reactive<QueryMatchedPositionsInDto>({
     ...new QueryMatchedPositionsInDto(),
     sortBy: 'recommendedAt',
@@ -71,7 +84,7 @@ const taskStatus = computed(() => currentTask.value?.status === 0)
 
 const taskList = ref<GetOtherJobTasksOutDto[]>([])
 
-const positionList = ref<PositionBean[]>([])
+const positionList = ref<MatchedPositionBean[]>([])
 
 const pagination = reactive({
     current: 1,
@@ -82,11 +95,20 @@ const pagination = reactive({
 const showChannelModal = ref(false)
 // 要删除的任务id
 const deleteTaskId = ref<string>()
+// 渠道登录提示显示状态
+const showChannelTip = ref(false)
+// 是否有新职位
+const hasNewPositions = ref(false)
+// 第一页第一条数据的推荐时间
+const firstPositionTime = ref<number>(0)
+// 简历文本
+const resumeText = ref<string>('')
+
 
 const resetFilters = () => {
     pagination.current = 1
     pagination.pageSize = 20
-    searchData.isInterested = undefined
+    searchData.isInterested = 0
     searchData.sourceChannel = -1
     searchData.sortBy = 'recommendedAt'
 }
@@ -102,44 +124,71 @@ const handlePageSizeChange = async (pageSize: number) => {
     await loadPositions()
 }
 
-const channels = [
+const channels = ref([
     {
         name: 'BOSS直聘',
+        value: 'boss',
         icon: bossIcon,
         isLogin: true
     },
     {
         name: '智联招聘',
+        value: 'zhilian',
         icon: zhilianIcon,
         isLogin: true
     },
     {
         name: '国聘网',
+        value: 'guopin',
         icon: guopinIcon,
         isLogin: false
     }
-]
+])
 
 const handleChannelLogin = () => {
     showChannelModal.value = true
 }
 
 const handleOpenCreateModal = () => {
-    console.log(createTaskModalRef, 'createTaskModalRef')
     createTaskModalRef.value?.open()
 }
 
-const handleLogin = (channel: any) => {
+const handleLogin = debounce(async (channel: any) => {
     if (!channel.isLogin) {
-        console.log('登录', channel.name)
+        try {
+            const loginResult = await executeLogin(channel.value)
+            if (loginResult.success) {
+                channel.isLogin = true
+                message.success(Message, '登录成功！')
+                showChannelModal.value = false
+
+                // 登录成功后，如果任务在进行中，重启爬取
+                if (currentTask.value?.status === 0 && currentTask.value.uuid) {
+                    await robotManager.cleanup()
+                    UserInfo.info.isRunningTask = false
+                    await robotManager.crawlPosition({
+                        jobTitle: currentTask.value.jobTitle,
+                        cityInfos: currentTask.value.cityName,
+                        experience: enumEcho(currentTask.value.experience, workExperienceList, 'value', 'key')
+                    }, currentTask.value.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
+                    UserInfo.info.isRunningTask = true
+                }
+            } else {
+                message.error(Message, `登录失败: ${loginResult.error}`)
+            }
+        } catch (error) {
+            console.error('登录异常:', error)
+            message.error(Message, '登录异常，请重试')
+        }
     }
-}
+}, 300)
 
 const handleTaskSwitch = () => {
-    showTaskDropdown.value = !showTaskDropdown.value
+    if (taskList.value.length)
+        showTaskDropdown.value = !showTaskDropdown.value
 }
 
-const handleToggleTaskStatus = async () => {
+const handleToggleTaskStatus = debounce(async () => {
     if (!currentTask.value?.uuid) return
     try {
         const params = new ActivateJobTaskInDto()
@@ -151,14 +200,43 @@ const handleToggleTaskStatus = async () => {
             const taskResult = await jobService.getJobTask(taskParams)
             if (taskResult.code === 200 && taskResult.data) {
                 currentTask.value = taskResult.data
+                if (taskResult.data.status === 0) {
+                    const allCookies = await channelAuth.getAllCookies()
+                    channels.value.forEach(channel => {
+                        channel.isLogin = !!allCookies[channel.value]
+                    })
+                    showChannelTip.value = channels.value.every(channel => !channel.isLogin)
+
+                    // 如果有登录的渠道，直接开始爬取
+                    const hasLoggedIn = channels.value.some(channel => channel.isLogin)
+                    if (hasLoggedIn && taskResult.data.uuid) {
+                        await robotManager.crawlPosition({
+                            jobTitle: taskResult.data.jobTitle,
+                            cityInfos: taskResult.data.cityName,
+                            experience: enumEcho(taskResult.data.experience, workExperienceList, 'value', 'key')
+                        }, taskResult.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
+                        UserInfo.info.isRunningTask = true
+                    }
+                    message.success(Message, '任务已开启，请至少登录一个招聘渠道！')
+                } else {
+                    // 关闭状态，停止爬取
+                    await robotManager.cleanup()
+                    UserInfo.info.isRunningTask = false
+                    message.success(Message, '任务已关闭，将不再推送精选职位！')
+                }
             }
+        } else if (result.code === 2601) { // 满额
+            UserInfo.info.isRunningTask = false
+            message.info(Message, '今日推荐次数已用完，请明日再来！')
+        } else if (result.code === 2306) { // 简历id不存在
+            message.error(Message, '求职简历不存在，任务开启失败!')
         }
     } catch (error) {
         console.error('切换任务状态失败:', error)
     }
-}
+}, 300)
 
-const handleSelectTask = async (taskId: string) => {
+const handleSelectTask = debounce(async (taskId: string) => {
     showTaskDropdown.value = false
     if (taskId === currentTaskId.value) {
         return
@@ -175,8 +253,7 @@ const handleSelectTask = async (taskId: string) => {
     } catch (error) {
         console.error('切换任务失败:', error)
     }
-
-}
+}, 300)
 
 const handleDeleteClick = (taskId: string) => {
     deleteTaskId.value = taskId
@@ -218,7 +295,36 @@ const loadCurrentTask = async () => {
         if (result.code === 200 && result.data) {
             currentTask.value = result.data
             searchData.taskUuid = result.data.uuid
+            // 调用获取简历文本接口
+            if (result.data.resumeUuid) {
+                const res = await resumeService.getResumeText(result.data.resumeUuid)
+                resumeText.value = res.data as string;
+                if (result.data.status === 0) {
+                    const allCookies = await channelAuth.getAllCookies()
+                    channels.value.forEach(channel => {
+                        channel.isLogin = !!allCookies[channel.value]
+                    })
+                    showChannelTip.value = channels.value.every(channel => !channel.isLogin)
+
+                    // 如果有登录的渠道，直接开始爬取
+                    const hasLoggedIn = channels.value.some(channel => channel.isLogin)
+                    // 每次切换之后 都要先关闭之前的机器人，重新启动
+                    if (hasLoggedIn && result.data.uuid) {
+                        console.log(UserInfo.info.matchAnalysisPrompt, 'prompt')
+                        await robotManager.cleanup()
+                        await robotManager.crawlPosition({
+                            jobTitle: result.data.jobTitle,
+                            cityInfos: result.data.cityName,
+                            experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
+                        }, result.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
+                        UserInfo.info.isRunningTask = true
+                    }
+                }
+            }
+
             await loadPositions()
+        } else if (result.code === 2306) { // 简历id不存在
+            message.error(Message, '求职简历不存在，任务开启失败!')
         }
     } catch (error) {
         console.error('获取任务失败:', error)
@@ -235,6 +341,17 @@ const loadPositions = async () => {
         if (result.code === 200 && result.data) {
             positionList.value = result.data.list
             pagination.total = result.data.total
+
+            // 如果有数据，自动选中第一条
+            if (result.data.list.length > 0) {
+                const firstItem = result.data.list[0]
+                selectedId.value = firstItem.positionUuid
+
+                // 如果是第一页，记录第一条的推荐时间
+                if (pagination.current === 1 && firstItem.recommendedAt) {
+                    firstPositionTime.value = firstItem.recommendedAt
+                }
+            }
         }
     } catch (error) {
         console.error('获取职位列表失败:', error)
@@ -260,9 +377,67 @@ const handleTaskUpdated = async () => {
     await loadOtherTasks()
 }
 
+const handleRefresh = async () => {
+    hasNewPositions.value = false
+    resetFilters()
+    await loadPositions()
+}
+
+const openBaidu = async (url: string) => {
+    if (url) {
+        await openWeb(url);
+    }
+}
+
+// 计算可显示的标签
+const getVisibleTags = (item: MatchedPositionBean) => {
+    const tags: string[] = []
+    if (item.educational) tags.push(item.educational)
+    if (item.workExperience) tags.push(item.workExperience)
+    if (item.labels) tags.push(...item.labels)
+
+    // 根据标签内容长度动态估算，时间信息占约25%宽度，每个标签平均占8%宽度
+    const timeWidthPercent = 25
+    const avgTagWidthPercent = 8
+    const availablePercent = 100 - timeWidthPercent
+    const maxTags = Math.floor(availablePercent / avgTagWidthPercent)
+
+    return tags.slice(0, Math.max(1, maxTags))
+}
+
+/**
+ * 显示有新职位
+ */
+const handleUpdateNewPosition = () => {
+    hasNewPositions.value = true;
+}
+
+/**
+ * 今日推荐次数用完，进行中 改为 已关闭
+ */
+const handleExhaustedOfAttempts = async () => {
+    await robotManager.cleanup()
+    UserInfo.info.isRunningTask = false
+    message.info(Message, '今日推荐次数已用完，请明日再来！')
+
+    const params = new ActivateJobTaskInDto()
+    params.uuid = currentTask.value?.uuid!
+    params.status = 1
+    await jobService.activateJobTask(params)
+}
+
 onMounted(async () => {
     await loadCurrentTask()
     await loadOtherTasks()
+
+    emitter.on('updateNewPosition', handleUpdateNewPosition)
+    emitter.on('exhaustedOfAttempts', handleExhaustedOfAttempts)
+})
+
+onBeforeUnmount(() => {
+    emitter.off('updateNewPosition', handleUpdateNewPosition)
+    emitter.off('exhaustedOfAttempts', handleExhaustedOfAttempts)
+
 })
 </script>
 
@@ -275,7 +450,8 @@ onMounted(async () => {
                     <span>精选职位</span>
                 </div>
                 <div class="title-right">
-                    <Checkbox v-model="searchData.isInterested" class="filter-checkbox" @on-change="loadPositions">
+                    <Checkbox v-model="searchData.isInterested" :false-value="0" :true-value="1" class="filter-checkbox"
+                              @on-change="loadPositions">
                         只看感兴趣
                     </Checkbox>
                     <Select v-model="searchData.sourceChannel" class="filter-select" placeholder="全部渠道"
@@ -293,17 +469,25 @@ onMounted(async () => {
                 <div class="task-header align-between">
                     <div class="task-left">
                         <span class="task-title">{{ currentTask?.jobTitle }}</span>
-                        <div :class="{ 'is-active': taskStatus }" class="task-switch" @click="handleToggleTaskStatus">
+                        <div :class="{ 'is-active': taskStatus }" class="task-switch mr-20"
+                             @click="handleToggleTaskStatus">
                             <div class="switch-dot"></div>
                             <span class="switch-text">{{ taskStatus ? '任务进行中' : '任务已关闭' }}</span>
                         </div>
+                        <div v-if="hasNewPositions" class="new-pos-tip">
+                            <div class="new-pos-text mr-20">有新职位</div>
+                            <div class="refresh-con" @click="handleRefresh">
+                                <SvgIcon class="mr-5" color="#9499A5" name="icon-shuaxin" size="12"/>
+                                刷新
+                            </div>
+                        </div>
                     </div>
                     <div class="task-right">
-                        <Tooltip v-for="item in channels" :key="item.name" :content="item.name" placement="bottom"
+                        <Tooltip v-for="item in channels" :key="item.value" :content="item.name" placement="bottom"
                                  theme="dark" transfer>
                             <div class="channel-icon">
                                 <img :alt="item.name" :src="item.icon"/>
-                                <div class="icon-mask"></div>
+                                <div v-if="!item.isLogin" class="icon-mask"></div>
                             </div>
                         </Tooltip>
                     </div>
@@ -340,17 +524,26 @@ onMounted(async () => {
                         <SvgIcon name="icon-xinzeng" size="12"/>
                         <span>新增任务</span>
                     </div>
-                    <div class="action-item" @click="handleChannelLogin">
-                        <SvgIcon name="icon-user" size="12"/>
-                        <span>渠道登录</span>
+                    <div class="action-item-wrapper">
+                        <div class="action-item" @click="handleChannelLogin">
+                            <SvgIcon name="icon-user" size="12"/>
+                            <span>渠道登录</span>
+                        </div>
+                        <div v-if="showChannelTip" class="channel-tip">
+                            <div class="tip-arrow"></div>
+                            <div class="tip-content">
+                                <span>至少登录一个招聘渠道</span>
+                                <SvgIcon class="tip-close" name="icon-cha" size="10" @click="showChannelTip = false"/>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div v-if="positionList.length > 0" class="position-list">
-                <div v-for="(item) in positionList" :key="item.uuid"
-                     :class="{ 'is-active': selectedId === item.uuid }" class="position-item"
-                     @click="handleSelectPosition(item.uuid)">
+                <div v-for="(item) in positionList" :key="item.positionUuid"
+                     :class="{ 'is-active': selectedId === item.positionUuid }" class="position-item"
+                     @click="handleSelectPosition(item.positionUuid)">
                     <div class="item-top">
                         <div class="top-left">
                             <span class="item-title">{{ item.title }}</span>
@@ -359,21 +552,26 @@ onMounted(async () => {
                                 <span>{{ item.matchScore }}%</span>
                             </div>
                         </div>
-                        <span class="item-salary">{{ item.salary }}</span>
+                        <span class="item-salary">{{
+                                [item.salary, item.salaryNumber].filter(Boolean).join('·')
+                            }}</span>
                     </div>
                     <div class="item-middle">
                         <div class="item-tags">
-                            <span v-for="(tag, idx) in item.labels" :key="idx" class="tag-item">{{ tag }}</span>
+                            <span v-for="(tag, idx) in getVisibleTags(item)" :key="idx" class="tag-item">{{
+                                    tag
+                                }}</span>
                         </div>
-                        <span class="item-time">{{ item.recommendedAt }} <span class="separator">｜</span>{{
-                                item.sourceChannel
+                        <span class="item-time">{{ parseDate(item.recommendedAt, '{y}-{m}-{d} {h}:{i}') }} <span
+                            class="separator">｜</span>{{
+                                enumEcho(item.sourceChannel, channelList, 'value', 'key')
                             }}</span>
                     </div>
                     <div class="item-bottom">
                         <span class="company-info">{{ item.areaName }} <span class="separator">｜</span>{{
                                 item.companyName
                             }}</span>
-                        <div class="item-action pointer">
+                        <div class="item-action pointer" @click="openBaidu(item.jobDetailUrl)">
                             <SvgIcon color="#9499A4" name="icon-send" size="14"/>
                             <span>去投递</span>
                         </div>
@@ -397,7 +595,7 @@ onMounted(async () => {
         </div>
 
         <div class="panel-right">
-            <PositionDetail ref="positionDetailRef"/>
+            <PositionDetail :id="selectedId" ref="positionDetailRef"/>
         </div>
 
         <Modal v-model="showChannelModal" :closable="false" :footer-hide="true" :mask-closable="false"
@@ -412,7 +610,7 @@ onMounted(async () => {
                     <p>渠道处于“登录状态”并且“任务已开启”，系统将自动为您匹配合适岗位。</p>
                 </div>
                 <div class="channel-list">
-                    <div v-for="(channel, index) in channels" :key="index" class="channel-card"
+                    <div v-for="channel in channels" :key="channel.value" class="channel-card"
                          @click="handleLogin(channel)">
                         <div class="channel-icon-wrapper mb-25">
                             <img :alt="channel.name" :src="channel.icon" class="channel-img"/>
@@ -666,6 +864,53 @@ onMounted(async () => {
                             transition: color 0.2s ease;
                         }
                     }
+
+                    .new-pos-tip {
+                        display: flex;
+                        align-items: center;
+                        column-gap: vw(10);
+
+                        .new-pos-text {
+                            position: relative;
+                            padding-left: vw(18);
+                            font-family: 'PingFang SC', sans-serif;
+                            font-size: vw(14);
+                            font-weight: 500;
+                            line-height: vw(14);
+                            color: $remind-red;
+
+                            &::before {
+                                content: '';
+                                position: absolute;
+                                left: 0;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                width: vw(8);
+                                height: vw(8);
+                                background: $remind-red;
+                                border-radius: 50%;
+                            }
+                        }
+
+                        .refresh-con {
+                            display: flex;
+                            align-items: center;
+                            column-gap: vw(6);
+                            font-family: 'PingFang SC', sans-serif;
+                            font-size: vw(14);
+                            line-height: vw(12);
+                            color: $font-middle;
+                            cursor: pointer;
+
+                            &:hover {
+                                color: $theme-color;
+
+                                :deep(use) {
+                                    fill: $theme-color;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 .task-right {
@@ -735,6 +980,12 @@ onMounted(async () => {
                 display: flex;
                 align-items: center;
                 column-gap: vw(20);
+
+                .action-item-wrapper {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                }
 
 
                 .action-item {
@@ -860,6 +1111,7 @@ onMounted(async () => {
                         display: flex;
                         align-items: center;
                         column-gap: vw(10);
+                        flex-wrap: nowrap;
 
                         .tag-item {
                             padding: vw(5);
@@ -867,6 +1119,7 @@ onMounted(async () => {
                             font-size: vw(12);
                             color: $font-dark;
                             line-height: vw(12);
+                            white-space: nowrap;
                         }
                     }
 
@@ -915,6 +1168,11 @@ onMounted(async () => {
                             line-height: vw(14);
                         }
 
+                        svg {
+                            width: vw(14) !important;
+                            height: vw(14) !important;
+                        }
+
                         &:hover {
                             span {
                                 color: $theme-color;
@@ -956,6 +1214,54 @@ onMounted(async () => {
         background: $white;
         border-radius: vw(2);
         box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.10);
+    }
+}
+
+.channel-tip {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+
+    .tip-arrow {
+        width: 0;
+        height: 0;
+        border-top: vw(5) solid transparent;
+        border-bottom: vw(5) solid transparent;
+        border-right: vw(6) solid rgba(70, 76, 91, 0.9);
+    }
+
+    .tip-content {
+        background: rgba(70, 76, 91, 0.9);
+        border-radius: vw(4);
+        padding: vh(8) vw(10);
+        display: flex;
+        align-items: center;
+        column-gap: vw(10);
+
+        span {
+            font-family: 'PingFang SC', sans-serif;
+            font-size: vw(14);
+            font-weight: 500;
+            line-height: vw(14);
+            color: $white;
+            white-space: nowrap;
+        }
+
+        .tip-close {
+            cursor: pointer;
+            flex-shrink: 0;
+
+            :deep(use) {
+                fill: $white;
+            }
+
+            &:hover {
+                opacity: 0.8;
+            }
+        }
     }
 }
 

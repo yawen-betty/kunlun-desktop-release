@@ -20,12 +20,16 @@ const componentMap = {
     personal: defineAsyncComponent(() => import('@/views/personalInfo/components/basic/PersonalInfoForm.vue')),
     // 模型信息弹窗
     model: defineAsyncComponent(() => import('@/views/personalInfo/components/basic/PersonalInfoExhaustedModal.vue')),
+    // 版本更新
+    version: defineAsyncComponent(() => import('@/views/personalInfo/components/basic/PersonalInfoVersionUpdate.vue')),
     // 问题反馈
     feedback: defineAsyncComponent(() => import('@/views/personalInfo/components/basic/PersonalInfoFeedback.vue')),
     // 帮助中心
     help: defineAsyncComponent(() => import('@/views/personalInfo/components/basic/PersonalInfoHelpCenter.vue')),
     // 关于我们
-    about: defineAsyncComponent(() => import('@/views/personalInfo/components/basic/PersonalInfoAboutUs.vue'))
+    about: defineAsyncComponent(() => import('@/views/personalInfo/components/basic/PersonalInfoAboutUs.vue')),
+    // 通用设置
+    settings: defineAsyncComponent(() => import('@/views/personalInfo/components/basic/PersonalInfoGeneralSettings.vue'))
 };
 
 const currentComponent = computed(() => componentMap[currentMenu.value as keyof typeof componentMap]);

@@ -17,6 +17,13 @@
     "updater:allow-check",
     "updater:allow-download",
     "updater:allow-install",
-    "process:allow-restart"
+    "process:allow-restart",
+    "opener:default",
+    "opener:allow-open-url",
+    "process:allow-restart",
+    "shell:allow-execute",
+    "shell:allow-open",
+    "core:path:default",
+    "core:path:allow-resolve-directory"
   ]
 }

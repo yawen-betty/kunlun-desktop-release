@@ -11,6 +11,9 @@ import {GetMakeAdviceInDto, GetMakeAdviceOutDto} from '@/api/admin/dto/GetMakeAd
 import {GetHelpCenterInDto, GetHelpCenterOutDto} from '@/api/admin/dto/GetHelpCenter';
 import {GetHelpCenterStatusInDto, GetHelpCenterStatusOutDto} from '@/api/admin/dto/GetHelpCenterStatus';
 import {GetWebsiteUrlInDto, GetWebsiteUrlOutDto} from '@/api/admin/dto/GetWebsiteUrl';
+import {GetVersionInfoInDto, GetVersionInfoOutDto} from '@/api/admin/dto/GetVersionInfo';
+import {GetReleaseVersionInfoInDto, GetReleaseVersionInfoOutDto} from '@/api/admin/dto/GetReleaseVersionInfo';
+import {GetMatchAnalysisPromptInDto, GetMatchAnalysisPromptOutDto} from '@/api/admin/dto/GetMatchAnalysisPrompt';
 import {Result} from '@/api/BaseDto';
 
 export class AdminService {
@@ -96,5 +99,26 @@ export class AdminService {
      */
     public async getWebsiteUrl(params: GetWebsiteUrlInDto): Promise<Result<GetWebsiteUrlOutDto>> {
         return await this.http.request<Result<GetWebsiteUrlOutDto>>(AdminPaths.getWebsiteUrl, params);
+    }
+
+    /**
+     * 根据版本号获取详情
+     */
+    public async getVersionInfo(params: GetVersionInfoInDto): Promise<Result<GetVersionInfoOutDto>> {
+        return await this.http.request<Result<GetVersionInfoOutDto>>(AdminPaths.getVersionInfo, params);
+    }
+
+    /**
+     * 获取发布版本详情
+     */
+    public async getReleaseVersionInfo(params: GetReleaseVersionInfoInDto): Promise<Result<GetReleaseVersionInfoOutDto>> {
+        return await this.http.request<Result<GetReleaseVersionInfoOutDto>>(AdminPaths.getReleaseVersionInfo, params);
+    }
+
+    /**
+     * 获取简历匹配分析提示词
+     */
+    public async getMatchAnalysisPrompt(params: GetMatchAnalysisPromptInDto): Promise<Result<GetMatchAnalysisPromptOutDto>> {
+        return await this.http.request<Result<GetMatchAnalysisPromptOutDto>>(AdminPaths.getMatchAnalysisPrompt, params);
     }
 }

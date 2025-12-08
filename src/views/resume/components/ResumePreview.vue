@@ -1260,7 +1260,7 @@ const handlePhotoChange = async (e: Event) => {
 
     try {
         const extraFields = {
-            'folderPath': 'kunlun-pc/personal-image'
+            'folderPath': 'kunlun/personal-image'
         };
         const result = await fileService.upload(file, extraFields);
 

@@ -1,5 +1,5 @@
-@use "@/assets/styles/variable.scss" as *;
-@use "@/assets/styles/compute.scss" as *;
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
 
 .ivu-modal-wrap {
     display: flex;
@@ -63,7 +63,6 @@
     删除二次确认框
  */
 .delete-confirm-modal.ivu-modal-wrap {
-
     .ivu-modal {
         width: vw(460) !important;
     }
@@ -386,4 +385,134 @@
     }
 }
 
+/**
+ * 更新弹窗
+ */
+.update-dialog-modal {
+    .ivu-modal {
+        width: vw(680) !important;
+    }
 
+    .ivu-modal-content {
+        border-radius: vw(2);
+        box-shadow: 0 0 vw(6) 0 inset rgba(0, 0, 0, 0.1);
+    }
+
+    .ivu-modal-body {
+        padding: 0;
+    }
+    .update-dialog-container {
+        padding: vh(60) vw(40) vh(20) vw(40);
+
+        .update-dialog-content {
+            position: relative;
+            display: flex;
+            min-height: vh(259);
+
+            .content-left {
+                flex: 1;
+                padding-right: vw(40);
+                display: flex;
+                flex-direction: column;
+            }
+
+            .content-right {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+
+                .update-illustration {
+                    width: vw(223);
+                    height: vh(189);
+                    object-fit: contain;
+                }
+            }
+
+            .dialog-title {
+                font-family: 'YouSheBiaoTiHei', 'PingFang SC', sans-serif;
+                font-size: vw(28);
+                font-weight: normal;
+                line-height: vh(28);
+                color: $font-dark;
+                margin: 0 0 vh(20) 0;
+            }
+
+            .version-text {
+                font-family: 'PingFang SC', sans-serif;
+                font-size: vw(14);
+                line-height: vh(20);
+                color: $font-dark;
+                margin: 0 0 vh(10) 0;
+            }
+
+            .update-details {
+                font-family: 'PingFang SC', sans-serif;
+                font-size: vw(14);
+                line-height: vh(20);
+                color: $font-dark;
+                flex: 1;
+
+                p {
+                    margin: 0;
+                    word-wrap: break-word;
+                }
+
+                .force-tip {
+                    color: $remind-error;
+                    font-weight: bold;
+                }
+            }
+
+            .progress-box {
+                margin-top: vh(20);
+
+                .progress-text {
+                    text-align: center;
+                    margin-top: vh(10);
+                    font-size: vw(14);
+                    color: $font-middle;
+                }
+            }
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: vw(22);
+            margin-top: vh(40);
+
+            .ivu-btn {
+                height: vh(32);
+                padding: 0 vw(20);
+                border-radius: vw(2);
+                font-size: vw(12);
+                line-height: vh(12);
+                font-weight: 500;
+            }
+
+            .btn-cancel {
+                border-color: $theme-color;
+                color: $theme-color;
+                background: $white;
+
+                &:hover {
+                    border-color: $theme-color;
+                    color: $theme-color;
+                    background: $hover-color;
+                }
+            }
+
+            .btn-confirm {
+                background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
+                border-color: $theme-color;
+                color: $white;
+
+                &:hover {
+                    opacity: 0.9;
+                }
+            }
+        }
+    }
+}

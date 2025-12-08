@@ -94,4 +94,31 @@ export class AdminPaths {
         method: 'GET',
         prefix: 'admin'
     };
+
+    /**
+     * 根据版本号获取详情
+     */
+    static getVersionInfo: Path = {
+        url: '/getVersionInfo/{version}',
+        method: 'GET',
+        prefix: 'admin'
+    };
+
+    /**
+     * 获取发布版本详情
+     */
+    static getReleaseVersionInfo: Path = {
+        url: '/getReleaseVersionInfo',
+        method: 'GET',
+        prefix: 'admin'
+    };
+
+    /**
+     * 获取简历匹配分析提示词
+     */
+    static getMatchAnalysisPrompt: Path = {
+        url: '/getMatchAnalysisPrompt',
+        method: 'GET',
+        prefix: 'admin'
+    };
 }

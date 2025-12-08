@@ -10,26 +10,26 @@ try {
 } catch (error) {
     console.info('=====', error);
 }
-// const osPlatform = platform();
+const osPlatform = platform();
 const isMax = ref(false);
 </script>
 
 <template>
     <div class="titlebar">
         <div data-tauri-drag-region></div>
-        <!--    <div class="mac-controls" v-if="osPlatform === 'macos'">-->
-        <!--      <div class="control-btn close-btn" @click="appWindow.close()">-->
-        <!--        <SvgIcon name="icon-cucha" size="8"></SvgIcon>-->
-        <!--      </div>-->
-        <!--      <div class="control-btn min-btn" @click="appWindow.minimize()">-->
-        <!--        <SvgIcon name="icon-zuixiaohua-mac" size="8"></SvgIcon>-->
-        <!--      </div>-->
-        <!--      <div class="control-btn max-btn" @click="appWindow.toggleMaximize();isMax = !isMax">-->
-        <!--        <SvgIcon name="icon-zuidahua-mac" size="8" v-if="!isMax"></SvgIcon>-->
-        <!--        <SvgIcon name="icon-huanyuan-mac" size="10" v-else></SvgIcon>-->
-        <!--      </div>-->
-        <!--    </div>-->
-        <div class="win-controls">
+        <div class="mac-controls" v-if="osPlatform === 'macos'">
+          <div class="control-btn close-btn" @click="appWindow.close()">
+            <SvgIcon name="icon-cucha" size="8"></SvgIcon>
+          </div>
+          <div class="control-btn min-btn" @click="appWindow.minimize()">
+            <SvgIcon name="icon-zuixiaohua-mac" size="8"></SvgIcon>
+          </div>
+          <div class="control-btn max-btn" @click="appWindow.toggleMaximize();isMax = !isMax">
+            <SvgIcon name="icon-zuidahua-mac" size="8" v-if="!isMax"></SvgIcon>
+            <SvgIcon name="icon-huanyuan-mac" size="10" v-else></SvgIcon>
+          </div>
+        </div>
+        <div class="win-controls" v-else>
             <div class="control-btn minimize" @click="appWindow.minimize()">
                 <SvgIcon name="icon-zuixiaohua" size="14"></SvgIcon>
             </div>

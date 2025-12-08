@@ -1,3 +1,5 @@
+import {MatchInfoBean} from "@/api/job/dto/bean/MatchInfoBean.ts";
+
 export class ChannelPositionBean {
     /**
      * 在源站的唯一ID
@@ -52,7 +54,12 @@ export class ChannelPositionBean {
     /**
      * 薪资数 (单位:元)
      */
-    salaryNumber?: number;
+    salaryNumber?: string;
+
+    /**
+     * 公司ID
+     */
+    companyId: string = '';
 
     /**
      * 公司名称
@@ -60,9 +67,24 @@ export class ChannelPositionBean {
     companyName: string = '';
 
     /**
+     * 公司简介
+     */
+    introduce: string = '';
+
+    /**
+     * 公司地址
+     */
+    companyAddress?: string[];
+
+    /**
      * 公司行业
      */
     industry?: string;
+
+    /**
+     * 公司标签
+     */
+    companyLabel?: string[];
 
     /**
      * 公司规模
@@ -95,7 +117,12 @@ export class ChannelPositionBean {
     jobDetailUrl: string = '';
 
     /**
-     * 发布日期
+     * 发布日期 (时间戳)
      */
-    publishDate: string = '';
+    publishDate?: number;
+
+    /**
+     * 匹配结果
+     */
+    matchInfo?: MatchInfoBean;
 }

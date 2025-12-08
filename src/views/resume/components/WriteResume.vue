@@ -77,7 +77,7 @@
                             <SvgIcon class="mr-5" color="#FFFFFF" name="icon-zhenduan" size="10"/>
                             <span>简历诊断</span>
                         </Button>
-                        <Button v-if="isShowToggleBtn" class="mode-btn" type="primary" @click="toggleMode">
+                        <Button v-if="isShowToggleBtn" class="mode-btn" type="primary" @click="handleToggleMode">
                             <SvgIcon class="mr-5" color="#FFFFFF" name="icon-qiehuan" size="10"/>
                             <span>{{ currentMode === 'ai' ? '人工' : 'AI' }}撰写</span>
                         </Button>
@@ -457,7 +457,7 @@ const handleConfirm = async () => {
         }
         try {
             const params = new RenameResumeInDto();
-            params.resumeId = resumeData.value.uuid || '';
+            params.resumeId = props.resumeId || '';
             params.name = formData.resumeName;
 
             await resumeService.renameResume(params);
@@ -558,7 +558,7 @@ const handleExit = debounce(async () => {
     emit('back-to-make');
 }, 300);
 
-const toggleMode = debounce(() => {
+const handleToggleMode = debounce(() => {
     if (previewRef.value?.isStreaming) {
         message.warning(Message, 'AI正在撰写中，请稍后！');
         return;
@@ -566,10 +566,19 @@ const toggleMode = debounce(() => {
     if (currentMode.value === 'ai') {
         promptDialogRef.value?.open();
     } else {
+        resetEditingState();
         currentMode.value = 'ai';
         showScoreAndMode.value = true
     }
 }, 300);
+
+const resetEditingState = () => {
+    if (previewRef.value) {
+        previewRef.value.isEditingBasicInfo = false;
+        previewRef.value.editingEntryUuid = '';
+        previewRef.value.editingModuleUuid = '';
+    }
+};
 
 /**
  * 人工切换ai的回调

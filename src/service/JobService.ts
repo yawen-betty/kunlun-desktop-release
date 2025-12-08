@@ -11,6 +11,9 @@ import {MarkPositionInterestInDto, MarkPositionInterestOutDto} from '@/api/job/d
 import {SwitchJobTaskInDto, SwitchJobTaskOutDto} from '@/api/job/dto/SwitchJobTask'
 import {GetOtherJobTasksInDto, GetOtherJobTasksOutDto} from '@/api/job/dto/GetOtherJobTasks'
 import {CrawlPositionsInDto, CrawlPositionsOutDto} from '@/api/job/dto/CrawlPositions'
+import {GetPositionReportInDto, GetPositionReportOutDto} from '@/api/job/dto/GetPositionReport'
+import {GetPositionDetailInDto, GetPositionDetailOutDto} from '@/api/job/dto/GetPositionDetail'
+import {CheckNewPositionsInDto, CheckNewPositionsOutDto} from '@/api/job/dto/CheckNewPositions'
 import {Result} from '@/api/BaseDto'
 import {EmptyOutDto} from '@/api/HttpClient'
 
@@ -69,7 +72,7 @@ export class JobService {
     /**
      * 标记或取消标记感兴趣的职位
      */
-    public async markPositionInterest(uuid: string, isInterested: boolean): Promise<EmptyOutDto> {
+    public async markPositionInterest(uuid: string, isInterested: number): Promise<EmptyOutDto> {
         return await this.http.request<EmptyOutDto>(JobPaths.markPositionInterest, {uuid, isInterested});
     }
 
@@ -92,5 +95,26 @@ export class JobService {
      */
     public async crawlPositions(params: CrawlPositionsInDto): Promise<Result<CrawlPositionsOutDto>> {
         return await this.http.request<Result<CrawlPositionsOutDto>>(JobPaths.crawlPositions, params);
+    }
+
+    /**
+     * 根据匹配职位uuid查询职位分析报告
+     */
+    public async getPositionReport(uuid: string): Promise<Result<GetPositionReportOutDto>> {
+        return await this.http.request<Result<GetPositionReportOutDto>>(JobPaths.getPositionReport, {uuid});
+    }
+
+    /**
+     * 根据匹配职位uuid查询职位详情
+     */
+    public async getPositionDetail(uuid: string): Promise<Result<GetPositionDetailOutDto>> {
+        return await this.http.request<Result<GetPositionDetailOutDto>>(JobPaths.getPositionDetail, {uuid});
+    }
+
+    /**
+     * 查询是否有新的匹配职位
+     */
+    public async checkNewPositions(params: CheckNewPositionsInDto): Promise<Result<CheckNewPositionsOutDto>> {
+        return await this.http.request<Result<CheckNewPositionsOutDto>>(JobPaths.checkNewPositions, params);
     }
 }

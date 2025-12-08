@@ -117,4 +117,13 @@ export class ResumePaths {
         method: 'POST',
         prefix: 'resumes'
     }
+
+    /**
+     * 获取简历文本
+     */
+    static getResumeText: Path = {
+        url: '/{resumeId}/text',
+        method: 'GET',
+        prefix: 'resumes'
+    }
 }

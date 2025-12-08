@@ -3,15 +3,15 @@ import HttpClient from '@/api/HttpClient';
 import {inject} from 'vue';
 import {InitResumeInDto, InitResumeOutDto} from '@/api/resume/dto/InitResume';
 import {GetMyResumeListInDto, GetMyResumeListOutDto} from '@/api/resume/dto/GetMyResumeList';
-import {SaveResumeInDto, SaveResumeOutDto} from '@/api/resume/dto/SaveResume';
-import {RenameResumeInDto, RenameResumeOutDto} from '@/api/resume/dto/RenameResume';
+import {SaveResumeInDto} from '@/api/resume/dto/SaveResume';
+import {RenameResumeInDto} from '@/api/resume/dto/RenameResume';
 import {GetResumeDetailInDto, GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
 import {DownloadResumeInDto, DownloadResumeOutDto} from '@/api/resume/dto/DownloadResume';
-import {UpdateModulesInDto, UpdateModulesOutDto} from '@/api/resume/dto/UpdateModules';
+import {UpdateModulesInDto} from '@/api/resume/dto/UpdateModules';
 import {GetSystemModulesInDto, GetSystemModulesOutDto} from '@/api/resume/dto/GetSystemModules';
 import {GetModuleFieldsInDto, GetModuleFieldsOutDto} from '@/api/resume/dto/GetModuleFields';
-import {UpdateModuleFieldsInDto, UpdateModuleFieldsOutDto} from '@/api/resume/dto/UpdateModuleFields';
-import {UpdateModuleEntriesInDto, UpdateModuleEntriesOutDto} from '@/api/resume/dto/UpdateModuleEntries';
+import {UpdateModuleFieldsInDto} from '@/api/resume/dto/UpdateModuleFields';
+import {UpdateModuleEntriesInDto} from '@/api/resume/dto/UpdateModuleEntries';
 import {DeleteResumeInDto, DeleteResumeOutDto} from '@/api/resume/dto/DeleteResume';
 import {CopyResumeInDto, CopyResumeOutDto} from '@/api/resume/dto/CopyResume';
 import {Result} from '@/api/BaseDto';
@@ -161,5 +161,16 @@ export class ResumeService {
             url: ResumePaths.copyResume.url.replace('{resumeId}', params.resumeId)
         };
         return await this.http.request<Result<CopyResumeOutDto>>(path, params);
+    }
+
+    /**
+     * 获取简历文本
+     */
+    public async getResumeText(resumeId: string): Promise<Result<EmptyOutDto>> {
+      const path = {
+        ...ResumePaths.getResumeText,
+        url: ResumePaths.getResumeText.url.replace('{resumeId}', resumeId)
+      };
+      return await this.http.request<Result<EmptyOutDto>>(path,{});
     }
 }

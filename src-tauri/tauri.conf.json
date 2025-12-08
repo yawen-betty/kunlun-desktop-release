@@ -1,60 +1,70 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Kunlun",
-  "version": "1.0.1",
-  "identifier": "com.liangji.kunlun",
+  "app": {
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "decorations": false,
+        "devtools": true,
+        "dragDropEnabled": true,
+        "label": "main",
+        "maximized": true,
+        "minHeight": 768,
+        "minWidth": 1366,
+        "resizable": true,
+        "title": "昆仑",
+        "transparent": false
+      }
+    ]
+  },
   "build": {
-    "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
     "frontendDist": "../dist",
     "removeUnusedCommands": true
   },
-  "app": {
-    "windows": [
-      {
-        "label": "main",
-        "title": "昆仑",
-        "maximized": true,
-        "minWidth": 1366,
-        "minHeight": 768,
-        "decorations": false,
-        "resizable": true,
-        "transparent": false,
-        "devtools": true,
-        "dragDropEnabled": true
-      }
-    ],
-    "security": {
-      "csp": null
-    }
-  },
   "bundle": {
-    "createUpdaterArtifacts": true,
     "active": true,
-    "targets": "all",
+    "createUpdaterArtifacts": true,
+    "externalBin": [
+      "binaries/node"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "resources": [
+      "binaries/mcp-entry.cjs",
+      "binaries/mcp-modules"
+    ],
+    "targets": "all"
   },
+  "identifier": "com.liangji.kunlun",
   "plugins": {
-    "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQwQ0JDMzE2RTlGMzgyMTIKUldRU2d2UHBGc1BMME93U0pMWjhmUCsxYm5qVUpzcWxjRGhQTmNQVzlJUU14N2dtYXZaMVY3VkcK",
-      "endpoints": [
-        "http://update.liangjiyuren.cn/kunlun/dev/latest.json"
+    "fs": {
+      "scope": [
+        "$LOG/*"
       ]
     },
     "process": {
       "relaunch": true
     },
-    "fs": {
-      "scope": [
-        "$LOG/*"
-      ]
+    "shell": {
+      "open": true
+    },
+    "updater": {
+      "endpoints": [
+        "http://update.liangjiyuren.cn/kunlun/dev/latest-macos.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQwQ0JDMzE2RTlGMzgyMTIKUldRU2d2UHBGc1BMME93U0pMWjhmUCsxYm5qVUpzcWxjRGhQTmNQVzlJUU14N2dtYXZaMVY3VkcK"
     }
-  }
+  },
+  "productName": "Kunlun",
+  "version": "1.1.0"
 }

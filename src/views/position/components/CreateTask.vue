@@ -15,6 +15,7 @@ import {MyResumeBean} from "@/api/resume/dto/bean/MyResumeBean.ts";
 import CustomSelect from '@/components/customSelect/index.vue'
 import {message} from "@/utiles/Message.ts";
 import {workExperienceList} from "@/enums/enumDict.ts";
+import ModelUsageExhaustedModal from "@/views/resume/components/ModelUsageExhaustedModal.vue";
 
 const router = useRouter();
 // 输入框提示词列表
@@ -53,6 +54,7 @@ const formData = reactive<CreateJobTaskInDto>(new CreateJobTaskInDto())
 const resumeList = ref<MyResumeBean[]>([])
 const resumeService = new ResumeService()
 const jobService = new JobService()
+const modelVisible = ref(false)
 
 const emit = defineEmits<{
     'task-created': []
@@ -73,8 +75,11 @@ const submit = debounce(async () => {
         formData.publish = true
         formData.isDefault = true
         const result = await jobService.createJobTask(formData)
+        console.log(result, 'result')
         if (result.code === 200) {
             emit('task-created')
+        } else if (result.code === 2603) {  // 模型账号不存在
+            modelVisible.value = true
         }
     } catch (error) {
         console.error('发布求职任务失败:', error)
@@ -199,6 +204,8 @@ onUnmounted(() => {
             </div>
         </div>
     </div>
+    <!-- AI账号配置弹框 -->
+    <ModelUsageExhaustedModal v-model="modelVisible"/>
 </template>
 
 <style lang="scss" scoped>

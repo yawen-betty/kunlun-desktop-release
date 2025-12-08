@@ -72,4 +72,28 @@ export class JobPaths {
     url: '/job-tasks/positions/crawl',
     method: 'POST'
   }
+
+  /**
+   * 根据匹配职位uuid查询职位分析报告
+   */
+  static getPositionReport: Path = {
+    url: '/matched-positions/{uuid}/report',
+    method: 'GET'
+  }
+
+  /**
+   * 根据匹配职位uuid查询职位详情
+   */
+  static getPositionDetail: Path = {
+    url: '/matched-positions/{uuid}',
+    method: 'GET'
+  }
+
+  /**
+   * 查询是否有新的匹配职位
+   */
+  static checkNewPositions: Path = {
+    url: '/matched-positions/new-positions-check',
+    method: 'POST'
+  }
 }

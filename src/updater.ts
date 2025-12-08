@@ -29,7 +29,7 @@ function isForceUpdate(currentVersion: string, newVersion: string): boolean {
 export async function checkForUpdates(currentVersion: string, isManual: boolean = false) {
   try {
     const update = await check();
-    console.info('//////////////////',update)
+    console.info('//////////////////更新数据更新数据',update)
 
     if (!update) {
       if (isManual) {

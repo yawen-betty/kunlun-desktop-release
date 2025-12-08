@@ -1,111 +1,139 @@
-<script setup lang="ts">
-import {onMounted, ref} from 'vue';
+<script lang="ts" setup>
+import {onMounted, ref, provide, readonly, onUnmounted} from 'vue';
 import {checkForUpdates} from '@/updater';
 import UpdateDialog from '@/components/updateDialog/index.vue';
-import {Config} from "@/Config.ts";
-import {GetProfileInDto} from "@/api/user/dto/GetProfile.ts";
-import {UserInfo} from "@/utiles/userInfo.ts";
-import {UserService} from "@/service/UserService.ts";
-import {auth} from "@/utiles/tauriCommonds.ts";
-import {useRouter} from "vue-router";
-import {GetConfigInDto} from "@/api/admin/dto/GetConfig.ts";
-import {SystemInfo} from "@/utiles/systemInfo.ts";
-import {AdminService} from "@/service/AdminService.ts";
+import {Config} from '@/Config.ts';
+import {GetProfileInDto} from '@/api/user/dto/GetProfile.ts';
+import {UserInfo} from '@/utiles/userInfo.ts';
+import {UserService} from '@/service/UserService.ts';
+import {auth} from '@/utiles/tauriCommonds.ts';
+import {useRouter} from 'vue-router';
+import {GetConfigInDto} from '@/api/admin/dto/GetConfig.ts';
+import {GetMatchAnalysisPromptInDto} from '@/api/admin/dto/GetMatchAnalysisPrompt.ts';
+import {SystemInfo} from '@/utiles/systemInfo.ts';
+import {AdminService} from '@/service/AdminService.ts';
+import emitter from '@/utiles/eventBus';
+import {GetVersionInfoOutDto} from './api/admin/dto/GetVersionInfo';
 
 const adminService = new AdminService();
 const userService = new UserService();
 const updateDialogRef = ref();
 const currentVersion = Config.version; // 从 package.json 或 tauri.conf.json 读取
+// 检测最新版本
 
 const router = useRouter();
 
+// 提供给子组件的配置状态
+
+const versionUpdateInfo = ref<GetVersionInfoOutDto>(new GetVersionInfoOutDto());
+// provide('versionUpdateInfo', versionUpdateInfo);
+
 // 应用启动时自动检查更新
 onMounted(async () => {
-  try {
-
-    const result = await checkForUpdates(currentVersion, false);
-
-    if (result) {
-      updateDialogRef.value?.show({
-        ...result,
-        currentVersion
-      });
-    }
-  } catch (e) {
-    console.info('=====检测更新失败====', e)
-  }
-
-  auth.getToken().then(token => {
-    if (token) {
-      UserInfo.info.token = token;
-      getUserInfo(userService);
-    } else {
-      router.push('/login')
-    }
-  })
-
-  getConfigInfo();
+    emitter.on('forcedUpdate', manualCheckUpdate);
+    // manualCheckUpdate();
+    getConfigInfo();
+    auth.getToken().then((token) => {
+        if (token) {
+            UserInfo.info.token = token;
+            getUserInfo(userService);
+        } else {
+            router.push('/login');
+        }
+    });
+    getMatchAnalysisPrompt();
 });
 
-// 手动检查更新（绑定到菜单或按钮）
-const manualCheckUpdate = async () => {
-  const result = await checkForUpdates(currentVersion, true);
+onUnmounted(() => {
+    emitter.off('forcedUpdate', manualCheckUpdate);
+});
 
-  if (result) {
-    updateDialogRef.value?.show({
-      ...result,
-      currentVersion
-    });
-  }
-}
+const checkForUpdatesResult = ref<Record<string, any>>({});
+
+// 启动获取最新版本信息
+const theCheckForUpdates = async () => {
+    try {
+        const version = checkForUpdatesResult.value?.forceUpdate ? checkForUpdatesResult.value?.newVersion : currentVersion;
+        const res = await adminService.getVersionInfo({version});
+        versionUpdateInfo.value = res.data;
+    } catch (error) {
+        console.warn('获取版本信息失败', error);
+    }
+};
+
+// 检查更新
+const manualCheckUpdate = async () => {
+    try {
+        const result = await checkForUpdates(currentVersion, false);
+        checkForUpdatesResult.value = result || {};
+        await theCheckForUpdates();
+        if (result) {
+            updateDialogRef.value?.show({
+                ...result,
+                currentVersion,
+                versionUpdateDetails: versionUpdateInfo.value?.content || ''
+            });
+        }
+    } catch (e) {
+        console.info('=====检测更新失败====', e);
+    }
+};
 
 // 获取用户信息
 const getUserInfo = (userService: UserService) => {
-  userService.getProfile(new GetProfileInDto()).then(res => {
-    if (res.code === 200) {
-      if (res.data.avatarUrl) {
-        UserInfo.info.avatar = Config.baseUrl + res.data.avatarUrl!;
-      }
-      UserInfo.info.userName = res.data.name!;
-      UserInfo.info.userId = res.data.uuid!;
-
-      if (Config.env !== 'dev') {
-        if (res.data.profileCompleteFlag === '1') {
-          router.push('/resume')
-        } else {
-          router.push('/initProfile')
+    userService.getProfile(new GetProfileInDto()).then((res) => {
+        if (res.code === 200) {
+            if (res.data.avatarUrl) {
+                UserInfo.info.avatar = Config.baseUrl + res.data.avatarUrl!;
+            }
+            UserInfo.info.userName = res.data.name!;
+            UserInfo.info.userId = res.data.uuid!;
+            if (res.data.modelAccountBeanList && res.data.modelAccountBeanList.length) UserInfo.info.modelList = res.data.modelAccountBeanList;
+            if (Config.env !== 'dev') {
+                if (res.data.profileCompleteFlag === '1') {
+                    router.push('/resume');
+                } else {
+                    router.push('/initProfile');
+                }
+            }
         }
-      }
-    }
-  })
-}
+    });
+};
 
 // 获取系统配置
 const getConfigInfo = () => {
-  adminService.getConfig(new GetConfigInDto()).then(res => {
-    if (res.code === 200) {
-      SystemInfo.info.loginTitle = res.data.appName
-      SystemInfo.info.loginBg = res.data.loginPageImage
-    }
-  })
-}
+    adminService.getConfig(new GetConfigInDto()).then((res) => {
+        if (res.code === 200) {
+            SystemInfo.info.loginTitle = res.data.appName;
+            SystemInfo.info.loginBg = res.data.loginPageImage;
+        }
+    });
+};
 
+// 获取简历匹配分析提示词
+const getMatchAnalysisPrompt = () => {
+    adminService.getMatchAnalysisPrompt(new GetMatchAnalysisPromptInDto()).then((res) => {
+        if (res.code === 200) {
+            UserInfo.info.matchAnalysisPrompt = res.data.content;
+        }
+    });
+};
 </script>
 
 <template>
-  <main class="container">
-    <router-view/>
-  </main>
-  <UpdateDialog ref="updateDialogRef"/>
+    <main class="container">
+        <router-view />
+    </main>
+    <UpdateDialog ref="updateDialogRef" />
 </template>
-<style scoped lang="scss">
-@use "@/assets/styles/variable.scss" as *;
-@use "@/assets/styles/compute.scss" as *;
+<style lang="scss" scoped>
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
 
 .container {
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  background: $bg-gray;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: $bg-gray;
 }
 </style>

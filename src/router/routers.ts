@@ -50,12 +50,19 @@ const all = [
         icon: 'icon-resume',
         component: () => import('@/views/resume/index.vue')
     }),
-    //
+    // 精选职位
     layout({
         path: '/position',
         title: '精选职位',
         icon: 'icon-zhiwei',
         component: () => import('@/views/position/index.vue')
+    }),
+    // 模拟面试
+    layout({
+        path: '/interview',
+        title: '模拟面试',
+        icon: 'icon-mianshi',
+        component: () => import('@/views/interview/index.vue')
     }),
     // 个人信息
     layout({
@@ -70,6 +77,13 @@ const all = [
         title: '增值服务',
         icon: 'icon-gerenzhongxin',
         component: () => import('@/views/addedServices/index.vue')
+    }),
+    // MCPdemo
+    layout({
+      path: '/mcpMananger',
+      title: 'mcp',
+      icon: 'icon-gerenzhongxin',
+      component: () => import('@/views/resume/mcpManager.vue')
     })
 ];
 
