@@ -48,22 +48,25 @@ onUnmounted(() => {
     emitter.off('forcedUpdate', manualCheckUpdate);
 });
 
+const checkForUpdatesResult = ref<Record<string, any>>({});
+
 // 启动获取最新版本信息
 const theCheckForUpdates = async () => {
     try {
-        const res = await adminService.getVersionInfo({});
-
+        const version = checkForUpdatesResult.value?.forceUpdate ? checkForUpdatesResult.value?.newVersion : currentVersion;
+        const res = await adminService.getVersionInfo({version});
         versionUpdateInfo.value = res.data;
-    } catch (error) {}
+    } catch (error) {
+        console.warn('获取版本信息失败', error);
+    }
 };
 
 // 检查更新
 const manualCheckUpdate = async () => {
     try {
         const result = await checkForUpdates(currentVersion, false);
-        console.log('%c 🐞: manualCheckUpdate -> result ', 'font-size:16px;background-color:#ac6afe;color:white;', result);
+        checkForUpdatesResult.value = result || {};
         await theCheckForUpdates();
-        console.log('%c 👳‍♂️: manualCheckUpdate -> result ', 'font-size:16px;background-color:#cadd01;color:black;', result);
         if (result) {
             updateDialogRef.value?.show({
                 ...result,

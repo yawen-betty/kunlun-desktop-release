@@ -99,7 +99,7 @@ export class AdminPaths {
      * 根据版本号获取详情
      */
     static getVersionInfo: Path = {
-        url: '/getVersionInfo',
+        url: '/getVersionInfo/{version}',
         method: 'GET',
         prefix: 'admin'
     };
