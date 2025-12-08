@@ -131,7 +131,7 @@
                             v-if="mode === 'manual'"
                             v-slot="{ toggle, visible }"
                             :applied-modules="getAppliedEntries(module.uuid)"
-                            :column-width="200"
+                            :column-width="320"
                             :show-add-button="false"
                             @on-apply="(entries) => handleEntriesApply(module.uuid, entries)"
                         >
@@ -261,7 +261,7 @@
                             v-if="mode === 'manual'"
                             v-slot="{ toggle, visible }"
                             :applied-modules="getAppliedEntries(module.uuid)"
-                            :column-width="200"
+                            :column-width="320"
                             :show-add-button="false"
                             @on-apply="(entries) => handleEntriesApply(module.uuid, entries)"
                         >
@@ -380,7 +380,7 @@
                             v-if="mode === 'manual'"
                             v-slot="{ toggle, visible }"
                             :applied-modules="getAppliedEntries(module.uuid)"
-                            :column-width="200"
+                            :column-width="320"
                             :show-add-button="false"
                             @on-apply="(entries) => handleEntriesApply(module.uuid, entries)"
                         >
@@ -501,7 +501,7 @@
                             v-if="mode === 'manual'"
                             v-slot="{ toggle, visible }"
                             :applied-modules="getAppliedEntries(module.uuid)"
-                            :column-width="200"
+                            :column-width="320"
                             :show-add-button="false"
                             @on-apply="(entries) => handleEntriesApply(module.uuid, entries)"
                         >
@@ -918,13 +918,35 @@ const getAppliedEntries = (moduleUuid: string) => {
 
     return module.entries.map((entry: any) => {
         const firstField = entry.fields?.[0];
-        const name = firstField?.fieldValue || '未命名';
+        // 如果当前条目正在编辑,优先使用编辑数据
+        let name = firstField?.fieldValue || '未命名';
+        if (editingEntryUuid.value === entry.entryUuid && entryEditData.value[firstField?.fieldKey]) {
+            name = entryEditData.value[firstField.fieldKey];
+        } else if (firstField?.uuid) {
+            // 否则使用流式数据或原始数据
+            name = getStreamValue(firstField.uuid) || firstField.fieldValue || '未命名';
+        }
         return {id: entry.entryUuid, name};
     });
 };
 
 const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
     try {
+        if (editingEntryUuid.value) {
+            const module = props.resumeData?.modules?.find((m: any) => m.uuid === moduleUuid);
+            const entry = module?.entries?.find((e: any) => e.entryUuid === editingEntryUuid.value);
+            if (entry) {
+                entry.fields?.forEach((f: any) => {
+                    if (entryEditData.value[f.fieldKey] !== undefined) {
+                        streamValues.value.set(f.uuid, entryEditData.value[f.fieldKey]);
+                        f.fieldValue = entryEditData.value[f.fieldKey];
+                    }
+                });
+                emit('data-change', props.resumeData);
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        }
+
         const params = new UpdateModuleEntriesInDto();
         params.resumeId = props.resumeData.uuid || '';
         params.moduleId = moduleUuid;
@@ -939,6 +961,7 @@ const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
         isEditingBasicInfo.value = false;
         editingEntryUuid.value = '';
         editingModuleUuid.value = '';
+        entryEditData.value = {};
         message.success(Message, '条目更新成功');
         emit('update-modules');
     } catch (error) {
