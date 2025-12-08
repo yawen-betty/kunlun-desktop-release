@@ -324,7 +324,8 @@ const handleWriteStream = async (items: StreamItem[], speed?: number) => {
  */
 const checkChanges = () => {
     if (!UserInfo.info.resumeMap[props.resumeId]) return true
-
+    console.log(UserInfo.info.resumeMap[props.resumeId].template, ' UserInfo.info.resumeMap[props.resumeId].template')
+    console.log(JSON.stringify(resumeData.value.modules), 'JSON.stringify(resumeData.value.modules)')
     return UserInfo.info.resumeMap[props.resumeId].template !== JSON.stringify(resumeData.value.modules)
 }
 
