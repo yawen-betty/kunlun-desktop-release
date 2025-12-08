@@ -2,14 +2,9 @@ import {BaseInDto, BaseOutDto} from '@/api/BaseDto';
 
 export class GetVersionInfoInDto extends BaseInDto {
     /**
-     * 平台类型（1Android，2ios，3mac，4windows）- 请求头 x_type
+     * 版本号（路径参数）
      */
-    x_type?: string;
-
-    /**
-     * 版本号 - 请求头 x_version
-     */
-    x_version?: string;
+    version: string = '';
 }
 
 export class GetVersionInfoOutDto extends BaseOutDto {

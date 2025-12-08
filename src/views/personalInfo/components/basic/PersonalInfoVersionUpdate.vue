@@ -53,18 +53,22 @@ const newVersion = ref('');
  */
 const progress = ref(0);
 
+const checkForUpdatesResult = ref<Record<string, any>>({});
+
 /**
  * 组件挂载时初始化
  * 检查更新并获取版本信息
  */
 onMounted(async () => {
     const result = await checkForUpdates(currentVersion, true);
-    console.log('%c 🕋: result ', 'font-size:16px;background-color:#b45944;color:white;', result);
+    const version = checkForUpdatesResult.value?.forceUpdate ? checkForUpdatesResult.value?.newVersion : currentVersion;
+    console.log('%c 🇸🇿: version ', 'font-size:16px;background-color:#4da95a;color:white;', version);
     newVersion.value = result?.newVersion || '';
     try {
-        const res = await adminService.getVersionInfo({});
+        const res = await adminService.getVersionInfo({version});
         if (res.code === 200) {
             versionData.value = res.data;
+            console.log('%c 🤝: res.data ', 'font-size:16px;background-color:#acd429;color:black;', res.data);
         }
     } catch (error) {
         console.error('获取版本信息失败:', error);
@@ -77,16 +81,14 @@ onMounted(async () => {
  */
 const handleUpdate = async () => {
     const result = await checkForUpdates(currentVersion, true);
-    console.log('%c 🐖: handleUpdate -> result ', 'font-size:16px;background-color:#ad0c1d;color:white;', result);
-    const updateInstance = result?.update;
-    if (!updateInstance) return;
+    checkForUpdatesResult.value = result || {};
+    if (!result?.update) return;
 
     try {
-        await performUpdate(updateInstance, (p) => {
+        await performUpdate(result?.update, (p) => {
             progress.value = p;
         });
     } catch (error) {
-        console.log('%c 🛴: handleUpdate -> error ', 'font-size:16px;background-color:#a06cf8;color:white;', error);
         alert('更新失败，请稍后重试');
     }
 };
