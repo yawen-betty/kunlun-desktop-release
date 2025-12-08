@@ -1,5 +1,6 @@
 import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
 import { ChannelPositionBean } from "@/api/job/dto/bean/ChannelPositionBean";
+import { MatchInfoBean } from "@/api/job/dto/bean/MatchInfoBean";
 
 export class CrawlPositionsInDto extends BaseInDto {
     /**
@@ -11,6 +12,11 @@ export class CrawlPositionsInDto extends BaseInDto {
      * 爬取到的职位数据
      */
     positions: ChannelPositionBean = new ChannelPositionBean();
+    
+    /**
+     * 匹配结果
+     */
+    matchInfo?: MatchInfoBean;
 }
 
 export class CrawlPositionsOutDto extends BaseOutDto {
