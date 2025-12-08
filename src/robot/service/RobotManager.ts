@@ -185,6 +185,7 @@ export class RobotManager {
             }
         }
         if (roundCount >= maxRounds) {
+            await this.cleanup();
             logger.info(`[RobotManager] 已完成最大轮次 ${maxRounds}，爬取结束`);
         } else {
             logger.info('[RobotManager] 爬取循环结束');
