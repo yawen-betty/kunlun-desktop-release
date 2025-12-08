@@ -116,7 +116,7 @@ const handleSave = () => {
             userService.updateProfile(data).then((res) => {
                 if (res.code === 200) {
                     message.success(Message, '保存成功！');
-                    UserInfo.info.avatar = filePreviewUrl.value;
+                    UserInfo.info.avatar = formValidate.avatarUrl || '';
                     UserInfo.info.userName = formValidate.name!;
                 }
             });
