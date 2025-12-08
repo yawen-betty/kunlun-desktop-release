@@ -1,4 +1,4 @@
-import { BaseInDto, BaseOutDto } from "@/api/BaseDto";
+import {BaseInDto, BaseOutDto} from '@/api/BaseDto';
 
 export class GetAiRegisterGuideInDto extends BaseInDto {
     /**
@@ -12,14 +12,19 @@ export class GetAiRegisterGuideOutDto extends BaseOutDto {
      * AI名字
      */
     aiName: string = '';
-    
+
     /**
      * 注册引导内容
      */
     content: string = '';
-    
+
     /**
      * 模型类型（1-智谱AI）
      */
     modelType: string = '';
+
+    /**
+     * 是否开启模型介绍
+     */
+    status: number = 0;
 }

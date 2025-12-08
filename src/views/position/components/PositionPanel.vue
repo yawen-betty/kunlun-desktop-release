@@ -184,8 +184,7 @@ const handleLogin = debounce(async (channel: any) => {
 }, 300)
 
 const handleTaskSwitch = () => {
-    if (taskList.value.length)
-        showTaskDropdown.value = !showTaskDropdown.value
+    showTaskDropdown.value = !showTaskDropdown.value
 }
 
 const handleToggleTaskStatus = debounce(async () => {
@@ -247,8 +246,6 @@ const handleSelectTask = debounce(async (taskId: string) => {
         if (result.code === 200) {
             resetFilters()
             await loadCurrentTask()
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            await loadOtherTasks()
         }
     } catch (error) {
         console.error('切换任务失败:', error)
@@ -279,7 +276,6 @@ const handleDeleteTask = async (uuid?: string) => {
                     await jobService.switchJobTask(nextTask.uuid)
                     resetFilters()
                     await loadCurrentTask()
-                    await loadOtherTasks()
                 }
             }
         }
@@ -321,8 +317,8 @@ const loadCurrentTask = async () => {
                     }
                 }
             }
-
-            await loadPositions()
+            loadOtherTasks()
+            loadPositions()
         } else if (result.code === 2306) { // 简历id不存在
             message.error(Message, '求职简历不存在，任务开启失败!')
         }
@@ -374,7 +370,6 @@ const loadOtherTasks = async () => {
 const handleTaskUpdated = async () => {
     resetFilters()
     await loadCurrentTask()
-    await loadOtherTasks()
 }
 
 const handleRefresh = async () => {
@@ -424,12 +419,11 @@ const handleExhaustedOfAttempts = async () => {
     params.uuid = currentTask.value?.uuid!
     params.status = 1
     await jobService.activateJobTask(params)
+    loadCurrentTask()
 }
 
 onMounted(async () => {
-    await loadCurrentTask()
-    await loadOtherTasks()
-
+    loadCurrentTask()
     emitter.on('updateNewPosition', handleUpdateNewPosition)
     emitter.on('exhaustedOfAttempts', handleExhaustedOfAttempts)
 })

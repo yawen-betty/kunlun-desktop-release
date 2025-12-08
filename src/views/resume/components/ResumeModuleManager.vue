@@ -100,7 +100,7 @@
                 <div class="modal-header">
                     <span class="modal-title">{{ modalTitle }}</span>
                 </div>
-                <Form ref="formRef" :model="formData" :rules="rules">
+                <Form ref="formRef" :model="formData" :rules="rules" @submit.prevent>
                     <FormItem prop="name">
                         <div class="input-wrapper">
                             <Input
@@ -523,6 +523,7 @@ defineExpose({
 .module-item {
     display: flex;
     align-items: center;
+    width: 100%;
     height: vh(32);
     padding: 0 vw(10);
     background: $white;
@@ -541,6 +542,7 @@ defineExpose({
     }
 
     .name-wrapper {
+        width: 96%;
         flex: 1;
         display: flex;
         align-items: center;
@@ -550,6 +552,13 @@ defineExpose({
             flex-shrink: 0;
             color: $font-middle;
             cursor: move;
+        }
+
+        .module-name {
+            white-space: nowrap;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     }
 

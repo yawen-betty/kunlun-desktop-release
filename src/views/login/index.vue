@@ -20,14 +20,17 @@
             <div class="login-box" id="ewm">
                 <h2 class="login-title">微信扫码登录/注册</h2>
 
-                <iframe
-                    :src="qrCodeUrl"
-                    class="qrcode pointer"
-                    allowTransparency="true"
-                    frameBorder="0"
-                    sandbox="allow-scripts allow-top-navigation"
-                    scrolling="no"
-                ></iframe>
+                <div class="qrcode-box">
+                    <div class="qrcode-reload pointer" @click="generateQRCode"></div>
+                    <iframe
+                        :src="qrCodeUrl"
+                        class="qrcode pointer"
+                        allowTransparency="true"
+                        frameBorder="0"
+                        sandbox="allow-scripts allow-top-navigation"
+                        scrolling="no"
+                    ></iframe>
+                </div>
 
                 <div class="agreement-text">
                     登录即同意
@@ -50,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import {nextTick, onBeforeUnmount, onMounted, reactive, ref} from 'vue';
+import {onBeforeUnmount, onMounted, reactive, ref} from 'vue';
 import {Image, Message} from 'view-ui-plus';
 import {Config} from '@/Config.ts';
 import AgreementModal from '@/views/login/components/AgreementModal.vue';
@@ -170,7 +173,6 @@ const getStatus = () => {
             clearInterval(inter.value);
             UserInfo.info.token = res.data.token;
 
-            console.log(UserInfo.info, 'UserInfo.infoUserInfo.infoUserInfo.infoUserInfo.info');
             auth.saveToken(res.data.token);
             message.success(Message, '登录成功！');
             getUserInfo();
@@ -184,12 +186,8 @@ const getStatus = () => {
 const getUserInfo = () => {
     userService.getProfile(new GetProfileInDto()).then((res) => {
         if (res.code === 200) {
-            if (res.data.avatarUrl) {
-                // 拼接域名
-                UserInfo.info.avatar = res.data.avatarUrl.startsWith('http') 
-                    ? res.data.avatarUrl 
-                    : `${Config.baseUrl}${res.data.avatarUrl}`;
-            }
+            // 拼接域名
+            UserInfo.info.avatar = res.data.avatarUrl || '';
             UserInfo.info.userName = res.data.name!;
             UserInfo.info.userId = res.data.uuid!;
 
@@ -339,14 +337,27 @@ onMounted(() => {
                 text-align: center;
             }
 
-            .qrcode {
-                width: 320px;
-                height: 320px;
-                border: none;
-                margin: 0;
-                padding: 0;
-                background: transparent;
-                overflow: hidden;
+            .qrcode-box {
+                position: relative;
+                .qrcode-reload {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    opacity: 0;
+                    width: 320px;
+                    height: 320px;
+                    z-index: 99;
+                }
+
+                .qrcode {
+                    width: 320px;
+                    height: 320px;
+                    border: none;
+                    margin: 0;
+                    padding: 0;
+                    background: transparent;
+                    overflow: hidden;
+                }
             }
         }
     }

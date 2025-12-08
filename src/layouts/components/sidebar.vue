@@ -5,8 +5,8 @@ import Ellipsis from '@/components/ellipsis/index.vue';
 import routes from '@/router/routers.ts';
 import {useRoute, useRouter} from 'vue-router';
 import SvgIcon from '@/components/svgIcon/index.vue';
-import {Col, Image} from 'view-ui-plus';
 import {hasChineseCharacters} from '@/utiles/validators.ts';
+import {Config} from '@/Config.ts';
 
 // 从 App.vue 注入版本更新状态
 const showVersionUpdate = inject<Ref<boolean>>('showVersionUpdate', ref(false));
@@ -54,7 +54,7 @@ onMounted(() => {
 <template>
     <div class="left-menu" :class="{minibar: minSize}">
         <div class="user">
-            <img v-if="UserInfo.info.avatar" :src="UserInfo.info.avatar" class="user-avatar mr-10" />
+            <img v-if="UserInfo.info.avatar" :src="Config.baseUrl + UserInfo.info.avatar" class="user-avatar mr-10" />
             <div class="user-circle" v-else>{{ hasChineseCharacters(UserInfo.info.userName || '') }}</div>
             <div v-if="!minSize" class="user-text">
                 <Ellipsis :content="UserInfo.info.userName" placement="bottom" />
@@ -99,8 +99,8 @@ onMounted(() => {
         padding: 60px 20px 20px;
 
         .user-avatar {
-            width: 30px;
-            height: 30px;
+            width: vw(30);
+            height: vw(30);
             border-radius: 50%;
         }
 
@@ -109,8 +109,8 @@ onMounted(() => {
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            width: 30px;
-            height: 30px;
+            width: vw(30);
+            height: vw(30);
             border-radius: 50%;
             background: $theme-color;
             margin-right: 10px;
@@ -209,8 +209,8 @@ onMounted(() => {
         justify-content: center;
 
         .user-circle {
-            width: 40px;
-            height: 40px;
+            width: vw(30);
+            height: vw(30);
             margin-right: 0;
             font-size: 16px;
         }

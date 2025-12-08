@@ -7,7 +7,7 @@
                     <span>加载中...</span>
                 </div>
 
-                <template v-for="(info,index) in chatList" :key="index">
+                <template v-for="(info, index) in chatList" :key="index">
                     <div v-if="info.role === 'user'" class="my-chat_box mb-20">
                         <div class="my-chat">{{ info.content }}</div>
                     </div>
@@ -16,27 +16,30 @@
                         <div class="ai-chat-box mb-20">
                             <div class="ai-chat">
                                 <div class="ai-chat-text">{{ info.content }}</div>
-                                <div v-if="['1','2'].includes(info.thinkingStatus || '0')" class="is-think mt-10">
+                                <div v-if="['1', '2'].includes(info.thinkingStatus || '0')" class="is-think mt-10">
                                     <div class="think-text mr-5">{{ thinkingText[info.thinkingStatus!] }}</div>
-                                    <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12"
-                                             @click="info.isExpand = true"></SvgIcon>
+                                    <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12" @click="info.isExpand = true"></SvgIcon>
                                 </div>
                             </div>
                         </div>
 
                         <div v-if="info.isExpand" class="deep-thinking mt-10 mb-20">
-                            <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12"
-                                     @click="info.isExpand = false"></SvgIcon>
+                            <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12" @click="info.isExpand = false"></SvgIcon>
 
-                            <div v-if=" info.thinkingStatus === '2'" class="deep-thinking-title">
-                                <img class="deep-log" src="@/assets/images/deep-logo.gif"/>
+                            <div v-if="info.thinkingStatus === '2'" class="deep-thinking-title">
+                                <img class="deep-log" src="@/assets/images/deep-logo.gif" />
                                 <div class="deep-thinking-title-text">深度思考</div>
                             </div>
 
                             <div v-else-if="info.thinkingStatus === '1'" class="deep-thinking-finish">
                                 <div class="deep-thinking-finish-text">已完成思考</div>
-                                <div v-if="info.loadingContentStart" class="deep-thinking-finish-loading">请稍后，内容正在收集中<span
-                                    class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+                                <div v-if="info.loadingContentStart" class="deep-thinking-finish-loading">
+                                    请稍后，内容正在收集中
+                                    <span class="loading-dots">
+                                        <span>.</span>
+                                        <span>.</span>
+                                        <span>.</span>
+                                    </span>
                                 </div>
                             </div>
                             <div class="deep-thinking-content">
@@ -44,14 +47,13 @@
                             </div>
                         </div>
                     </div>
-
                 </template>
             </div>
 
             <div class="send-message">
                 <Input
                     v-model="sendContent"
-                    :autosize="{ minRows: 2, maxRows: 5 }"
+                    :autosize="{minRows: 2, maxRows: 5}"
                     :disabled="disabled"
                     :maxlength="2000"
                     :rows="2"
@@ -60,19 +62,13 @@
                     @keydown="handleKeyDown"
                 ></Input>
                 <button :disabled="disabled || !sendContent" class="save-btn" @click="handleSendMessage">
-                    <SvgIcon :color="disabled || !sendContent ? '#C5C8CE' : '#fff'" name="icon-fasong" size="10"/>
+                    <SvgIcon :color="disabled || !sendContent ? '#C5C8CE' : '#fff'" name="icon-fasong" size="10" />
                     发送
                 </button>
             </div>
         </div>
 
-        <Modal
-            v-model="diagnoseModal"
-            :closable="false"
-            :footer-hide="true"
-            :mask-closable="false"
-            class-name="delete-confirm-modal question-modal"
-        >
+        <Modal v-model="diagnoseModal" :closable="false" :footer-hide="true" :mask-closable="false" class-name="delete-confirm-modal question-modal">
             <div class="delete-modal-content">
                 <div class="modal-header">
                     <span class="modal-title">提示</span>
@@ -91,23 +87,23 @@
 
 <script lang="ts" setup>
 // 聊天组件逻辑待实现
-import {Input, Message, Modal} from "view-ui-plus";
-import {onActivated, onBeforeUnmount, onDeactivated, onMounted, ref} from "vue";
-import SvgIcon from "@/components/svgIcon/index.vue";
-import {QueryConversationInDto} from "@/api/ai/dto/QueryConversation.ts";
-import {AiService} from "@/service/AiService.ts";
-import {GenerateTemplateInDto} from "@/api/ai/dto/GenerateTemplate.ts";
-import {DiagnoseInDto} from "@/api/ai/dto/Diagnose.ts";
-import {extractDataContent} from "@/utiles/processing.ts";
-import {message} from "@/utiles/Message.ts";
-import {getRandomAiMessage} from "@/utiles/aiMessages.ts";
-import {AiMessageBean} from "@/api/ai/dto/bean/AiMessageBean.ts";
-import {QuestionBean} from "@/api/ai/dto/bean/QuestionBean.ts";
-import {WriteInDto} from "@/api/ai/dto/Write.ts";
-import {scrollToBottom} from "@/utiles/domUtils.ts";
-import {AiConversationOutDto} from "@/api/ai/dto/bean/AiConversationOutDto.ts";
-import {AiErrorHandler} from "@/utiles/aiErrorHandler.ts";
-import {UserInfo} from "@/utiles/userInfo.ts";
+import {Input, Message, Modal} from 'view-ui-plus';
+import {onActivated, onBeforeUnmount, onDeactivated, onMounted, ref} from 'vue';
+import SvgIcon from '@/components/svgIcon/index.vue';
+import {QueryConversationInDto} from '@/api/ai/dto/QueryConversation.ts';
+import {AiService} from '@/service/AiService.ts';
+import {GenerateTemplateInDto} from '@/api/ai/dto/GenerateTemplate.ts';
+import {DiagnoseInDto} from '@/api/ai/dto/Diagnose.ts';
+import {extractDataContent} from '@/utiles/processing.ts';
+import {message} from '@/utiles/Message.ts';
+import {getRandomAiMessage} from '@/utiles/aiMessages.ts';
+import {AiMessageBean} from '@/api/ai/dto/bean/AiMessageBean.ts';
+import {QuestionBean} from '@/api/ai/dto/bean/QuestionBean.ts';
+import {WriteInDto} from '@/api/ai/dto/Write.ts';
+import {scrollToBottom} from '@/utiles/domUtils.ts';
+import {AiConversationOutDto} from '@/api/ai/dto/bean/AiConversationOutDto.ts';
+import {AiErrorHandler} from '@/utiles/aiErrorHandler.ts';
+import {UserInfo} from '@/utiles/userInfo.ts';
 
 type TextType = {
     [key: string]: string;
@@ -124,23 +120,23 @@ class CustomMessagesBean extends AiConversationOutDto {
 const aiService = new AiService();
 
 const props = defineProps<{
-    resumeUuid: string;   // 简历id
+    resumeUuid: string; // 简历id
     hasAttachment?: File | null; // 简历附件
-    streamWrite: Function, // 流式回填
-    over: () => void // 结束ai 撰写（ai次数用完调用的）
-    changeMode: () => void // ai 结束调用
-    updateCache: (s: string) => void // 最后一次诊断保存
+    streamWrite: Function; // 流式回填
+    over: () => void; // 结束ai 撰写（ai次数用完调用的）
+    changeMode: () => void; // ai 结束调用
+    updateCache: (s: string) => void; // 最后一次诊断保存
 }>();
 
 const emits = defineEmits<{
-    sendTemplate: [template: string, type: string]
-    sendDiagnose: [diagnose: string]
-    listFinish: []
-}>()
+    sendTemplate: [template: string, type: string];
+    sendDiagnose: [diagnose: string];
+    listFinish: [];
+}>();
 
 const thinkingText: TextType = {
     '1': '已完成思考',
-    '2': '深度思考中',
+    '2': '深度思考中'
 };
 // 输入内容
 const sendContent = ref<string>('');
@@ -187,13 +183,13 @@ const handleOver = () => {
     chatList.value.push({
         role: 'user',
         content: '结束对话',
-        isExpand: false,
+        isExpand: false
     });
 
     setTimeout(() => {
-        props.changeMode()
-    }, 1000)
-}
+        props.changeMode();
+    }, 1000);
+};
 
 // 查询当前聊天记录
 const queryChatList = async () => {
@@ -204,9 +200,9 @@ const queryChatList = async () => {
         resumeUuid: props.resumeUuid,
         pageInfo: {
             pageNum: pageNum.value,
-            pageSize: pageSize.value,
-        },
-    }
+            pageSize: pageSize.value
+        }
+    };
 
     try {
         const res = await aiService.queryConversation(data);
@@ -227,15 +223,15 @@ const queryChatList = async () => {
             emits('listFinish');
         }
         if (chatList.value?.length === 0) {
-            const content: string = '请帮我制作一份求职简历！'
+            const content: string = '请帮我制作一份求职简历！';
             chatList.value.push({
                 role: 'user',
                 content,
-                isExpand: true,
-            })
+                isExpand: true
+            });
 
             // ai回复 （生成模板）
-            const msg: string = '正在帮您生成简历模板，请稍后！'
+            const msg: string = '正在帮您生成简历模板，请稍后！';
             chatList.value.push({
                 role: 'assistant',
                 content: msg,
@@ -243,18 +239,18 @@ const queryChatList = async () => {
                 isExpand: true,
                 thinking: ''
             });
-            generateTemplate(msg, content)
+            generateTemplate(msg, content);
         }
     } finally {
         loading.value = false;
     }
-}
+};
 
 // 继续优化
 const continueOptimize = () => {
     diagnoseModal.value = false;
     askQuestion();
-}
+};
 
 // 生成模板
 const generateTemplate = (msg: string, content: string) => {
@@ -264,25 +260,26 @@ const generateTemplate = (msg: string, content: string) => {
         {
             role: 'user',
             content: content
-        }, {
+        },
+        {
             role: 'assistant',
             content: msg
         }
-    ]
+    ];
 
     const params: GenerateTemplateInDto = {
         resumeId: props.resumeUuid,
         hasAttachment: props.hasAttachment ? '1' : '0',
         messages
-    }
+    };
 
     aiService.generateTemplateStream(
         params,
         (data) => {
-            const lastData = chatList.value[chatList.value.length - 1]
+            const lastData = chatList.value[chatList.value.length - 1];
             if (data.includes('event:thinking')) {
-                const str: string = extractDataContent(data, 'event:thinking')
-                lastData.thinking += str
+                const str: string = extractDataContent(data, 'event:thinking');
+                lastData.thinking += str;
                 scrollThinkingToBottom();
             } else if (data.includes('event:loadingContentStart')) {
                 lastData.thinkingStatus = '1';
@@ -290,13 +287,13 @@ const generateTemplate = (msg: string, content: string) => {
             } else if (data.includes('event:loadingContentEnd')) {
                 lastData.loadingContentStart = false;
             } else {
-                const str: string = extractDataContent(data, 'event:content')
+                const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'template');
             }
             smartScrollToBottom();
         },
         (error) => {
-            showErrorMessage(error.status)
+            showErrorMessage(error.status);
         },
         () => {
             isWorking.value = false;
@@ -304,7 +301,7 @@ const generateTemplate = (msg: string, content: string) => {
             // 完成处理 查询是否存在附件，解析附件 || 分析简历
             if (props.hasAttachment) {
                 // 解析模板
-                const msg: string = '正在解析附件内容，请稍后！'
+                const msg: string = '正在解析附件内容，请稍后！';
 
                 chatList.value.push({
                     role: 'assistant',
@@ -316,11 +313,11 @@ const generateTemplate = (msg: string, content: string) => {
 
                 parseAttachment(msg);
             } else {
-                diagnoseResume()
+                diagnoseResume();
             }
         }
     );
-}
+};
 
 // 解析简历附件
 const parseAttachment = (msg: string) => {
@@ -334,17 +331,17 @@ const parseAttachment = (msg: string) => {
                 content: msg
             }
         ])
-    }
+    };
 
     aiService.parseAttachmentStream(
         params,
         props.hasAttachment!,
         (data) => {
-            const lastData = chatList.value[chatList.value.length - 1]
+            const lastData = chatList.value[chatList.value.length - 1];
 
             if (data.includes('event:thinking')) {
-                const str: string = extractDataContent(data, 'event:thinking')
-                lastData.thinking += str
+                const str: string = extractDataContent(data, 'event:thinking');
+                lastData.thinking += str;
                 scrollThinkingToBottom();
             } else if (data.includes('event:loadingContentStart')) {
                 lastData.thinkingStatus = '1';
@@ -352,13 +349,13 @@ const parseAttachment = (msg: string) => {
             } else if (data.includes('event:loadingContentEnd')) {
                 lastData.loadingContentStart = false;
             } else {
-                const str: string = extractDataContent(data, 'event:content')
+                const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'attachmentStream');
             }
             smartScrollToBottom();
         },
         (error) => {
-            showErrorMessage(error.status)
+            showErrorMessage(error.status);
         },
         () => {
             isWorking.value = false;
@@ -366,7 +363,7 @@ const parseAttachment = (msg: string) => {
             diagnoseResume();
         }
     );
-}
+};
 
 /**
  * @description 诊断简历
@@ -377,7 +374,7 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
     isWorking.value = true;
 
     // 解析模板
-    const msg: string = message || '接下来我会对简历进行诊断并询问一些问题。'
+    const msg: string = message || '接下来我会对简历进行诊断并询问一些问题。';
 
     chatList.value.push({
         role: 'assistant',
@@ -392,21 +389,21 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
             role: 'assistant',
             content: msg
         }
-    ]
+    ];
 
     const params: DiagnoseInDto = {
         resumeId: props.resumeUuid,
         messages
-    }
+    };
 
     aiService.diagnoseStream(
         params,
         (data) => {
-            const lastData = chatList.value[chatList.value.length - 1]
+            const lastData = chatList.value[chatList.value.length - 1];
 
             if (data.includes('event:thinking')) {
-                const str: string = extractDataContent(data, 'event:thinking')
-                lastData.thinking += str
+                const str: string = extractDataContent(data, 'event:thinking');
+                lastData.thinking += str;
                 scrollToBottom('deep-thinking-content');
             } else if (data.includes('event:loadingContentStart')) {
                 lastData.thinkingStatus = '1';
@@ -415,7 +412,7 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
                 lastData.loadingContentStart = false;
             } else {
                 setThinkState();
-                const str: string = extractDataContent(data, 'event:content')
+                const str: string = extractDataContent(data, 'event:content');
                 chatList.value.push({
                     role: 'assistant',
                     content: JSON.parse(str).diagnosisResultMessage,
@@ -426,7 +423,7 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
                 const diagnoseData = JSON.parse(str);
 
                 diagnoseData.issues = diagnoseData.issues.map((item: any) => ({...item, isEnquiry: false}));
-                diagnoseList.value = diagnoseData.issues
+                diagnoseList.value = diagnoseData.issues;
 
                 diagnoseStr.value = JSON.stringify(diagnoseData);
 
@@ -437,22 +434,21 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
                     emits('sendDiagnose', str);
                     askQuestion();
                 }
-                props.updateCache(str)
+                props.updateCache(str);
             }
             smartScrollToBottom();
         },
         (error) => {
-            showErrorMessage(error.status)
+            showErrorMessage(error.status);
         },
         () => {
             isWorking.value = false;
         }
     );
-}
+};
 
 // 发送上次诊断的消息
 const sendLastDiagnose = (issues: QuestionBean[]) => {
-
     diagnoseList.value = issues;
     if (diagnoseList.value[0].isEnquiry) {
         diagnoseList.value.shift();
@@ -460,7 +456,7 @@ const sendLastDiagnose = (issues: QuestionBean[]) => {
     }
 
     askQuestion();
-}
+};
 
 // 提出问题 (每次取第一个问题)
 const askQuestion = () => {
@@ -476,9 +472,9 @@ const askQuestion = () => {
         disabled.value = false;
     } else {
         // 再次诊断
-        diagnoseResume('我将继续对简历进行诊断。', true)
+        diagnoseResume('我将继续对简历进行诊断。', true);
     }
-}
+};
 
 // 处理键盘事件
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -490,8 +486,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
 // 发送消息
 const handleSendMessage = () => {
-
-    if (!sendContent.value) return message.error(Message, '请输入内容后发送')
+    if (!sendContent.value) return message.error(Message, '请输入内容后发送');
 
     chatList.value.push({
         role: 'user',
@@ -504,7 +499,7 @@ const handleSendMessage = () => {
     disabled.value = true;
 
     write();
-}
+};
 
 // 撰写
 const write = () => {
@@ -520,7 +515,7 @@ const write = () => {
     });
 
     // 获取最后三条数据转换为AiMessageBean格式
-    const messages: AiMessageBean[] = chatList.value.slice(-3).map(item => ({
+    const messages: AiMessageBean[] = chatList.value.slice(-3).map((item) => ({
         role: item.role!,
         content: item.content!
     }));
@@ -530,16 +525,16 @@ const write = () => {
         questionUuid: diagnoseList.value[0].questionUuid,
         isFollowUp: isFollowUp.value,
         messages
-    }
+    };
 
     aiService.writeStream(
         params,
         async (data) => {
-            const lastData = chatList.value[chatList.value.length - 1]
+            const lastData = chatList.value[chatList.value.length - 1];
 
             if (data.includes('event:thinking')) {
-                const str: string = extractDataContent(data, 'event:thinking')
-                lastData.thinking += str
+                const str: string = extractDataContent(data, 'event:thinking');
+                lastData.thinking += str;
                 scrollToBottom('deep-thinking-content');
             } else if (data.includes('event:loadingContentStart')) {
                 lastData.thinkingStatus = '1';
@@ -548,16 +543,16 @@ const write = () => {
                 lastData.loadingContentStart = false;
             } else {
                 setThinkState();
-                const str: string = extractDataContent(data, 'event:content')
+                const str: string = extractDataContent(data, 'event:content');
                 const response = JSON.parse(str);
-                console.log(response, ' response')
+                console.log(response, ' response');
                 // 更新诊断问题数据（已问询）
                 const diagnoseData = JSON.parse(diagnoseStr.value);
 
-                const index: number = diagnoseData.issues.findIndex((info: QuestionBean) => info.questionUuid === diagnoseList.value[0].questionUuid)
-                diagnoseData.issues[index].isEnquiry = true
+                const index: number = diagnoseData.issues.findIndex((info: QuestionBean) => info.questionUuid === diagnoseList.value[0].questionUuid);
+                diagnoseData.issues[index].isEnquiry = true;
 
-                isFollowUp.value = response.isFollowUp
+                isFollowUp.value = response.isFollowUp;
                 if (response.completed) {
                     await props.streamWrite(response.fieldDataList);
                     diagnoseList.value.shift();
@@ -585,20 +580,20 @@ const write = () => {
             smartScrollToBottom();
         },
         (error) => {
-            showErrorMessage(error.status)
+            showErrorMessage(error.status);
         },
         () => {
             isWorking.value = false;
         }
-    )
-}
+    );
+};
 
 // 关闭深度思考
 const setThinkState = () => {
-    const lastData = chatList.value[chatList.value.length - 1]
+    const lastData = chatList.value[chatList.value.length - 1];
 
     lastData.isExpand = false;
-}
+};
 
 // 处理滚动事件
 const handleScroll = () => {
@@ -641,7 +636,6 @@ onMounted(() => {
     }
 
     diagnoseStr.value = UserInfo.info.resumeMap?.[props.resumeUuid]?.trick;
-
 });
 
 onActivated(() => {
@@ -660,12 +654,12 @@ defineExpose({
     diagnoseResume,
     sendLastDiagnose,
     isWorking
-})
+});
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/styles/variable.scss" as *;
-@use "@/assets/styles/compute.scss" as *;
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
 
 .resume-chat {
     width: 100%;
@@ -697,7 +691,7 @@ defineExpose({
 
             .my-chat {
                 border-radius: vw(2);
-                background: #F6F8FA;
+                background: #f6f8fa;
                 padding: vh(13) vw(15);
                 color: $font-dark;
                 font-size: vw(14);
@@ -705,7 +699,7 @@ defineExpose({
                 font-weight: 400;
                 line-height: vw(20);
                 word-break: break-all;
-                white-space: pre-wrap
+                white-space: pre-wrap;
             }
         }
 
@@ -724,7 +718,7 @@ defineExpose({
                     font-weight: 400;
                     line-height: vw(20);
                     word-break: break-all;
-                    white-space: pre-wrap
+                    white-space: pre-wrap;
                 }
             }
 
@@ -741,15 +735,14 @@ defineExpose({
                     line-height: vw(12);
                 }
             }
-
         }
 
         .deep-thinking {
             width: 100%;
             padding: vh(10) vw(15);
             border-radius: vw(2);
-            border: 1px solid #AEBCFD;
-            background: linear-gradient(92deg, rgba(196, 162, 252, 0.10) 3.76%, rgba(136, 233, 255, 0.10) 95.27%);
+            border: 1px solid #aebcfd;
+            background: linear-gradient(92deg, rgba(196, 162, 252, 0.1) 3.76%, rgba(136, 233, 255, 0.1) 95.27%);
             position: relative;
 
             .icon {
@@ -787,15 +780,15 @@ defineExpose({
                     font-size: vw(14);
                     font-style: normal;
                     font-weight: 400;
-                    line-height: vw(20)
+                    line-height: vw(20);
                 }
 
                 .deep-thinking-finish-loading {
-                    color: #C4A2FC;
+                    color: #c4a2fc;
                     font-size: vw(14);
                     font-style: normal;
                     font-weight: 400;
-                    line-height: vw(20)
+                    line-height: vw(20);
                 }
             }
 
@@ -857,7 +850,18 @@ defineExpose({
             resize: none;
 
             &::-webkit-scrollbar {
-                display: none;
+                width: vw(6);
+                height: vh(6);
+                box-shadow: 0 0 vw(5) #e7eaea;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: #c1c1c0;
+                border-radius: vw(3);
+            }
+
+            &::-webkit-scrollbar-track {
+                border-radius: vw(3);
             }
         }
 
@@ -874,15 +878,15 @@ defineExpose({
             font-weight: 500;
             line-height: vw(12);
             box-shadow: none;
-            background: linear-gradient(0deg, #FC8719 0%, #FC8719 100%), #E8EAEC;
+            background: linear-gradient(0deg, #fc8719 0%, #fc8719 100%), #e8eaec;
             color: $white;
             font-size: vw(12);
             cursor: pointer;
             border-radius: vw(2);
 
             &:disabled {
-                background: #EAECEE;
-                color: #C5C8CE;
+                background: #eaecee;
+                color: #c5c8ce;
                 cursor: no-drop;
             }
         }
@@ -899,11 +903,11 @@ defineExpose({
     45% {
         opacity: 1;
     }
-    60%, 100% {
+    60%,
+    100% {
         opacity: 0;
     }
 }
-
 </style>
 
 <style lang="scss">

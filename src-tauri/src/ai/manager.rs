@@ -12,9 +12,9 @@ use super::tool_executor::ToolExecutor;
 use super::message_builder::MessageBuilder;
 
 /// AI 任务管理器
-/// 
+///
 /// 负责协调 AI 和 MCP 的交互，实现 AI Agent 的核心逻辑
-/// 
+///
 /// # 职责
 /// - 管理任务执行流程
 /// - 协调 AI API 调用和工具执行
@@ -24,25 +24,25 @@ pub struct AIManager {
     /// 任务锁，确保同一时间只执行一个任务
     /// 使用 Arc<Mutex<()>> 作为信号量
     task_lock: Arc<Mutex<()>>,
-    
+
     /// 任务取消标志
     /// 用于强制停止正在执行的任务
     cancel_flag: Arc<AtomicBool>,
-    
+
     /// MCP 管理器的共享引用
     /// 用于调用浏览器自动化工具
     mcp_manager: Arc<Mutex<McpManager>>,
-    
+
     /// API 客户端，负责与 AI 服务通信
     api_client: ApiClient,
-    
+
     /// 工具执行器，负责执行 AI 请求的工具调用
     tool_executor: ToolExecutor,
 }
 
 impl AIManager {
     /// 创建新的 AI 管理器
-    /// 
+    ///
     /// # 参数
     /// * `mcp_manager` - MCP 管理器的共享引用
     pub fn new(mcp_manager: Arc<Mutex<McpManager>>) -> Self {
@@ -54,9 +54,9 @@ impl AIManager {
             api_client: ApiClient::new(),
         }
     }
-    
+
     /// 强制停止当前正在执行的任务
-    /// 
+    ///
     /// # 说明
     /// 设置取消标志，任务会在下一次检查点停止执行
     /// 不会立即中断，而是在对话循环的下一轮检查时退出
@@ -66,15 +66,15 @@ impl AIManager {
     }
 
     /// 执行 AI 任务（带配置）
-    /// 
+    ///
     /// # 参数
     /// * `task` - 任务描述
     /// * `config` - 任务配置（API Key、URL、超时等）
     /// * `app` - AppHandle 用于检查浏览器
-    /// 
+    ///
     /// # 返回
     /// 任务执行结果，包含成功状态、消息和统计信息
-    /// 
+    ///
     /// # 超时
     /// 任务会在 config.timeout_secs 秒后超时
     pub async fn execute_task_with_config(
@@ -89,9 +89,9 @@ impl AIManager {
         .await
         .map_err(|_| "任务执行超时".to_string())?
     }
-    
+
     /// 执行 AI 任务（简化接口，向后兼容）
-    /// 
+    ///
     /// # 参数
     /// * `api_key` - API 密钥
     /// * `task` - 任务描述
@@ -105,9 +105,9 @@ impl AIManager {
         let config = AITaskConfig::new(api_key);
         self.execute_task_with_config(task, config, app).await
     }
-    
+
     /// 任务执行的内部实现
-    /// 
+    ///
     /// # 流程
     /// 1. 获取任务锁（防止并发）
     /// 2. 检查浏览器状态
@@ -122,10 +122,10 @@ impl AIManager {
     ) -> Result<TaskResult, String> {
         // 获取任务锁，确保同一时间只执行一个任务
         let _lock = self.task_lock.lock().await;
-        
+
         // 重置取消标志
         self.cancel_flag.store(false, Ordering::SeqCst);
-        
+
         eprintln!("[AI] 开始执行任务: {}", task);
 
         // 检查浏览器是否已安装
@@ -144,27 +144,27 @@ impl AIManager {
         // 执行对话循环
         self.run_conversation_loop(&config, &mut messages, &tools).await
     }
-    
+
     /// 检查浏览器状态
-    /// 
+    ///
     /// # 错误
     /// 如果浏览器未安装，返回错误提示
     async fn check_browser_status(&self, app: &AppHandle) -> Result<(), String> {
         eprintln!("[AI] 检查浏览器状态...");
-        
+
         let browser_status = BrowserManager::check_installed(app);
-        
+
         if !browser_status.installed {
             eprintln!("[AI] 浏览器未安装，任务终止");
             return Err("浏览器未安装。请先停止 MCP Server，然后重新启动（会自动安装浏览器）。".to_string());
         }
-        
+
         eprintln!("[AI] 浏览器已安装");
         Ok(())
     }
-    
+
     /// 获取并转换 MCP 工具列表
-    /// 
+    ///
     /// # 返回
     /// 转换为 AI API 格式的工具列表（仅白名单工具）
     async fn get_mcp_tools(&self) -> Result<Vec<Tool>, String> {
@@ -179,10 +179,10 @@ impl AIManager {
             "browser_type",            // 输入文本
             "browser_evaluate",        // 执行JavaScript（数据提取）
             "browser_hover",           // 鼠标悬停
-            "browser_select_option",   // 选择下拉选项
-            "browser_press_key",       // 按键盘按键
+//             "browser_select_option",   // 选择下拉选项
+//             "browser_press_key",       // 按键盘按键
             "browser_wait_for",        // 等待
-            "browser_take_screenshot", // 截图
+//             "browser_take_screenshot", // 截图
             "browser_close",           // 关闭浏览器
             "browser_tabs",            // 管理标签
             "browser_handle_dialog",   // 处理弹窗
@@ -203,12 +203,12 @@ impl AIManager {
                 if !allowed_tools.contains(&name) {
                     continue;
                 }
-                
+
                 let description = tool
                     .get("description")
                     .and_then(|d| d.as_str())
                     .unwrap_or("");
-                
+
                 let input_schema = tool
                     .get("inputSchema")
                     .cloned()
@@ -231,14 +231,14 @@ impl AIManager {
         eprintln!("[AI] 加载了 {} 个工具（白名单过滤）", tools.len());
         Ok(tools)
     }
-    
+
     /// 执行对话循环
-    /// 
+    ///
     /// # 参数
     /// * `config` - 任务配置
     /// * `messages` - 对话历史（可变，会不断添加新消息）
     /// * `tools` - 可用的工具列表
-    /// 
+    ///
     /// # 流程
     /// 1. 调用 AI API 获取响应
     /// 2. 如果 AI 请求工具调用：
@@ -247,7 +247,7 @@ impl AIManager {
     ///    - 继续循环
     /// 3. 如果 AI 返回最终答案：
     ///    - 返回任务结果
-    /// 
+    ///
     /// # 限制
     /// 最多执行 config.max_iterations 轮对话
     async fn run_conversation_loop(
@@ -257,14 +257,14 @@ impl AIManager {
         tools: &[Tool],
     ) -> Result<TaskResult, String> {
         let mut iteration = 0;
-        
+
         loop {
             // 检查是否收到取消请求
             if self.cancel_flag.load(Ordering::SeqCst) {
                 eprintln!("[AI] 任务被用户取消");
                 return Err("任务已被用户取消".to_string());
             }
-            
+
             iteration += 1;
             eprintln!("[AI] 第 {} 轮对话", iteration);
 

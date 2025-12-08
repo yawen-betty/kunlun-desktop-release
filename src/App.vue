@@ -35,7 +35,6 @@ onMounted(async () => {
     getConfigInfo();
     auth.getToken()
         .then((token) => {
-            console.log(token, '111');
             if (token) {
                 UserInfo.info.token = token;
                 getUserInfo(userService);
@@ -88,7 +87,7 @@ const getUserInfo = (userService: UserService) => {
     userService.getProfile(new GetProfileInDto()).then((res) => {
         if (res.code === 200) {
             if (res.data.avatarUrl) {
-                UserInfo.info.avatar = Config.baseUrl + res.data.avatarUrl!;
+                UserInfo.info.avatar = res.data.avatarUrl || '';
             }
             UserInfo.info.userName = res.data.name!;
             UserInfo.info.userId = res.data.uuid!;
