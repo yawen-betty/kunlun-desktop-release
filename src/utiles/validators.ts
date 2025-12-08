@@ -31,7 +31,7 @@ export const validateEmail = (rule: any, value: string, callback: any) => {
         callback(new Error('邮箱格式有误'));
         return;
     }
-    if (!domain.includes('.') || domain.startsWith('.') || domain.endsWith('.') || domain.includes('..')) {
+    if (/\.{2,}/.test(value) || !domain.includes('.') || domain.startsWith('.') || domain.endsWith('.')) {
         callback(new Error('邮箱格式有误'));
         return;
     }
