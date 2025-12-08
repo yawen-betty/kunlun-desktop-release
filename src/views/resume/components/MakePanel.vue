@@ -190,7 +190,7 @@ onUnmounted(() => {
                 <SvgIcon class="ai-icon" color="#FC8719" name="icon-AI" size="40"/>
                 <span>简历制作</span>
             </div>
-            <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form">
+            <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form" @submit.prevent>
                 <FormItem prop="jobPosition">
                     <Input v-model="formData.jobPosition" :max-length="20"
                            :placeholder="placeholderList[placeholderIdx]"

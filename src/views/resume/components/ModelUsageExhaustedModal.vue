@@ -18,7 +18,8 @@
                 <span>如何注册智谱账号</span>
             </div>
 
-            <Form ref="formRef" :model="formData" :rules="rules" class="config-form mb-60" label-position="top">
+            <Form ref="formRef" :model="formData" :rules="rules" class="config-form mb-60" label-position="top"
+                  @submit.prevent>
                 <FormItem class="model-item" label="模型" prop="modelType">
                     <RadioGroup v-model="formData.modelType" class="model-radio-group">
                         <Radio label="1">智谱</Radio>

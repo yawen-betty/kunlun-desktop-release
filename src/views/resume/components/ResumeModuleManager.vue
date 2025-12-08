@@ -100,7 +100,7 @@
                 <div class="modal-header">
                     <span class="modal-title">{{ modalTitle }}</span>
                 </div>
-                <Form ref="formRef" :model="formData" :rules="rules">
+                <Form ref="formRef" :model="formData" :rules="rules" @submit.prevent>
                     <FormItem prop="name">
                         <div class="input-wrapper">
                             <Input

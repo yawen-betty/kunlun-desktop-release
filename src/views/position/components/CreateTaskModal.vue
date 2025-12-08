@@ -157,7 +157,7 @@ defineExpose({
         </div>
         <div class="modal-content">
             <div class="content-left">
-                <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form">
+                <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form" @submit.prevent>
                     <FormItem prop="jobTitle">
                         <Input v-model="formData.jobTitle" :max-length="20"
                                :placeholder="placeholderList[placeholderIdx]"
