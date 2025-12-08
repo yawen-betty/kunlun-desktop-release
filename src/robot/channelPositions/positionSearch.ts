@@ -25,7 +25,7 @@ const http = new HttpClient();
 /**
  * 执行职位搜索
  */
-export async function executePositionSearch(options: SearchOptions,resumeText: string, taskId: string, prompt: string): Promise<SearchResult> {
+export async function executePositionSearch(options: SearchOptions, resumeText: string, taskId: string, prompt: string): Promise<SearchResult> {
     // 并发控制
     if (isTaskRunning) {
         return {code: 500, message: '任务正在执行中，请稍后再试'};
@@ -181,18 +181,15 @@ export async function executePositionSearch(options: SearchOptions,resumeText: s
             }
 
             // 匹配
-            const matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt);
-            if (matchJobRes === 1305) {
+            let matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt);
+            while (matchJobRes === 1305) {
                 logger.warning('[PositionSearch] AI 请求频率限制，等待 60 秒');
                 await robotManager.sleep(1000 * 60);
-                await matchJob(apiKey, resumeText, dataInfo, prompt); // 重试
+                matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt);
             }
 
-            dataInfo = Object.assign(dataInfo, {
-                matchInfo: matchJobRes
-            });
-            // 发送数据给接口 TODO
-            // crawlPositions(dataInfo, taskId);
+            // 发送数据给接口
+            await crawlPositions(dataInfo, taskId, matchJobRes);
 
             // 获取所有标签页
             const count = await tabCount();
@@ -318,10 +315,11 @@ async function tabCount(): Promise<number> {
 /**
  * 调用接口上传数据
  */
-async function crawlPositions(data: ChannelPositionBean, taskId: string) {
+async function crawlPositions(data: ChannelPositionBean, taskId: string, matchInfo: MatchInfoBean) {
     const res = await http.request<Result<CrawlPositionsOutDto>>(JobPaths.crawlPositions, {
         taskUuid: taskId,
-        positions: data
+        positions: data,
+        matchInfo
     });
 
     // 推荐职位已达上限
@@ -337,36 +335,36 @@ async function crawlPositions(data: ChannelPositionBean, taskId: string) {
 /**
  * 匹配
  */
-async function matchJob(apiKey: string, resumeText: string, positionInfo:any, prompt:string): Promise<any> {
+async function matchJob(apiKey: string, resumeText: string, positionInfo: any, prompt: string): Promise<any> {
     const parts: string[] = [];
 
     if (positionInfo.title) {
-      parts.push(`职位名称：${positionInfo.title}`);
+        parts.push(`职位名称：${positionInfo.title}`);
     }
     if (positionInfo.areaName) {
-      parts.push(`工作地址：${positionInfo.areaName}`);
+        parts.push(`工作地址：${positionInfo.areaName}`);
     }
     if (positionInfo.educational) {
-      parts.push(`学历要求：${positionInfo.educational}`);
+        parts.push(`学历要求：${positionInfo.educational}`);
     }
     if (positionInfo.workExperience) {
-      parts.push(`工作经验：${positionInfo.workExperience}`);
+        parts.push(`工作经验：${positionInfo.workExperience}`);
     }
     if (positionInfo.salary) {
-      parts.push(`薪资范围：${positionInfo.salary}`);
+        parts.push(`薪资范围：${positionInfo.salary}`);
     }
     if (positionInfo.salaryNumber) {
-      parts.push(`薪资结构：${positionInfo.salaryNumber}`);
+        parts.push(`薪资结构：${positionInfo.salaryNumber}`);
     }
     if (positionInfo.labels?.length) {
-      parts.push(`职位标签：${positionInfo.labels.join(',')}`);
+        parts.push(`职位标签：${positionInfo.labels.join(',')}`);
     }
     if (positionInfo.description) {
-      parts.push(`职位描述：${positionInfo.description}`);
+        parts.push(`职位描述：${positionInfo.description}`);
     }
 
     const positionContent = parts.join('\n');
-    const userContent =  `
+    const userContent = `
     简历文本：
     ${resumeText}
     职位要求：
@@ -384,9 +382,9 @@ async function matchJob(apiKey: string, resumeText: string, positionInfo:any, pr
     ];
 
 
-  console.info('========================msg',message)
+    console.info('========================msg', message)
 
-    const response:any = await invoke('http_request', {
+    const response: any = await invoke('http_request', {
         req: {
             url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
             method: 'POST',
@@ -395,24 +393,24 @@ async function matchJob(apiKey: string, resumeText: string, positionInfo:any, pr
                 'Content-Type': 'application/json'
             },
             body: {
-              "model": 'glm-4.5-flash',
-              "temperature": 0.8,
-              "max_tokens": 65536,
-              "stream": false,
-              "thinking": {
-                "type": "enabled"
-              },
-              "do_sample": true,
-              "top_p": 0.6,
-              "tool_stream": false,
-              "response_format": {
-                "type": "text"
-              },
-              "messages": message
+                "model": 'glm-4.5-flash',
+                "temperature": 0.8,
+                "max_tokens": 65536,
+                "stream": false,
+                "thinking": {
+                    "type": "enabled"
+                },
+                "do_sample": true,
+                "top_p": 0.6,
+                "tool_stream": false,
+                "response_format": {
+                    "type": "text"
+                },
+                "messages": message
             }
         }
     });
-    console.info('========================匹配',response)
+    console.info('========================匹配', response)
 
     // 配置超时重试
     if (response.body.error) {
@@ -427,7 +425,7 @@ async function matchJob(apiKey: string, resumeText: string, positionInfo:any, pr
         if (msg && msg.content) {
             const matchInfo = parseMatchInfo(msg.content);
             console.log(matchInfo);
-            console.info('========================清洗数据',matchInfo)
+            console.info('========================清洗数据', matchInfo)
             return matchInfo
         } else {
             return new MatchInfoBean();
@@ -438,31 +436,31 @@ async function matchJob(apiKey: string, resumeText: string, positionInfo:any, pr
 }
 
 function parseMatchInfo(content: string): MatchInfoBean {
-  // 1. 提取 JSON 部分（支持代码块格式或直接JSON字符串）
-  const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) ||
-                   content.match(/(\{[\s\S]*})/);
+    // 1. 提取 JSON 部分（支持代码块格式或直接JSON字符串）
+    const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) ||
+        content.match(/(\{[\s\S]*})/);
 
-  let jsonStr = '';
-  if (jsonMatch && jsonMatch[1]) {
-    jsonStr = jsonMatch[1];
-  } else {
-    // 如果没有匹配到，直接使用原始内容
-    jsonStr = content;
-  }
+    let jsonStr = '';
+    if (jsonMatch && jsonMatch[1]) {
+        jsonStr = jsonMatch[1];
+    } else {
+        // 如果没有匹配到，直接使用原始内容
+        jsonStr = content;
+    }
 
-  // 2. 使用浏览器原生 HTML 解码器
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = jsonStr;
-  const decodedStr = textarea.value;
+    // 2. 使用浏览器原生 HTML 解码器
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = jsonStr;
+    const decodedStr = textarea.value;
 
-  // 3. 解析 JSON
-  const data = JSON.parse(decodedStr);
+    // 3. 解析 JSON
+    const data = JSON.parse(decodedStr);
 
-  // 4. 转换为 MatchInfoBean
-  const matchInfo = new MatchInfoBean();
-  matchInfo.jobPositionMatchScore = data.jobPositionMatchScore || '';
-  matchInfo.summaryAndSuggestion = data.summaryAndSuggestion || '';
-  matchInfo.relatedDimensionAnalysisList = data.relatedDimensionAnalysisList || [];
+    // 4. 转换为 MatchInfoBean
+    const matchInfo = new MatchInfoBean();
+    matchInfo.jobPositionMatchScore = data.jobPositionMatchScore || '';
+    matchInfo.summaryAndSuggestion = data.summaryAndSuggestion || '';
+    matchInfo.relatedDimensionAnalysisList = data.relatedDimensionAnalysisList || [];
 
-  return matchInfo;
+    return matchInfo;
 }

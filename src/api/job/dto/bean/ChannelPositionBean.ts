@@ -1,5 +1,3 @@
-import {MatchInfoBean} from "@/api/job/dto/bean/MatchInfoBean.ts";
-
 export class ChannelPositionBean {
     /**
      * 在源站的唯一ID
@@ -120,9 +118,4 @@ export class ChannelPositionBean {
      * 发布日期 (时间戳)
      */
     publishDate?: number;
-
-    /**
-     * 匹配结果
-     */
-    matchInfo?: MatchInfoBean;
 }

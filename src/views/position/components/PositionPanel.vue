@@ -427,9 +427,9 @@ const handleExhaustedOfAttempts = async () => {
 }
 
 onMounted(async () => {
-    await loadCurrentTask()
-    await loadOtherTasks()
-
+    loadCurrentTask()
+    loadOtherTasks()
+    console.log('11111111111111111111111111')
     emitter.on('updateNewPosition', handleUpdateNewPosition)
     emitter.on('exhaustedOfAttempts', handleExhaustedOfAttempts)
 })

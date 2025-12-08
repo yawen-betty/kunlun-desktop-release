@@ -17,7 +17,7 @@ export class PositionBean {
     /**
      * 薪资数 (单位:元)
      */
-    salaryNumber?: number;
+    salaryNumber?: string;
 
     /**
      * 区域信息
@@ -128,4 +128,9 @@ export class PositionBean {
      * 推荐时间
      */
     recommendedAt: number = 0;
+    
+    /**
+     * 职位详情URL
+     */
+    jobDetailUrl: string = '';
 }
