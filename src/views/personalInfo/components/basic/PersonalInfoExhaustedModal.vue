@@ -10,7 +10,7 @@
             <li>· 面试AI辅导、模拟面试</li>
         </ul>
 
-        <div class="tutorial-link mb-40">
+        <div class="tutorial-link mb-40" v-if="status === 1">
             <Icon type="md-help-circle" />
             <span @click="handleTutorial(true)">如何注册智谱账号</span>
         </div>
@@ -75,6 +75,8 @@ const tutorialVisible = ref<boolean>(false);
 // html 内容
 const tutorialContent = ref<string>('');
 
+const status = ref<number>(0);
+
 // 弹窗状态切换
 const handleTutorial = (state: boolean) => {
     tutorialVisible.value = state;
@@ -117,6 +119,7 @@ const getAiRegisterGuide = () => {
     adminService.getAiRegisterGuide(data).then((res) => {
         if (res.code === 200) {
             tutorialContent.value = res.data.content;
+            status.value = res.data.status;
         }
     });
 };
