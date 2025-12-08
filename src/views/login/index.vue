@@ -173,7 +173,6 @@ const getStatus = () => {
             clearInterval(inter.value);
             UserInfo.info.token = res.data.token;
 
-            console.log(UserInfo.info, 'UserInfo.infoUserInfo.infoUserInfo.infoUserInfo.info');
             auth.saveToken(res.data.token);
             message.success(Message, '登录成功！');
             getUserInfo();
@@ -187,10 +186,8 @@ const getStatus = () => {
 const getUserInfo = () => {
     userService.getProfile(new GetProfileInDto()).then((res) => {
         if (res.code === 200) {
-            if (res.data.avatarUrl) {
-                // 拼接域名
-                UserInfo.info.avatar = res.data.avatarUrl.startsWith('http') ? res.data.avatarUrl : `${Config.baseUrl}${res.data.avatarUrl}`;
-            }
+            // 拼接域名
+            UserInfo.info.avatar = res.data.avatarUrl || '';
             UserInfo.info.userName = res.data.name!;
             UserInfo.info.userId = res.data.uuid!;
 

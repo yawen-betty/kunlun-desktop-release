@@ -2,7 +2,7 @@
     <div class="modal-content">
         <h3 class="modal-title mb-40">AI账号配置</h3>
 
-        <p class="description mb-20"> 配置AI账号后，您可以无限制使用AI相关功能，包含：</p>
+        <p class="description mb-20">配置AI账号后，您可以无限制使用AI相关功能，包含：</p>
 
         <ul class="description-list mb-40">
             <li>· 简历AI撰写、润色、扩展、简化、总结</li>
@@ -11,7 +11,7 @@
         </ul>
 
         <div class="tutorial-link mb-40">
-            <Icon type="md-help-circle"/>
+            <Icon type="md-help-circle" />
             <span @click="handleTutorial(true)">如何注册智谱账号</span>
         </div>
 
@@ -23,33 +23,21 @@
             </FormItem>
 
             <FormItem class="api-key-item" label="API Key" prop="apiKey">
-                <Input
-                    v-model="formData.apiKey"
-                    class="api-key-input"
-                    password
-                    placeholder="请输入"
-                    type="password"
-                ></Input>
+                <Input v-model="formData.apiKey" class="api-key-input" password placeholder="请输入" type="password"></Input>
             </FormItem>
         </Form>
 
         <Button :disabled="!formData.apiKey" class="save-btn" type="primary" @click="handleSave">
-            <SvgIcon color="#fff" name="icon-baocun" size="12"/>
+            <SvgIcon color="#fff" name="icon-baocun" size="12" />
             保存
         </Button>
 
-        <img alt="" class="decoration-img" src="@/assets/images/ai.png"/>
+        <img alt="" class="decoration-img" src="@/assets/images/ai.png" />
     </div>
 
-    <Modal
-        v-model="tutorialVisible"
-        :closable="false"
-        :mask-closable="false"
-        class="tutorial-modal"
-        footer-hide
-    >
+    <Modal v-model="tutorialVisible" :closable="false" :mask-closable="false" class="tutorial-modal" footer-hide>
         <div class="tutorial-content">
-            <Icon class="tutorial-close-icon" type="md-close" @click="handleTutorial(false)"/>
+            <Icon class="tutorial-close-icon" type="md-close" @click="handleTutorial(false)" />
             <h3 class="tutorial-title mb-20">如何注册智谱账号</h3>
             <div class="tutorial-html pt-20" v-html="tutorialContent"></div>
         </div>
@@ -59,83 +47,79 @@
 <script lang="ts" setup>
 import {ref, reactive, onMounted} from 'vue';
 import {Form, FormItem, Input, RadioGroup, Radio, Button, Icon, Message, Modal} from 'view-ui-plus';
-import SvgIcon from "@/components/svgIcon/index.vue";
-import {UserService} from "@/service/UserService.ts";
-import {message} from "@/utiles/Message.ts";
-import {SaveModelAccountInDto} from "@/api/user/dto/SaveModelAccount.ts";
-import {aiModal} from "@/enums/enumDict.ts";
-import {AdminService} from "@/service/AdminService.ts";
-import {GetAiRegisterGuideInDto} from "@/api/admin/dto/GetAiRegisterGuide.ts";
-import {GetModelAccountInDto} from "@/api/user/dto/GetModelAccount.ts";
-import {UserInfo} from "@/utiles/userInfo.ts";
+import SvgIcon from '@/components/svgIcon/index.vue';
+import {UserService} from '@/service/UserService.ts';
+import {message} from '@/utiles/Message.ts';
+import {SaveModelAccountInDto} from '@/api/user/dto/SaveModelAccount.ts';
+import {aiModal} from '@/enums/enumDict.ts';
+import {AdminService} from '@/service/AdminService.ts';
+import {GetAiRegisterGuideInDto} from '@/api/admin/dto/GetAiRegisterGuide.ts';
+import {GetModelAccountInDto} from '@/api/user/dto/GetModelAccount.ts';
+import {UserInfo} from '@/utiles/userInfo.ts';
 
 const formRef = ref<any>(null);
 
 const userService = new UserService();
-const adminService = new AdminService()
+const adminService = new AdminService();
 
 // form
 const formData = reactive<SaveModelAccountInDto>(new SaveModelAccountInDto());
 
 // 校验
 const rules = {
-    apiKey: [
-        {required: true, message: '请输入API Key', trigger: 'blur'},
-    ],
+    apiKey: [{required: true, message: '请输入API Key', trigger: 'blur'}]
 };
 
 // 弹窗状态
 const tutorialVisible = ref<boolean>(false);
 // html 内容
-const tutorialContent = ref<string>('')
+const tutorialContent = ref<string>('');
 
 // 弹窗状态切换
 const handleTutorial = (state: boolean) => {
-    tutorialVisible.value = state
-}
-
+    tutorialVisible.value = state;
+};
 
 // 保存模型key
 const handleSave = async () => {
     const valid = await formRef.value?.validate();
 
     if (valid) {
-        userService.saveModelAccount(formData).then(res => {
+        userService.saveModelAccount(formData).then((res) => {
             if (res.code === 200) {
-                message.success(Message, '配置保存成功！')
-                UserInfo.info.modelList = [formData]
+                message.success(Message, '配置保存成功！');
+                UserInfo.info.modelList = [formData];
             }
-        })
+        });
     } else {
-        message.error(Message, '请完善必填项！')
+        message.error(Message, '请完善必填项！');
     }
 };
-
 
 // 获取app key
 const getAppKey = () => {
     const data: GetModelAccountInDto = {
         modelType: '1'
-    }
+    };
 
-    userService.getModelAccount(data).then(res => {
+    userService.getModelAccount(data).then((res) => {
         if (res.code === 200) {
-            Object.assign(formData, res.data)
+            Object.assign(formData, res.data);
         }
-    })
-}
+    });
+};
 
 // 获取简介
 const getAiRegisterGuide = () => {
     const data: GetAiRegisterGuideInDto = {
         modelType: '1'
-    }
-    adminService.getAiRegisterGuide(data).then(res => {
+    };
+    adminService.getAiRegisterGuide(data).then((res) => {
         if (res.code === 200) {
-            tutorialContent.value = res.data.content
+            tutorialContent.value = res.data.content;
         }
-    })
-}
+    });
+};
 
 onMounted(() => {
     getAppKey();
@@ -144,8 +128,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/styles/variable.scss" as *;
-@use "@/assets/styles/compute.scss" as *;
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
 
 .modal-content {
     width: 100%;
@@ -177,7 +161,6 @@ onMounted(() => {
         }
     }
 }
-
 
 .tutorial-link {
     display: flex;
@@ -258,13 +241,13 @@ onMounted(() => {
                 background-color: $bg-gray;
                 border: none;
                 border-radius: vw(2);
-                padding: 0 vw(20);
+                padding: 0 vw(30) 0 vw(20);
                 font-size: vw(16);
                 color: $font-dark;
 
                 &::placeholder {
                     color: $placeholder-color;
-                    font-family: "PingFangSCBold", serif;
+                    font-family: 'PingFangSCBold', serif;
                     font-size: vw(16);
                     font-weight: 600;
                     line-height: 1.5; /* 100% */
@@ -294,8 +277,8 @@ onMounted(() => {
     }
 
     &:disabled {
-        background-color: #EAECEE;
-        color: #B0B7C6;
+        background-color: #eaecee;
+        color: #b0b7c6;
         cursor: not-allowed;
 
         &:hover {
@@ -348,7 +331,6 @@ onMounted(() => {
         display: none;
     }
 }
-
 
 .tutorial-content {
     width: 100%;
@@ -415,5 +397,4 @@ onMounted(() => {
         color: $font-dark;
     }
 }
-
 </style>
