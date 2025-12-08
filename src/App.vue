@@ -35,7 +35,6 @@ onMounted(async () => {
     getConfigInfo();
     auth.getToken()
         .then((token) => {
-            console.log(token, '111');
             if (token) {
                 UserInfo.info.token = token;
                 getUserInfo(userService);
