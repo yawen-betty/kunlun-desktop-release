@@ -33,15 +33,19 @@ onMounted(async () => {
     emitter.on('forcedUpdate', manualCheckUpdate);
     // manualCheckUpdate();
     getConfigInfo();
-    auth.getToken().then((token) => {
-        if (token) {
-            UserInfo.info.token = token;
-            getUserInfo(userService);
-        } else {
-            router.push('/login');
-        }
-    });
-    getMatchAnalysisPrompt();
+    auth.getToken()
+        .then((token) => {
+            console.log(token, '111');
+            if (token) {
+                UserInfo.info.token = token;
+                getUserInfo(userService);
+            } else {
+                router.push('/login');
+            }
+        })
+        .finally(() => {
+            getMatchAnalysisPrompt();
+        });
 });
 
 onUnmounted(() => {
