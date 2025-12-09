@@ -161,7 +161,7 @@ const handleLogin = debounce(async (channel: any) => {
                 channel.isLogin = true
                 message.success(Message, '登录成功！')
                 showChannelModal.value = false
-
+                showChannelTip.value = false
                 // 登录成功后，如果任务在进行中，重启爬取
                 if (currentTask.value?.status === 0 && currentTask.value.uuid) {
                     await robotManager.cleanup()
@@ -306,7 +306,6 @@ const loadCurrentTask = async () => {
                     const hasLoggedIn = channels.value.some(channel => channel.isLogin)
                     // 每次切换之后 都要先关闭之前的机器人，重新启动
                     if (hasLoggedIn && result.data.uuid) {
-                        console.log(UserInfo.info.matchAnalysisPrompt, 'prompt')
                         await robotManager.cleanup()
                         await robotManager.crawlPosition({
                             jobTitle: result.data.jobTitle,
@@ -1284,6 +1283,7 @@ onBeforeUnmount(() => {
             .task-item {
                 position: relative;
                 height: vh(45);
+                width: 100%;
                 padding: vh(6) vw(10);
                 display: flex;
                 align-items: center;
@@ -1333,6 +1333,7 @@ onBeforeUnmount(() => {
 
                 .task-info {
                     flex: 1;
+                    width: 95%;
 
                     .task-name {
                         font-family: 'PingFang SC', sans-serif;
@@ -1340,6 +1341,10 @@ onBeforeUnmount(() => {
                         line-height: vh(14);
                         color: $font-dark;
                         margin-bottom: vh(7);
+                        width: 95%;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
                     }
 
                     .task-meta {

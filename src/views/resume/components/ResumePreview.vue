@@ -735,6 +735,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
     'update-modules': [];
     'data-change': [data: any];
+    'save-resume': [isShowAnimate: boolean];
 }>();
 
 const streamValues = ref<Map<string, string>>(new Map());
@@ -932,20 +933,7 @@ const getAppliedEntries = (moduleUuid: string) => {
 
 const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
     try {
-        if (editingEntryUuid.value) {
-            const module = props.resumeData?.modules?.find((m: any) => m.uuid === moduleUuid);
-            const entry = module?.entries?.find((e: any) => e.entryUuid === editingEntryUuid.value);
-            if (entry) {
-                entry.fields?.forEach((f: any) => {
-                    if (entryEditData.value[f.fieldKey] !== undefined) {
-                        streamValues.value.set(f.uuid, entryEditData.value[f.fieldKey]);
-                        f.fieldValue = entryEditData.value[f.fieldKey];
-                    }
-                });
-                emit('data-change', props.resumeData);
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-        }
+        emit('save-resume', false);
 
         const params = new UpdateModuleEntriesInDto();
         params.resumeId = props.resumeData.uuid || '';

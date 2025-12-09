@@ -60,7 +60,7 @@
     },
     "updater": {
       "endpoints": [
-        "http://update.liangjiyuren.cn/kunlun/dev/latest-macos.json"
+        "https://hr-ai.dev.lingxizhifu.cn/assets/kl-desktop/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQwQ0JDMzE2RTlGMzgyMTIKUldRU2d2UHBGc1BMME93U0pMWjhmUCsxYm5qVUpzcWxjRGhQTmNQVzlJUU14N2dtYXZaMVY3VkcK"
     }

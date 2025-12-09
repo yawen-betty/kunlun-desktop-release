@@ -8,12 +8,14 @@
                 <div class="form-label mb-20">头像</div>
                 <div class="avatar-upload pointer">
                     <Upload :before-upload="beforeAvatarUpload" :show-upload-list="false">
-                        <div class="avatar-container">
+                        <div class="avatar-container" v-if="isFinish">
                             <img v-if="filePreviewUrl" :src="filePreviewUrl" class="avatar-img" />
                             <div v-else class="avatar-circle">
                                 <span class="avatar-text">{{ hasChineseCharacters(UserInfo.info.userName || '') }}</span>
                             </div>
                         </div>
+
+                        <div class="bg-white" v-else></div>
 
                         <div class="avatar-modal">
                             <SvgIcon color="#fff" name="icon-bianji-xian" size="20" />
@@ -58,6 +60,8 @@ const userService = new UserService();
 const fileService = new FileService();
 // 预览地址
 const filePreviewUrl = ref<string>('');
+// 是否加载完成
+const isFinish = ref<boolean>(false);
 
 // 校验
 const ruleValidate = {
@@ -118,6 +122,8 @@ const handleSave = () => {
                     message.success(Message, '保存成功！');
                     UserInfo.info.avatar = formValidate.avatarUrl || '';
                     UserInfo.info.userName = formValidate.name!;
+
+                    console.log(UserInfo.info);
                 }
             });
         } else {
@@ -128,19 +134,23 @@ const handleSave = () => {
 
 // 获取用户信息
 const getUserInfo = () => {
-    userService.getProfile(new GetProfileInDto()).then((res) => {
-        if (res.code === 200) {
-            Object.assign(formValidate, {
-                ...res.data,
-                avatarUrl: Config.baseUrl + res.data.avatarUrl!,
-                birthDate: new Date(res.data.birthDate as any)
-            });
+    userService
+        .getProfile(new GetProfileInDto())
+        .then((res) => {
+            if (res.code === 200) {
+                Object.assign(formValidate, {
+                    ...res.data,
+                    birthDate: new Date(res.data.birthDate as any)
+                });
 
-            if (res.data.avatarUrl) {
-                filePreviewUrl.value = Config.baseUrl + res.data.avatarUrl!;
+                if (res.data.avatarUrl) {
+                    filePreviewUrl.value = Config.baseUrl + res.data.avatarUrl!;
+                }
             }
-        }
-    });
+        })
+        .finally(() => {
+            isFinish.value = true;
+        });
 };
 
 onMounted(() => {
@@ -203,6 +213,12 @@ onMounted(() => {
                 justify-content: center;
                 flex-wrap: wrap;
             }
+        }
+
+        .bg-white {
+            width: vw(80);
+            height: vw(80);
+            background: $white;
         }
 
         .avatar-container {

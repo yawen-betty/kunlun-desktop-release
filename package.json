@@ -6,17 +6,20 @@
     "dev": {
       "basePath": "/",
       "baseUrl": "https://hr-ai.dev.lingxizhifu.cn/",
-      "downloadUrl": "https://hr-ai.dev.lingxizhifu.cn/assets/kl-desktop"
+      "downloadUrl": "https://hr-ai.dev.lingxizhifu.cn/assets/kl-desktop",
+      "webUrl": ""
     },
     "prod": {
       "basePath": "/",
       "baseUrl": "https://hr-ai.lingxizhifu.cn",
-      "downloadUrl": "https://hr-ai.qianniaohudong.cn/assets/kl-desktop"
+      "downloadUrl": "https://hr-ai.qianniaohudong.cn/assets/kl-desktop",
+      "webUrl": "https://test.qianniaohudong.cn/"
     },
     "test": {
       "basePath": "/",
       "baseUrl": "https://hr-ai.test.lingxizhifu.cn/",
-      "downloadUrl": "https://hr-ai.test.lingxizhifu.cn/assets/kl-desktop"
+      "downloadUrl": "https://hr-ai.test.lingxizhifu.cn/assets/kl-desktop",
+      "webUrl": "https://qianniaohudong.cn/ "
     }
   },
   "dependencies": {

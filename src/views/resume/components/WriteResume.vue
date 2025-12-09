@@ -44,6 +44,7 @@
                     :resume-data="resumeData"
                     @update-modules="handleUpdateModules"
                     @data-change="handleDataChange"
+                    @save-resume="(isShowAnimate) => saveResume(isShowAnimate)"
                 />
             </div>
 
@@ -474,14 +475,14 @@ const handleConfirm = async () => {
 };
 
 // 保存操作
-const saveResume = async () => {
+const saveResume = async (isShowAnimate: boolean = true) => {
     try {
         const params = new SaveResumeInDto();
         params.resumeId = props.resumeId;
         params.modules = resumeData.value.modules;
 
         await resumeService.saveResume(params);
-        showSaveSuccessAnimation();
+        isShowAnimate && showSaveSuccessAnimation();
     } catch (error) {
         message.error(Message, '保存失败');
         console.error(error);
@@ -629,7 +630,6 @@ const handleUpdateModules = async () => {
  * 切换新的简历ID进入并且当前组件存在不会走 onMounted 时（keepAlive）
  */
 const reset = () => {
-    console.log('重新获取', props.resumeId)
     fetchResumeDetail(props.resumeId);
 }
 

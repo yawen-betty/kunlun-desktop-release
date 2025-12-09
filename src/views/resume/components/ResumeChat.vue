@@ -16,7 +16,7 @@
                         <div class="ai-chat-box mb-20">
                             <div class="ai-chat">
                                 <div class="ai-chat-text">{{ info.content }}</div>
-                                <div v-if="['1', '2'].includes(info.thinkingStatus || '0')" class="is-think mt-10">
+                                <div v-if="['1', '2'].includes(info.thinkingStatus || '0') && !info.isExpand" class="is-think mt-10">
                                     <div class="think-text mr-5">{{ thinkingText[info.thinkingStatus!] }}</div>
                                     <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12" @click="info.isExpand = true"></SvgIcon>
                                 </div>
@@ -141,7 +141,7 @@ const thinkingText: TextType = {
 // 输入内容
 const sendContent = ref<string>('');
 // 是否禁用输入框
-const disabled = ref<boolean>(false);
+const disabled = ref<boolean>(true);
 // 聊天列表
 const chatList = ref<CustomMessagesBean[]>([]);
 // 诊断问题列表
@@ -497,6 +497,7 @@ const handleSendMessage = () => {
     });
     sendContent.value = '';
     disabled.value = true;
+    scrollToBottom('chatting-records');
 
     write();
 };

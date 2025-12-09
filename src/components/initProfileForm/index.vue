@@ -13,7 +13,7 @@
 
     <div class="form-row">
         <FormItem label="出生年月" prop="birthDate" class="custom-date_picker">
-            <DatePicker type="month" placeholder="请选择" v-model="formData.birthDate" :start-date="defaultDate" />
+            <DatePicker type="month" placeholder="请选择" v-model="formData.birthDate" :start-date="defaultDate" :options="dateOptions" />
         </FormItem>
         <FormItem label="居住城市" prop="areaInfoBeanList">
             <AddressSelect v-model="formData.areaInfoBeanList" @change="handleChange" />
@@ -45,8 +45,15 @@ interface Props {
 
 const props = defineProps<Props>();
 
-// 默认展示1950年
-const defaultDate = ref(new Date('1950-01-01'));
+// 默认展示1996年
+const defaultDate = ref(new Date('1996-01-01'));
+
+// 限制只能选择1950年及以后的日期
+const dateOptions = {
+    disabledDate(date: Date) {
+        return date.getFullYear() < 1950;
+    }
+};
 
 // 手机号输入限制（只允许数字）
 const handleMobileInput = (e: any) => {

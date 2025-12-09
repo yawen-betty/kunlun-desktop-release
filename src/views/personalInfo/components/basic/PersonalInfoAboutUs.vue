@@ -32,9 +32,9 @@ const adminService = new AdminService();
 
 const handleGoToWebsite = async () => {
     console.log('%c 🎥: handleGoToWebsite -> websiteUrl.value ', 'font-size:16px;background-color:#17c306;color:white;', websiteUrl.value);
-    await openWeb('https://www.baidu.com/');
-    // if (websiteUrl.value) {
-    // }
+    if (websiteUrl.value) {
+        await openWeb(websiteUrl.value);
+    }
 };
 
 onMounted(() => {
