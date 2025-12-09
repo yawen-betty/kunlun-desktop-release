@@ -54,7 +54,7 @@ const formData = reactive<CreateJobTaskInDto>(new CreateJobTaskInDto())
 const resumeList = ref<MyResumeBean[]>([])
 const resumeService = new ResumeService()
 const jobService = new JobService()
-const modelVisible = ref(true)
+const modelVisible = ref(false)
 
 const emit = defineEmits<{
     'task-created': []
