@@ -308,13 +308,13 @@ const loadCurrentTask = async () => {
                     const hasLoggedIn = channels.value.some(channel => channel.isLogin)
                     // 每次切换之后 都要先关闭之前的机器人，重新启动
                     if (hasLoggedIn && result.data.uuid) {
-                        // await robotManager.cleanup()
-                        // await robotManager.crawlPosition({
-                        //     jobTitle: result.data.jobTitle,
-                        //     cityInfos: result.data.cityName,
-                        //     experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
-                        // }, result.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
-                        // UserInfo.info.isRunningTask = true
+                        await robotManager.cleanup()
+                        await robotManager.crawlPosition({
+                            jobTitle: result.data.jobTitle,
+                            cityInfos: result.data.cityName,
+                            experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
+                        }, result.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
+                        UserInfo.info.isRunningTask = true
                     }
                 }
             }
