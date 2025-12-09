@@ -1,16 +1,21 @@
 <!--选择地址-->
 <template>
-    <Poptip
-        v-model="isDropDown"
-        :disabled="props.disabled"
-        class="address-custom_box"
-        placement="bottom-start"
-    >
+    <Poptip v-model="isDropDown" :disabled="props.disabled" class="address-custom_box" placement="bottom-start">
         <div v-if="hasDefaultSlot">
-            <slot/>
+            <slot />
         </div>
-        <div v-else
-             :class="['custom-input' ,'pointer', 'p10', !isEmpty && 'custom-input-hover', isDropDown && 'custom-input-drop_down' , props.multiple && 'custom-input_multiple',props.disabled && 'custom-input_disabled','search-filter-option']"
+        <div
+            v-else
+            :class="[
+                'custom-input',
+                'pointer',
+                'p10',
+                !isEmpty && 'custom-input-hover',
+                isDropDown && 'custom-input-drop_down',
+                props.multiple && 'custom-input_multiple',
+                props.disabled && 'custom-input_disabled',
+                'search-filter-option'
+            ]"
         >
             <div class="custom-content">
                 <div v-if="isEmpty" class="custom-placeholder ellipsis">
@@ -21,30 +26,34 @@
                         {{ props.modelValue[0]?.name }}
                     </div>
                     <div v-else class="tag-box">
-            <span v-for="(info,index) in props.modelValue as  AreaInfoBean[]" :key="info.id"
-                  class="tag p5">
-                <span class="tag-text ellipsis mr-5">
-                    info.name
-                </span>
-                <svg-icon class="icon-cha pointer" color="#9499A5" name="icon-cha" size="8"
-                          @click.stop="clearSelect(index)"/>
-            </span>
+                        <span v-for="(info, index) in props.modelValue as AreaInfoBean[]" :key="info.id" class="tag p5">
+                            <span class="tag-text ellipsis mr-5">info.name</span>
+                            <svg-icon class="icon-cha pointer" color="#9499A5" name="icon-cha" size="8" @click.stop="clearSelect(index)" />
+                        </span>
                     </div>
                 </template>
             </div>
-            <svg-icon :style="{display:props.disabled && 'block'}" class="icon-svg icon-arrow" color="#9499A5"
-                      name="icon-jiantou-xia"
-                      size="10" @click.stop="toggleDrop()"/>
+            <svg-icon
+                :style="{display: props.disabled && 'block'}"
+                class="icon-svg icon-arrow"
+                color="#9499A5"
+                name="icon-jiantou-xia"
+                size="10"
+                @click.stop="toggleDrop()"
+            />
 
-            <svg-icon v-if="!isEmpty && !props.disabled" class="icon-svg icon-close" color="#9499A5" name="icon-cha"
-                      size="10"
-                      @click.stop="clearSelect(-1)"
+            <svg-icon
+                v-if="!isEmpty && !props.disabled"
+                class="icon-svg icon-close"
+                color="#9499A5"
+                name="icon-cha"
+                size="10"
+                @click.stop="clearSelect(-1)"
             />
         </div>
         <template #content>
             <div class="custom-address-content">
-                <AddressSearch :disabled="disabled" :isDropDown="isDropDown" :maxLevel="maxLevel"
-                               @onClose="handleClose"/>
+                <AddressSearch :disabled="disabled" :isDropDown="isDropDown" :maxLevel="maxLevel" @onClose="handleClose" />
 
                 <div class="address-cascade-container">
                     <AddressCascade
@@ -66,9 +75,8 @@ import {computed, nextTick, onMounted, PropType, provide, ref, useSlots, watch} 
 import AddressSearch from '@/components/addressSelect/components/addressSearch.vue';
 import AddressCascade from '@/components/addressSelect/components/addressCascade.vue';
 
-import {AddressService} from "@/service/AddressService.ts";
-import {QueryAreaInDto} from "@/api/address/dto/QueryArea.ts";
-import {AreaInfoBean} from "@/api/user/dto/bean/AreaInfoBean.ts";
+import {AreaInfoBean} from '@/api/user/dto/bean/AreaInfoBean.ts';
+import areaData from '@/assets/data/area.json';
 
 const slots = useSlots();
 
@@ -123,14 +131,14 @@ const selectVal = ref<AreaInfoBean[]>([]);
 // 国内全量数据
 const cityTree = ref<AreaInfoBean[]>([]);
 
-const addressService = new AddressService();
-
-watch(() => isDropDown.value,
+watch(
+    () => isDropDown.value,
     (newVal: boolean) => {
         if (newVal) {
             selectVal.value = props.modelValue as any;
         }
-    });
+    }
+);
 
 // 判断当前的值是否为空
 const isEmpty = computed(() => {
@@ -140,7 +148,7 @@ const isEmpty = computed(() => {
 // 选择
 const select = (val: AreaInfoBean) => {
     if (props.multiple) {
-        const index: number = selectVal.value.findIndex(info => info.id === val.id);
+        const index: number = selectVal.value.findIndex((info) => info.id === val.id);
 
         if (index > -1) {
             selectVal.value.splice(index, 1);
@@ -174,7 +182,7 @@ const clearSelect = (index: number) => {
 //关闭
 const handleClose = () => {
     isDropDown.value = false;
-}
+};
 
 // 显示或隐藏下拉
 const toggleDrop = () => {
@@ -182,29 +190,19 @@ const toggleDrop = () => {
     isDropDown.value = !isDropDown.value;
 };
 
-
 // 查询国内数据
 const getArea = () => {
-    const data: QueryAreaInDto = {
-        rangeType: '1',
-        maxLevel: props.maxLevel
-    }
-
-    addressService.queryArea(data).then(res => {
-        if (res.code === 200) {
-            if (props.isHotCity) {
-                cityTree.value = [...res.data.areaList];
-            } else {
-                cityTree.value = res.data.areaList.filter((item: AreaInfoBean) => {
-                    if (item.id === '110000' || item.id === '120000' || item.id === '310000' || item.id === '500000') {
-                        item.children = item.children!.filter((child: AreaInfoBean) => child.name !== '全部');
-                    }
-
-                    return item.name !== '热门';
-                });
+    if (props.isHotCity) {
+        cityTree.value = [...areaData.areaList] as AreaInfoBean[];
+    } else {
+        cityTree.value = (areaData.areaList as AreaInfoBean[]).filter((item: AreaInfoBean) => {
+            if (item.id === '110000' || item.id === '120000' || item.id === '310000' || item.id === '500000') {
+                item.children = item.children!.filter((child: AreaInfoBean) => child.name !== '全部');
             }
-        }
-    });
+
+            return item.name !== '热门';
+        });
+    }
 };
 
 provide('emitUpdate', select);
@@ -213,15 +211,14 @@ provide('deleteItem', clearSelect);
 onMounted(() => {
     getArea();
 });
-
 </script>
 
 <style lang="scss" scoped>
-@use "@/assets/styles/variable.scss" as *;
-@use "@/assets/styles/compute.scss" as *;
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
 
 .search-filter .icon-close {
-    width: 0 !important;;
+    width: 0 !important;
     height: 0 !important;
 }
 
@@ -271,7 +268,7 @@ onMounted(() => {
         .icon-arrow {
             width: vw(10) !important;
             height: vw(10) !important;
-            transition: all .2s linear;
+            transition: all 0.2s linear;
             transform-origin: center;
         }
 
@@ -326,10 +323,8 @@ onMounted(() => {
                         line-height: vh(12);
                         vertical-align: bottom;
                     }
-
                 }
             }
-
         }
 
         .icon-svg {
@@ -362,6 +357,4 @@ onMounted(() => {
         }
     }
 }
-
 </style>
-

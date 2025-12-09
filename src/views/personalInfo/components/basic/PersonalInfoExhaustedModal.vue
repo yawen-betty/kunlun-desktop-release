@@ -10,7 +10,7 @@
             <li>· 面试AI辅导、模拟面试</li>
         </ul>
 
-        <div class="tutorial-link mb-40" v-if="status === 1">
+        <div class="tutorial-link mb-40" v-if="status === 0">
             <Icon type="md-help-circle" />
             <span @click="handleTutorial(true)">如何注册智谱账号</span>
         </div>
