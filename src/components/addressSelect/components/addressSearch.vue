@@ -131,7 +131,7 @@ const getHighLightFont = (name: string, highLightFont: string): string => {
     return parts[0] + '/' + parts[1].replace(regex, (match) => `<span>${match}</span>`);
   }
   if (parts[0] && parts[0].includes(highLightFont)) {
-    return parts[0].replace(regex, (match) => `<span>${match}</span>`) + '/' + parts[1];
+    return parts[0].replace(regex, (match) => `<span>${match}</span>`) + (parts[1] ? '/' + parts[1] : '');
   }
 
   return name;
