@@ -39,8 +39,8 @@ onActivated(() => {
 
 <template>
     <div class="position-cont">
-        <CreateTask v-if="!hasTask" @task-created="handleTaskCreated"/>
-        <PositionPanel v-else @all-tasks-deleted="handleAllTasksDeleted"/>
+        <CreateTask @task-created="handleTaskCreated"/>
+        <!--        <PositionPanel v-else @all-tasks-deleted="handleAllTasksDeleted"/>-->
     </div>
 </template>
 
