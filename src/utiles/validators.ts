@@ -21,6 +21,10 @@ export const validateMobile = (rule: any, value: string, callback: any) => {
  * 邮箱校验
  */
 export const validateEmail = (rule: any, value: string, callback: any) => {
+    if (/[\u4e00-\u9fa5]/.test(value)) {
+        callback(new Error('邮箱格式有误'));
+        return;
+    }
     const atCount = (value.match(/@/g) || []).length;
     if (atCount !== 1) {
         callback(new Error('邮箱格式有误'));
@@ -37,7 +41,6 @@ export const validateEmail = (rule: any, value: string, callback: any) => {
     }
     callback();
 };
-
 
 /**
  * 处理用户名 开始
