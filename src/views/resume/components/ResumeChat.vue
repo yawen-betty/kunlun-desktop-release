@@ -42,7 +42,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="deep-thinking-content">
+                            <div class="deep-thinking-content" v-if="info.thinking">
                                 {{ info.thinking }}
                             </div>
                         </div>

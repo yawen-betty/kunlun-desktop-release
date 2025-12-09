@@ -13,7 +13,7 @@
 
     <div class="form-row">
         <FormItem label="出生年月" prop="birthDate" class="custom-date_picker">
-            <DatePicker type="month" placeholder="请选择" v-model="formData.birthDate" :start-date="defaultDate" :options="dateOptions" />
+            <DatePicker type="month" placeholder="请选择" v-model="formData.birthDate" :start-date="defaultDate" :options="dateOptions" :editable="false" />
         </FormItem>
         <FormItem label="居住城市" prop="areaInfoBeanList">
             <AddressSelect v-model="formData.areaInfoBeanList" @change="handleChange" />
