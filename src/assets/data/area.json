@@ -1,0 +1,4026 @@
+{
+        "areaList": [
+            {
+                "id": null,
+                "name": "热门",
+                "spelling": null,
+                "pid": "0",
+                "hotFlag": null,
+                "level": 1,
+                "children": [
+                    {
+                        "id": "110100",
+                        "name": "北京市",
+                        "spelling": "Beijing",
+                        "pid": "110000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "430100",
+                        "name": "长沙市",
+                        "spelling": "Changsha",
+                        "pid": "430000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "510100",
+                        "name": "成都市",
+                        "spelling": "Chengdu",
+                        "pid": "510000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "500100",
+                        "name": "重庆市",
+                        "spelling": "Chongqing",
+                        "pid": "500000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "440100",
+                        "name": "广州市",
+                        "spelling": "Guangzhou",
+                        "pid": "440000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "330100",
+                        "name": "杭州市",
+                        "spelling": "Hangzhou",
+                        "pid": "330000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "340100",
+                        "name": "合肥市",
+                        "spelling": "Hefei",
+                        "pid": "340000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "320100",
+                        "name": "南京市",
+                        "spelling": "Nanjing",
+                        "pid": "320000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "310100",
+                        "name": "上海市",
+                        "spelling": "Shanghai",
+                        "pid": "310000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "440300",
+                        "name": "深圳市",
+                        "spelling": "Shenzhen",
+                        "pid": "440000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "320500",
+                        "name": "苏州市",
+                        "spelling": "Suzhou",
+                        "pid": "320000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "420100",
+                        "name": "武汉市",
+                        "spelling": "Wuhan",
+                        "pid": "420000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    },
+                    {
+                        "id": "410100",
+                        "name": "郑州市",
+                        "spelling": "Zhengzhou",
+                        "pid": "410000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": null
+                    }
+                ]
+            },
+            {
+                "id": "110000",
+                "name": "北京",
+                "spelling": "Beijing",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "110100",
+                        "name": "北京市",
+                        "spelling": "Beijing",
+                        "pid": "110000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "310000",
+                "name": "上海",
+                "spelling": "Shanghai",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "310100",
+                        "name": "上海市",
+                        "spelling": "Shanghai",
+                        "pid": "310000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "440000",
+                "name": "广东省",
+                "spelling": "Guangdong",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "440100",
+                        "name": "广州市",
+                        "spelling": "Guangzhou",
+                        "pid": "440000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "440300",
+                        "name": "深圳市",
+                        "spelling": "Shenzhen",
+                        "pid": "440000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "440200",
+                        "name": "韶关市",
+                        "spelling": "Shaoguan",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "440400",
+                        "name": "珠海市",
+                        "spelling": "Zhuhai",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "440500",
+                        "name": "汕头市",
+                        "spelling": "Shantou",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "440600",
+                        "name": "佛山市",
+                        "spelling": "Foshan",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "440700",
+                        "name": "江门市",
+                        "spelling": "Jiangmen",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "440800",
+                        "name": "湛江市",
+                        "spelling": "Zhanjiang",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "440900",
+                        "name": "茂名市",
+                        "spelling": "Maoming",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "441200",
+                        "name": "肇庆市",
+                        "spelling": "Zhaoqing",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "441300",
+                        "name": "惠州市",
+                        "spelling": "Huizhou",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "441400",
+                        "name": "梅州市",
+                        "spelling": "Meizhou",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "441500",
+                        "name": "汕尾市",
+                        "spelling": "Shanwei",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "441600",
+                        "name": "河源市",
+                        "spelling": "Heyuan",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "441700",
+                        "name": "阳江市",
+                        "spelling": "Yangjiang",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "441800",
+                        "name": "清远市",
+                        "spelling": "Qingyuan",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "441900",
+                        "name": "东莞市",
+                        "spelling": "Dongguan",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "442000",
+                        "name": "中山市",
+                        "spelling": "Zhongshan",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "445100",
+                        "name": "潮州市",
+                        "spelling": "Chaozhou",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "445200",
+                        "name": "揭阳市",
+                        "spelling": "Jieyang",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "445300",
+                        "name": "云浮市",
+                        "spelling": "Yunfu",
+                        "pid": "440000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "330000",
+                "name": "浙江省",
+                "spelling": "Zhejiang",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "330100",
+                        "name": "杭州市",
+                        "spelling": "Hangzhou",
+                        "pid": "330000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "330200",
+                        "name": "宁波市",
+                        "spelling": "Ningbo",
+                        "pid": "330000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "330300",
+                        "name": "温州市",
+                        "spelling": "Wenzhou",
+                        "pid": "330000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "330400",
+                        "name": "嘉兴市",
+                        "spelling": "Jiaxing",
+                        "pid": "330000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "330500",
+                        "name": "湖州市",
+                        "spelling": "Huzhou",
+                        "pid": "330000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "330600",
+                        "name": "绍兴市",
+                        "spelling": "Shaoxing",
+                        "pid": "330000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "330700",
+                        "name": "金华市",
+                        "spelling": "Jinhua",
+                        "pid": "330000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "330800",
+                        "name": "衢州市",
+                        "spelling": "Quzhou",
+                        "pid": "330000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "330900",
+                        "name": "舟山市",
+                        "spelling": "Zhoushan",
+                        "pid": "330000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "331000",
+                        "name": "台州市",
+                        "spelling": "Taizhou",
+                        "pid": "330000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "331100",
+                        "name": "丽水市",
+                        "spelling": "Lishui",
+                        "pid": "330000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "510000",
+                "name": "四川省",
+                "spelling": "Sichuan",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "510100",
+                        "name": "成都市",
+                        "spelling": "Chengdu",
+                        "pid": "510000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "510300",
+                        "name": "自贡市",
+                        "spelling": "Zigong",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "510400",
+                        "name": "攀枝花市",
+                        "spelling": "Panzhihua",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "510500",
+                        "name": "泸州市",
+                        "spelling": "Luzhou",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "510600",
+                        "name": "德阳市",
+                        "spelling": "Deyang",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "510700",
+                        "name": "绵阳市",
+                        "spelling": "Mianyang",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "510800",
+                        "name": "广元市",
+                        "spelling": "Guangyuan",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "510900",
+                        "name": "遂宁市",
+                        "spelling": "Suining",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "511000",
+                        "name": "内江市",
+                        "spelling": "Neijiang",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "511100",
+                        "name": "乐山市",
+                        "spelling": "Leshan",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "511300",
+                        "name": "南充市",
+                        "spelling": "Nanchong",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "511400",
+                        "name": "眉山市",
+                        "spelling": "Meishan",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "511500",
+                        "name": "宜宾市",
+                        "spelling": "Yibin",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "511600",
+                        "name": "广安市",
+                        "spelling": "Guang'an",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "511700",
+                        "name": "达州市",
+                        "spelling": "Dazhou",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "511800",
+                        "name": "雅安市",
+                        "spelling": "Ya'an",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "511900",
+                        "name": "巴中市",
+                        "spelling": "Bazhong",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "512000",
+                        "name": "资阳市",
+                        "spelling": "Ziyang",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "513200",
+                        "name": "阿坝藏族羌族自治州",
+                        "spelling": "Aba",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "513300",
+                        "name": "甘孜藏族自治州",
+                        "spelling": "Garze",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "513400",
+                        "name": "凉山彝族自治州",
+                        "spelling": "Liangshan",
+                        "pid": "510000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "320000",
+                "name": "江苏省",
+                "spelling": "Jiangsu",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "320100",
+                        "name": "南京市",
+                        "spelling": "Nanjing",
+                        "pid": "320000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "320200",
+                        "name": "无锡市",
+                        "spelling": "Wuxi",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "320300",
+                        "name": "徐州市",
+                        "spelling": "Xuzhou",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "320400",
+                        "name": "常州市",
+                        "spelling": "Changzhou",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "320500",
+                        "name": "苏州市",
+                        "spelling": "Suzhou",
+                        "pid": "320000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "320600",
+                        "name": "南通市",
+                        "spelling": "Nantong",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "320700",
+                        "name": "连云港市",
+                        "spelling": "Lianyungang",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "320800",
+                        "name": "淮安市",
+                        "spelling": "Huai'an",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "320900",
+                        "name": "盐城市",
+                        "spelling": "Yancheng",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "321000",
+                        "name": "扬州市",
+                        "spelling": "Yangzhou",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "321100",
+                        "name": "镇江市",
+                        "spelling": "Zhenjiang",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "321200",
+                        "name": "泰州市",
+                        "spelling": "Taizhou",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "321300",
+                        "name": "宿迁市",
+                        "spelling": "Suqian",
+                        "pid": "320000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "420000",
+                "name": "湖北省",
+                "spelling": "Hubei",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "420100",
+                        "name": "武汉市",
+                        "spelling": "Wuhan",
+                        "pid": "420000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "420200",
+                        "name": "黄石市",
+                        "spelling": "Huangshi",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "420300",
+                        "name": "十堰市",
+                        "spelling": "Shiyan",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "420500",
+                        "name": "宜昌市",
+                        "spelling": "Yichang",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "420600",
+                        "name": "襄阳市",
+                        "spelling": "Xiangyang",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "420700",
+                        "name": "鄂州市",
+                        "spelling": "Ezhou",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "420800",
+                        "name": "荆门市",
+                        "spelling": "Jingmen",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "420900",
+                        "name": "孝感市",
+                        "spelling": "Xiaogan",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "421000",
+                        "name": "荆州市",
+                        "spelling": "Jingzhou",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "421100",
+                        "name": "黄冈市",
+                        "spelling": "Huanggang",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "421200",
+                        "name": "咸宁市",
+                        "spelling": "Xianning",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "421300",
+                        "name": "随州市",
+                        "spelling": "Suizhou",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "422800",
+                        "name": "恩施土家族苗族自治州",
+                        "spelling": "Enshi",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "429004",
+                        "name": "仙桃市",
+                        "spelling": "Xiantao",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "429005",
+                        "name": "潜江市",
+                        "spelling": "Qianjiang",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "429006",
+                        "name": "天门市",
+                        "spelling": "Tianmen",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "429021",
+                        "name": "神农架林区",
+                        "spelling": "Shennongjia",
+                        "pid": "420000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "610000",
+                "name": "陕西省",
+                "spelling": "Shaanxi",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "610100",
+                        "name": "西安市",
+                        "spelling": "Xi'an",
+                        "pid": "610000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "610200",
+                        "name": "铜川市",
+                        "spelling": "Tongchuan",
+                        "pid": "610000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "610300",
+                        "name": "宝鸡市",
+                        "spelling": "Baoji",
+                        "pid": "610000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "610400",
+                        "name": "咸阳市",
+                        "spelling": "Xianyang",
+                        "pid": "610000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "610500",
+                        "name": "渭南市",
+                        "spelling": "Weinan",
+                        "pid": "610000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "610600",
+                        "name": "延安市",
+                        "spelling": "Yan'an",
+                        "pid": "610000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "610700",
+                        "name": "汉中市",
+                        "spelling": "Hanzhong",
+                        "pid": "610000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "610800",
+                        "name": "榆林市",
+                        "spelling": "Yulin",
+                        "pid": "610000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "610900",
+                        "name": "安康市",
+                        "spelling": "Ankang",
+                        "pid": "610000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "611000",
+                        "name": "商洛市",
+                        "spelling": "Shangluo",
+                        "pid": "610000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "430000",
+                "name": "湖南省",
+                "spelling": "Hunan",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "430100",
+                        "name": "长沙市",
+                        "spelling": "Changsha",
+                        "pid": "430000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "430200",
+                        "name": "株洲市",
+                        "spelling": "Zhuzhou",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "430300",
+                        "name": "湘潭市",
+                        "spelling": "Xiangtan",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "430400",
+                        "name": "衡阳市",
+                        "spelling": "Hengyang",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "430500",
+                        "name": "邵阳市",
+                        "spelling": "Shaoyang",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "430600",
+                        "name": "岳阳市",
+                        "spelling": "Yueyang",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "430700",
+                        "name": "常德市",
+                        "spelling": "Changde",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "430800",
+                        "name": "张家界市",
+                        "spelling": "Zhangjiajie",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "430900",
+                        "name": "益阳市",
+                        "spelling": "Yiyang",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "431000",
+                        "name": "郴州市",
+                        "spelling": "Chenzhou",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "431100",
+                        "name": "永州市",
+                        "spelling": "Yongzhou",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "431200",
+                        "name": "怀化市",
+                        "spelling": "Huaihua",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "431300",
+                        "name": "娄底市",
+                        "spelling": "Loudi",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "433100",
+                        "name": "湘西土家族苗族自治州",
+                        "spelling": "Xiangxi",
+                        "pid": "430000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "350000",
+                "name": "福建省",
+                "spelling": "Fujian",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "350100",
+                        "name": "福州市",
+                        "spelling": "Fuzhou",
+                        "pid": "350000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "350200",
+                        "name": "厦门市",
+                        "spelling": "Xiamen",
+                        "pid": "350000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "350300",
+                        "name": "莆田市",
+                        "spelling": "Putian",
+                        "pid": "350000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "350400",
+                        "name": "三明市",
+                        "spelling": "Sanming",
+                        "pid": "350000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "350500",
+                        "name": "泉州市",
+                        "spelling": "Quanzhou",
+                        "pid": "350000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "350600",
+                        "name": "漳州市",
+                        "spelling": "Zhangzhou",
+                        "pid": "350000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "350700",
+                        "name": "南平市",
+                        "spelling": "Nanping",
+                        "pid": "350000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "350800",
+                        "name": "龙岩市",
+                        "spelling": "Longyan",
+                        "pid": "350000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "350900",
+                        "name": "宁德市",
+                        "spelling": "Ningde",
+                        "pid": "350000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "340000",
+                "name": "安徽省",
+                "spelling": "Anhui",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "340100",
+                        "name": "合肥市",
+                        "spelling": "Hefei",
+                        "pid": "340000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "340200",
+                        "name": "芜湖市",
+                        "spelling": "Wuhu",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "340300",
+                        "name": "蚌埠市",
+                        "spelling": "Bengbu",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "340400",
+                        "name": "淮南市",
+                        "spelling": "Huainan",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "340500",
+                        "name": "马鞍山市",
+                        "spelling": "Ma'anshan",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "340600",
+                        "name": "淮北市",
+                        "spelling": "Huaibei",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "340700",
+                        "name": "铜陵市",
+                        "spelling": "Tongling",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "340800",
+                        "name": "安庆市",
+                        "spelling": "Anqing",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "341000",
+                        "name": "黄山市",
+                        "spelling": "Huangshan",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "341100",
+                        "name": "滁州市",
+                        "spelling": "Chuzhou",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "341200",
+                        "name": "阜阳市",
+                        "spelling": "Fuyang",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "341300",
+                        "name": "宿州市",
+                        "spelling": "Suzhou",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "341500",
+                        "name": "六安市",
+                        "spelling": "Lu'an",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "341600",
+                        "name": "亳州市",
+                        "spelling": "Bozhou",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "341700",
+                        "name": "池州市",
+                        "spelling": "Chizhou",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "341800",
+                        "name": "宣城市",
+                        "spelling": "Xuancheng",
+                        "pid": "340000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "210000",
+                "name": "辽宁省",
+                "spelling": "Liaoning",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "210100",
+                        "name": "沈阳市",
+                        "spelling": "Shenyang",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "210200",
+                        "name": "大连市",
+                        "spelling": "Dalian",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "210300",
+                        "name": "鞍山市",
+                        "spelling": "Anshan",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "210400",
+                        "name": "抚顺市",
+                        "spelling": "Fushun",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "210500",
+                        "name": "本溪市",
+                        "spelling": "Benxi",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "210600",
+                        "name": "丹东市",
+                        "spelling": "Dandong",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "210700",
+                        "name": "锦州市",
+                        "spelling": "Jinzhou",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "210800",
+                        "name": "营口市",
+                        "spelling": "Yingkou",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "210900",
+                        "name": "阜新市",
+                        "spelling": "Fuxin",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "211000",
+                        "name": "辽阳市",
+                        "spelling": "Liaoyang",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "211100",
+                        "name": "盘锦市",
+                        "spelling": "Panjin",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "211200",
+                        "name": "铁岭市",
+                        "spelling": "Tieling",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "211300",
+                        "name": "朝阳市",
+                        "spelling": "Chaoyang",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "211400",
+                        "name": "葫芦岛市",
+                        "spelling": "Huludao",
+                        "pid": "210000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "370000",
+                "name": "山东省",
+                "spelling": "Shandong",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "370100",
+                        "name": "济南市",
+                        "spelling": "Jinan",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "370200",
+                        "name": "青岛市",
+                        "spelling": "Qingdao",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "370300",
+                        "name": "淄博市",
+                        "spelling": "Zibo",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "370400",
+                        "name": "枣庄市",
+                        "spelling": "Zaozhuang",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "370500",
+                        "name": "东营市",
+                        "spelling": "Dongying",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "370600",
+                        "name": "烟台市",
+                        "spelling": "Yantai",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "370700",
+                        "name": "潍坊市",
+                        "spelling": "Weifang",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "370800",
+                        "name": "济宁市",
+                        "spelling": "Jining",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "370900",
+                        "name": "泰安市",
+                        "spelling": "Tai'an",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "371000",
+                        "name": "威海市",
+                        "spelling": "Weihai",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "371100",
+                        "name": "日照市",
+                        "spelling": "Rizhao",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "371300",
+                        "name": "临沂市",
+                        "spelling": "Linyi",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "371400",
+                        "name": "德州市",
+                        "spelling": "Dezhou",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "371500",
+                        "name": "聊城市",
+                        "spelling": "Liaocheng",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "371600",
+                        "name": "滨州市",
+                        "spelling": "Binzhou",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "371700",
+                        "name": "菏泽市",
+                        "spelling": "Heze",
+                        "pid": "370000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "130000",
+                "name": "河北省",
+                "spelling": "Hebei",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "130100",
+                        "name": "石家庄市",
+                        "spelling": "Shijiazhuang",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "130200",
+                        "name": "唐山市",
+                        "spelling": "Tangshan",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "130300",
+                        "name": "秦皇岛市",
+                        "spelling": "Qinhuangdao",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "130400",
+                        "name": "邯郸市",
+                        "spelling": "Handan",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "130500",
+                        "name": "邢台市",
+                        "spelling": "Xingtai",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "130600",
+                        "name": "保定市",
+                        "spelling": "Baoding",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "130700",
+                        "name": "张家口市",
+                        "spelling": "Zhangjiakou",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "130800",
+                        "name": "承德市",
+                        "spelling": "Chengde",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "130900",
+                        "name": "沧州市",
+                        "spelling": "Cangzhou",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "131000",
+                        "name": "廊坊市",
+                        "spelling": "Langfang",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "131100",
+                        "name": "衡水市",
+                        "spelling": "Hengshui",
+                        "pid": "130000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "220000",
+                "name": "吉林省",
+                "spelling": "Jilin",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "220100",
+                        "name": "长春市",
+                        "spelling": "Changchun",
+                        "pid": "220000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "220200",
+                        "name": "吉林市",
+                        "spelling": "Jilin",
+                        "pid": "220000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "220300",
+                        "name": "四平市",
+                        "spelling": "Siping",
+                        "pid": "220000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "220400",
+                        "name": "辽源市",
+                        "spelling": "Liaoyuan",
+                        "pid": "220000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "220500",
+                        "name": "通化市",
+                        "spelling": "Tonghua",
+                        "pid": "220000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "220600",
+                        "name": "白山市",
+                        "spelling": "Baishan",
+                        "pid": "220000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "220700",
+                        "name": "松原市",
+                        "spelling": "Songyuan",
+                        "pid": "220000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "220800",
+                        "name": "白城市",
+                        "spelling": "Baicheng",
+                        "pid": "220000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "222400",
+                        "name": "延边朝鲜族自治州",
+                        "spelling": "Yanbian",
+                        "pid": "220000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "230000",
+                "name": "黑龙江省",
+                "spelling": "Heilongjiang",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "230100",
+                        "name": "哈尔滨市",
+                        "spelling": "Harbin",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "230200",
+                        "name": "齐齐哈尔市",
+                        "spelling": "Qiqihar",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "230300",
+                        "name": "鸡西市",
+                        "spelling": "Jixi",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "230400",
+                        "name": "鹤岗市",
+                        "spelling": "Hegang",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "230500",
+                        "name": "双鸭山市",
+                        "spelling": "Shuangyashan",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "230600",
+                        "name": "大庆市",
+                        "spelling": "Daqing",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "230700",
+                        "name": "伊春市",
+                        "spelling": "Yichun",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "230800",
+                        "name": "佳木斯市",
+                        "spelling": "Jiamusi",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "230900",
+                        "name": "七台河市",
+                        "spelling": "Qitaihe",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "231000",
+                        "name": "牡丹江市",
+                        "spelling": "Mudanjiang",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "231100",
+                        "name": "黑河市",
+                        "spelling": "Heihe",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "231200",
+                        "name": "绥化市",
+                        "spelling": "Suihua",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "232700",
+                        "name": "大兴安岭地区",
+                        "spelling": "DaXingAnLing",
+                        "pid": "230000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "410000",
+                "name": "河南省",
+                "spelling": "Henan",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "410100",
+                        "name": "郑州市",
+                        "spelling": "Zhengzhou",
+                        "pid": "410000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "410200",
+                        "name": "开封市",
+                        "spelling": "Kaifeng",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "410300",
+                        "name": "洛阳市",
+                        "spelling": "Luoyang",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "410400",
+                        "name": "平顶山市",
+                        "spelling": "Pingdingshan",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "410500",
+                        "name": "安阳市",
+                        "spelling": "Anyang",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "410600",
+                        "name": "鹤壁市",
+                        "spelling": "Hebi",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "410700",
+                        "name": "新乡市",
+                        "spelling": "Xinxiang",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "410800",
+                        "name": "焦作市",
+                        "spelling": "Jiaozuo",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "410900",
+                        "name": "濮阳市",
+                        "spelling": "Puyang",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "411000",
+                        "name": "许昌市",
+                        "spelling": "Xuchang",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "411100",
+                        "name": "漯河市",
+                        "spelling": "Luohe",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "411200",
+                        "name": "三门峡市",
+                        "spelling": "Sanmenxia",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "411300",
+                        "name": "南阳市",
+                        "spelling": "Nanyang",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "411400",
+                        "name": "商丘市",
+                        "spelling": "Shangqiu",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "411500",
+                        "name": "信阳市",
+                        "spelling": "Xinyang",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "411600",
+                        "name": "周口市",
+                        "spelling": "Zhoukou",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "411700",
+                        "name": "驻马店市",
+                        "spelling": "Zhumadian",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "419001",
+                        "name": "济源市",
+                        "spelling": "Jiyuan",
+                        "pid": "410000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "120000",
+                "name": "天津",
+                "spelling": "Tianjin",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "120100",
+                        "name": "天津市",
+                        "spelling": "Tianjin",
+                        "pid": "120000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "140000",
+                "name": "山西省",
+                "spelling": "Shanxi",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "140100",
+                        "name": "太原市",
+                        "spelling": "Taiyuan",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "140200",
+                        "name": "大同市",
+                        "spelling": "Datong",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "140300",
+                        "name": "阳泉市",
+                        "spelling": "Yangquan",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "140400",
+                        "name": "长治市",
+                        "spelling": "Changzhi",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "140500",
+                        "name": "晋城市",
+                        "spelling": "Jincheng",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "140600",
+                        "name": "朔州市",
+                        "spelling": "Shuozhou",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "140700",
+                        "name": "晋中市",
+                        "spelling": "Jinzhong",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "140800",
+                        "name": "运城市",
+                        "spelling": "Yuncheng",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "140900",
+                        "name": "忻州市",
+                        "spelling": "Xinzhou",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "141000",
+                        "name": "临汾市",
+                        "spelling": "Linfen",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "141100",
+                        "name": "吕梁市",
+                        "spelling": "Lvliang",
+                        "pid": "140000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "360000",
+                "name": "江西省",
+                "spelling": "Jiangxi",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "360100",
+                        "name": "南昌市",
+                        "spelling": "Nanchang",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "360200",
+                        "name": "景德镇市",
+                        "spelling": "Jingdezhen",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "360300",
+                        "name": "萍乡市",
+                        "spelling": "Pingxiang",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "360400",
+                        "name": "九江市",
+                        "spelling": "Jiujiang",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "360500",
+                        "name": "新余市",
+                        "spelling": "Xinyu",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "360600",
+                        "name": "鹰潭市",
+                        "spelling": "Yingtan",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "360700",
+                        "name": "赣州市",
+                        "spelling": "Ganzhou",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "360800",
+                        "name": "吉安市",
+                        "spelling": "Ji'an",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "360900",
+                        "name": "宜春市",
+                        "spelling": "Yichun",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "361000",
+                        "name": "抚州市",
+                        "spelling": "Fuzhou",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "361100",
+                        "name": "上饶市",
+                        "spelling": "Shangrao",
+                        "pid": "360000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "500000",
+                "name": "重庆",
+                "spelling": "Chongqing",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "500100",
+                        "name": "重庆市",
+                        "spelling": "Chongqing",
+                        "pid": "500000",
+                        "hotFlag": "1",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "450000",
+                "name": "广西壮族自治区",
+                "spelling": "Guangxi",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "450100",
+                        "name": "南宁市",
+                        "spelling": "Nanning",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "450200",
+                        "name": "柳州市",
+                        "spelling": "Liuzhou",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "450300",
+                        "name": "桂林市",
+                        "spelling": "Guilin",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "450400",
+                        "name": "梧州市",
+                        "spelling": "Wuzhou",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "450500",
+                        "name": "北海市",
+                        "spelling": "Beihai",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "450600",
+                        "name": "防城港市",
+                        "spelling": "Fangchenggang",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "450700",
+                        "name": "钦州市",
+                        "spelling": "Qinzhou",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "450800",
+                        "name": "贵港市",
+                        "spelling": "Guigang",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "450900",
+                        "name": "玉林市",
+                        "spelling": "Yulin",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "451000",
+                        "name": "百色市",
+                        "spelling": "Baise",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "451100",
+                        "name": "贺州市",
+                        "spelling": "Hezhou",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "451200",
+                        "name": "河池市",
+                        "spelling": "Hechi",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "451300",
+                        "name": "来宾市",
+                        "spelling": "Laibin",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "451400",
+                        "name": "崇左市",
+                        "spelling": "Chongzuo",
+                        "pid": "450000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "460000",
+                "name": "海南省",
+                "spelling": "Hainan",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "460100",
+                        "name": "海口市",
+                        "spelling": "Haikou",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "460200",
+                        "name": "三亚市",
+                        "spelling": "Sanya",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "460300",
+                        "name": "三沙市",
+                        "spelling": "Sansha",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "460400",
+                        "name": "儋州市",
+                        "spelling": "Danzhou",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469001",
+                        "name": "五指山市",
+                        "spelling": "Wuzhishan",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469002",
+                        "name": "琼海市",
+                        "spelling": "Qionghai",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469005",
+                        "name": "文昌市",
+                        "spelling": "Wenchang",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469006",
+                        "name": "万宁市",
+                        "spelling": "Wanning",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469007",
+                        "name": "东方市",
+                        "spelling": "Dongfang",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469021",
+                        "name": "定安县",
+                        "spelling": "Ding'an",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469022",
+                        "name": "屯昌县",
+                        "spelling": "Tunchang",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469023",
+                        "name": "澄迈县",
+                        "spelling": "Chengmai",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469024",
+                        "name": "临高县",
+                        "spelling": "Lingao",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469025",
+                        "name": "白沙黎族自治县",
+                        "spelling": "Baisha",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469026",
+                        "name": "昌江黎族自治县",
+                        "spelling": "Changjiang",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469027",
+                        "name": "乐东黎族自治县",
+                        "spelling": "Ledong",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469028",
+                        "name": "陵水黎族自治县",
+                        "spelling": "Lingshui",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469029",
+                        "name": "保亭黎族苗族自治县",
+                        "spelling": "Baoting",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "469030",
+                        "name": "琼中黎族苗族自治县",
+                        "spelling": "Qiongzhong",
+                        "pid": "460000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "150000",
+                "name": "内蒙古自治区",
+                "spelling": "Inner Mongolia",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "150100",
+                        "name": "呼和浩特市",
+                        "spelling": "Hohhot",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "150200",
+                        "name": "包头市",
+                        "spelling": "Baotou",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "150300",
+                        "name": "乌海市",
+                        "spelling": "Wuhai",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "150400",
+                        "name": "赤峰市",
+                        "spelling": "Chifeng",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "150500",
+                        "name": "通辽市",
+                        "spelling": "Tongliao",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "150600",
+                        "name": "鄂尔多斯市",
+                        "spelling": "Ordos",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "150700",
+                        "name": "呼伦贝尔市",
+                        "spelling": "Hulunber",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "150800",
+                        "name": "巴彦淖尔市",
+                        "spelling": "Bayan Nur",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "150900",
+                        "name": "乌兰察布市",
+                        "spelling": "Ulanqab",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "152200",
+                        "name": "兴安盟",
+                        "spelling": "Hinggan",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "152500",
+                        "name": "锡林郭勒盟",
+                        "spelling": "Xilin Gol",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "152900",
+                        "name": "阿拉善盟",
+                        "spelling": "Alxa",
+                        "pid": "150000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "530000",
+                "name": "云南省",
+                "spelling": "Yunnan",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "530100",
+                        "name": "昆明市",
+                        "spelling": "Kunming",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "530300",
+                        "name": "曲靖市",
+                        "spelling": "Qujing",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "530400",
+                        "name": "玉溪市",
+                        "spelling": "Yuxi",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "530500",
+                        "name": "保山市",
+                        "spelling": "Baoshan",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "530600",
+                        "name": "昭通市",
+                        "spelling": "Zhaotong",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "530700",
+                        "name": "丽江市",
+                        "spelling": "Lijiang",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "530800",
+                        "name": "普洱市",
+                        "spelling": "Pu'er",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "530900",
+                        "name": "临沧市",
+                        "spelling": "Lincang",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "532300",
+                        "name": "楚雄彝族自治州",
+                        "spelling": "Chuxiong",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "532500",
+                        "name": "红河哈尼族彝族自治州",
+                        "spelling": "Honghe",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "532600",
+                        "name": "文山壮族苗族自治州",
+                        "spelling": "Wenshan",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "532800",
+                        "name": "西双版纳傣族自治州",
+                        "spelling": "Xishuangbanna",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "532900",
+                        "name": "大理白族自治州",
+                        "spelling": "Dali",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "533100",
+                        "name": "德宏傣族景颇族自治州",
+                        "spelling": "Dehong",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "533300",
+                        "name": "怒江傈僳族自治州",
+                        "spelling": "Nujiang",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "533400",
+                        "name": "迪庆藏族自治州",
+                        "spelling": "Deqen",
+                        "pid": "530000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "520000",
+                "name": "贵州省",
+                "spelling": "Guizhou",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "520100",
+                        "name": "贵阳市",
+                        "spelling": "Guiyang",
+                        "pid": "520000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "520200",
+                        "name": "六盘水市",
+                        "spelling": "Liupanshui",
+                        "pid": "520000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "520300",
+                        "name": "遵义市",
+                        "spelling": "Zunyi",
+                        "pid": "520000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "520400",
+                        "name": "安顺市",
+                        "spelling": "Anshun",
+                        "pid": "520000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "520500",
+                        "name": "毕节市",
+                        "spelling": "Bijie",
+                        "pid": "520000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "520600",
+                        "name": "铜仁市",
+                        "spelling": "Tongren",
+                        "pid": "520000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "522300",
+                        "name": "黔西南布依族苗族自治州",
+                        "spelling": "Qianxinan",
+                        "pid": "520000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "522600",
+                        "name": "黔东南苗族侗族自治州",
+                        "spelling": "Qiandongnan",
+                        "pid": "520000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "522700",
+                        "name": "黔南布依族苗族自治州",
+                        "spelling": "Qiannan",
+                        "pid": "520000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "620000",
+                "name": "甘肃省",
+                "spelling": "Gansu",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "620100",
+                        "name": "兰州市",
+                        "spelling": "Lanzhou",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "620200",
+                        "name": "嘉峪关市",
+                        "spelling": "Jiayuguan",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "620300",
+                        "name": "金昌市",
+                        "spelling": "Jinchang",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "620400",
+                        "name": "白银市",
+                        "spelling": "Baiyin",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "620500",
+                        "name": "天水市",
+                        "spelling": "Tianshui",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "620600",
+                        "name": "武威市",
+                        "spelling": "Wuwei",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "620700",
+                        "name": "张掖市",
+                        "spelling": "Zhangye",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "620800",
+                        "name": "平凉市",
+                        "spelling": "Pingliang",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "620900",
+                        "name": "酒泉市",
+                        "spelling": "Jiuquan",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "621000",
+                        "name": "庆阳市",
+                        "spelling": "Qingyang",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "621100",
+                        "name": "定西市",
+                        "spelling": "Dingxi",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "621200",
+                        "name": "陇南市",
+                        "spelling": "Longnan",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "622900",
+                        "name": "临夏回族自治州",
+                        "spelling": "Linxia",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "623000",
+                        "name": "甘南藏族自治州",
+                        "spelling": "Gannan",
+                        "pid": "620000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "630000",
+                "name": "青海省",
+                "spelling": "Qinghai",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "630100",
+                        "name": "西宁市",
+                        "spelling": "Xining",
+                        "pid": "630000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "630200",
+                        "name": "海东市",
+                        "spelling": "Haidong",
+                        "pid": "630000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "632200",
+                        "name": "海北藏族自治州",
+                        "spelling": "Haibei",
+                        "pid": "630000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "632300",
+                        "name": "黄南藏族自治州",
+                        "spelling": "Huangnan",
+                        "pid": "630000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "632500",
+                        "name": "海南藏族自治州",
+                        "spelling": "Hainan",
+                        "pid": "630000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "632600",
+                        "name": "果洛藏族自治州",
+                        "spelling": "Golog",
+                        "pid": "630000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "632700",
+                        "name": "玉树藏族自治州",
+                        "spelling": "Yushu",
+                        "pid": "630000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "632800",
+                        "name": "海西蒙古族藏族自治州",
+                        "spelling": "Haixi",
+                        "pid": "630000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "640000",
+                "name": "宁夏回族自治区",
+                "spelling": "Ningxia",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "640100",
+                        "name": "银川市",
+                        "spelling": "Yinchuan",
+                        "pid": "640000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "640200",
+                        "name": "石嘴山市",
+                        "spelling": "Shizuishan",
+                        "pid": "640000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "640300",
+                        "name": "吴忠市",
+                        "spelling": "Wuzhong",
+                        "pid": "640000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "640400",
+                        "name": "固原市",
+                        "spelling": "Guyuan",
+                        "pid": "640000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "640500",
+                        "name": "中卫市",
+                        "spelling": "Zhongwei",
+                        "pid": "640000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "650000",
+                "name": "新疆维吾尔自治区",
+                "spelling": "Xinjiang",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "650100",
+                        "name": "乌鲁木齐市",
+                        "spelling": "Urumqi",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "650200",
+                        "name": "克拉玛依市",
+                        "spelling": "Karamay",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "650400",
+                        "name": "吐鲁番市",
+                        "spelling": "Tulufan",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "650500",
+                        "name": "哈密市",
+                        "spelling": "Hami",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "652300",
+                        "name": "昌吉回族自治州",
+                        "spelling": "Changji",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "652700",
+                        "name": "博尔塔拉蒙古自治州",
+                        "spelling": "Bortala",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "652800",
+                        "name": "巴音郭楞蒙古自治州",
+                        "spelling": "Bayingol",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "652900",
+                        "name": "阿克苏地区",
+                        "spelling": "Aksu",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "653000",
+                        "name": "克孜勒苏柯尔克孜自治州",
+                        "spelling": "Kizilsu",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "653100",
+                        "name": "喀什地区",
+                        "spelling": "Kashgar",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "653200",
+                        "name": "和田地区",
+                        "spelling": "Hotan",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "654000",
+                        "name": "伊犁哈萨克自治州",
+                        "spelling": "Ili",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "654200",
+                        "name": "塔城地区",
+                        "spelling": "Qoqek",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "654300",
+                        "name": "阿勒泰地区",
+                        "spelling": "Altay",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659001",
+                        "name": "石河子市",
+                        "spelling": "Shihezi",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659002",
+                        "name": "阿拉尔市",
+                        "spelling": "Aral",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659003",
+                        "name": "图木舒克市",
+                        "spelling": "Tumxuk",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659004",
+                        "name": "五家渠市",
+                        "spelling": "Wujiaqu",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659005",
+                        "name": "北屯市",
+                        "spelling": "Beitun",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659006",
+                        "name": "铁门关市",
+                        "spelling": "Tiemenguan",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659007",
+                        "name": "双河市",
+                        "spelling": "Shuanghe",
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659008",
+                        "name": "可克达拉市",
+                        "spelling": null,
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659009",
+                        "name": "昆玉市",
+                        "spelling": null,
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659010",
+                        "name": "胡杨河市",
+                        "spelling": null,
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "659011",
+                        "name": "新星市",
+                        "spelling": null,
+                        "pid": "650000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "540000",
+                "name": "西藏自治区",
+                "spelling": "Tibet",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "540100",
+                        "name": "拉萨市",
+                        "spelling": "Lhasa",
+                        "pid": "540000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "540200",
+                        "name": "日喀则市",
+                        "spelling": "Rikaze",
+                        "pid": "540000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "540300",
+                        "name": "昌都市",
+                        "spelling": "Qamdo",
+                        "pid": "540000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "540400",
+                        "name": "林芝市",
+                        "spelling": null,
+                        "pid": "540000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "540500",
+                        "name": "山南市",
+                        "spelling": null,
+                        "pid": "540000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "540600",
+                        "name": "那曲市",
+                        "spelling": null,
+                        "pid": "540000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "542500",
+                        "name": "阿里地区",
+                        "spelling": "Ngari",
+                        "pid": "540000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "810000",
+                "name": "香港特别行政区",
+                "spelling": "Hong Kong",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "810100",
+                        "name": "香港岛",
+                        "spelling": "Hong Kong Island",
+                        "pid": "810000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "810200",
+                        "name": "九龙",
+                        "spelling": "Kowloon",
+                        "pid": "810000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "810300",
+                        "name": "新界",
+                        "spelling": "New Territories",
+                        "pid": "810000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "820000",
+                "name": "澳门特别行政区",
+                "spelling": "Macau",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "820100",
+                        "name": "澳门半岛",
+                        "spelling": "MacauPeninsula",
+                        "pid": "820000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "820200",
+                        "name": "氹仔岛",
+                        "spelling": "Taipa",
+                        "pid": "820000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "820300",
+                        "name": "路环岛",
+                        "spelling": "Coloane",
+                        "pid": "820000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "710000",
+                "name": "台湾省",
+                "spelling": null,
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": [
+                    {
+                        "id": "710100",
+                        "name": "台北市",
+                        "spelling": "Taipei",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "710200",
+                        "name": "高雄市",
+                        "spelling": "Kaohsiung",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "710300",
+                        "name": "台南市",
+                        "spelling": "Tainan",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "710400",
+                        "name": "台中市",
+                        "spelling": "Taichung",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "710600",
+                        "name": "南投县",
+                        "spelling": "Nantou",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "710700",
+                        "name": "基隆市",
+                        "spelling": "Keelung",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "710800",
+                        "name": "新竹市",
+                        "spelling": "Hsinchu",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "710900",
+                        "name": "嘉义市",
+                        "spelling": "Chiayi",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "711100",
+                        "name": "新北市",
+                        "spelling": "New Taipei",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "711200",
+                        "name": "宜兰县",
+                        "spelling": "Yilan",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "711300",
+                        "name": "新竹县",
+                        "spelling": "Hsinchu",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "711400",
+                        "name": "桃园市",
+                        "spelling": "Taoyuan",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "711500",
+                        "name": "苗栗县",
+                        "spelling": "Miaoli",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "711700",
+                        "name": "彰化县",
+                        "spelling": "Changhua",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "711900",
+                        "name": "嘉义县",
+                        "spelling": "Chiayi",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "712100",
+                        "name": "云林县",
+                        "spelling": "Yunlin",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "712400",
+                        "name": "屏东县",
+                        "spelling": "Pingtung",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "712500",
+                        "name": "台东县",
+                        "spelling": "Taitung",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "712600",
+                        "name": "花莲县",
+                        "spelling": "Hualien",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    },
+                    {
+                        "id": "712700",
+                        "name": "澎湖县",
+                        "spelling": "Penghu",
+                        "pid": "710000",
+                        "hotFlag": "0",
+                        "level": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "900000",
+                "name": "钓鱼岛",
+                "spelling": "DiaoyuDao",
+                "pid": "0",
+                "hotFlag": "0",
+                "level": 1,
+                "children": []
+            }
+        ]
+    }
