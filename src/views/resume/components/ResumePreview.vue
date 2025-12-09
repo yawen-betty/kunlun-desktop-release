@@ -934,6 +934,7 @@ const getAppliedEntries = (moduleUuid: string) => {
 const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
     try {
         emit('save-resume', false);
+        await new Promise(resolve => setTimeout(resolve, 200))
 
         const params = new UpdateModuleEntriesInDto();
         params.resumeId = props.resumeData.uuid || '';

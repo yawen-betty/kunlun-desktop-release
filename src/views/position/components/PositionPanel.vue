@@ -291,6 +291,8 @@ const loadCurrentTask = async () => {
         if (result.code === 200 && result.data) {
             currentTask.value = result.data
             searchData.taskUuid = result.data.uuid
+            loadOtherTasks()
+            loadPositions()
             // 调用获取简历文本接口
             if (result.data.resumeUuid) {
                 const res = await resumeService.getResumeText(result.data.resumeUuid)
@@ -316,8 +318,6 @@ const loadCurrentTask = async () => {
                     }
                 }
             }
-            loadOtherTasks()
-            loadPositions()
         } else if (result.code === 2306) { // 简历id不存在
             message.error(Message, '求职简历不存在，任务开启失败!')
         }
@@ -709,13 +709,27 @@ onBeforeUnmount(() => {
                     min-height: 12px;
                 }
 
+                .ivu-checkbox-checked {
+                    .ivu-checkbox-inner {
+                        border-color: transparent !important;
+                    }
+                }
+
                 .ivu-checkbox-inner {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                     width: 100%;
                     height: 100%;
                     min-width: 12px;
                     min-height: 12px;
                     border-color: #B0B7C6 !important;
                     padding: 0;
+                    box-shadow: none;
+
+                    &::after {
+                        position: unset;
+                    }
                 }
 
                 .ivu-checkbox-label-text {

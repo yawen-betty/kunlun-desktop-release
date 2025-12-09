@@ -29,7 +29,7 @@ const onlyHeader = function (meta: any) {
 const all = [
     {
         path: '/',
-        redirect: '/position'
+        redirect: '/resume'
     },
     // 登录
     onlyHeader({
@@ -80,10 +80,10 @@ const all = [
     }),
     // MCPdemo
     layout({
-      path: '/mcpMananger',
-      title: 'mcp',
-      icon: 'icon-gerenzhongxin',
-      component: () => import('@/views/resume/mcpManager.vue')
+        path: '/mcpMananger',
+        title: 'mcp',
+        icon: 'icon-gerenzhongxin',
+        component: () => import('@/views/resume/mcpManager.vue')
     })
 ];
 
