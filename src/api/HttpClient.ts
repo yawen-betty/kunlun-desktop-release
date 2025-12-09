@@ -283,6 +283,8 @@ export default class HttpClient {
 
                 HttpClient.handleSpecialCode(response.body);
                 resolve(response.body as T);
+            } else if (response.status === 504) { // 请求超时处理
+                reject(new Error(`请求超时`));
             } else {
                 reject(new Error(`请求失败: ${response.status} ${JSON.stringify(response.body)}`));
             }
