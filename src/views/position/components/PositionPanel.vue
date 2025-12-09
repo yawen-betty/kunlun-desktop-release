@@ -161,7 +161,7 @@ const handleLogin = debounce(async (channel: any) => {
                 channel.isLogin = true
                 message.success(Message, '登录成功！')
                 showChannelModal.value = false
-
+                showChannelTip.value = false
                 // 登录成功后，如果任务在进行中，重启爬取
                 if (currentTask.value?.status === 0 && currentTask.value.uuid) {
                     await robotManager.cleanup()
