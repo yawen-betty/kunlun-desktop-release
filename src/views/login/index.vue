@@ -178,6 +178,7 @@ const getStatus = () => {
             getUserInfo();
         } else if (res.code === 2107) {
             message.error(Message, '该账号已被管理员停用，无法登陆！');
+            generateQRCode();
         }
     });
 };

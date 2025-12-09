@@ -54,8 +54,8 @@ onMounted(() => {
 <template>
     <div class="left-menu" :class="{minibar: minSize}">
         <div class="user">
-            <img v-if="UserInfo.info.avatar" :src="Config.baseUrl + UserInfo.info.avatar" class="user-avatar mr-10" />
-            <div class="user-circle" v-else>{{ hasChineseCharacters(UserInfo.info.userName || '') }}</div>
+            <img v-if="UserInfo.info.avatar" :src="Config.baseUrl + UserInfo.info.avatar" :class="['user-avatar', !minSize && 'mr-10']" />
+            <div v-else :class="['user-circle', !minSize && 'mr-10']">{{ hasChineseCharacters(UserInfo.info.userName || '') }}</div>
             <div v-if="!minSize" class="user-text">
                 <Ellipsis :content="UserInfo.info.userName" placement="bottom" />
             </div>
@@ -211,8 +211,7 @@ onMounted(() => {
         .user-circle {
             width: vw(30);
             height: vw(30);
-            margin-right: 0;
-            font-size: 16px;
+            font-size: vw(16);
         }
     }
 

@@ -8,6 +8,7 @@ import {message} from '@/utiles/Message.ts';
 import {Message} from 'view-ui-plus';
 import {platform} from '@tauri-apps/plugin-os';
 import emitter from '@/utiles/eventBus';
+import {auth} from '@/utiles/tauriCommonds.ts';
 
 // 定义请求参数接口
 interface HttpRequestParams {
@@ -35,9 +36,17 @@ export default class HttpClient {
 
     static osPlatform = platform();
 
-    // 动态获取token，确保每次请求都使用最新的token
-    static get token(): string | undefined {
-        return UserInfo.info?.token;
+    // 异步获取token，如果内存中没有则从持久化存储获取
+    static async getToken(): Promise<string> {
+        if (UserInfo.info?.token) {
+            return UserInfo.info.token;
+        }
+        const token = await auth.getToken();
+        if (token) {
+            UserInfo.info.token = token;
+            return token;
+        }
+        return '';
     }
 
     static create(): any {
@@ -199,8 +208,9 @@ export default class HttpClient {
             // x-version: '1.0.0'
         };
 
-        if (HttpClient.token) {
-            defaultHeaders['Admin-Token'] = HttpClient.token;
+        const token = await HttpClient.getToken();
+        if (token) {
+            defaultHeaders['Admin-Token'] = token;
         }
 
         // 为版本管理接口添加额外的header
@@ -305,8 +315,9 @@ export default class HttpClient {
             'x-source': HttpClient.osPlatform === 'macos' ? 'mac' : HttpClient.osPlatform
         };
 
-        if (HttpClient.token) {
-            headers['Admin-Token'] = HttpClient.token;
+        const token = await HttpClient.getToken();
+        if (token) {
+            headers['Admin-Token'] = token;
         }
 
         // 监听消息
