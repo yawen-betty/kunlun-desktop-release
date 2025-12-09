@@ -142,6 +142,16 @@ export default class HttpClient {
                     message.error(Message, responseBody.msg);
                     break;
 
+                // 增值服务不存在
+                case 2701:
+                    message.error(Message, responseBody.msg);
+                    break;
+
+                // 已预约
+                case 2702:
+                    message.error(Message, responseBody.msg);
+                    break;
+
                 case 302:
                     message.error(Message, responseBody.msg);
                     UserInfo.logout();
@@ -170,7 +180,7 @@ export default class HttpClient {
                         console.log(responseBody, 'responseBodyresponseBody');
                         const msg = responseBody.msg || '请求失败';
                         message.error(Message, msg);
-                        // throw new Error(msg);
+                        throw new Error(msg);
                     }
             }
         }
