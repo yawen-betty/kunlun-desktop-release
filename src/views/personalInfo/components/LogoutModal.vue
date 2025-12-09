@@ -35,6 +35,8 @@ import {ref, watch} from 'vue';
 import {AuthService} from '@/service/AuthService';
 import {UserService} from '@/service/UserService.ts';
 import {UserInfo} from '@/utiles/userInfo';
+import {message} from '@/utiles/Message.ts';
+import {Message} from 'view-ui-plus';
 
 const userService = new UserService();
 
@@ -74,7 +76,8 @@ const handleClose = () => {
 const handleConfirm = async () => {
     // 注销账号
     await userService.deactivate({});
-    // 推出登录
+    message.success(Message, '注销成功！');
+    // 退出登录
     await authService.logout();
     UserInfo.logout();
 };
