@@ -1,6 +1,6 @@
 [package]
 name = "kunlun"
-version = "1.0.0"
+version = "1.0.1"
 description = "昆仑桌面端"
 authors = ["fzxs"]
 edition = "2021"
