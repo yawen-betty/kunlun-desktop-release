@@ -1,6 +1,7 @@
 <!-- 模拟面试页面 -->
 <script lang="ts" setup>
 import SvgIcon from "@/components/svgIcon/index.vue";
+import {Config} from "@/Config.ts";
 
 const infoList = [
     '依岗定题，凭简历复盘，面试更精准',
@@ -10,7 +11,7 @@ const infoList = [
     '每一次模拟，都离 offer 近一步'
 ]
 
-const websiteUrl = 'https://www.example.com'
+const websiteUrl = Config.webUrl || 'https://www.example.com'
 
 </script>
 

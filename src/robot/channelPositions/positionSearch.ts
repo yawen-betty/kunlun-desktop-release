@@ -108,7 +108,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
         logger.info('[PositionSearch] 所有搜索任务执行完成')
 
         // 5. AI 点击指定职位
-        const max = 2;  // 获取条数
+        const max = 20;  // 获取条数
 
         for (let i = 1; i <= max; i++) {
             let dataInfo: ChannelPositionBean = new ChannelPositionBean(); // 获取的数据

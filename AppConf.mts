@@ -6,7 +6,7 @@ class AppConfig {
      * 编码
      * @type {string}
      */
-    // @ts-ignore
+        // @ts-ignore
     encoding: BufferEncoding = 'utf-8';
 
     /**
@@ -35,7 +35,8 @@ class AppConfig {
     config: {
         'baseUrl': string,
         'basePath': string,
-        'downloadUrl': string
+        'downloadUrl': string,
+        'webUrl': string
     };
 
     build: {
@@ -59,7 +60,7 @@ class AppConfig {
 
         //= ===============================================
         const now = new Date(this.timestamp);
-        const dataStr = now.getFullYear() + '' + ((now.getMonth() + 1) < 10 ? ('0' + (now.getMonth() + 1)) :(now.getMonth() + 1)) + '' + ((now.getDate()) < 10 ? ('0' + (now.getDate())) :(now.getDate()));
+        const dataStr = now.getFullYear() + '' + ((now.getMonth() + 1) < 10 ? ('0' + (now.getMonth() + 1)) : (now.getMonth() + 1)) + '' + ((now.getDate()) < 10 ? ('0' + (now.getDate())) : (now.getDate()));
         const buildVersion = `V${this.package.version}-${this.env[0].toLocaleUpperCase()}${dataStr}`;
         const evn = `/**
  * 该文件自动生成,请不要手动修改!
@@ -75,6 +76,7 @@ export class Config {
   static readonly env : 'dev' | 'test' | 'prod' | 'local' = '${this.env}';
   static readonly buildVersion: string = '${buildVersion}';
   static readonly buildName: string = '${this.build.name}';
+  static readonly webUrl: string = '${this.config.webUrl}';
 }
 `;
         fs.writeFileSync('src/Config.ts', evn, this.encoding);
@@ -98,7 +100,7 @@ export class Config {
         console.log(`Setting updater endpoint to: ${endpoint}`);
 
         // 读取、修改并写回 tauri.conf.json
-        const tauriConfData = fs.readFileSync(tauriConfPath, { encoding: this.encoding });
+        const tauriConfData = fs.readFileSync(tauriConfPath, {encoding: this.encoding});
         const tauriConf = JSON.parse(tauriConfData);
 
         if (tauriConf.plugins && tauriConf.plugins.updater) {
