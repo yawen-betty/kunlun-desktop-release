@@ -47,4 +47,5 @@ panic = "abort" # Higher performance by disabling panic handlers.
 strip = false # Keep debug symbols for devtools
 
 [target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-single-instance = "2.3.6"
 tauri-plugin-updater = "2.9.0"
