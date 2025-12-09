@@ -12,6 +12,7 @@ use commands::*;
 mod mcp;
 mod ai;
 mod cdp;
+mod tray;
 
 use tokio::sync::Mutex;
 use std::sync::Arc;
@@ -70,6 +71,20 @@ pub fn run() {
 
             let ai_manager = AIManager::new(mcp_manager_clone);
             app.manage(Arc::new(Mutex::new(ai_manager)));
+
+            // 创建系统托盘
+            tray::create_tray(&app.handle())?;
+
+            // 处理窗口关闭事件 - 隐藏到托盘而不是退出
+            let app_handle = app.handle().clone();
+            if let Some(window) = app.get_webview_window("main") {
+                window.on_window_event(move |event| {
+                    if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                        api.prevent_close();
+                        tray::hide_to_tray(&app_handle);
+                    }
+                });
+            }
 
             #[cfg(desktop)]
             app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
