@@ -2,8 +2,9 @@ import {reactive} from 'vue';
 import {auth} from '@/utiles/tauriCommonds.ts';
 import router from '@/router/index.ts';
 import {ModelAccountBean} from '@/api/user/dto/bean/ModelAccountBean.ts';
+import {robotManager} from "@/robot/service";
 
-type TResumeMap = Record<string, {trick: string; template: string}>;
+type TResumeMap = Record<string, { trick: string; template: string }>;
 
 export class UserInfo {
     static info = reactive({
@@ -29,6 +30,7 @@ export class UserInfo {
         UserInfo.info.isRunningTask = false;
         UserInfo.info.matchAnalysisPrompt = '';
         await auth.saveToken('');
+        await robotManager.cleanup()
         await router.replace('/login');
     }
 }
