@@ -34,9 +34,9 @@
 
                 <div class="agreement-text">
                     登录即同意
-                    <span class="agreement-link pointer" @click="openAgreement(2)">《服务协议》</span>
+                    <span class="agreement-link pointer" @click="openAgreement(1)">《服务协议》</span>
                     、
-                    <span class="agreement-link pointer" @click="openAgreement(1)">《隐私协议》</span>
+                    <span class="agreement-link pointer" @click="openAgreement(2)">《隐私协议》</span>
                 </div>
             </div>
         </div>
