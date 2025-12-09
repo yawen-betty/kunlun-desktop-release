@@ -32,7 +32,7 @@ const adminService = new AdminService();
 
 const handleGoToWebsite = async () => {
     console.log('%c 🎥: handleGoToWebsite -> websiteUrl.value ', 'font-size:16px;background-color:#17c306;color:white;', websiteUrl.value);
-    await openWeb('https://www.baidu.com/');
+    await openWeb('https://test.qianniaohudong.cn/');
     // if (websiteUrl.value) {
     // }
 };

@@ -164,7 +164,7 @@ onUnmounted(() => {
             </div>
             <Form ref="formRef" :model="formData" :rules="formRules" class="custom-form" @submit.prevent>
                 <FormItem prop="jobTitle">
-                    <Input v-model="formData.jobTitle" :max-length="20"
+                    <Input v-model="formData.jobTitle" :maxlength="20"
                            :placeholder="placeholderList[placeholderIdx]"
                            class="job-name"
                            @compositionend="handleCompositionEnd"

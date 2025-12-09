@@ -99,7 +99,6 @@ const visible = computed({
 });
 
 const tutorialVisible = ref(false);
-const showApiKey = ref(false);
 const formRef = ref<any>(null);
 const tutorialContent = ref('');
 
@@ -119,6 +118,7 @@ const rules = {
 
 const handleClose = () => {
     visible.value = false;
+    formRef.value.resetFields();
 };
 
 const handleShowTutorial = async () => {
@@ -153,6 +153,7 @@ const handleSave = debounce(async () => {
             message.success(Message, '配置保存成功');
             visible.value = false;
             UserInfo.info.modelList = [params]
+            formRef.value.resetFields()
         }
     } catch (error) {
         message.error(Message, '保存失败，请稍后重试');
@@ -299,13 +300,36 @@ const handleSave = debounce(async () => {
         }
     }
 
-    .api-key-item {
+    .api-key-input {
         width: vw(400);
 
         :deep(.ivu-form-item-label::after) {
             content: '*';
             color: $remind-error;
             margin-left: vw(4);
+        }
+
+        :deep(.ivu-input) {
+            height: vh(40);
+            background-color: $bg-gray;
+            border: none;
+            border-radius: vw(2);
+            padding: 0 vw(30) 0 vw(20);
+            font-size: vw(16);
+            color: $font-dark;
+
+            &::placeholder {
+                color: $placeholder-color;
+                font-family: 'PingFangSCBold', serif;
+                font-size: vw(16);
+                font-weight: 600;
+                line-height: 1.5; /* 100% */
+            }
+
+            &:focus {
+                box-shadow: none;
+                background-color: $bg-gray;
+            }
         }
     }
 }

@@ -307,13 +307,13 @@ const loadCurrentTask = async () => {
                     // 每次切换之后 都要先关闭之前的机器人，重新启动
                     if (hasLoggedIn && result.data.uuid) {
                         console.log(UserInfo.info.matchAnalysisPrompt, 'prompt')
-                        await robotManager.cleanup()
-                        await robotManager.crawlPosition({
-                            jobTitle: result.data.jobTitle,
-                            cityInfos: result.data.cityName,
-                            experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
-                        }, result.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
-                        UserInfo.info.isRunningTask = true
+                        // await robotManager.cleanup()
+                        // await robotManager.crawlPosition({
+                        //     jobTitle: result.data.jobTitle,
+                        //     cityInfos: result.data.cityName,
+                        //     experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
+                        // }, result.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
+                        // UserInfo.info.isRunningTask = true
                     }
                 }
             }
@@ -1284,6 +1284,7 @@ onBeforeUnmount(() => {
             .task-item {
                 position: relative;
                 height: vh(45);
+                width: 100%;
                 padding: vh(6) vw(10);
                 display: flex;
                 align-items: center;
@@ -1333,6 +1334,7 @@ onBeforeUnmount(() => {
 
                 .task-info {
                     flex: 1;
+                    width: 95%;
 
                     .task-name {
                         font-family: 'PingFang SC', sans-serif;
@@ -1340,6 +1342,10 @@ onBeforeUnmount(() => {
                         line-height: vh(14);
                         color: $font-dark;
                         margin-bottom: vh(7);
+                        width: 95%;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
                     }
 
                     .task-meta {

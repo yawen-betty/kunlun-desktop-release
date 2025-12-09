@@ -172,7 +172,11 @@ impl McpManager {
         for _ in 0..10 {
             #[cfg(target_os = "windows")]
             let output = std::process::Command::new("wmic")
-                .args(&["process", "get", "commandline"])
+                .args(&[
+                    "process", "where",
+                    "name='chrome.exe' and commandline like '%playwright-browsers%' and commandline like '%--no-startup-window%'",
+                    "get", "commandline"
+                ])
                 .output()
                 .map_err(|e| format!("Failed to run wmic: {}", e))?;
 
@@ -185,7 +189,7 @@ impl McpManager {
             let stdout = String::from_utf8_lossy(&output.stdout);
 
             for line in stdout.lines() {
-                if line.contains("chrome") && line.contains("--remote-debugging-port=") {
+                if line.contains("--remote-debugging-port=") {
                     // 解析端口号
                     if let Some(port_str) = line.split("--remote-debugging-port=").nth(1) {
                         if let Some(port_str) = port_str.split_whitespace().next() {
