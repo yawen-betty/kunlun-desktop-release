@@ -36,7 +36,6 @@ class AppConfig {
         'baseUrl': string,
         'basePath': string,
         'downloadUrl': string,
-        'webUrl': string
     };
 
     build: {
@@ -76,7 +75,6 @@ export class Config {
   static readonly env : 'dev' | 'test' | 'prod' | 'local' = '${this.env}';
   static readonly buildVersion: string = '${buildVersion}';
   static readonly buildName: string = '${this.build.name}';
-  static readonly webUrl: string = '${this.config.webUrl}';
 }
 `;
         fs.writeFileSync('src/Config.ts', evn, this.encoding);

@@ -1,7 +1,14 @@
 <!-- 模拟面试页面 -->
+<script lang="ts">
+export default {
+    name: 'Interview'
+}
+</script>
+
 <script lang="ts" setup>
 import SvgIcon from "@/components/svgIcon/index.vue";
-import {Config} from "@/Config.ts";
+import {onActivated, ref} from "vue";
+import {AdminService} from "@/service/AdminService.ts";
 
 const infoList = [
     '依岗定题，凭简历复盘，面试更精准',
@@ -10,9 +17,16 @@ const infoList = [
     '先模拟，再实战，求职少走弯',
     '每一次模拟，都离 offer 近一步'
 ]
+const adminService = new AdminService();
+const websiteUrl = ref('https://www.example.com')
 
-const websiteUrl = Config.webUrl || 'https://www.example.com'
-
+onActivated(() => {
+    adminService.getWebsiteUrl({}).then((res) => {
+        if (res.code === 200) {
+            websiteUrl.value = res.data.websiteUrl;
+        }
+    });
+});
 </script>
 
 <template>

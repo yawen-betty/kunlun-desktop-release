@@ -33,6 +33,10 @@ const change = (e: any) => {
         .ivu-input-suffix {
             top: 50%;
             transform: translateY(-50%);
+
+            i {
+                line-height: unset;
+            }
         }
 
         .ivu-input {
