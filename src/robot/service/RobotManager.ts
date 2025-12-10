@@ -64,6 +64,12 @@ export class RobotManager {
         // 设置停止标志
         this.isRunning = false;
 
+        // await Promise.all([
+        //     aiService.stopTask().catch(err => logger.error('停止AI失败:', err)),
+        //     mcpService.stop().catch(err => logger.error('停止MCP失败:', err))
+        // ]);
+        // this.mcpInitialized = false;
+
         try {
             // 停止 AI 任务
             await aiService.stopTask();

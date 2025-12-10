@@ -16,6 +16,7 @@ mod tray;
 
 use tokio::sync::Mutex;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use mcp::McpManager;
 use ai::AIManager;
 
@@ -83,7 +84,10 @@ pub fn run() {
             std::mem::forget(mcp_manager_arc);
 
             let ai_manager = AIManager::new(mcp_manager_clone);
-            app.manage(Arc::new(Mutex::new(ai_manager)));
+            // 获取 cancel_flag 的引用并单独管理
+            let cancel_flag = ai_manager.get_cancel_flag();
+            app.manage(Mutex::new(ai_manager));
+            app.manage(cancel_flag);
 
             // 创建系统托盘
             tray::create_tray(&app.handle())?;

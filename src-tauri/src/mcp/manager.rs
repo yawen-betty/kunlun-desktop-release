@@ -96,6 +96,17 @@ impl McpManager {
     pub fn stop(&mut self) -> Result<(), String> {
         eprintln!("[MCP] Stopping MCP Server...");
 
+        // 0. 先关闭浏览器（在断开 CDP 之前）
+        if self.protocol.is_some() && self.initialized {
+            eprintln!("[MCP] Closing browser...");
+            // 尝试关闭浏览器，如果失败也继续
+            let _ = self.protocol.as_mut()
+                .unwrap()
+                .call_tool("browser_close", serde_json::json!({}));
+            // 等待浏览器关闭
+            std::thread::sleep(std::time::Duration::from_millis(500));
+        }
+
         // 1. 先断开 CDP（释放 WebSocket 连接）
         if self.cdp_client.is_some() {
             eprintln!("[MCP] Disconnecting CDP...");
@@ -117,18 +128,22 @@ impl McpManager {
         // 4. 等待资源释放
         std::thread::sleep(std::time::Duration::from_millis(500));
 
-        // 5. 清理所有 Chrome 进程
+        // 5. 清理 Playwright Chrome 进程
         eprintln!("[MCP] Cleaning up Chrome processes...");
-//         #[cfg(target_os = "windows")]
-//         let _ = std::process::Command::new("taskkill")
-//             .args(&["/F", "/IM", "chrome.exe", "/T"])
-//             .output();
+        #[cfg(target_os = "windows")]
+        {
+            let _ = std::process::Command::new("taskkill")
+                .args(&["/F", "/FI", "IMAGENAME eq chrome.exe", "/FI", "COMMANDLINE eq *playwright-browsers*"])
+                .output();
+        }
 
-//         #[cfg(not(target_os = "windows"))]
-//         let _ = std::process::Command::new("pkill")
-//             .arg("-f")
-//             .arg("Google Chrome for Testing")
-//             .output();
+        #[cfg(not(target_os = "windows"))]
+        {
+            let _ = std::process::Command::new("pkill")
+                .arg("-f")
+                .arg("playwright-browsers.*chrome")
+                .output();
+        }
 
         // 6. 重置所有状态
         self.cdp_port = None;
