@@ -68,7 +68,7 @@ const login = async (channelName: string) => {
     }
 }
 
-let shouldStop = false;
+let shouldStop = true;
 let prompt = `# Role：简历与岗位匹配机器\\r\\n**目标**：\\r\\n
       需要从给定的简历文本中提取所有信息，结合职位要求信息，动态生成匹配维度并进行匹配分析，
       在完成所有匹配维度分析后，基于“职位要求核心项（剔除软性要求）

@@ -408,16 +408,13 @@ async function matchJob(apiKey: string, resumeText: string, positionInfo: any, p
         }
     });
     let response: any;
-    if (signal) {
-        const abortPromise = new Promise((_, reject) => {
-            signal.addEventListener('abort', () => {
-                reject(new DOMException('Request aborted', 'AbortError'));
-            });
+
+    const abortPromise = new Promise((_, reject) => {
+        signal.addEventListener('abort', () => {
+            reject(new DOMException('Request aborted', 'AbortError'));
         });
-        response = await Promise.race([httpPromise, abortPromise]);
-    } else {
-        response = await httpPromise;
-    }
+    });
+    response = await Promise.race([httpPromise, abortPromise]);
 
     console.info('========================匹配', response)
 
