@@ -177,8 +177,8 @@ defineExpose({
                         </Select>
                     </FormItem>
                     <FormItem prop="resumeUuid">
-                        <CustomSelect v-model="formData.resumeUuid"
-                                      :option-list="resumeList.map(item => ({label: item.name, value: item.uuid}))"/>
+                        <CustomSelect v-model="formData.resumeUuid" :option-list="resumeList.map(item => ({label: item.name, value: item.uuid}))"
+                                      placeholder="请选择简历"/>
                     </FormItem>
                 </Form>
                 <div class="btn-box mt-50">
