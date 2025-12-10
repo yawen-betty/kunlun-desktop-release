@@ -443,8 +443,8 @@ onBeforeUnmount(() => {
                     <span>精选职位</span>
                 </div>
                 <div class="title-right">
-                    <Checkbox v-model="searchData.isInterested" :false-value="0" :true-value="1" class="filter-checkbox"
-                              @on-change="loadPositions">
+                    <Checkbox v-model="searchData.isInterested" :false-value="null" :true-value="1"
+                              class="filter-checkbox" @on-change="loadPositions">
                         只看感兴趣
                     </Checkbox>
                     <Select v-model="searchData.sourceChannel" class="filter-select" placeholder="全部渠道"

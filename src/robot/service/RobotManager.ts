@@ -98,7 +98,7 @@ export class RobotManager {
     /**
      * 爬简历机器人调度
      */
-    public async crawlPosition(searchParams: any, taskId: string, resumeText:string, prompt:string) {
+    public async crawlPosition(searchParams: any, taskId: string, resumeText: string, prompt: string) {
         this.isRunning = true;
         const channelList = ['boss', 'zhilian', 'guopin']
 
@@ -141,13 +141,13 @@ export class RobotManager {
                         await executePositionSearch({
                                 channelName: channel,
                                 searchParams: searchParams,
-                                // apiKey: UserInfo.info.modelList[0].apiKey!,
-                                apiKey: 'ca9112c0753043ae9c2f9647892f49e7.bfZ2cqxbzv7duOph'
+                                apiKey: UserInfo.info.modelList[0].apiKey!,
+                                // apiKey: 'ca9112c0753043ae9c2f9647892f49e7.bfZ2cqxbzv7duOph'
                             },
                             resumeText,
                             taskId,
                             prompt
-                          );
+                        );
 
                         logger.info(`[RobotManager] ${channel} 渠道爬取完成`);
                     } catch (error) {

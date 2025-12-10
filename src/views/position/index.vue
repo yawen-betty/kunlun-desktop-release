@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import {ref, onMounted, onActivated} from 'vue'
+import {ref, onActivated} from 'vue'
 import CreateTask from "@/views/position/components/CreateTask.vue";
 import PositionPanel from "@/views/position/components/PositionPanel.vue";
 import {JobService} from "@/service/JobService";

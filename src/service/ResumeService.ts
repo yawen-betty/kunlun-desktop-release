@@ -54,7 +54,7 @@ export class ResumeService {
             ...ResumePaths.saveResume,
             url: ResumePaths.saveResume.url.replace('{resumeId}', params.resumeId)
         };
-        return await this.http.request<EmptyOutDto>(path, params);
+        return await this.http.request<EmptyOutDto>(path, params, {showLoading: false});
     }
 
     /**
@@ -167,10 +167,10 @@ export class ResumeService {
      * 获取简历文本
      */
     public async getResumeText(resumeId: string): Promise<Result<EmptyOutDto>> {
-      const path = {
-        ...ResumePaths.getResumeText,
-        url: ResumePaths.getResumeText.url.replace('{resumeId}', resumeId)
-      };
-      return await this.http.request<Result<EmptyOutDto>>(path,{});
+        const path = {
+            ...ResumePaths.getResumeText,
+            url: ResumePaths.getResumeText.url.replace('{resumeId}', resumeId)
+        };
+        return await this.http.request<Result<EmptyOutDto>>(path, {});
     }
 }
