@@ -2,7 +2,7 @@
     <div class="login-page">
         <div class="left-section">
             <div class="brand-area">
-                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30"/>
+                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30" />
                 <h1 class="app-name">{{ SystemInfo.info.loginTitle }}</h1>
             </div>
 
@@ -12,7 +12,7 @@
             </div>
 
             <div class="illustration-area">
-                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration"/>
+                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration" />
             </div>
         </div>
 
@@ -21,6 +21,13 @@
                 <h2 class="login-title">微信扫码登录/注册</h2>
 
                 <div class="qrcode-box">
+                    <div class="is-error" v-show="isError">
+                        <div class="error-text">该账号已被管理员停用，无法登陆</div>
+                        <div class="reload-box">
+                            <div class="reload-text">重新扫码登录</div>
+                            <svg-icon name="icon-shuaxin" color="#FC8719" size="20"></svg-icon>
+                        </div>
+                    </div>
                     <div class="qrcode-reload pointer" @click="generateQRCode"></div>
                     <iframe
                         :src="qrCodeUrl"
@@ -68,6 +75,7 @@ import {GetProfileInDto} from '@/api/user/dto/GetProfile.ts';
 import {auth} from '@/utiles/tauriCommonds.ts';
 import {useRouter} from 'vue-router';
 import {message} from '@/utiles/Message.ts';
+import SvgIcon from '@/components/svgIcon/index.vue';
 
 const qrCodeUrl = ref<string>('');
 const showAgreement = ref<boolean>(false);
@@ -76,6 +84,7 @@ const configInfo = reactive<GetConfigOutDto>(new GetConfigOutDto());
 const state = ref<string>('');
 const inter = ref();
 const router = useRouter();
+const isError = ref<boolean>(false);
 
 // 在setup中创建service实例，避免在定时器中丢失Vue上下文
 const authService = new AuthService();
@@ -141,6 +150,7 @@ const generateQRCode = async () => {
     state.value = list.join('');
 
     qrCodeUrl.value = `https://open.weixin.qq.com/connect/qrconnect?appid=${configInfo.appId}&id=ewm&self_redirect=true&redirect_uri=${redirect_uri}&response_type=code&scope=snsapi_login&state=${state.value}&href=${href}#wechat_redirect`;
+    isError.value = false;
 };
 
 //获取基本配置
@@ -177,8 +187,7 @@ const getStatus = () => {
             message.success(Message, '登录成功！');
             getUserInfo();
         } else if (res.code === 2107) {
-            message.error(Message, '该账号已被管理员停用，无法登陆！');
-            generateQRCode();
+            isError.value = true;
         }
     });
 };
@@ -349,6 +358,43 @@ onMounted(() => {
                     width: 320px;
                     height: 320px;
                     z-index: 99;
+                }
+
+                .is-error {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 320px;
+                    height: 320px;
+                    z-index: 90;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: vh(20);
+                    background: rgba(255, 255, 255, 0.5);
+                    cursor: pointer;
+
+                    .error-text {
+                        color: $font-middle;
+                        font-size: vw(18);
+                        font-style: normal;
+                        font-weight: 600;
+                        line-height: vw(24);
+                    }
+                    .reload-box {
+                        display: flex;
+                        gap: vw(10);
+                        justify-content: center;
+                        align-content: center;
+                        .reload-text {
+                            color: $theme-color;
+                            font-size: vw(18);
+                            font-style: normal;
+                            font-weight: 600;
+                            line-height: vw(24);
+                        }
+                    }
                 }
 
                 .qrcode {

@@ -30,8 +30,7 @@ interface HttpResponse {
     body: any;
 }
 
-export interface EmptyOutDto {
-}
+export interface EmptyOutDto {}
 
 export default class HttpClient {
     static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
@@ -178,6 +177,11 @@ export default class HttpClient {
                 case 417:
                     message.error(Message, responseBody.msg);
                     emitter.emit('forcedUpdate');
+                    break;
+
+                // 账号停用
+                case 2107:
+                    message.error(Message, responseBody.msg);
                     break;
 
                 default:
