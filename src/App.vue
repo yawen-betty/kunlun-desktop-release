@@ -24,14 +24,15 @@ const currentVersion = Config.version; // 从 package.json 或 tauri.conf.json �
 const router = useRouter();
 
 // 提供给子组件的配置状态
-
+const showVersionUpdate = ref(false);
 const versionUpdateInfo = ref<GetVersionInfoOutDto>(new GetVersionInfoOutDto());
-// provide('versionUpdateInfo', versionUpdateInfo);
+provide('showVersionUpdate', showVersionUpdate);
+provide('versionUpdateInfo', versionUpdateInfo);
 
 // 应用启动时自动检查更新
 onMounted(async () => {
     emitter.on('forcedUpdate', manualCheckUpdate);
-    // manualCheckUpdate();
+    preCheck();
     getConfigInfo();
     auth.getToken()
         .then((token) => {
@@ -51,8 +52,13 @@ onUnmounted(() => {
     emitter.off('forcedUpdate', manualCheckUpdate);
 });
 
-const checkForUpdatesResult = ref<Record<string, any>>({});
-
+const checkForUpdatesResult = ref<Record<string, any> | null>({});
+const version = ref(false);
+const preCheck = async () => {
+    const result = await checkForUpdates(currentVersion, false);
+    checkForUpdatesResult.value = result;
+    showVersionUpdate.value = !!checkForUpdatesResult.value?.newVersion && currentVersion !== checkForUpdatesResult.value?.newVersion;
+};
 // 启动获取最新版本信息
 const theCheckForUpdates = async () => {
     try {
@@ -67,12 +73,12 @@ const theCheckForUpdates = async () => {
 // 检查更新
 const manualCheckUpdate = async () => {
     try {
-        const result = await checkForUpdates(currentVersion, false);
-        checkForUpdatesResult.value = result || {};
+        await preCheck();
+
         await theCheckForUpdates();
-        if (result) {
+        if (checkForUpdatesResult.value) {
             updateDialogRef.value?.show({
-                ...result,
+                ...checkForUpdatesResult.value,
                 currentVersion,
                 versionUpdateDetails: versionUpdateInfo.value?.content || ''
             });
