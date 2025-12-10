@@ -24,9 +24,9 @@ const currentVersion = Config.version; // 从 package.json 或 tauri.conf.json �
 const router = useRouter();
 
 // 提供给子组件的配置状态
-
+const showVersionUpdate = ref(false);
 const versionUpdateInfo = ref<GetVersionInfoOutDto>(new GetVersionInfoOutDto());
-// provide('versionUpdateInfo', versionUpdateInfo);
+provide('versionUpdateInfo', showVersionUpdate);
 
 // 应用启动时自动检查更新
 onMounted(async () => {
@@ -52,7 +52,7 @@ onUnmounted(() => {
 });
 
 const checkForUpdatesResult = ref<Record<string, any>>({});
-
+const version = ref(false);
 // 启动获取最新版本信息
 const theCheckForUpdates = async () => {
     try {
@@ -69,6 +69,7 @@ const manualCheckUpdate = async () => {
     try {
         const result = await checkForUpdates(currentVersion, false);
         checkForUpdatesResult.value = result || {};
+        showVersionUpdate.value = !!checkForUpdatesResult.value?.newVersion && currentVersion !== checkForUpdatesResult.value?.newVersion;
         await theCheckForUpdates();
         if (result) {
             updateDialogRef.value?.show({
