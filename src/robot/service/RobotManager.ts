@@ -98,7 +98,7 @@ export class RobotManager {
     /**
      * 爬简历机器人调度
      */
-    public async crawlPosition(searchParams: any, taskId: string, resumeText: string, prompt: string) {
+    public async crawlPosition(searchParams: any, taskId: string, resumeText:string, prompt:string) {
         this.isRunning = true;
         const channelList = ['boss', 'zhilian', 'guopin']
 
@@ -146,11 +146,16 @@ export class RobotManager {
                             },
                             resumeText,
                             taskId,
-                            prompt
-                        );
+                            prompt,
+                            () => this.isRunning
+                          );
 
                         logger.info(`[RobotManager] ${channel} 渠道爬取完成`);
-                    } catch (error) {
+                    } catch (error:any) {
+                        if (error.name === 'AbortError') {
+                            logger.info(`[RobotManager] ${channel} 渠道已被取消`);
+                            return; // 直接退出，不继续处理其他渠道
+                        }
                         logger.error(`[RobotManager] ${channel} 渠道爬取失败:`, error);
                     }
 

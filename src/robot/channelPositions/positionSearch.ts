@@ -25,13 +25,22 @@ const http = new HttpClient();
 /**
  * 执行职位搜索
  */
-export async function executePositionSearch(options: SearchOptions, resumeText: string, taskId: string, prompt: string): Promise<SearchResult> {
+export async function executePositionSearch(options: SearchOptions, resumeText: string, taskId: string, prompt: string, isRunning: () => boolean): Promise<SearchResult> {
     // 并发控制
     if (isTaskRunning) {
         return {code: 500, message: '任务正在执行中，请稍后再试'};
     }
 
     isTaskRunning = true;
+    // 在 executePositionSearch 内部创建 AbortController
+    const abortController = new AbortController();
+    // 监听外部停止信号，触发内部 abort
+    const checkStop = () => {
+        if (!isRunning()) {
+            abortController.abort();
+            throw new DOMException('Task stopped', 'AbortError');
+        }
+    };
 
     try {
         const {channelName, searchParams, apiKey} = options;
@@ -42,6 +51,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
         }
 
         // 1、获取所有标签页
+        checkStop();
         const countNow = await tabCount();
         logger.info(`[PositionSearch] 当前有 ${countNow} 个标签页`);
 
@@ -49,6 +59,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
         if (countNow > 1) {
             for (let i = countNow - 1; i >= 1; i--) {
                 logger.info(`[PositionSearch] 关闭标签页 ${i}`);
+                checkStop();
                 await mcpService.callTool('browser_tabs', {action: 'close', index: i});
                 await robotManager.sleep(500);
             }
@@ -59,6 +70,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
         logger.info('[PositionSearch] 获取 Cookies...');
         const cookiesStr = await channelAuth.getCookies(channelName);
 
+        checkStop();
         const isLogin = await check(channelName, cookiesStr);
 
         if (!isLogin) {
@@ -87,6 +99,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
         const tasks = buildTaskList(channelName, searchParams);
 
         for (let i = 0; i < tasks.length; i++) {
+            checkStop();
             const task = tasks[i];
             logger.info(`[PositionSearch] 执行任务 ${i + 1}/${tasks.length}: ${task}`);
 
@@ -101,8 +114,6 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
             }
 
             await robotManager.sleep(1000);
-            // 任务间短暂延迟
-            await robotManager.sleep(200);
         }
 
         logger.info('[PositionSearch] 所有搜索任务执行完成')
@@ -115,14 +126,19 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
             await cdpService.clearNetworkEvents(); // 执行任务前先清空网络监听
             logger.info(`[PositionClick] 执行第${i}条点击任务...`);
 
+            checkStop();
             // 点击职位打开职位详情
             const clickPositionResult = await executeAITask(
                 channelName === 'boss' ? `请直接点击职位列表的第 ${i} 个职位项,然后点击页面右侧的'查看更多信息'` : `请直接点击职位列表的第 ${i} 个职位项`, apiKey);
             logger.info(`[PositionClick] 任务完成`, clickPositionResult);
+
+            checkStop();
             await robotManager.sleep(3000);
 
             // 刷新新 tab（此时监听已启用）
             await cdpService.executeScript('location.reload()');
+
+            checkStop();
             await robotManager.sleep(3000); // 等待接口完成
             const positionNetwork = await cdpService.getNetworkEvents();
             // 获取职位详情
@@ -152,15 +168,23 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
             dataInfo = Object.assign(dataInfo, {
                 jobDetailUrl: newTab.url
             })
+
+            checkStop();
             await robotManager.sleep(3000);
             // 点击公司打开公司详情
+
+            checkStop();
             await cdpService.clearNetworkEvents(); // 执行任务前先清空网络监听
             const clickCompanyResult = await executeAITask(`切换到浏览器最后一个标签页,点击页面右侧公司名称`, apiKey);
             logger.info(`[CompanyClick] 任务完成`, clickCompanyResult);
+
+            checkStop();
             await robotManager.sleep(3000);
 
             // 刷新新 tab（此时监听已启用）
             await cdpService.executeScript('location.reload()');
+
+            checkStop();
             await robotManager.sleep(3000); // 等待接口完成
             const companyNetwork = await cdpService.getNetworkEvents();
 
@@ -181,16 +205,29 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
             }
 
             // 匹配
-            let matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt);
-            while (matchJobRes === 1305) {
-                logger.warning('[PositionSearch] AI 请求频率限制，等待 60 秒');
-                await robotManager.sleep(1000 * 60);
-                matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt);
+            checkStop();
+            try {
+
+                let matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt, abortController.signal);
+                while (matchJobRes === 1305) {
+                    logger.warning('[PositionSearch] AI 请求频率限制，等待 60 秒');
+                    checkStop();
+                    await robotManager.sleep(1000 * 60);
+                    checkStop();
+                    matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt, abortController.signal);
+                }
+
+                // 发送数据给接口
+                await crawlPositions(dataInfo, taskId, matchJobRes);
+            } catch (error: any) {
+                if (error.name === 'AbortError') {
+                    logger.info('[PositionSearch] matchJob 已被取消');
+                    return { code: 499, message: '任务已被停止' };
+                }
+                throw error; // 重新抛出其他错误
             }
 
-            // 发送数据给接口
-            await crawlPositions(dataInfo, taskId, matchJobRes);
-
+            checkStop();
             // 获取所有标签页
             const count = await tabCount();
             logger.info(`[PositionSearch] 当前有 ${count} 个标签页`);
@@ -198,68 +235,28 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
             // 关闭除第一个外的所有标签页（从后往前关闭）
             for (let i = count - 1; i >= 1; i--) {
                 logger.info(`[PositionSearch] 关闭标签页 ${i}`);
+                checkStop();
                 await mcpService.callTool('browser_tabs', {action: 'close', index: i});
                 await robotManager.sleep(500);
             }
             // 每条间短暂延迟
+            checkStop();
             await robotManager.sleep(1000 * 60);
-
-
-            // 点击职位打开职位详情
-            // const clickTaskResult = await executeAITask(`请直接点击职位列表的第 ${i} 个职位项，不要点击任何筛选、清空或其他按钮`, apiKey);
-            // logger.info(`[PositionClick] 任务 ${i + 1} 完成`,clickTaskResult);
-            // await sleep(3000);
-            //
-            // // 获取标签页列表
-            // const counts = await tabCount();
-            //
-            // // 切换到最后一个标签页（新打开的）
-            // await mcpService.callTool('browser_tabs', { action: 'select', index: counts - 1 });
-            // await sleep(1000); // 等待页面加载
-            //
-            //
-            // // 使用 AI 提取职位详情
-            // const positionDetail = await extractPositionDetailByAI(apiKey, channelName);
-            // logger.info(`[positionDetail] 职位详情提取完成:`, positionDetail);
-            // await sleep(1000);
-            //
-            // // 获取职位详情页 URL
-            // const positionUrl = await cdpService.executeScript('window.location.href');
-            // logger.info(`[PositionClick] 职位详情页 URL: ${positionUrl}`);
-            // await sleep(3000);
-            //
-            // // 点击公司名称打开公司详情
-            // const clickCompany = await executeAITask(`点击页面右侧公司名称`, apiKey);
-            // logger.info(`[clickCompany] 打开公司详情任务完成:`, clickCompany);
-            // await sleep(3000);
-            //
-            // // 使用AI提取公司详情
-            // const companyDetail = await extractCompanyDetailByAI(apiKey, channelName);
-            // logger.info(`[companyDetail] 公司详情提取完成:`, companyDetail);
-            //
-            // // 获取所有标签页
-            // const count = await tabCount();
-            //
-            // logger.info(`[PositionSearch] 当前有 ${count} 个标签页`);
-            //
-            // // 关闭除第一个外的所有标签页（从后往前关闭）
-            // for (let i = count - 1; i >= 1; i--) {
-            //   logger.info(`[PositionSearch] 关闭标签页 ${i}`);
-            //   await mcpService.callTool('browser_tabs', { action: 'close', index: i });
-            //   await sleep(500);
-            // }
-            // // 每条间短暂延迟
-            // await sleep(3000);
         }
 
         await robotManager.sleep(1000); // 等待数据加载
+        checkStop();
         await aiService.stopTask();
         return {
             code: 200,
             message: '执行成功'
         };
 
-    } catch (error) {
+    } catch (error:any) {
+        if (error.name === 'AbortError') {
+            logger.info('[PositionSearch] 任务已被取消');
+            return { code: 499, message: '任务已被停止' };
+        }
         logger.error('[PositionSearch] 执行失败:', error);
         await aiService.stopTask();
         return {
@@ -335,7 +332,7 @@ async function crawlPositions(data: ChannelPositionBean, taskId: string, matchIn
 /**
  * 匹配
  */
-async function matchJob(apiKey: string, resumeText: string, positionInfo: any, prompt: string): Promise<any> {
+async function matchJob(apiKey: string, resumeText: string, positionInfo: any, prompt: string, signal: AbortSignal ): Promise<any> {
     const parts: string[] = [];
 
     if (positionInfo.title) {
@@ -384,7 +381,7 @@ async function matchJob(apiKey: string, resumeText: string, positionInfo: any, p
 
     console.info('========================msg', message)
 
-    const response: any = await invoke('http_request', {
+    const httpPromise: any = invoke('http_request', {
         req: {
             url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
             method: 'POST',
@@ -410,6 +407,15 @@ async function matchJob(apiKey: string, resumeText: string, positionInfo: any, p
             }
         }
     });
+    let response: any;
+
+    const abortPromise = new Promise((_, reject) => {
+        signal.addEventListener('abort', () => {
+            reject(new DOMException('Request aborted', 'AbortError'));
+        });
+    });
+    response = await Promise.race([httpPromise, abortPromise]);
+
     console.info('========================匹配', response)
 
     // 配置超时重试
