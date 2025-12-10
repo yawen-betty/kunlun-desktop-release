@@ -23,15 +23,28 @@ onMounted(() => {
         listenerResize();
     });
 
-    window.addEventListener('online', () => {
-        logger.info('网络已连接');
-        isOnLine.value = true;
-    });
+    let lastOnlineStatus = navigator.onLine;
 
-    window.addEventListener('offline', () => {
-        logger.info('网络已断开');
-        isOnLine.value = false;
-    });
+    // 轻量级轮询（仅检查 navigator.onLine）
+    setInterval(() => {
+        const currentStatus = navigator.onLine;
+        if (currentStatus !== lastOnlineStatus) {
+            logger.info(`网络状态变化：${currentStatus ? '已连接' : '已断开'}`);
+            isOnLine.value = currentStatus;
+            lastOnlineStatus = currentStatus;
+        }
+    }, 1000); // 每2秒检查一次
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    function updateOnlineStatus() {
+        const status = navigator.onLine ? "在线" : "离线";
+        console.log(`当前网络状态: ${status}`);
+
+        // 注意：navigator.onLine 为 true 仅代表设备连上了局域网/路由器，
+        // 不一定代表能访问互联网（比如连上了 WiFi 但宽带欠费）。
+    }
 });
 </script>
 
@@ -47,8 +60,8 @@ onMounted(() => {
                     </keep-alive>
                 </router-view>
                 <div v-if="!isOnLine" class="offline-indicator">
-                  <img class="no-data_icon" src="@/assets/images/offline.png" />
-                  网络已断开
+                    <img class="no-data_icon" src="@/assets/images/offline.png"/>
+                    网络已断开
                 </div>
             </Content>
         </Layout>
@@ -83,23 +96,23 @@ onMounted(() => {
     }
 }
 
-.offline-indicator{
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: vw(100);
-  bottom: 0;
-  z-index: 9999999999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: $bg-gray;
-  font-size: vw(24);
-  color: $font-middle;
+.offline-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: vw(100);
+    bottom: 0;
+    z-index: 9999999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $bg-gray;
+    font-size: vw(24);
+    color: $font-middle;
 
-  img{
-    width: vw(80);
-    margin-right: vw(40);
-  }
+    img {
+        width: vw(80);
+        margin-right: vw(40);
+    }
 }
 </style>

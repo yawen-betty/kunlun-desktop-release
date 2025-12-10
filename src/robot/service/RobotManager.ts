@@ -11,6 +11,7 @@ import {UserInfo} from "@/utiles/userInfo.ts";
  */
 export class RobotManager {
     private static instance: RobotManager;
+    public isRealStop: boolean = true;
     private isRunning: boolean = false; // 运行状态标志
     private browserClosedUnlisten: (() => void) | null = null; // 浏览器关闭事件监听器
     private mcpInitialized: boolean = false; // MCP 初始化状态
@@ -104,8 +105,9 @@ export class RobotManager {
     /**
      * 爬简历机器人调度
      */
-    public async crawlPosition(searchParams: any, taskId: string, resumeText:string, prompt:string) {
+    public async crawlPosition(searchParams: any, taskId: string, resumeText: string, prompt: string) {
         this.isRunning = true;
+        this.isRealStop = false
         const channelList = ['boss', 'zhilian', 'guopin']
 
         logger.info('[RobotManager] 开始爬取职位...');
@@ -134,6 +136,7 @@ export class RobotManager {
                 // 检查是否被停止
                 if (!this.isRunning) {
                     logger.info('[RobotManager] 爬取已停止');
+                    this.isRealStop = true
                     return;
                 }
 
@@ -154,10 +157,10 @@ export class RobotManager {
                             taskId,
                             prompt,
                             () => this.isRunning
-                          );
+                        );
 
                         logger.info(`[RobotManager] ${channel} 渠道爬取完成`);
-                    } catch (error:any) {
+                    } catch (error: any) {
                         if (error.name === 'AbortError') {
                             logger.info(`[RobotManager] ${channel} 渠道已被取消`);
                             return; // 直接退出，不继续处理其他渠道
@@ -177,6 +180,7 @@ export class RobotManager {
             // 检查是否被停止
             if (!this.isRunning) {
                 logger.info('[RobotManager] 爬取已停止');
+                this.isRealStop = true
                 return;
             }
 

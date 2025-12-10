@@ -1421,7 +1421,7 @@ defineExpose({
 
 .name {
     height: vh(48);
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-size: vw(32);
     line-height: vh(48);
     color: $font-dark;
@@ -1431,7 +1431,6 @@ defineExpose({
 .job-title {
     width: 100%;
     height: vh(38);
-    font-family: 'PingFangSCBold', sans-serif;
     font-size: vw(20);
     line-height: vh(38);
     color: $font-dark;
@@ -1442,7 +1441,7 @@ defineExpose({
 }
 
 .contact-item {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-size: vw(16);
     line-height: vh(32);
     height: vh(32);
@@ -1509,7 +1508,7 @@ defineExpose({
 }
 
 .section-title {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-size: vw(20);
     line-height: vh(22);
     color: $font-dark;
@@ -1582,7 +1581,7 @@ defineExpose({
 }
 
 .info-item {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-size: vw(16);
     line-height: vh(16);
     color: $font-dark;
@@ -1590,14 +1589,14 @@ defineExpose({
 }
 
 .experience-header {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-size: vw(16);
     line-height: vh(16);
     margin-bottom: vh(16);
 }
 
 .experience-desc {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-size: vw(16);
     line-height: vh(22);
     color: $font-dark;
@@ -1606,7 +1605,7 @@ defineExpose({
 .rich-text-desc {
     position: relative;
     padding: vh(8) 0;
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-size: vw(16);
     line-height: vh(22);
     color: $font-dark;
@@ -1666,7 +1665,7 @@ defineExpose({
 }
 
 .loading-text {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-size: vw(20);
     line-height: vh(60);
     color: transparent;
@@ -1691,7 +1690,7 @@ defineExpose({
     :deep(.ivu-input) {
         background: $bg-gray;
         border: none;
-        font-family: 'PingFangSCBold', sans-serif;
+        font-family: sans-serif;
         font-size: vw(32);
         color: $font-dark;
         padding: 0 vw(10);
@@ -1709,7 +1708,7 @@ defineExpose({
         height: 100%;
         background: $bg-gray;
         border: none;
-        font-family: 'PingFangSCBold', sans-serif;
+        font-family: sans-serif;
         font-size: vw(22);
         color: $font-dark;
         padding: 0 vw(10);
@@ -1728,7 +1727,7 @@ defineExpose({
     }
 
     .field-prefix {
-        font-family: 'PingFangSCBold', sans-serif;
+        font-family: sans-serif;
         font-size: vw(16);
         color: $placeholder-color;
         white-space: nowrap;
@@ -1743,7 +1742,7 @@ defineExpose({
         :deep(.ivu-input) {
             background: transparent;
             border: none;
-            font-family: 'PingFangSCBold', sans-serif;
+            font-family: sans-serif;
             font-size: vw(16);
             color: $font-dark;
             padding: 0;
@@ -1758,7 +1757,7 @@ defineExpose({
     padding: 0 vw(10);
 
     .field-prefix {
-        font-family: 'PingFangSCBold', sans-serif;
+        font-family: sans-serif;
         font-size: vw(16);
         color: $placeholder-color;
         white-space: nowrap;
@@ -1773,7 +1772,7 @@ defineExpose({
         :deep(.ivu-input) {
             background: transparent;
             border: none;
-            font-family: 'PingFangSCBold', sans-serif;
+            font-family: sans-serif;
             font-size: vw(16);
             color: $font-dark;
             padding: 0;
@@ -1861,7 +1860,7 @@ defineExpose({
     span {
         display: inline-block;
         vertical-align: middle;
-        font-family: 'PingFangSCBold', sans-serif;
+        font-family: sans-serif;
         font-size: vw(14);
         line-height: vh(14);
         color: $font-middle;
@@ -1924,7 +1923,7 @@ defineExpose({
 }
 
 .time-separator {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-size: vw(16);
     line-height: vh(16);
     color: $font-dark;

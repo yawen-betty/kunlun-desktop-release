@@ -39,13 +39,11 @@ onMounted(async () => {
             if (token) {
                 UserInfo.info.token = token;
                 getUserInfo(userService);
+                getMatchAnalysisPrompt();
             } else {
                 router.push('/login');
             }
         })
-        .finally(() => {
-            getMatchAnalysisPrompt();
-        });
 });
 
 onUnmounted(() => {

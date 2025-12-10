@@ -30,7 +30,8 @@ interface HttpResponse {
     body: any;
 }
 
-export interface EmptyOutDto {}
+export interface EmptyOutDto {
+}
 
 export default class HttpClient {
     static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
@@ -315,6 +316,7 @@ export default class HttpClient {
                 HttpClient.handleSpecialCode(response.body);
                 return response.body as T;
             } else if (response.status === 504) {
+                message.error(Message, '网络异常，请稍后重试');
                 throw new Error(`请求超时`);
             } else {
                 throw new Error(`HTTP ${response.status}: ${response.body?.msg || '请求失败'}`);
