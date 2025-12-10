@@ -54,7 +54,7 @@
     <AgreementModal
         v-model:visible="showAgreement"
         :agreementType="agreementType"
-        :title="agreementType === 1 ? '隐私协议' : '服务协议'"
+        :title="agreementType === 1 ? '服务协议' : '隐私协议'"
         @close="closeModal"
     />
 </template>
