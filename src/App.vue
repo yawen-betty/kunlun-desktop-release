@@ -131,9 +131,9 @@ const getMatchAnalysisPrompt = () => {
 
 <template>
     <main class="container">
-        <router-view />
+        <router-view/>
     </main>
-    <UpdateDialog ref="updateDialogRef" />
+    <UpdateDialog ref="updateDialogRef"/>
 </template>
 <style lang="scss" scoped>
 @use '@/assets/styles/variable.scss' as *;

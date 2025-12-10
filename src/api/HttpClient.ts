@@ -9,6 +9,7 @@ import {Message} from 'view-ui-plus';
 import {platform} from '@tauri-apps/plugin-os';
 import emitter from '@/utiles/eventBus';
 import {auth} from '@/utiles/tauriCommonds.ts';
+import {showLoading, hideLoading} from '@/utiles/loading.ts';
 
 // 定义请求参数接口
 interface HttpRequestParams {
@@ -29,12 +30,16 @@ interface HttpResponse {
     body: any;
 }
 
-export interface EmptyOutDto {}
+export interface EmptyOutDto {
+}
 
 export default class HttpClient {
     static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
 
     static osPlatform = platform();
+
+    // loading 计数器，用于处理多个接口同时请求的情况
+    private static loadingCount = 0;
 
     // 异步获取token，如果内存中没有则从持久化存储获取
     static async getToken(): Promise<string> {
@@ -134,6 +139,8 @@ export default class HttpClient {
             switch (code) {
                 // 满额
                 case 2601:
+                // 未达到推荐门槛
+                case 2602:
                 // 简历ID不存在
                 case 2306:
                     break;
@@ -186,12 +193,29 @@ export default class HttpClient {
         }
     }
 
+    // 显示 loading
+    private static showRequestLoading(): void {
+        if (this.loadingCount === 0) {
+            showLoading();
+        }
+        this.loadingCount++;
+    }
+
+    // 隐藏 loading
+    private static hideRequestLoading(): void {
+        this.loadingCount--;
+        if (this.loadingCount <= 0) {
+            this.loadingCount = 0;
+            hideLoading();
+        }
+    }
+
     /**
      * 核心请求方法。通过 Path 对象封装了请求的 URL 和 Method。
      *
      * @param path Path 接口对象，包含 url, method, prefix 等。
      * @param data 请求体数据 (仅 POST/PUT 有效)。
-     * @param options 额外选项，如文件上传
+     * @param options 额外选项，如文件上传和loading控制
      * @returns Promise，解析为响应数据 (T)。
      */
     public async request<T>(
@@ -200,10 +224,17 @@ export default class HttpClient {
         options?: {
             file?: File;
             extraFields?: Record<string, string>;
+            showLoading?: boolean; // 是否显示loading，默认true
         }
     ): Promise<T> {
+        const shouldShowLoading = options?.showLoading !== false;
         console.log('开始请求:', path);
         console.log('请求数据:', data);
+
+        // 显示 loading
+        if (shouldShowLoading) {
+            HttpClient.showRequestLoading();
+        }
 
         // 传递data参数用于构建URL（包括路径参数和查询参数）
         const fullUrl = HttpClient.fixUrl(path, data);
@@ -268,9 +299,7 @@ export default class HttpClient {
             }
         }
 
-        return new Promise<T>(async (resolve, reject) => {
-            // try {
-            // 调用后端的http_request命令
+        try {
             const response: HttpResponse = await invoke('http_request', {
                 req: requestParams
             });
@@ -279,22 +308,22 @@ export default class HttpClient {
 
             // 检查HTTP状态码
             if (response.status >= 200 && response.status < 300) {
-                // 返回响应体
-
                 HttpClient.handleSpecialCode(response.body);
-                resolve(response.body as T);
-            } else if (response.status === 504) { // 请求超时处理
-                reject(new Error(`请求超时`));
+                return response.body as T;
+            } else if (response.status === 504) {
+                throw new Error(`请求超时`);
             } else {
-                reject(new Error(`请求失败: ${response.status} ${JSON.stringify(response.body)}`));
+                throw new Error(`HTTP ${response.status}: ${response.body?.msg || '请求失败'}`);
             }
-            // } catch (error) {
-            //     // 处理特殊业务 code
-            //     HttpClient.handleSpecialCode(response.body);
-            //     console.error('HTTP请求错误:', error);
-            //     reject(error);
-            // }
-        });
+        } catch (error) {
+            console.error('HTTP请求失败:', error);
+            throw error;
+        } finally {
+            // 隐藏 loading
+            if (shouldShowLoading) {
+                HttpClient.hideRequestLoading();
+            }
+        }
     }
 
     /**
