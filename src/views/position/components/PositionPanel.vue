@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {reactive, ref, onMounted, computed} from 'vue';
+import {reactive, ref, onMounted, computed, nextTick} from 'vue';
 import PositionDetail from "@/views/position/components/PositionDetail.vue";
 import {useCompRef} from "@/hooks/useComponent";
 import SvgIcon from "@/components/svgIcon/index.vue";
@@ -28,8 +28,9 @@ import {parseDate} from "@/utiles/DateUtils.ts";
 import {robotManager} from "@/robot/service";
 import {UserInfo} from "@/utiles/userInfo.ts";
 import {debounce} from "@/utiles/debounce.ts";
-import mitt from "mitt";
 import emitter from "@/utiles/eventBus.ts";
+import {hideLoading, showLoading} from "@/utiles/loading.ts";
+import {show} from "@tauri-apps/api/app";
 
 // 创建任务弹框实例
 const createTaskModalRef = useCompRef(CreateTaskModal)
@@ -104,11 +105,10 @@ const firstPositionTime = ref<number>(0)
 // 简历文本
 const resumeText = ref<string>('')
 
-
 const resetFilters = () => {
     pagination.current = 1
     pagination.pageSize = 20
-    searchData.isInterested = 0
+    searchData.isInterested = undefined
     searchData.sourceChannel = -1
     searchData.sortBy = 'recommendedAt'
 }
@@ -164,14 +164,19 @@ const handleLogin = debounce(async (channel: any) => {
                 showChannelTip.value = false
                 // 登录成功后，如果任务在进行中，重启爬取
                 if (currentTask.value?.status === 0 && currentTask.value.uuid) {
+                    showLoading()
                     await robotManager.cleanup()
                     UserInfo.info.isRunningTask = false
+                    while (!robotManager.isRealStop) {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
                     await robotManager.crawlPosition({
                         jobTitle: currentTask.value.jobTitle,
                         cityInfos: currentTask.value.cityName,
                         experience: enumEcho(currentTask.value.experience, workExperienceList, 'value', 'key')
                     }, currentTask.value.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
                     UserInfo.info.isRunningTask = true
+                    hideLoading()
                 }
             } else {
                 message.error(Message, `登录失败: ${loginResult.error}`)
@@ -183,8 +188,28 @@ const handleLogin = debounce(async (channel: any) => {
     }
 }, 300)
 
+const dropdownRef = ref<HTMLElement>()
+
 const handleTaskSwitch = () => {
     showTaskDropdown.value = !showTaskDropdown.value
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+    if (!showTaskDropdown.value) return
+
+    const target = event.target as HTMLElement
+
+    // 检查是否点击了 Modal 弹窗
+    if (target.closest('.ivu-modal-wrap') || target.closest('.ivu-modal-mask')) {
+        return
+    }
+
+    // 检查是否点击了 dropdown 触发器或下拉菜单
+    if (target.closest('.task-dropdown') || target.closest('.ivu-select-dropdown')) {
+        return
+    }
+
+    showTaskDropdown.value = false
 }
 
 const handleToggleTaskStatus = debounce(async () => {
@@ -245,6 +270,7 @@ const handleSelectTask = debounce(async (taskId: string) => {
         const result = await jobService.switchJobTask(taskId)
         if (result.code === 200) {
             resetFilters()
+            selectedId.value = '';
             await loadCurrentTask()
         }
     } catch (error) {
@@ -293,33 +319,43 @@ const loadCurrentTask = async () => {
             searchData.taskUuid = result.data.uuid
             loadOtherTasks()
             loadPositions()
-            // 调用获取简历文本接口
-            if (result.data.resumeUuid) {
-                const res = await resumeService.getResumeText(result.data.resumeUuid)
-                resumeText.value = res.data as string;
-                if (result.data.status === 0) {
-                    const allCookies = await channelAuth.getAllCookies()
-                    channels.value.forEach(channel => {
-                        channel.isLogin = !!allCookies[channel.value]
-                    })
-                    showChannelTip.value = channels.value.every(channel => !channel.isLogin)
+            if (result.data.resumeExit) {
+                // 调用获取简历文本接口
+                if (result.data.resumeUuid) {
+                    const res = await resumeService.getResumeText(result.data.resumeUuid)
+                    if (res.code === 200) {
+                        resumeText.value = res.data as string;
+                        if (result.data.status === 0) {
+                            const allCookies = await channelAuth.getAllCookies()
+                            channels.value.forEach(channel => {
+                                channel.isLogin = !!allCookies[channel.value]
+                            })
+                            showChannelTip.value = channels.value.every(channel => !channel.isLogin)
 
-                    // 如果有登录的渠道，直接开始爬取
-                    const hasLoggedIn = channels.value.some(channel => channel.isLogin)
-                    // 每次切换之后 都要先关闭之前的机器人，重新启动
-                    if (hasLoggedIn && result.data.uuid) {
-                        await robotManager.cleanup()
-                        await robotManager.crawlPosition({
-                            jobTitle: result.data.jobTitle,
-                            cityInfos: result.data.cityName,
-                            experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
-                        }, result.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
-                        UserInfo.info.isRunningTask = true
+                            // 如果有登录的渠道，直接开始爬取
+                            const hasLoggedIn = channels.value.some(channel => channel.isLogin)
+                            // 每次切换之后 都要先关闭之前的机器人，重新启动
+                            if (hasLoggedIn && result.data.uuid) {
+                                showLoading()
+                                await robotManager.cleanup()
+                                while (!robotManager.isRealStop) {
+                                    await new Promise(resolve => setTimeout(resolve, 500));
+                                }
+
+                                await robotManager.crawlPosition({
+                                    jobTitle: result.data.jobTitle,
+                                    cityInfos: result.data.cityName,
+                                    experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
+                                }, result.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
+                                UserInfo.info.isRunningTask = true
+                                hideLoading()
+                            }
+                        }
                     }
                 }
+            } else {
+                message.error(Message, '求职简历不存在，任务开启失败!')
             }
-        } else if (result.code === 2306) { // 简历id不存在
-            message.error(Message, '求职简历不存在，任务开启失败!')
         }
     } catch (error) {
         console.error('获取任务失败:', error)
@@ -425,12 +461,13 @@ onMounted(async () => {
     loadCurrentTask()
     emitter.on('updateNewPosition', handleUpdateNewPosition)
     emitter.on('exhaustedOfAttempts', handleExhaustedOfAttempts)
+    document.addEventListener('click', handleClickOutside)
 })
 
 onBeforeUnmount(() => {
     emitter.off('updateNewPosition', handleUpdateNewPosition)
     emitter.off('exhaustedOfAttempts', handleExhaustedOfAttempts)
-
+    document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -486,7 +523,8 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
                 <div class="task-actions">
-                    <Dropdown :visible="showTaskDropdown" class="task-dropdown" placement="bottom-start"
+                    <Dropdown ref="dropdownRef" :visible="showTaskDropdown" class="task-dropdown"
+                              placement="bottom-start"
                               trigger="custom">
                         <div class="action-item" @click="handleTaskSwitch">
                             <SvgIcon name="icon-qiehuan" size="12"/>
@@ -561,7 +599,8 @@ onBeforeUnmount(() => {
                             }}</span>
                     </div>
                     <div class="item-bottom">
-                        <span class="company-info">{{ item.areaName }} <span class="separator">｜</span>{{
+                        <span class="company-info">{{ item.areaName }}
+                            <span v-if="item.companyName" class="separator">｜</span>{{
                                 item.companyName
                             }}</span>
                         <div class="item-action pointer" @click="openBaidu(item.jobDetailUrl)">

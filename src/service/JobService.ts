@@ -59,14 +59,14 @@ export class JobService {
      * 激活或停用一个求职任务
      */
     public async activateJobTask(params: ActivateJobTaskInDto): Promise<Result<ActivateJobTaskOutDto>> {
-        return await this.http.request<Result<ActivateJobTaskOutDto>>(JobPaths.activateJobTask, params);
+        return await this.http.request<Result<ActivateJobTaskOutDto>>(JobPaths.activateJobTask, params, {showLoading: false});
     }
 
     /**
      * 获取匹配的职位列表（分页）
      */
     public async queryMatchedPositions(params: QueryMatchedPositionsInDto): Promise<Result<QueryMatchedPositionsOutDto>> {
-        return await this.http.request<Result<QueryMatchedPositionsOutDto>>(JobPaths.queryMatchedPositions, params);
+        return await this.http.request<Result<QueryMatchedPositionsOutDto>>(JobPaths.queryMatchedPositions, params, {showLoading: false});
     }
 
     /**

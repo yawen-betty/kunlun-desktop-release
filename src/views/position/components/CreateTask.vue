@@ -138,8 +138,11 @@ onMounted(async () => {
     await loadResumeList()
 })
 
-const loadResumeList = async () => {
+const loadResumeList = async (isReset: boolean = false) => {
     try {
+        if (isReset) {
+            formRef.value.resetFields()
+        }
         const params = new GetMyResumeListInDto()
         const result = await resumeService.getMyResumeList(params)
         if (result.code === 200 && result.data?.resumes) {
@@ -153,6 +156,8 @@ const loadResumeList = async () => {
 onUnmounted(() => {
     stopPlaceholderRotation()
 })
+
+defineExpose({loadResumeList})
 </script>
 
 <template>
@@ -182,7 +187,8 @@ onUnmounted(() => {
                     </Select>
                 </FormItem>
                 <FormItem prop="resumeUuid">
-                    <CustomSelect v-model="formData.resumeUuid" :option-list="resumeList.map(item => ({label: item.name, value: item.uuid}))"
+                    <CustomSelect v-model="formData.resumeUuid"
+                                  :option-list="resumeList.map(item => ({label: item.name, value: item.uuid}))"
                                   placeholder="请选择简历"/>
                 </FormItem>
             </Form>

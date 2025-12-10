@@ -63,6 +63,13 @@ impl AIManager {
     pub fn stop_task(&self) {
         eprintln!("[AI] 收到停止任务请求");
         self.cancel_flag.store(true, Ordering::SeqCst);
+        eprintln!("[AI] cancel_flag 已设置为 true");
+    }
+
+    /// 获取 cancel_flag 的引用
+    /// 用于在无法获取锁时直接设置取消标志
+    pub fn get_cancel_flag(&self) -> Arc<AtomicBool> {
+        Arc::clone(&self.cancel_flag)
     }
 
     /// 执行 AI 任务（带配置）
@@ -260,7 +267,9 @@ impl AIManager {
 
         loop {
             // 检查是否收到取消请求
-            if self.cancel_flag.load(Ordering::SeqCst) {
+            let cancel_status = self.cancel_flag.load(Ordering::SeqCst);
+            eprintln!("[AI] 循环开始检查: cancel_flag = {}", cancel_status);
+            if cancel_status {
                 eprintln!("[AI] 任务被用户取消");
                 return Err("任务已被用户取消".to_string());
             }
@@ -278,6 +287,14 @@ impl AIManager {
                 tokio::time::sleep(Duration::from_secs(1)).await;
             }
 
+            // API 调用前检查取消标志
+            let cancel_status = self.cancel_flag.load(Ordering::SeqCst);
+            eprintln!("[AI] API 调用前检查: cancel_flag = {}", cancel_status);
+            if cancel_status {
+                eprintln!("[AI] 任务被用户取消（API 调用前）");
+                return Err("任务已被用户取消".to_string());
+            }
+
             // 调用 AI API
             let response = self.api_client
                 .call_api(
@@ -289,6 +306,14 @@ impl AIManager {
                     config.enable_thinking,
                 )
                 .await?;
+
+            // API 调用后检查取消标志
+            let cancel_status = self.cancel_flag.load(Ordering::SeqCst);
+            eprintln!("[AI] API 调用后检查: cancel_flag = {}", cancel_status);
+            if cancel_status {
+                eprintln!("[AI] 任务被用户取消（API 调用后）");
+                return Err("任务已被用户取消".to_string());
+            }
 
             // 检查 AI 是否请求工具调用
             if let Some(tool_calls) = response.tool_calls {
@@ -303,10 +328,22 @@ impl AIManager {
                     name: None,
                 });
 
+                // 工具执行前检查取消标志
+                if self.cancel_flag.load(Ordering::SeqCst) {
+                    eprintln!("[AI] 任务被用户取消（工具执行前）");
+                    return Err("任务已被用户取消".to_string());
+                }
+
                 // 执行工具调用
                 let tool_results = self.tool_executor
                     .execute_tools(tool_calls)
                     .await?;
+
+                // 工具执行后检查取消标志
+                if self.cancel_flag.load(Ordering::SeqCst) {
+                    eprintln!("[AI] 任务被用户取消（工具执行后）");
+                    return Err("任务已被用户取消".to_string());
+                }
 
                 // 将工具执行结果添加到对话历史
                 for result in tool_results {

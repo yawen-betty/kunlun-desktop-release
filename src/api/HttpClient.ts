@@ -180,6 +180,11 @@ export default class HttpClient {
                     emitter.emit('forcedUpdate');
                     break;
 
+                // 账号停用
+                case 2107:
+                    message.error(Message, responseBody.msg);
+                    break;
+
                 default:
                     // 其他错误码的通用处理
                     // TODO 白名单
@@ -311,6 +316,7 @@ export default class HttpClient {
                 HttpClient.handleSpecialCode(response.body);
                 return response.body as T;
             } else if (response.status === 504) {
+                message.error(Message, '网络异常，请稍后重试');
                 throw new Error(`请求超时`);
             } else {
                 throw new Error(`HTTP ${response.status}: ${response.body?.msg || '请求失败'}`);

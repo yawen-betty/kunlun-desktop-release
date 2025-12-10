@@ -6,8 +6,8 @@ import {Result} from '@/api/BaseDto';
 import {SearchAreaOutDto} from "@/api/address/dto/SearchArea.ts";
 
 export class AddressService {
-    private http: HttpClient;
     private static instance: AddressService;
+    private http: HttpClient;
 
     constructor() {
         this.http = inject('$http') as HttpClient;
@@ -35,6 +35,6 @@ export class AddressService {
         maxLevel?: number;
         keyWord: string
     }): Promise<Result<SearchAreaOutDto>> {
-        return await this.http.request<Result<SearchAreaOutDto>>(AddressPaths.searchArea, params);
+        return await this.http.request<Result<SearchAreaOutDto>>(AddressPaths.searchArea, params, {showLoading: false});
     }
 }
