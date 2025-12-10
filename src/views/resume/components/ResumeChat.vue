@@ -285,7 +285,7 @@ const generateTemplate = (msg: string, content: string) => {
                 lastData.thinkingStatus = '1';
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
-                lastData.loadingContentStart = false;
+                chatList.value.forEach(item => item.loadingContentStart = false);
             } else {
                 const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'template');
@@ -347,7 +347,7 @@ const parseAttachment = (msg: string) => {
                 lastData.thinkingStatus = '1';
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
-                lastData.loadingContentStart = false;
+                chatList.value.forEach(item => item.loadingContentStart = false);
             } else {
                 const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'attachmentStream');
@@ -399,17 +399,19 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
     aiService.diagnoseStream(
         params,
         (data) => {
-            const lastData = chatList.value[chatList.value.length - 1];
+            let lastData = chatList.value[chatList.value.length - 1]
 
+            console.log(data);
             if (data.includes('event:thinking')) {
                 const str: string = extractDataContent(data, 'event:thinking');
-                lastData.thinking += str;
+                chatList.value[chatList.value.length - 1].thinking += str;
                 scrollToBottom('deep-thinking-content');
             } else if (data.includes('event:loadingContentStart')) {
+                lastData = chatList.value[chatList.value.length - 1];
                 lastData.thinkingStatus = '1';
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
-                lastData.loadingContentStart = false;
+                chatList.value.forEach(item => item.loadingContentStart = false);
             } else {
                 setThinkState();
                 const str: string = extractDataContent(data, 'event:content');
@@ -541,7 +543,7 @@ const write = () => {
                 lastData.thinkingStatus = '1';
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
-                lastData.loadingContentStart = false;
+                chatList.value.forEach(item => item.loadingContentStart = false);
             } else {
                 setThinkState();
                 const str: string = extractDataContent(data, 'event:content');
