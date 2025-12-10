@@ -141,16 +141,21 @@ export class RobotManager {
                         await executePositionSearch({
                                 channelName: channel,
                                 searchParams: searchParams,
-                                // apiKey: UserInfo.info.modelList[0].apiKey!,
-                                apiKey: 'ca9112c0753043ae9c2f9647892f49e7.bfZ2cqxbzv7duOph'
+                                apiKey: UserInfo.info.modelList[0].apiKey!,
+                                // apiKey: 'ca9112c0753043ae9c2f9647892f49e7.bfZ2cqxbzv7duOph'
                             },
                             resumeText,
                             taskId,
-                            prompt
+                            prompt,
+                            () => this.isRunning
                           );
 
                         logger.info(`[RobotManager] ${channel} 渠道爬取完成`);
-                    } catch (error) {
+                    } catch (error:any) {
+                        if (error.name === 'AbortError') {
+                            logger.info(`[RobotManager] ${channel} 渠道已被取消`);
+                            return; // 直接退出，不继续处理其他渠道
+                        }
                         logger.error(`[RobotManager] ${channel} 渠道爬取失败:`, error);
                     }
 
