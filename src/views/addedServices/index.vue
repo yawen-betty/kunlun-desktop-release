@@ -11,7 +11,7 @@
                         <p class="service-description">{{ service.instructions }}</p>
                     </div>
                     <div class="service-price">{{ service.price || '' }}</div>
-                    <Button type="primary" class="consult-btn" @click="handleConsultClick(service.id)">预约咨询</Button>
+                    <span type="primary" class="consult-btn" @click="handleConsultClick(service.id)">预约咨询</span>
                 </div>
             </Card>
         </div>
@@ -161,6 +161,7 @@ const showModal = ref(false);
     color: $theme-color;
     padding: 0;
     height: auto;
+    cursor: pointer;
 
     &:hover {
         background: transparent;
