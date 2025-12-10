@@ -1416,7 +1416,7 @@ defineExpose({
 }
 
 .info-left {
-    width: vw(420);
+    width: 80%;
 }
 
 .name {
@@ -1429,12 +1429,16 @@ defineExpose({
 }
 
 .job-title {
+    width: 100%;
     height: vh(38);
     font-family: 'PingFangSCBold', sans-serif;
     font-size: vw(20);
     line-height: vh(38);
     color: $font-dark;
     margin-bottom: vh(4);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .contact-item {

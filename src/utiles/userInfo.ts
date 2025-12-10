@@ -20,6 +20,7 @@ export class UserInfo {
     });
 
     static async logout() {
+        robotManager.cleanup()
         UserInfo.info.token = '';
         UserInfo.info.userName = '';
         UserInfo.info.userId = '';
@@ -30,7 +31,6 @@ export class UserInfo {
         UserInfo.info.isRunningTask = false;
         UserInfo.info.matchAnalysisPrompt = '';
         await auth.saveToken('');
-        await robotManager.cleanup()
         await router.replace('/login');
     }
 }

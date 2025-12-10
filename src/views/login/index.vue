@@ -2,7 +2,7 @@
     <div class="login-page">
         <div class="left-section">
             <div class="brand-area">
-                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30" />
+                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30"/>
                 <h1 class="app-name">{{ SystemInfo.info.loginTitle }}</h1>
             </div>
 
@@ -12,20 +12,20 @@
             </div>
 
             <div class="illustration-area">
-                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration" />
+                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration"/>
             </div>
         </div>
 
         <div class="right-section">
-            <div class="login-box" id="ewm">
+            <div id="ewm" class="login-box">
                 <h2 class="login-title">微信扫码登录/注册</h2>
 
                 <div class="qrcode-box">
                     <div class="qrcode-reload pointer" @click="generateQRCode"></div>
                     <iframe
                         :src="qrCodeUrl"
-                        class="qrcode pointer"
                         allowTransparency="true"
+                        class="qrcode pointer"
                         frameBorder="0"
                         sandbox="allow-scripts allow-top-navigation"
                         scrolling="no"
@@ -46,13 +46,13 @@
 
     <AgreementModal
         v-model:visible="showAgreement"
+        :agreementType="agreementType"
         :title="agreementType === 1 ? '隐私协议' : '服务协议'"
         @close="closeModal"
-        :agreementType="agreementType"
     />
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {onBeforeUnmount, onMounted, reactive, ref} from 'vue';
 import {Image, Message} from 'view-ui-plus';
 import {Config} from '@/Config.ts';
@@ -191,7 +191,7 @@ const getUserInfo = () => {
             UserInfo.info.avatar = res.data.avatarUrl || '';
             UserInfo.info.userName = res.data.name!;
             UserInfo.info.userId = res.data.uuid!;
-
+            if (res.data.modelAccountBeanList && res.data.modelAccountBeanList.length) UserInfo.info.modelList = res.data.modelAccountBeanList;
             if (res.data.profileCompleteFlag === '1') {
                 router.push('/resume');
             } else {
@@ -240,7 +240,7 @@ onMounted(() => {
 //  };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @use '@/assets/styles/variable.scss' as *;
 @use '@/assets/styles/compute.scss' as *;
 
@@ -340,6 +340,7 @@ onMounted(() => {
 
             .qrcode-box {
                 position: relative;
+
                 .qrcode-reload {
                     position: absolute;
                     left: 0;
