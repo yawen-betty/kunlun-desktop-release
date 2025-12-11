@@ -289,7 +289,7 @@ const generateTemplate = (msg: string, content: string) => {
                 lastData.thinkingStatus = '1';
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
-                chatList.value.forEach(item => item.loadingContentStart = false);
+                chatList.value.forEach((item) => (item.loadingContentStart = false));
             } else {
                 const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'template');
@@ -351,7 +351,7 @@ const parseAttachment = (msg: string) => {
                 lastData.thinkingStatus = '1';
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
-                chatList.value.forEach(item => item.loadingContentStart = false);
+                chatList.value.forEach((item) => (item.loadingContentStart = false));
             } else {
                 const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'attachmentStream');
@@ -403,7 +403,7 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
     aiService.diagnoseStream(
         params,
         (data) => {
-            let lastData = chatList.value[chatList.value.length - 1]
+            let lastData = chatList.value[chatList.value.length - 1];
 
             console.log(data);
             if (data.includes('event:thinking')) {
@@ -415,7 +415,7 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
                 lastData.thinkingStatus = '1';
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
-                chatList.value.forEach(item => item.loadingContentStart = false);
+                chatList.value.forEach((item) => (item.loadingContentStart = false));
             } else {
                 setThinkState();
                 const str: string = extractDataContent(data, 'event:content');
@@ -547,12 +547,11 @@ const write = () => {
                 lastData.thinkingStatus = '1';
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
-                chatList.value.forEach(item => item.loadingContentStart = false);
+                chatList.value.forEach((item) => (item.loadingContentStart = false));
             } else {
                 setThinkState();
                 const str: string = extractDataContent(data, 'event:content');
                 const response = JSON.parse(str);
-                console.log(response, ' response');
                 // 更新诊断问题数据（已问询）
                 const diagnoseData = JSON.parse(diagnoseStr.value);
 
