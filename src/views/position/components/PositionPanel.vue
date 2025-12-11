@@ -114,12 +114,14 @@ const resetFilters = () => {
 const handlePageChange = async (page: number) => {
     pagination.current = page
     await loadPositions()
+    document.querySelector('.position-list')?.scrollTo(0, 0)
 }
 
 const handlePageSizeChange = async (pageSize: number) => {
     pagination.pageSize = pageSize
     pagination.current = 1
     await loadPositions()
+    document.querySelector('.position-list')?.scrollTo(0, 0)
 }
 
 const channels = ref([
@@ -160,10 +162,10 @@ const handleLogin = debounce(async (channel: any) => {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
             const loginResult = await executeLogin(channel.value)
+            hideLoading()
             if (loginResult.success) {
                 channel.isLogin = true
                 message.success(Message, '登录成功！')
-                showChannelModal.value = false
                 showChannelTip.value = false
                 // 登录成功后，如果任务在进行中，重启爬取
                 if (currentTask.value?.status === 0 && currentTask.value.uuid) {
@@ -174,7 +176,6 @@ const handleLogin = debounce(async (channel: any) => {
                         experience: enumEcho(currentTask.value.experience, workExperienceList, 'value', 'key')
                     }, currentTask.value.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
                     UserInfo.info.isRunningTask = true
-                    hideLoading()
                 }
             } else {
                 message.error(Message, `登录失败: ${loginResult.error}`)

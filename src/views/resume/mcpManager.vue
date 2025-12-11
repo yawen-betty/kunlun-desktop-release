@@ -139,9 +139,9 @@ const bossPosition = async () => {
     const result = await executePositionSearch({
         channelName: 'boss',
         searchParams: {
-            jobTitle: '学徒',
-            cityInfos: '兰州',
-            experience: '50K以上'
+            jobTitle: '英语自动化测试',
+            cityInfos: '大连',
+            experience: '10-15K'
         },
         apiKey: 'ca9112c0753043ae9c2f9647892f49e7.bfZ2cqxbzv7duOph'
     },

@@ -198,38 +198,51 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
                 jobDetailUrl: newTab.url
             })
 
-            checkStop();
-            await robotManager.sleep(3000);
-            // 点击公司打开公司详情
+            let keepCompany = true
+            // boss判断是否是代招
+            if (channelName === 'boss') {
+                const result = await cdpService.executeScript(`document.querySelector(".job-medium-icon")`);
+                const isDz = result.result?.value;
+                if (isDz) {
+                    keepCompany = false;
+                    logger.info('[PositionClick] 检测到代招职位，跳过公司详情获取');
+                }
+            }
 
-            checkStop();
-            await cdpService.clearNetworkEvents(); // 执行任务前先清空网络监听
-            const clickCompanyResult = await executeAITask(`切换到浏览器最后一个标签页,点击页面右侧公司名称`, apiKey);
-            logger.info(`[CompanyClick] 任务完成`, clickCompanyResult);
+            if (keepCompany) {
+                checkStop();
+                await robotManager.sleep(3000);
+                // 点击公司打开公司详情
 
-            checkStop();
-            await robotManager.sleep(3000);
+                checkStop();
+                await cdpService.clearNetworkEvents(); // 执行任务前先清空网络监听
+                const clickCompanyResult = await executeAITask(`切换到浏览器最后一个标签页,点击页面右侧公司名称`, apiKey);
+                logger.info(`[CompanyClick] 任务完成`, clickCompanyResult);
 
-            // 刷新新 tab（此时监听已启用）
-            await cdpService.executeScript('location.reload()');
+                checkStop();
+                await robotManager.sleep(3000);
 
-            checkStop();
-            await robotManager.sleep(3000); // 等待接口完成
-            const companyNetwork = await cdpService.getNetworkEvents();
+                // 刷新新 tab（此时监听已启用）
+                await cdpService.executeScript('location.reload()');
 
-            // 获取公司详情
-            logger.info('[PositionClick] 获取公司数据...');
+                checkStop();
+                await robotManager.sleep(3000); // 等待接口完成
+                const companyNetwork = await cdpService.getNetworkEvents();
 
-            const guopinCompanyInfoList = companyNetwork.filter(e => e.url.includes(config.companyNetUrl));
-            logger.info('///////////////////////////////3', guopinCompanyInfoList);
-            logger.info('获取到公司接口:', guopinCompanyInfoList);
-            if (guopinCompanyInfoList.length > 0) {
-                const guopinCompanyInfo = guopinCompanyInfoList.pop(); // 获取最后一个
+                // 获取公司详情
+                logger.info('[PositionClick] 获取公司数据...');
 
-                if (guopinCompanyInfo?.response_body) {
-                    const company = await buildCompanyData(JSON.parse(guopinCompanyInfo.response_body), channelName);
-                    dataInfo = Object.assign(dataInfo, company)
-                    logger.info('///////////////////////////////4', company);
+                const guopinCompanyInfoList = companyNetwork.filter(e => e.url.includes(config.companyNetUrl));
+                logger.info('///////////////////////////////3', guopinCompanyInfoList);
+                logger.info('获取到公司接口:', guopinCompanyInfoList);
+                if (guopinCompanyInfoList.length > 0) {
+                    const guopinCompanyInfo = guopinCompanyInfoList.pop(); // 获取最后一个
+
+                    if (guopinCompanyInfo?.response_body) {
+                        const company = await buildCompanyData(JSON.parse(guopinCompanyInfo.response_body), channelName);
+                        dataInfo = Object.assign(dataInfo, company)
+                        logger.info('///////////////////////////////4', company);
+                    }
                 }
             }
 
