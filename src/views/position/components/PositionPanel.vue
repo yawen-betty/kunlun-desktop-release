@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {reactive, ref, onMounted, computed, nextTick} from 'vue';
+import {reactive, ref, onMounted, computed} from 'vue';
 import PositionDetail from "@/views/position/components/PositionDetail.vue";
 import {useCompRef} from "@/hooks/useComponent";
 import SvgIcon from "@/components/svgIcon/index.vue";
@@ -17,7 +17,6 @@ import {GetOtherJobTasksOutDto} from "@/api/job/dto/GetOtherJobTasks";
 import {ActivateJobTaskInDto} from "@/api/job/dto/ActivateJobTask";
 import {channelList, workExperienceList, enumEcho} from "@/enums/enumDict.ts";
 import {QueryMatchedPositionsInDto} from "@/api/job/dto/QueryMatchedPositions.ts";
-import {CheckNewPositionsInDto} from "@/api/job/dto/CheckNewPositions.ts";
 import {message} from "@/utiles/Message.ts";
 import {executeLogin} from '@/robot/channelLogin/login.ts';
 import {channelAuth} from '@/robot/channelLogin/authManage.ts';
@@ -30,7 +29,6 @@ import {UserInfo} from "@/utiles/userInfo.ts";
 import {debounce} from "@/utiles/debounce.ts";
 import emitter from "@/utiles/eventBus.ts";
 import {hideLoading, showLoading} from "@/utiles/loading.ts";
-import {show} from "@tauri-apps/api/app";
 
 // 创建任务弹框实例
 const createTaskModalRef = useCompRef(CreateTaskModal)
@@ -156,6 +154,11 @@ const handleOpenCreateModal = () => {
 const handleLogin = debounce(async (channel: any) => {
     if (!channel.isLogin) {
         try {
+            showLoading()
+            await robotManager.cleanup()
+            while (!robotManager.isRealStop) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
             const loginResult = await executeLogin(channel.value)
             if (loginResult.success) {
                 channel.isLogin = true
@@ -164,13 +167,8 @@ const handleLogin = debounce(async (channel: any) => {
                 showChannelTip.value = false
                 // 登录成功后，如果任务在进行中，重启爬取
                 if (currentTask.value?.status === 0 && currentTask.value.uuid) {
-                    showLoading()
-                    await robotManager.cleanup()
                     UserInfo.info.isRunningTask = false
-                    while (!robotManager.isRealStop) {
-                        await new Promise(resolve => setTimeout(resolve, 500));
-                    }
-                    await robotManager.crawlPosition({
+                    robotManager.crawlPosition({
                         jobTitle: currentTask.value.jobTitle,
                         cityInfos: currentTask.value.cityName,
                         experience: enumEcho(currentTask.value.experience, workExperienceList, 'value', 'key')
@@ -234,17 +232,26 @@ const handleToggleTaskStatus = debounce(async () => {
                     // 如果有登录的渠道，直接开始爬取
                     const hasLoggedIn = channels.value.some(channel => channel.isLogin)
                     if (hasLoggedIn && taskResult.data.uuid) {
-                        await robotManager.crawlPosition({
+                        showLoading()
+                        robotManager.crawlPosition({
                             jobTitle: taskResult.data.jobTitle,
                             cityInfos: taskResult.data.cityName,
                             experience: enumEcho(taskResult.data.experience, workExperienceList, 'value', 'key')
                         }, taskResult.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
+                        await new Promise(resolve => setTimeout(resolve, 3000))
                         UserInfo.info.isRunningTask = true
+                        hideLoading()
                     }
                     message.success(Message, '任务已开启，请至少登录一个招聘渠道！')
                 } else {
                     // 关闭状态，停止爬取
+                    showLoading()
                     await robotManager.cleanup()
+                    while (!robotManager.isRealStop) {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 3000))
+                    hideLoading()
                     UserInfo.info.isRunningTask = false
                     message.success(Message, '任务已关闭，将不再推送精选职位！')
                 }
@@ -341,12 +348,12 @@ const loadCurrentTask = async () => {
                                 while (!robotManager.isRealStop) {
                                     await new Promise(resolve => setTimeout(resolve, 500));
                                 }
-
-                                await robotManager.crawlPosition({
+                                robotManager.crawlPosition({
                                     jobTitle: result.data.jobTitle,
                                     cityInfos: result.data.cityName,
                                     experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
                                 }, result.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
+                                await new Promise(resolve => setTimeout(resolve, 3000))
                                 UserInfo.info.isRunningTask = true
                                 hideLoading()
                             }
@@ -367,6 +374,10 @@ const loadPositions = async () => {
         const params = {...searchData}
         if (params.sourceChannel === -1) {
             delete params.sourceChannel
+        }
+        params.pageInfo = {
+            pageNum: pagination.current,
+            pageSize: pagination.pageSize
         }
         const result = await jobService.queryMatchedPositions(params)
         if (result.code === 200 && result.data) {
@@ -455,6 +466,15 @@ const handleExhaustedOfAttempts = async () => {
     params.status = 1
     await jobService.activateJobTask(params)
     loadCurrentTask()
+}
+
+const handleBeforeUnload = async () => {
+    if (currentTask.value?.uuid) {
+        const params = new ActivateJobTaskInDto()
+        params.uuid = currentTask.value.uuid
+        params.status = 1
+        await jobService.activateJobTask(params)
+    }
 }
 
 onMounted(async () => {
@@ -1391,9 +1411,9 @@ onBeforeUnmount(() => {
                     .task-name {
                         font-family: 'PingFang SC', sans-serif;
                         font-size: vw(14);
-                        line-height: vh(14);
+                        line-height: vh(18);
                         color: $font-dark;
-                        margin-bottom: vh(7);
+                        margin-bottom: vh(5);
                         width: 95%;
                         overflow: hidden;
                         text-overflow: ellipsis;
