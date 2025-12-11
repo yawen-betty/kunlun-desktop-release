@@ -122,11 +122,9 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
         const positionListNetwork = await cdpService.getNetworkEvents();
         const positionCountNet = positionListNetwork.filter(e => e.url.includes(config.positionCountUrl));
         if (positionCountNet.length > 0) {
-            logger.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2', positionCountNet);
             const positionCount = positionCountNet.pop(); // 获取最后一个
             if (positionCount?.response_body) {
                 const countBody = JSON.parse(positionCount?.response_body);
-                logger.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3', countBody);
                 let count = 0;
 
                 switch (channelName) {
