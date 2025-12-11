@@ -67,16 +67,21 @@ fn handle_menu_event<R: Runtime>(app: &AppHandle<R>, menu_id: &str) {
 /// 切换窗口显示/隐藏状态
 fn toggle_window_visibility<R: Runtime>(app: &AppHandle<R>) {
     if let Some(window) = app.get_webview_window("main") {
-        match window.is_visible() {
-            Ok(true) => {
-                let _ = window.hide();
-            }
-            Ok(false) | Err(_) => {
-                let _ = window.show();
-                let _ = window.set_focus();
-                // macOS 特殊处理：取消最小化状态
-//                 #[cfg(target_os = "macos")]
-                let _ = window.unminimize();
+        // 如果窗口最小化，直接恢复并显示
+        if window.is_minimized().unwrap_or(false) {
+            let _ = window.unminimize();
+            let _ = window.show();
+            let _ = window.set_focus();
+        } else {
+            // 否则根据可见性切换
+            match window.is_visible() {
+                Ok(true) => {
+                    let _ = window.hide();
+                }
+                Ok(false) | Err(_) => {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
             }
         }
     }
