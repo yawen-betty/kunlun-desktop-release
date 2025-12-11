@@ -84,10 +84,5 @@ export async function buildCompanyData(info: any): Promise<any> {
     sourceChannel: 0
   });
 
-  const address = await execScript(`__INITIAL_STATE__.companyDetail.companyAddresses.addresses`, 'array');
-  if (address && address.length > 0 ) {
-    company.companyAddress = address.map((item: any) => item.address)
-  }
-
   return company;
 }
