@@ -388,7 +388,7 @@ const loadPositions = async () => {
             // 如果有数据，自动选中第一条
             if (result.data.list.length > 0) {
                 const firstItem = result.data.list[0]
-                selectedId.value = firstItem.positionUuid
+                selectedId.value = firstItem.uuid
 
                 // 如果是第一页，记录第一条的推荐时间
                 if (pagination.current === 1 && firstItem.recommendedAt) {
@@ -593,9 +593,9 @@ onBeforeUnmount(() => {
             </div>
 
             <div v-if="positionList.length > 0" class="position-list">
-                <div v-for="(item) in positionList" :key="item.positionUuid"
-                     :class="{ 'is-active': selectedId === item.positionUuid }" class="position-item"
-                     @click="handleSelectPosition(item.positionUuid)">
+                <div v-for="(item) in positionList" :key="item.uuid"
+                     :class="{ 'is-active': selectedId === item.uuid }" class="position-item"
+                     @click="handleSelectPosition(item.uuid)">
                     <div class="item-top">
                         <div class="top-left">
                             <span class="item-title">{{ item.title }}</span>
