@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {onMounted, ref, provide, readonly, onUnmounted} from 'vue';
+import {onMounted, ref, provide, onUnmounted} from 'vue';
 import {checkForUpdates} from '@/updater';
 import UpdateDialog from '@/components/updateDialog/index.vue';
 import {Config} from '@/Config.ts';
@@ -14,7 +14,11 @@ import {SystemInfo} from '@/utiles/systemInfo.ts';
 import {AdminService} from '@/service/AdminService.ts';
 import emitter from '@/utiles/eventBus';
 import {GetVersionInfoOutDto} from './api/admin/dto/GetVersionInfo';
+import {GetJobTaskInDto} from "@/api/job/dto/GetJobTask.ts";
+import {JobService} from "@/service/JobService.ts";
+import {ActivateJobTaskInDto} from "@/api/job/dto/ActivateJobTask.ts";
 
+const jobService = new JobService()
 const adminService = new AdminService();
 const userService = new UserService();
 const updateDialogRef = ref();
@@ -25,25 +29,27 @@ const router = useRouter();
 
 // 提供给子组件的配置状态
 const showVersionUpdate = ref(false);
+const currentShowVersion = ref(false);
 const versionUpdateInfo = ref<GetVersionInfoOutDto>(new GetVersionInfoOutDto());
 provide('showVersionUpdate', showVersionUpdate);
-provide('versionUpdateInfo', versionUpdateInfo);
+provide('currentShowVersion', currentShowVersion);
 
 // 应用启动时自动检查更新
 onMounted(async () => {
     emitter.on('forcedUpdate', manualCheckUpdate);
     preCheck();
     getConfigInfo();
-    auth.getToken()
-        .then((token) => {
-            if (token) {
-                UserInfo.info.token = token;
-                getUserInfo(userService);
-                getMatchAnalysisPrompt();
-            } else {
-                router.push('/login');
-            }
-        })
+    auth.getToken().then((token) => {
+        if (token) {
+            UserInfo.info.token = token;
+            getUserInfo(userService);
+            getMatchAnalysisPrompt();
+            console.log(adminService, userService, jobService)
+            switchTaskStatus()
+        } else {
+            router.push('/login');
+        }
+    });
 });
 
 onUnmounted(() => {
@@ -56,6 +62,7 @@ const preCheck = async () => {
     const result = await checkForUpdates(currentVersion, false);
     checkForUpdatesResult.value = result;
     showVersionUpdate.value = !!checkForUpdatesResult.value?.newVersion && currentVersion !== checkForUpdatesResult.value?.newVersion;
+    currentShowVersion.value = showVersionUpdate.value;
 };
 // 启动获取最新版本信息
 const theCheckForUpdates = async () => {
@@ -106,6 +113,17 @@ const getUserInfo = (userService: UserService) => {
         }
     });
 };
+
+const switchTaskStatus = async () => {
+    const params = new GetJobTaskInDto()
+    const result = await jobService.getJobTask(params)
+    if (result.code === 200 && result.data && result.data.status === 0) {
+        const inDto = new ActivateJobTaskInDto()
+        inDto.uuid = result.data.uuid
+        inDto.status = 1
+        jobService.activateJobTask(inDto)
+    }
+}
 
 // 获取系统配置
 const getConfigInfo = () => {

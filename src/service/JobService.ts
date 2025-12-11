@@ -23,7 +23,7 @@ export class JobService {
     private http: HttpClient;
 
     constructor() {
-        this.http = inject('$http') as HttpClient;
+        this.http = new HttpClient();
     }
 
     // 静态方法，用于获取类的唯一实例
@@ -45,7 +45,7 @@ export class JobService {
      * 获取当前执行的求职任务及职位列表
      */
     public async getJobTask(params: GetJobTaskInDto): Promise<Result<GetJobTaskOutDto>> {
-        return await this.http.request<Result<GetJobTaskOutDto>>(JobPaths.getJobTask, params);
+        return await this.http.request<Result<GetJobTaskOutDto>>(JobPaths.getJobTask, params, {showLoading: false});
     }
 
     /**

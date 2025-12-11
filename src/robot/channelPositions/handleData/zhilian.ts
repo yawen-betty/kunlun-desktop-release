@@ -33,11 +33,16 @@ export async function buildPositionData(info: any): Promise<any> {
 
   Object.assign(position, {
     title: await execScript(`__INITIAL_STATE__.jobInfo.jobDetail.detailedPosition.positionName`),
-    description: await execScript(`__INITIAL_STATE__.jobInfo.jobDetail.detailedPosition.description`),
     educational: await execScript(`__INITIAL_STATE__.jobInfo.jobDetail.detailedPosition.education`),
     workExperience: await execScript(`__INITIAL_STATE__.jobInfo.jobDetail.detailedPosition.workingExp`),
     labels: await execScript(`__INITIAL_STATE__.jobInfo.jobDetail.detailedPosition.skillLabel`),
   });
+
+  // 职位描述
+  const getDes = await execScript(`__INITIAL_STATE__.jobInfo.jobDetail.detailedPosition.description`);
+  if (getDes) {
+      position.description = cleanHtmlContent(getDes)
+  }
 
   // 薪资范围和薪资月数
   const getSalary = await execScript(`__INITIAL_STATE__.jobInfo.jobDetail.detailedPosition.salary`);
@@ -105,4 +110,14 @@ export async function buildCompanyData(info: any): Promise<any> {
   }
 
   return company;
+}
+
+function cleanHtmlContent(html: string): string {
+    return html
+        .replace(/<br\s*\/?>/gi, '\n')     // 替换 <br> 为换行
+        .replace(/<\/p>/gi, '\n')          // 替换 </p> 为换行
+        .replace(/<p[^>]*>/gi, '')         // 去掉 <p> 起始标签（含属性）
+        .replace(/&nbsp;/gi, ' ')          // 可选：替换 &nbsp; 为普通空格
+        .replace(/<[^>]+>/g, '')           // 去掉其他残余 HTML 标签（保险）
+        .trim();                           // 去掉首尾空白
 }

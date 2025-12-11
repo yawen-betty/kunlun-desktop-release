@@ -34,7 +34,7 @@ export async function buildPositionData(data: any): Promise<any> {
   Object.assign(position, {
     title: await execScript(`_jobInfo.job_name`),
     areaName: await execScript(`document.querySelector(".text-city").textContent`),
-    description: await execScript(`document.querySelector(".job-sec-text").textContent`),
+    description: (await execScript(`document.querySelector(".job-sec-text").innerHTML`)).replace(/<br\s*\/?>/gi, '\n'),
     educational: await execScript(`document.querySelector(".text-degree").textContent`),
     workExperience: await execScript(`document.querySelector(".text-experiece").textContent`),
     labels: await execScript(`[...document.querySelectorAll(".job-keyword-list li")].map(li => li.textContent.trim())`),
@@ -83,11 +83,6 @@ export async function buildCompanyData(info: any): Promise<any> {
     companyAddress:  await execScript(`[...document.querySelectorAll(".location-address")].map(a => a.textContent.trim())`),
     sourceChannel: 0
   });
-
-  const address = await execScript(`__INITIAL_STATE__.companyDetail.companyAddresses.addresses`, 'array');
-  if (address && address.length > 0 ) {
-    company.companyAddress = address.map((item: any) => item.address)
-  }
 
   return company;
 }

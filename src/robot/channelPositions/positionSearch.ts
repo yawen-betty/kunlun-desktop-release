@@ -90,10 +90,10 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
 
         // 3. 跳转到搜索页面
         logger.info('[PositionSearch] 跳转到搜索页面...');
-        await cdpService.clearNetworkEvents(); // 先清空网络监听
         await mcpService.callTool('browser_navigate', {url: config.searchUrl});
         await robotManager.sleep(1000);
 
+        await cdpService.clearNetworkEvents(); // 执行任务前先清空网络监听
         // 4. AI 逐个执行搜索任务
         logger.info('[PositionSearch] 执行搜索任务...');
         const tasks = buildTaskList(channelName, searchParams);
@@ -118,6 +118,33 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
 
         logger.info('[PositionSearch] 所有搜索任务执行完成')
 
+        checkStop();
+        const positionListNetwork = await cdpService.getNetworkEvents();
+        const positionCountNet = positionListNetwork.filter(e => e.url.includes(config.positionCountUrl));
+        if (positionCountNet.length > 0) {
+            const positionCount = positionCountNet.pop(); // 获取最后一个
+            if (positionCount?.response_body) {
+                const countBody = JSON.parse(positionCount?.response_body);
+                let count = 0;
+
+                switch (channelName) {
+                    case 'boss':
+                        count = countBody?.zpData?.totalCount || 0;
+                        break;
+                    case 'zhilian':
+                        count = countBody?.data?.count || 0;  // 确认是 body 还是 data
+                        break;
+                    case 'guopin':
+                        count = countBody?.data?.total || 0;
+                        break;
+                }
+
+                if (count === 0) {
+                    return { code: 200, message: '暂无职位' };
+                }
+            }
+        }
+
         // 5. AI 点击指定职位
         const max = 20;  // 获取条数
 
@@ -129,7 +156,9 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
             checkStop();
             // 点击职位打开职位详情
             const clickPositionResult = await executeAITask(
-                channelName === 'boss' ? `请直接点击职位列表的第 ${i} 个职位项,然后点击页面右侧的'查看更多信息'` : `请直接点击职位列表的第 ${i} 个职位项`, apiKey);
+                channelName === 'boss' ?
+                    `请直接点击职位列表的第 ${i} 个职位项,然后点击页面右侧的'查看更多信息'` :
+                    `请直接点击职位列表的第 ${i} 个职位项`, apiKey);
             logger.info(`[PositionClick] 任务完成`, clickPositionResult);
 
             checkStop();
@@ -169,38 +198,51 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
                 jobDetailUrl: newTab.url
             })
 
-            checkStop();
-            await robotManager.sleep(3000);
-            // 点击公司打开公司详情
+            let keepCompany = true
+            // boss判断是否是代招
+            if (channelName === 'boss') {
+                const result = await cdpService.executeScript(`document.querySelector(".job-medium-icon")`);
+                const isDz = result.result?.value;
+                if (isDz) {
+                    keepCompany = false;
+                    logger.info('[PositionClick] 检测到代招职位，跳过公司详情获取');
+                }
+            }
 
-            checkStop();
-            await cdpService.clearNetworkEvents(); // 执行任务前先清空网络监听
-            const clickCompanyResult = await executeAITask(`切换到浏览器最后一个标签页,点击页面右侧公司名称`, apiKey);
-            logger.info(`[CompanyClick] 任务完成`, clickCompanyResult);
+            if (keepCompany) {
+                checkStop();
+                await robotManager.sleep(3000);
+                // 点击公司打开公司详情
 
-            checkStop();
-            await robotManager.sleep(3000);
+                checkStop();
+                await cdpService.clearNetworkEvents(); // 执行任务前先清空网络监听
+                const clickCompanyResult = await executeAITask(`切换到浏览器最后一个标签页,点击页面右侧公司名称`, apiKey);
+                logger.info(`[CompanyClick] 任务完成`, clickCompanyResult);
 
-            // 刷新新 tab（此时监听已启用）
-            await cdpService.executeScript('location.reload()');
+                checkStop();
+                await robotManager.sleep(3000);
 
-            checkStop();
-            await robotManager.sleep(3000); // 等待接口完成
-            const companyNetwork = await cdpService.getNetworkEvents();
+                // 刷新新 tab（此时监听已启用）
+                await cdpService.executeScript('location.reload()');
 
-            // 获取公司详情
-            logger.info('[PositionClick] 获取公司数据...');
+                checkStop();
+                await robotManager.sleep(3000); // 等待接口完成
+                const companyNetwork = await cdpService.getNetworkEvents();
 
-            const guopinCompanyInfoList = companyNetwork.filter(e => e.url.includes(config.companyNetUrl));
-            logger.info('///////////////////////////////3', guopinCompanyInfoList);
-            logger.info('获取到公司接口:', guopinCompanyInfoList);
-            if (guopinCompanyInfoList.length > 0) {
-                const guopinCompanyInfo = guopinCompanyInfoList.pop(); // 获取最后一个
+                // 获取公司详情
+                logger.info('[PositionClick] 获取公司数据...');
 
-                if (guopinCompanyInfo?.response_body) {
-                    const company = await buildCompanyData(JSON.parse(guopinCompanyInfo.response_body), channelName);
-                    dataInfo = Object.assign(dataInfo, company)
-                    logger.info('///////////////////////////////4', company);
+                const guopinCompanyInfoList = companyNetwork.filter(e => e.url.includes(config.companyNetUrl));
+                logger.info('///////////////////////////////3', guopinCompanyInfoList);
+                logger.info('获取到公司接口:', guopinCompanyInfoList);
+                if (guopinCompanyInfoList.length > 0) {
+                    const guopinCompanyInfo = guopinCompanyInfoList.pop(); // 获取最后一个
+
+                    if (guopinCompanyInfo?.response_body) {
+                        const company = await buildCompanyData(JSON.parse(guopinCompanyInfo.response_body), channelName);
+                        dataInfo = Object.assign(dataInfo, company)
+                        logger.info('///////////////////////////////4', company);
+                    }
                 }
             }
 
