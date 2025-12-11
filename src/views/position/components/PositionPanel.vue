@@ -129,13 +129,13 @@ const channels = ref([
         name: 'BOSS直聘',
         value: 'boss',
         icon: bossIcon,
-        isLogin: true
+        isLogin: false
     },
     {
         name: '智联招聘',
         value: 'zhilian',
         icon: zhilianIcon,
-        isLogin: true
+        isLogin: false
     },
     {
         name: '国聘网',
