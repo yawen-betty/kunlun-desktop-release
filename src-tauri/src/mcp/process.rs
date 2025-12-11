@@ -51,9 +51,7 @@ impl McpProcess {
         cmd.arg(entry_clean)
             .arg("--browser")
             .arg("chromium")
-            .arg("--isolated")
-            .arg("--no-warnings")
-            .arg("--silent");
+            .arg("--isolated");
 
         if !headless {
             eprintln!("[MCP] Starting in HEADED mode (visible browser)");
@@ -63,7 +61,7 @@ impl McpProcess {
         }
 
         #[cfg(target_os = "windows")]
-        cmd.creation_flags(0x08000000);
+        cmd.creation_flags(0x08000000 | 0x00000008);
 
         let mut child = cmd.env("PLAYWRIGHT_BROWSERS_PATH", browsers_path.to_str().unwrap())
             .stdin(Stdio::piped())

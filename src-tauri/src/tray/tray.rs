@@ -17,12 +17,12 @@ pub fn create_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     let mut tray_builder = TrayIconBuilder::new()
         .tooltip("昆仑")
         .menu(&menu);
-    
+
     // 安全地设置图标
     if let Some(icon) = app.default_window_icon() {
         tray_builder = tray_builder.icon(icon.clone());
     }
-    
+
     let _tray = tray_builder
         .menu_on_left_click(false)
         .on_tray_icon_event(|tray, event| {
@@ -32,7 +32,7 @@ pub fn create_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
             handle_menu_event(app, &event.id().as_ref());
         })
         .build(app)?;
-    
+
     eprintln!("[Tray] System tray created successfully");
     Ok(())
 }
@@ -75,7 +75,7 @@ fn toggle_window_visibility<R: Runtime>(app: &AppHandle<R>) {
                 let _ = window.show();
                 let _ = window.set_focus();
                 // macOS 特殊处理：取消最小化状态
-                #[cfg(target_os = "macos")]
+//                 #[cfg(target_os = "macos")]
                 let _ = window.unminimize();
             }
         }
