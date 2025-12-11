@@ -9,7 +9,7 @@ import {hasChineseCharacters} from '@/utiles/validators.ts';
 import {Config} from '@/Config.ts';
 
 // 从 App.vue 注入版本更新状态
-const showVersionUpdate = inject<Ref<boolean>>('showVersionUpdate', ref(false));
+const currentShowVersion = inject<Ref<boolean>>('currentShowVersion', ref(false));
 
 /**
  * 监听窗口大小,调整尺寸 开始
@@ -65,13 +65,13 @@ onMounted(() => {
                 <MenuItem :name="item.path" v-if="item.show">
                     <SvgIcon :name="item.meta.icon" :size="minSize ? '20px' : '16px'" />
                     <span>{{ item.meta.title }}</span>
-                    <template v-if="item.path === '/personalInfo' && showVersionUpdate">
+                    <div v-if="item.path === '/personalInfo' && currentShowVersion" @click.stop>
                         <SvgIcon class="new-svg" name="icon-triangle" size="10px" />
                         <span class="new-badge">
                             <span style="width: 94px">NEW 新版本！</span>
-                            <SvgIcon class="new-close" name="icon-cha" size="10px" color="#fff" @click="showVersionUpdate = false" />
+                            <SvgIcon class="new-close" name="icon-cha" size="10px" color="#fff" @click.stop="currentShowVersion = false" />
                         </span>
-                    </template>
+                    </div>
                 </MenuItem>
             </template>
         </Menu>
@@ -180,9 +180,12 @@ onMounted(() => {
             line-height: 16px;
             text-align: center;
             border-radius: 4px;
+            // pointer-events: none;
+            cursor: default;
 
             .new-close {
                 margin: 0 0 0 5px;
+                cursor: pointer;
             }
         }
     }

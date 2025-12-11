@@ -1,8 +1,9 @@
 <template>
     <div class="personal-info-sidebar">
         <Menu :active-name="modelValue" @on-select="handleSelect">
-            <MenuItem v-for="item in menuItems" :key="item.name" :name="item.name">
+            <MenuItem class="personal-info-item" v-for="item in menuItems" :key="item.name" :name="item.name">
                 <span class="menu-text">{{ item.label }}</span>
+                <span v-if="item.name === 'version' && showVersionUpdate" class="red-dot"></span>
             </MenuItem>
         </Menu>
 
@@ -30,7 +31,7 @@
 
 <script setup lang="ts">
 import SvgIcon from '@/components/svgIcon/index.vue';
-import {ref, onMounted, computed, onActivated} from 'vue';
+import {ref, onMounted, computed, inject, Ref} from 'vue';
 import {Button, Icon, Modal} from 'view-ui-plus';
 import {AuthService} from '@/service/AuthService.ts';
 import {UserInfo} from '@/utiles/userInfo.ts';
@@ -50,6 +51,7 @@ const emit = defineEmits<Emits>();
 
 const logoutState = ref(false);
 const showHelpCenter = ref(false);
+const showVersionUpdate = inject<Ref<boolean>>('showVersionUpdate', ref(false));
 const adminService = AdminService.getInstance();
 const authService = new AuthService();
 
@@ -106,6 +108,12 @@ const handleSubmitLogout = () => {
     border-radius: vw(2);
     position: relative;
 
+    .personal-info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
     :deep(.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu):after) {
         background-color: $white;
     }
@@ -154,6 +162,13 @@ const handleSubmitLogout = () => {
                 font-weight: 500;
                 margin-left: vw(20);
                 line-height: vw(20);
+            }
+
+            .red-dot {
+                width: vw(8);
+                height: vw(8);
+                background: #ff4d4f;
+                border-radius: 50%;
             }
 
             &.ivu-menu-item-active {

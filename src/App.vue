@@ -25,25 +25,25 @@ const router = useRouter();
 
 // 提供给子组件的配置状态
 const showVersionUpdate = ref(false);
+const currentShowVersion = ref(false);
 const versionUpdateInfo = ref<GetVersionInfoOutDto>(new GetVersionInfoOutDto());
 provide('showVersionUpdate', showVersionUpdate);
-provide('versionUpdateInfo', versionUpdateInfo);
+provide('currentShowVersion', currentShowVersion);
 
 // 应用启动时自动检查更新
 onMounted(async () => {
     emitter.on('forcedUpdate', manualCheckUpdate);
     preCheck();
     getConfigInfo();
-    auth.getToken()
-        .then((token) => {
-            if (token) {
-                UserInfo.info.token = token;
-                getUserInfo(userService);
-                getMatchAnalysisPrompt();
-            } else {
-                router.push('/login');
-            }
-        })
+    auth.getToken().then((token) => {
+        if (token) {
+            UserInfo.info.token = token;
+            getUserInfo(userService);
+            getMatchAnalysisPrompt();
+        } else {
+            router.push('/login');
+        }
+    });
 });
 
 onUnmounted(() => {
@@ -56,6 +56,7 @@ const preCheck = async () => {
     const result = await checkForUpdates(currentVersion, false);
     checkForUpdatesResult.value = result;
     showVersionUpdate.value = !!checkForUpdatesResult.value?.newVersion && currentVersion !== checkForUpdatesResult.value?.newVersion;
+    currentShowVersion.value = showVersionUpdate.value;
 };
 // 启动获取最新版本信息
 const theCheckForUpdates = async () => {
@@ -129,9 +130,9 @@ const getMatchAnalysisPrompt = () => {
 
 <template>
     <main class="container">
-        <router-view/>
+        <router-view />
     </main>
-    <UpdateDialog ref="updateDialogRef"/>
+    <UpdateDialog ref="updateDialogRef" />
 </template>
 <style lang="scss" scoped>
 @use '@/assets/styles/variable.scss' as *;
