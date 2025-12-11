@@ -20,7 +20,7 @@
                         <SvgIcon class="pointer" color="#9499A4" name="icon-bianji-xian" size="14"
                                  @click="showRenameModal = true"/>
                     </div>
-                    <div v-if="showScoreAndMode && currentMode === 'manual'" class="score-wrapper flex flex-column">
+                    <div v-if="currentMode === 'manual'" class="score-wrapper flex flex-column">
                         <div class="score-text mr-10">当前简历分数：{{ resumeScore }}</div>
                         <Poptip v-if="scoreProblems.length" class="questions-pop flex-column mr-20" placement="bottom"
                                 trigger="hover">
@@ -28,7 +28,9 @@
                             <template #content>
                                 <ul class="problem-list">
                                     <li v-for="(problem, index) in scoreProblems" :key="index">
-                                        <span class="problem-text">{{ problem.problem }}</span>
+                                        <span class="problem-text">{{
+                                                problem.isEnquiry ? '[已问询] ' : ''
+                                            }}{{ problem.problem }}</span>
                                     </li>
                                 </ul>
                             </template>
@@ -60,7 +62,9 @@
                             <template #content>
                                 <ul class="problem-list">
                                     <li v-for="(problem, index) in scoreProblems" :key="index">
-                                        <span class="problem-text">{{ problem.problem }}</span>
+                                        <span class="problem-text">{{ problem.isEnquiry ? '[已问询] ' : '' }}{{
+                                                problem.problem
+                                            }}</span>
                                     </li>
                                 </ul>
                             </template>

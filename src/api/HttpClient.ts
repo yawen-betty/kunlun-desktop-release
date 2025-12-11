@@ -143,6 +143,8 @@ export default class HttpClient {
                 case 2602:
                 // 简历ID不存在
                 case 2306:
+                // 职位已存在
+                case 2604:
                     break;
                 // ai账号没有配置
                 case 2603:
