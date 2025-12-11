@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {onMounted, ref, provide, readonly, onUnmounted} from 'vue';
+import {onMounted, ref, provide, onUnmounted} from 'vue';
 import {checkForUpdates} from '@/updater';
 import UpdateDialog from '@/components/updateDialog/index.vue';
 import {Config} from '@/Config.ts';
@@ -14,7 +14,11 @@ import {SystemInfo} from '@/utiles/systemInfo.ts';
 import {AdminService} from '@/service/AdminService.ts';
 import emitter from '@/utiles/eventBus';
 import {GetVersionInfoOutDto} from './api/admin/dto/GetVersionInfo';
+import {GetJobTaskInDto} from "@/api/job/dto/GetJobTask.ts";
+import {JobService} from "@/service/JobService.ts";
+import {ActivateJobTaskInDto} from "@/api/job/dto/ActivateJobTask.ts";
 
+const jobService = new JobService()
 const adminService = new AdminService();
 const userService = new UserService();
 const updateDialogRef = ref();
@@ -40,6 +44,8 @@ onMounted(async () => {
             UserInfo.info.token = token;
             getUserInfo(userService);
             getMatchAnalysisPrompt();
+            console.log(adminService, userService, jobService)
+            switchTaskStatus()
         } else {
             router.push('/login');
         }
@@ -108,6 +114,17 @@ const getUserInfo = (userService: UserService) => {
     });
 };
 
+const switchTaskStatus = async () => {
+    const params = new GetJobTaskInDto()
+    const result = await jobService.getJobTask(params)
+    if (result.code === 200 && result.data && result.data.status === 0) {
+        const inDto = new ActivateJobTaskInDto()
+        inDto.uuid = result.data.uuid
+        inDto.status = 1
+        jobService.activateJobTask(inDto)
+    }
+}
+
 // 获取系统配置
 const getConfigInfo = () => {
     adminService.getConfig(new GetConfigInDto()).then((res) => {
@@ -130,9 +147,9 @@ const getMatchAnalysisPrompt = () => {
 
 <template>
     <main class="container">
-        <router-view />
+        <router-view/>
     </main>
-    <UpdateDialog ref="updateDialogRef" />
+    <UpdateDialog ref="updateDialogRef"/>
 </template>
 <style lang="scss" scoped>
 @use '@/assets/styles/variable.scss' as *;
