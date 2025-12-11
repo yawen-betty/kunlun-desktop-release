@@ -251,7 +251,7 @@ const handleToggleTaskStatus = debounce(async () => {
                     while (!robotManager.isRealStop) {
                         await new Promise(resolve => setTimeout(resolve, 500));
                     }
-                    await new Promise(resolve => setTimeout(resolve, 3000))
+                    await new Promise(resolve => setTimeout(resolve, 5000))
                     hideLoading()
                     UserInfo.info.isRunningTask = false
                     message.success(Message, '任务已关闭，将不再推送精选职位！')

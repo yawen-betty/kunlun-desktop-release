@@ -118,6 +118,7 @@ export class RobotManager {
         } catch (error) {
             logger.error('[RobotManager] MCP 初始化失败:', error);
             this.isRunning = false;
+            this.isRealStop = true;
             return;
         }
 
@@ -195,6 +196,7 @@ export class RobotManager {
                 } catch (error) {
                     logger.error('[RobotManager] 重新初始化 MCP 失败:', error);
                     this.isRunning = false;
+                    this.isRealStop = true;
                     return;
                 }
             }
