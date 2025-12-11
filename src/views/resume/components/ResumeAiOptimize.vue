@@ -60,6 +60,7 @@ import {extractDataContent} from '@/utiles/processing.ts';
 import {AiService} from '@/service/AiService.ts';
 import {scrollToBottom} from '@/utiles/domUtils.ts';
 import {AiErrorHandler} from '@/utiles/aiErrorHandler.ts';
+import {hideLoading, showLoading} from '@/utiles/loading.ts';
 
 interface Props {
     modelValue: boolean; //弹窗状态
@@ -101,7 +102,7 @@ const handleCancel = () => {
 // 开始ai 生成
 const handleSubmit = () => {
     if (requirement.value.length > 0 && requirement.value.length < 20) return message.warning(Message, '请至少填写20个字！');
-
+    showLoading();
     thinkContent.value = '';
     content.value = '';
     state.value = '1';
@@ -118,6 +119,7 @@ const handleSubmit = () => {
     aiService.polishStream(
         params,
         (data: string) => {
+            hideLoading();
             if (data.includes('event:thinking')) {
                 state.value = '2';
                 const str: string = extractDataContent(data, 'event:thinking');
