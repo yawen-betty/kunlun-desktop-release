@@ -2,7 +2,7 @@
     <div class="login-page">
         <div class="left-section">
             <div class="brand-area">
-                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30" />
+                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30"/>
                 <h1 class="app-name">{{ SystemInfo.info.loginTitle }}</h1>
             </div>
 
@@ -12,7 +12,7 @@
             </div>
 
             <div class="illustration-area">
-                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration" />
+                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration"/>
             </div>
         </div>
 
@@ -21,11 +21,11 @@
                 <h2 class="login-title">微信扫码登录/注册</h2>
 
                 <div class="qrcode-box">
-                    <div class="is-error" v-show="isError">
+                    <div v-show="isError" class="is-error">
                         <div class="error-text">该账号已被管理员停用，无法登陆</div>
                         <div class="reload-box">
                             <div class="reload-text">重新扫码登录</div>
-                            <svg-icon name="icon-shuaxin" color="#FC8719" size="20"></svg-icon>
+                            <svg-icon color="#FC8719" name="icon-shuaxin" size="20"></svg-icon>
                         </div>
                     </div>
                     <div class="qrcode-reload pointer" @click="generateQRCode"></div>
@@ -76,6 +76,9 @@ import {auth} from '@/utiles/tauriCommonds.ts';
 import {useRouter} from 'vue-router';
 import {message} from '@/utiles/Message.ts';
 import SvgIcon from '@/components/svgIcon/index.vue';
+import {GetJobTaskInDto} from "@/api/job/dto/GetJobTask.ts";
+import {ActivateJobTaskInDto} from "@/api/job/dto/ActivateJobTask.ts";
+import {JobService} from "@/service/JobService.ts";
 
 const qrCodeUrl = ref<string>('');
 const showAgreement = ref<boolean>(false);
@@ -90,6 +93,7 @@ const isError = ref<boolean>(false);
 const authService = new AuthService();
 const adminService = new AdminService();
 const userService = new UserService();
+const jobService = new JobService()
 
 const openAgreement = (type: number) => {
     showAgreement.value = true;
@@ -196,6 +200,7 @@ const getStatus = () => {
 const getUserInfo = () => {
     userService.getProfile(new GetProfileInDto()).then((res) => {
         if (res.code === 200) {
+            switchTaskStatus()
             // 拼接域名
             UserInfo.info.avatar = res.data.avatarUrl || '';
             UserInfo.info.userName = res.data.name!;
@@ -209,6 +214,18 @@ const getUserInfo = () => {
         }
     });
 };
+
+const switchTaskStatus = async () => {
+    const params = new GetJobTaskInDto()
+    const result = await jobService.getJobTask(params)
+    if (result.code === 200 && result.data && result.data.status === 0) {
+        const inDto = new ActivateJobTaskInDto()
+        inDto.uuid = result.data.uuid
+        inDto.status = 1
+        jobService.activateJobTask(inDto)
+    }
+}
+
 
 const open = () => {
     inter.value = setInterval(() => {
@@ -382,11 +399,13 @@ onMounted(() => {
                         font-weight: 600;
                         line-height: vw(24);
                     }
+
                     .reload-box {
                         display: flex;
                         gap: vw(10);
                         justify-content: center;
                         align-content: center;
+
                         .reload-text {
                             color: $theme-color;
                             font-size: vw(18);

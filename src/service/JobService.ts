@@ -23,7 +23,7 @@ export class JobService {
     private http: HttpClient;
 
     constructor() {
-        this.http = inject('$http') as HttpClient;
+        this.http = new HttpClient();
     }
 
     // 静态方法，用于获取类的唯一实例
