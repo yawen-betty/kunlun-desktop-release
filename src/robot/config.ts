@@ -16,7 +16,9 @@ export const CHANNEL_CONFIG = {
     /** 监听职位的接口 */
     positionNetUrl: 'web/competitive/jobDetail.json',
     /** 监听公司的接口 */
-    companyNetUrl: '/zpCommon/toggle/all'
+    companyNetUrl: '/zpCommon/toggle/all',
+    /** 搜索列表接口 用来判断是否有职位 */
+    positionCountUrl: '/search/joblist.json'
   },
   zhilian: {
     homeUrl: 'https://www.zhaopin.com/',
@@ -25,7 +27,8 @@ export const CHANNEL_CONFIG = {
     loginSuccessCode: 200,
     cookieDomain: '.zhaopin.com',
     positionNetUrl: 'experiment/config',
-    companyNetUrl: 'experiment/config'
+    companyNetUrl: 'experiment/config',
+    positionCountUrl: '/search/positions'
   },
   guopin: {
     homeUrl: 'https://www.iguopin.com/',
@@ -34,7 +37,8 @@ export const CHANNEL_CONFIG = {
     loginSuccessCode: 200,
     cookieDomain: '.chinahr.com',
     positionNetUrl: '/api/jobs/v1/info',
-    companyNetUrl: '/company/index/v1/home'
+    companyNetUrl: '/company/index/v1/home',
+    positionCountUrl: 'api/jobs/v1/recom-job'
   }
 };
 

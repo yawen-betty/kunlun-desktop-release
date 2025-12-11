@@ -139,9 +139,9 @@ const bossPosition = async () => {
     const result = await executePositionSearch({
         channelName: 'boss',
         searchParams: {
-            jobTitle: 'Java',
-            cityInfos: '丽水',
-            experience: '5-10K'
+            jobTitle: '学徒',
+            cityInfos: '兰州',
+            experience: '50K以上'
         },
         apiKey: 'ca9112c0753043ae9c2f9647892f49e7.bfZ2cqxbzv7duOph'
     },
@@ -164,9 +164,9 @@ const zhilianPosition = async () => {
     const result = await executePositionSearch({
         channelName: 'zhilian',
         searchParams: {
-            jobTitle: 'Java',
+            jobTitle: '学徒',
             cityInfos: '丽水',
-            experience: '10K-15K'
+            experience: '50K以上'
         },
         apiKey: 'ca9112c0753043ae9c2f9647892f49e7.bfZ2cqxbzv7duOph'
     },
@@ -189,9 +189,9 @@ const guopinPosition = async () => {
     const result = await executePositionSearch({
         channelName: 'guopin',
         searchParams: {
-            jobTitle: 'Java',
-            cityInfos: '丽水',
-            experience: '10K-20K'
+            jobTitle: '测试开发',
+            cityInfos: '北京',
+            experience: '60k以上'
         },
         apiKey: '2f8832011b8142c88355c47e436a371d.dxOs4FN5VORHJGbI'
     },
