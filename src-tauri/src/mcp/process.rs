@@ -51,7 +51,9 @@ impl McpProcess {
         cmd.arg(entry_clean)
             .arg("--browser")
             .arg("chromium")
-            .arg("--isolated");
+            .arg("--isolated")
+            .arg("--no-warnings")
+            .arg("--silent");
 
         if !headless {
             eprintln!("[MCP] Starting in HEADED mode (visible browser)");
@@ -63,9 +65,7 @@ impl McpProcess {
         #[cfg(target_os = "windows")]
         cmd.creation_flags(0x08000000);
 
-        let mut child = cmd.env("NODE_NO_WARNINGS", "1")
-            .env("ELECTRON_ENABLE_LOGGING", "0")
-            .env("PLAYWRIGHT_BROWSERS_PATH", browsers_path.to_str().unwrap())
+        let mut child = cmd.env("PLAYWRIGHT_BROWSERS_PATH", browsers_path.to_str().unwrap())
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
