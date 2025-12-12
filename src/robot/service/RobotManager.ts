@@ -4,6 +4,7 @@ import {channelAuth} from "@/robot/channelLogin/authManage.ts";
 import {executePositionSearch} from "@/robot/channelPositions/positionSearch.ts";
 import {listen} from '@tauri-apps/api/event';
 import {UserInfo} from "@/utiles/userInfo.ts";
+import emitter from "@/utiles/eventBus.ts";
 
 
 /**
@@ -83,6 +84,7 @@ export class RobotManager {
             // 停止 MCP
             await mcpService.stop();
             this.mcpInitialized = false;
+            this.isRealStop = true
             logger.info('[RobotManager] MCP 已停止');
         } catch (error) {
             logger.error('[RobotManager] 停止 MCP 失败:', error);
@@ -118,6 +120,7 @@ export class RobotManager {
         } catch (error) {
             logger.error('[RobotManager] MCP 初始化失败:', error);
             this.isRunning = false;
+            this.isRealStop = true;
             return;
         }
 
@@ -130,7 +133,11 @@ export class RobotManager {
 
             // 获取所有渠道的 Cookie
             const cookies = await channelAuth.getAllCookies();
-
+            if (channelList.every(channel => !cookies[channel])) {
+                logger.info('[RobotManager] 没有任何渠道登录信息 爬取已停止');
+                this.isRealStop = true
+                return;
+            }
             // 内层循环：遍历所有渠道
             for (const channel of channelList) {
                 // 检查是否被停止
@@ -147,7 +154,7 @@ export class RobotManager {
                     logger.info(`[RobotManager] 开始爬取 ${channel} 渠道`);
 
                     try {
-                        await executePositionSearch({
+                        const res = await executePositionSearch({
                                 channelName: channel,
                                 searchParams: searchParams,
                                 apiKey: UserInfo.info.modelList[0].apiKey!,
@@ -159,6 +166,9 @@ export class RobotManager {
                             () => this.isRunning
                         );
 
+                        if (res.code === 403) {
+                            emitter.emit('loginFailure', channel)
+                        }
                         logger.info(`[RobotManager] ${channel} 渠道爬取完成`);
                     } catch (error: any) {
                         if (error.name === 'AbortError') {
@@ -195,12 +205,14 @@ export class RobotManager {
                 } catch (error) {
                     logger.error('[RobotManager] 重新初始化 MCP 失败:', error);
                     this.isRunning = false;
+                    this.isRealStop = true;
                     return;
                 }
             }
         }
         if (roundCount >= maxRounds) {
             await this.cleanup();
+            this.isRealStop = true;
             logger.info(`[RobotManager] 已完成最大轮次 ${maxRounds}，爬取结束`);
         } else {
             logger.info('[RobotManager] 爬取循环结束');
@@ -220,6 +232,10 @@ export class RobotManager {
                     logger.info('[RobotManager] 正在停止中，忽略浏览器关闭事件');
                     return;
                 }
+
+                this.cleanup();
+                // 通知前端 取消loading
+                emitter.emit('cancelLoading');
 
                 // 标记 MCP 未初始化（需要重新初始化）
                 this.mcpInitialized = false;

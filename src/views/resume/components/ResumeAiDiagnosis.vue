@@ -48,6 +48,7 @@ import {scrollToBottom} from "@/utiles/domUtils.ts";
 import {AiErrorHandler} from "@/utiles/aiErrorHandler.ts";
 import {AiMessageBean} from "@/api/ai/dto/bean/AiMessageBean.ts";
 import {DiagnoseInDto} from "@/api/ai/dto/Diagnose.ts";
+import {hideLoading, showLoading} from "@/utiles/loading.ts";
 
 interface Props {
     visible: boolean; //弹窗状态
@@ -103,9 +104,11 @@ const open = (resumeId: string) => {
         messages
     }
     isRequesting.value = true
+    showLoading()
     aiService.diagnoseStream(
         params,
         (data) => {
+            hideLoading()
             console.log(data, 'data')
             if (data.includes('event:thinking')) {
                 state.value = '2'
