@@ -161,11 +161,9 @@ const handleLogin = debounce(async (channel: any) => {
             while (!robotManager.isRealStop) {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
-            await new Promise(resolve => setTimeout(resolve, 3000))
             const loginResult = await executeLogin(channel.value)
-
+            hideLoading()
             if (loginResult.success) {
-                hideLoading()
                 channel.isLogin = true
                 message.success(Message, '登录成功！')
                 showChannelTip.value = false
@@ -478,11 +476,26 @@ const handleCancelLoading = async () => {
     hideLoading()
 }
 
+/**
+ * 爬取中，渠道掉线
+ * @param channel
+ */
+const handleLoginFailure = (channel: string) => {
+    const i = channels.value.findIndex(item => item.value === channel);
+    if (i !== -1) {
+        channels.value[i].isLogin = false
+    }
+    if (channels.value.every(item => !item.isLogin)) {
+        showChannelTip.value = true
+    }
+}
+
 onMounted(() => {
     loadCurrentTask()
     emitter.on('updateNewPosition', handleUpdateNewPosition)
     emitter.on('exhaustedOfAttempts', handleExhaustedOfAttempts)
     emitter.on('cancelLoading', handleCancelLoading)
+    emitter.on('loginFailure', handleLoginFailure)
     document.addEventListener('click', handleClickOutside)
 })
 
@@ -490,6 +503,7 @@ onBeforeUnmount(() => {
     emitter.off('updateNewPosition', handleUpdateNewPosition)
     emitter.off('exhaustedOfAttempts', handleExhaustedOfAttempts)
     emitter.off('cancelLoading', handleCancelLoading)
+    emitter.on('loginFailure', handleLoginFailure)
     document.removeEventListener('click', handleClickOutside)
 })
 </script>

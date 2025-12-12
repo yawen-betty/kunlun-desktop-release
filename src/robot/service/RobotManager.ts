@@ -133,7 +133,11 @@ export class RobotManager {
 
             // 获取所有渠道的 Cookie
             const cookies = await channelAuth.getAllCookies();
-
+            if (channelList.every(channel => !cookies[channel])) {
+                logger.info('[RobotManager] 没有任何渠道登录信息 爬取已停止');
+                this.isRealStop = true
+                return;
+            }
             // 内层循环：遍历所有渠道
             for (const channel of channelList) {
                 // 检查是否被停止
@@ -150,7 +154,7 @@ export class RobotManager {
                     logger.info(`[RobotManager] 开始爬取 ${channel} 渠道`);
 
                     try {
-                        await executePositionSearch({
+                        const res = await executePositionSearch({
                                 channelName: channel,
                                 searchParams: searchParams,
                                 apiKey: UserInfo.info.modelList[0].apiKey!,
@@ -162,6 +166,9 @@ export class RobotManager {
                             () => this.isRunning
                         );
 
+                        if (res.code === 403) {
+                            emitter.emit('loginFailure', channel)
+                        }
                         logger.info(`[RobotManager] ${channel} 渠道爬取完成`);
                     } catch (error: any) {
                         if (error.name === 'AbortError') {
@@ -226,6 +233,7 @@ export class RobotManager {
                     return;
                 }
 
+                this.cleanup();
                 // 通知前端 取消loading
                 emitter.emit('cancelLoading');
 
