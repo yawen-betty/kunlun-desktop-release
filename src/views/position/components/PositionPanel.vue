@@ -161,9 +161,11 @@ const handleLogin = debounce(async (channel: any) => {
             while (!robotManager.isRealStop) {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
+            await new Promise(resolve => setTimeout(resolve, 3000))
             const loginResult = await executeLogin(channel.value)
-            hideLoading()
+
             if (loginResult.success) {
+                hideLoading()
                 channel.isLogin = true
                 message.success(Message, '登录成功！')
                 showChannelTip.value = false
@@ -178,7 +180,7 @@ const handleLogin = debounce(async (channel: any) => {
                     UserInfo.info.isRunningTask = true
                 }
             } else {
-                message.error(Message, `登录失败: ${loginResult.error}`)
+                console.log(`登录失败: ${loginResult.error}`)
             }
         } catch (error) {
             console.error('登录异常:', error)
@@ -279,7 +281,7 @@ const handleSelectTask = debounce(async (taskId: string) => {
         if (result.code === 200) {
             resetFilters()
             selectedId.value = '';
-            await loadCurrentTask()
+            await loadCurrentTask(true)
         }
     } catch (error) {
         console.error('切换任务失败:', error)
@@ -303,13 +305,14 @@ const handleDeleteTask = async (uuid?: string) => {
             // 如果列表为空，通知父组件切换到CreateTask
             if (taskList.value.length === 0) {
                 emit('all-tasks-deleted')
+                robotManager.cleanup()
             } else if (isCurrentTask) {
                 // 如果删除的是当前任务但还有其他任务，切换到最近创建的任务（列表最后一个）
                 const nextTask = taskList.value[taskList.value.length - 1]
                 if (nextTask) {
                     await jobService.switchJobTask(nextTask.uuid)
                     resetFilters()
-                    await loadCurrentTask()
+                    await loadCurrentTask(true)
                 }
             }
         }
@@ -318,7 +321,7 @@ const handleDeleteTask = async (uuid?: string) => {
     }
 }
 
-const loadCurrentTask = async () => {
+const loadCurrentTask = async (isShowTip?: boolean) => {
     try {
         const params = new GetJobTaskInDto()
         const result = await jobService.getJobTask(params)
@@ -362,7 +365,7 @@ const loadCurrentTask = async () => {
                     }
                 }
             } else {
-                message.error(Message, '求职简历不存在，任务开启失败!')
+                isShowTip && message.error(Message, '求职简历不存在，任务开启失败!')
             }
         }
     } catch (error) {
@@ -415,8 +418,9 @@ const loadOtherTasks = async () => {
 }
 
 const handleTaskUpdated = async () => {
+    selectedId.value = '';
     resetFilters()
-    await loadCurrentTask()
+    await loadCurrentTask(true)
 }
 
 const handleRefresh = async () => {
@@ -469,25 +473,23 @@ const handleExhaustedOfAttempts = async () => {
     loadCurrentTask()
 }
 
-const handleBeforeUnload = async () => {
-    if (currentTask.value?.uuid) {
-        const params = new ActivateJobTaskInDto()
-        params.uuid = currentTask.value.uuid
-        params.status = 1
-        await jobService.activateJobTask(params)
-    }
+const handleCancelLoading = async () => {
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    hideLoading()
 }
 
-onMounted(async () => {
+onMounted(() => {
     loadCurrentTask()
     emitter.on('updateNewPosition', handleUpdateNewPosition)
     emitter.on('exhaustedOfAttempts', handleExhaustedOfAttempts)
+    emitter.on('cancelLoading', handleCancelLoading)
     document.addEventListener('click', handleClickOutside)
 })
 
 onBeforeUnmount(() => {
     emitter.off('updateNewPosition', handleUpdateNewPosition)
     emitter.off('exhaustedOfAttempts', handleExhaustedOfAttempts)
+    emitter.off('cancelLoading', handleCancelLoading)
     document.removeEventListener('click', handleClickOutside)
 })
 </script>
