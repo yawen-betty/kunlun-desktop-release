@@ -57,9 +57,7 @@ onActivated(() => {
                 <div class="feature-section">
                     <p class="feature-title">一、AI面试辅导：可在APP中开始辅导</p>
                     <div class="img-wrapper">
-                        <div class="feature-img">
-                            <img alt="AI面试辅导" src="@/assets/images/ai-interview-tutorship.png">
-                        </div>
+                        <img alt="AI面试辅导" class="feature-img" src="@/assets/images/ai-interview-tutorship.png">
                     </div>
                 </div>
 
