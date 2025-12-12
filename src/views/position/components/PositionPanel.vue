@@ -478,11 +478,26 @@ const handleCancelLoading = async () => {
     hideLoading()
 }
 
+/**
+ * 爬取中，渠道掉线
+ * @param channel
+ */
+const handleLoginFailure = (channel: string) => {
+    const i = channels.value.findIndex(item => item.value === channel);
+    if (i !== -1) {
+        channels.value[i].isLogin = false
+    }
+    if (channels.value.every(item => !item.isLogin)) {
+        showChannelTip.value = true
+    }
+}
+
 onMounted(() => {
     loadCurrentTask()
     emitter.on('updateNewPosition', handleUpdateNewPosition)
     emitter.on('exhaustedOfAttempts', handleExhaustedOfAttempts)
     emitter.on('cancelLoading', handleCancelLoading)
+    emitter.on('loginFailure', handleLoginFailure)
     document.addEventListener('click', handleClickOutside)
 })
 
@@ -490,6 +505,7 @@ onBeforeUnmount(() => {
     emitter.off('updateNewPosition', handleUpdateNewPosition)
     emitter.off('exhaustedOfAttempts', handleExhaustedOfAttempts)
     emitter.off('cancelLoading', handleCancelLoading)
+    emitter.on('loginFailure', handleLoginFailure)
     document.removeEventListener('click', handleClickOutside)
 })
 </script>

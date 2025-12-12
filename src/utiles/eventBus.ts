@@ -5,6 +5,7 @@ type Events = {
     updateNewPosition: void; // 更新精选职位 有新职位UI
     exhaustedOfAttempts: void; // 推荐次数用完
     cancelLoading: void; // 取消loading
+    loginFailure: string; // 登录失效
 };
 
 const emitter = mitt<Events>();
