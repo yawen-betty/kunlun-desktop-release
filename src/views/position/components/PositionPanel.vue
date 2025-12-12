@@ -161,11 +161,9 @@ const handleLogin = debounce(async (channel: any) => {
             while (!robotManager.isRealStop) {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
-            await new Promise(resolve => setTimeout(resolve, 3000))
             const loginResult = await executeLogin(channel.value)
-
+            hideLoading()
             if (loginResult.success) {
-                hideLoading()
                 channel.isLogin = true
                 message.success(Message, '登录成功！')
                 showChannelTip.value = false

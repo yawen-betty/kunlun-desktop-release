@@ -233,6 +233,7 @@ export class RobotManager {
                     return;
                 }
 
+                this.cleanup();
                 // 通知前端 取消loading
                 emitter.emit('cancelLoading');
 
