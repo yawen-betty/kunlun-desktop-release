@@ -15,7 +15,7 @@ pub fn create_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
 
     // 创建托盘图标
     let mut tray_builder = TrayIconBuilder::new()
-        .tooltip("昆仑")
+        .tooltip("AI聘次方")
         .menu(&menu);
 
     // 安全地设置图标
