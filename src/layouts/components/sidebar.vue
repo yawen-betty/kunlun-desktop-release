@@ -99,8 +99,8 @@ onMounted(() => {
         padding: 60px 20px 20px;
 
         .user-avatar {
-            width: vw(30);
-            height: vw(30);
+           width: 30px;
+            height: 30px;
             border-radius: 50%;
         }
 
@@ -113,8 +113,8 @@ onMounted(() => {
             height: vw(30);
             border-radius: 50%;
             background: $theme-color;
-            margin-right: 10px;
-            font-size: 12px;
+            margin-right: vw(10);
+            font-size: vw(12);
             font-weight: bold;
             color: #fff;
         }
@@ -212,9 +212,9 @@ onMounted(() => {
         justify-content: center;
 
         .user-circle {
-            width: vw(30);
-            height: vw(30);
-            font-size: vw(16);
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
         }
     }
 
@@ -234,6 +234,12 @@ onMounted(() => {
             margin-right: 0;
             margin-bottom: 6px;
         }
+    }
+
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
     }
 }
 </style>

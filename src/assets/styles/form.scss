@@ -39,6 +39,10 @@
     background: $bg-gray;
     padding: vh(12) vw(20);
     border: 0 !important;
+    font-size: vw(14);
+}
+textarea.ivu-input{
+    font-size: vw(14);
 }
 
 .ivu-input-small {
@@ -461,6 +465,10 @@ fieldset[disabled] .ivu-input,
 // label在上样式重写
 .ivu-form-label-top .ivu-form-item-label {
     padding: 0 0 vh(14) 0;
+}
+.ivu-form .ivu-form-item-label{
+    font-size: vw(14);
+    padding: vh(10) vw(12) vh(10) 0;
 }
 
 // 密码样式重写

@@ -206,6 +206,7 @@ watch(() => props.optionsList, async (newValue) => {
       padding-left: vw(10);
       line-height: vw(26);
       cursor: pointer;
+      font-size: vw(14);
 
       span {
         white-space: nowrap;
