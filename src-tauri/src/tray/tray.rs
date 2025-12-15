@@ -24,7 +24,7 @@ pub fn create_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     }
 
     let _tray = tray_builder
-        .menu_on_left_click(false)
+        .show_menu_on_left_click(false)
         .on_tray_icon_event(|tray, event| {
             handle_tray_event(tray.app_handle(), event);
         })

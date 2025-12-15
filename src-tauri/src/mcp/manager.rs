@@ -1,5 +1,4 @@
 use tauri::AppHandle;
-use super::types::BrowserStatus;
 use super::browser::BrowserManager;
 use super::process::McpProcess;
 use super::protocol::McpProtocol;

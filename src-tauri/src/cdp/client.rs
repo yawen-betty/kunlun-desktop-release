@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
 use tokio::sync::{Mutex, RwLock, mpsc};
 use std::collections::HashMap;
-use tauri::{Manager, Emitter};
+use tauri::Emitter;
 use super::types::*;
 
 pub struct CDPClient {
@@ -24,6 +24,7 @@ pub struct CDPClient {
 
 impl CDPClient {
     /// 连接到 CDP
+    #[allow(dead_code)]
     pub async fn connect(url: &str) -> Result<Self, String> {
         Self::connect_with_app(url, None).await
     }

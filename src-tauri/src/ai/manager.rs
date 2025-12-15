@@ -60,6 +60,7 @@ impl AIManager {
     /// # 说明
     /// 设置取消标志，任务会在下一次检查点停止执行
     /// 不会立即中断，而是在对话循环的下一轮检查时退出
+    #[allow(dead_code)]
     pub fn stop_task(&self) {
         eprintln!("[AI] 收到停止任务请求");
         self.cancel_flag.store(true, Ordering::SeqCst);

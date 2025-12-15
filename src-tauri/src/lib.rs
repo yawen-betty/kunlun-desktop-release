@@ -16,7 +16,6 @@ mod tray;
 
 use tokio::sync::Mutex;
 use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
 use mcp::McpManager;
 use ai::AIManager;
 
@@ -25,7 +24,7 @@ pub fn run() {
       let mut builder = tauri::Builder::default();
       #[cfg(desktop)]
       {
-          builder = builder.plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
+          builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
               // 当尝试启动第二个实例时，显示并聚焦已有窗口
               if let Some(window) = app.get_webview_window("main") {
                   let _ = window.show();
