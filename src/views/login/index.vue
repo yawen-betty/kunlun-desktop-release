@@ -2,7 +2,7 @@
     <div class="login-page">
         <div class="left-section">
             <div class="brand-area">
-                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30"/>
+                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30" />
                 <h1 class="app-name">{{ SystemInfo.info.loginTitle }}</h1>
             </div>
 
@@ -12,7 +12,7 @@
             </div>
 
             <div class="illustration-area">
-                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration"/>
+                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration" />
             </div>
         </div>
 
@@ -30,12 +30,14 @@
                     </div>
                     <div class="qrcode-reload pointer" @click="generateQRCode"></div>
                     <iframe
+                        ref="qrcodeIframe"
                         :src="qrCodeUrl"
                         allowTransparency="true"
                         class="qrcode pointer"
                         frameBorder="0"
                         sandbox="allow-scripts allow-top-navigation"
                         scrolling="no"
+                        @load="onIframeLoad"
                     ></iframe>
                 </div>
 
@@ -76,11 +78,13 @@ import {auth} from '@/utiles/tauriCommonds.ts';
 import {useRouter} from 'vue-router';
 import {message} from '@/utiles/Message.ts';
 import SvgIcon from '@/components/svgIcon/index.vue';
-import {GetJobTaskInDto} from "@/api/job/dto/GetJobTask.ts";
-import {ActivateJobTaskInDto} from "@/api/job/dto/ActivateJobTask.ts";
-import {JobService} from "@/service/JobService.ts";
+import {showLoading, hideLoading} from '@/utiles/loading.ts';
+import {GetJobTaskInDto} from '@/api/job/dto/GetJobTask.ts';
+import {ActivateJobTaskInDto} from '@/api/job/dto/ActivateJobTask.ts';
+import {JobService} from '@/service/JobService.ts';
 
 const qrCodeUrl = ref<string>('');
+const qrcodeIframe = ref<HTMLIFrameElement>();
 const showAgreement = ref<boolean>(false);
 const agreementType = ref<number>(1);
 const configInfo = reactive<GetConfigOutDto>(new GetConfigOutDto());
@@ -93,7 +97,7 @@ const isError = ref<boolean>(false);
 const authService = new AuthService();
 const adminService = new AdminService();
 const userService = new UserService();
-const jobService = new JobService()
+const jobService = new JobService();
 
 const openAgreement = (type: number) => {
     showAgreement.value = true;
@@ -105,6 +109,7 @@ const closeModal = () => {
 };
 
 const generateQRCode = async () => {
+    showLoading();
     const redirect_uri = encodeURIComponent(`${Config.baseUrl}api/kunlun/auth/wechat/callback`);
     const hexRef = [
         '0',
@@ -157,6 +162,10 @@ const generateQRCode = async () => {
     isError.value = false;
 };
 
+const onIframeLoad = () => {
+    hideLoading();
+};
+
 //获取基本配置
 const getConfigInfo = () => {
     adminService.getConfig(new GetConfigInDto()).then((res) => {
@@ -200,7 +209,7 @@ const getStatus = () => {
 const getUserInfo = () => {
     userService.getProfile(new GetProfileInDto()).then((res) => {
         if (res.code === 200) {
-            switchTaskStatus()
+            switchTaskStatus();
             // 拼接域名
             UserInfo.info.avatar = res.data.avatarUrl || '';
             UserInfo.info.userName = res.data.name!;
@@ -216,16 +225,15 @@ const getUserInfo = () => {
 };
 
 const switchTaskStatus = async () => {
-    const params = new GetJobTaskInDto()
-    const result = await jobService.getJobTask(params)
+    const params = new GetJobTaskInDto();
+    const result = await jobService.getJobTask(params);
     if (result.code === 200 && result.data && result.data.status === 0) {
-        const inDto = new ActivateJobTaskInDto()
-        inDto.uuid = result.data.uuid
-        inDto.status = 1
-        jobService.activateJobTask(inDto)
+        const inDto = new ActivateJobTaskInDto();
+        inDto.uuid = result.data.uuid;
+        inDto.status = 1;
+        jobService.activateJobTask(inDto);
     }
-}
-
+};
 
 const open = () => {
     inter.value = setInterval(() => {
@@ -241,29 +249,6 @@ onMounted(() => {
     getConfigInfo();
     open();
 });
-
-// const fileService = new FileService();
-// const handleUpload = async (file: File): Promise<boolean> => {
-//   try {
-//     // 直接调用 Service 层的方法
-//     const response = await fileService.upload(file);
-//
-//     if (response.code === 200) {
-//       Message.success('上传成功！');
-//       // 在这里可以处理成功后的逻辑，比如更新页面数据
-//       console.log('上传结果:', response.data);
-//     } else {
-//       // Service/HttpClient 中已经有统一的错误消息提示，这里可以不重复提示
-//       // Message.error(response.msg || '上传失败');
-//     }
-//   } catch (error) {
-//     // Service/HttpClient 中已经有统一的错误消息提示
-//     console.error('处理上传时发生错误:', error);
-//   }
-//
-//   // 阻止组件的默认上传行为
-//   return false;
-//  };
 </script>
 
 <style lang="scss" scoped>

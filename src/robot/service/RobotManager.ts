@@ -84,7 +84,6 @@ export class RobotManager {
             // 停止 MCP
             await mcpService.stop();
             this.mcpInitialized = false;
-            this.isRealStop = true
             logger.info('[RobotManager] MCP 已停止');
         } catch (error) {
             logger.error('[RobotManager] 停止 MCP 失败:', error);
@@ -143,6 +142,7 @@ export class RobotManager {
                 // 检查是否被停止
                 if (!this.isRunning) {
                     logger.info('[RobotManager] 爬取已停止');
+                    await this.cleanup()
                     this.isRealStop = true
                     return;
                 }
@@ -190,6 +190,7 @@ export class RobotManager {
             // 检查是否被停止
             if (!this.isRunning) {
                 logger.info('[RobotManager] 爬取已停止');
+                await this.cleanup()
                 this.isRealStop = true
                 return;
             }

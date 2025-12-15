@@ -63,53 +63,53 @@ class LatestGenerator {
 
   private findPlatformFiles() {
     const platforms: { [key: string]: PlatformInfo } = {};
-    
+
     // 优先扫描根目录（CI/CD 产物位置）
     const rootDir = '.';
-    
+
     // macOS: 根目录
-    let macosAppTar = path.join(rootDir, 'Kunlun.app.tar.gz');
+    let macosAppTar = path.join(rootDir, 'AI聘次方.app.tar.gz');
     let appTarInfo = this.getFileInfo(macosAppTar);
     if (appTarInfo) {
       platforms['darwin-x86_64'] = { ...appTarInfo, url: `${this.downloadUrl}/${path.basename(macosAppTar)}` };
     }
-    
+
     // Windows: 根目录
-    let windowsMsi = path.join(rootDir, `Kunlun_${this.package.version}_x64_en-US.msi`);
+    let windowsMsi = path.join(rootDir, `AI聘次方_${this.package.version}_x64_en-US.msi`);
     let winInfo = this.getFileInfo(windowsMsi);
     if (winInfo) {
       platforms['windows-x86_64'] = { ...winInfo, url: `${this.downloadUrl}/${path.basename(windowsMsi)}` };
     }
-    
+
     // 如果根目录没找到，扫描 bundle 目录
     const bundleDir = this.bundlePath;
     if (fs.existsSync(bundleDir)) {
       // macOS: bundle 目录
       if (!platforms['darwin-x86_64']) {
-        macosAppTar = path.join(bundleDir, 'macos', 'Kunlun.app.tar.gz');
+        macosAppTar = path.join(bundleDir, 'macos', 'AI聘次方.app.tar.gz');
         appTarInfo = this.getFileInfo(macosAppTar);
         if (appTarInfo) {
           platforms['darwin-x86_64'] = { ...appTarInfo, url: `${this.downloadUrl}/${path.basename(macosAppTar)}` };
         }
       }
-      
+
       // Windows: bundle 目录
       if (!platforms['windows-x86_64']) {
-        windowsMsi = path.join(bundleDir, 'msi', `Kunlun_${this.package.version}_x64_en-US.msi`);
+        windowsMsi = path.join(bundleDir, 'msi', `AI聘次方_${this.package.version}_x64_en-US.msi`);
         winInfo = this.getFileInfo(windowsMsi);
         if (winInfo) {
           platforms['windows-x86_64'] = { ...winInfo, url: `${this.downloadUrl}/${path.basename(windowsMsi)}` };
         }
       }
-      
+
       // Linux: bundle 目录
-      const linuxAppImage = path.join(bundleDir, 'appimage', `Kunlun_${this.package.version}_amd64.AppImage`);
+      const linuxAppImage = path.join(bundleDir, 'appimage', `AI聘次方_${this.package.version}_amd64.AppImage`);
       const appImageInfo = this.getFileInfo(linuxAppImage);
       if (appImageInfo) {
         platforms['linux-x86_64'] = { ...appImageInfo, url: `${this.downloadUrl}/${path.basename(linuxAppImage)}` };
       }
     }
-    
+
     return platforms;
   }
 

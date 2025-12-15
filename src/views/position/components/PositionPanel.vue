@@ -28,7 +28,8 @@ import {robotManager} from "@/robot/service";
 import {UserInfo} from "@/utiles/userInfo.ts";
 import {debounce} from "@/utiles/debounce.ts";
 import emitter from "@/utiles/eventBus.ts";
-import {hideLoading, showLoading} from "@/utiles/loading.ts";
+import {hideLoading} from "@/utiles/loading.ts";
+import Loading from '@/components/loading/index.vue';
 
 // 创建任务弹框实例
 const createTaskModalRef = useCompRef(CreateTaskModal)
@@ -102,6 +103,10 @@ const hasNewPositions = ref(false)
 const firstPositionTime = ref<number>(0)
 // 简历文本
 const resumeText = ref<string>('')
+// 当前登录中的渠道
+const loggingInChannel = ref<string>('')
+// 任务切换状态：opening-开启中, closing-关闭中
+const taskSwitchingStatus = ref<'opening' | 'closing' | ''>('')
 
 const resetFilters = () => {
     pagination.current = 1
@@ -154,15 +159,15 @@ const handleOpenCreateModal = () => {
 }
 
 const handleLogin = debounce(async (channel: any) => {
-    if (!channel.isLogin) {
+    if (!channel.isLogin && !loggingInChannel.value) {
         try {
-            showLoading()
+            loggingInChannel.value = channel.value
             await robotManager.cleanup()
             while (!robotManager.isRealStop) {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
             const loginResult = await executeLogin(channel.value)
-            hideLoading()
+            loggingInChannel.value = ''
             if (loginResult.success) {
                 channel.isLogin = true
                 message.success(Message, '登录成功！')
@@ -179,10 +184,20 @@ const handleLogin = debounce(async (channel: any) => {
                 }
             } else {
                 console.log(`登录失败: ${loginResult.error}`)
+                // 如果任务状态是进行中，需要重新启动
+                if (currentTask.value?.status === 0) {
+                    robotManager.crawlPosition({
+                        jobTitle: currentTask.value.jobTitle,
+                        cityInfos: currentTask.value.cityName,
+                        experience: enumEcho(currentTask.value.experience, workExperienceList, 'value', 'key')
+                    }, currentTask.value.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
+                    UserInfo.info.isRunningTask = true
+                }
             }
         } catch (error) {
             console.error('登录异常:', error)
             message.error(Message, '登录异常，请重试')
+            loggingInChannel.value = ''
         }
     }
 }, 300)
@@ -217,6 +232,7 @@ const handleToggleTaskStatus = debounce(async () => {
         const params = new ActivateJobTaskInDto()
         params.uuid = currentTask.value.uuid
         params.status = taskStatus.value ? 1 : 0
+        taskSwitchingStatus.value = taskStatus.value ? 'closing' : 'opening'
         const result = await jobService.activateJobTask(params)
         if (result.code === 200) {
             const taskParams = new GetJobTaskInDto()
@@ -233,7 +249,6 @@ const handleToggleTaskStatus = debounce(async () => {
                     // 如果有登录的渠道，直接开始爬取
                     const hasLoggedIn = channels.value.some(channel => channel.isLogin)
                     if (hasLoggedIn && taskResult.data.uuid) {
-                        showLoading()
                         robotManager.crawlPosition({
                             jobTitle: taskResult.data.jobTitle,
                             cityInfos: taskResult.data.cityName,
@@ -241,30 +256,32 @@ const handleToggleTaskStatus = debounce(async () => {
                         }, taskResult.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
                         await new Promise(resolve => setTimeout(resolve, 3000))
                         UserInfo.info.isRunningTask = true
-                        hideLoading()
                     }
+                    taskSwitchingStatus.value = ''
                     message.success(Message, '任务已开启，请至少登录一个招聘渠道！')
                 } else {
                     // 关闭状态，停止爬取
-                    showLoading()
                     await robotManager.cleanup()
                     while (!robotManager.isRealStop) {
                         await new Promise(resolve => setTimeout(resolve, 500));
                     }
                     await new Promise(resolve => setTimeout(resolve, 5000))
-                    hideLoading()
                     UserInfo.info.isRunningTask = false
+                    taskSwitchingStatus.value = ''
                     message.success(Message, '任务已关闭，将不再推送精选职位！')
                 }
             }
         } else if (result.code === 2601) { // 满额
             UserInfo.info.isRunningTask = false
+            taskSwitchingStatus.value = ''
             message.info(Message, '今日推荐次数已用完，请明日再来！')
         } else if (result.code === 2306) { // 简历id不存在
+            taskSwitchingStatus.value = ''
             message.error(Message, '求职简历不存在，任务开启失败!')
         }
     } catch (error) {
         console.error('切换任务状态失败:', error)
+        taskSwitchingStatus.value = ''
     }
 }, 300)
 
@@ -345,19 +362,19 @@ const loadCurrentTask = async (isShowTip?: boolean) => {
                             const hasLoggedIn = channels.value.some(channel => channel.isLogin)
                             // 每次切换之后 都要先关闭之前的机器人，重新启动
                             if (hasLoggedIn && result.data.uuid) {
-                                showLoading()
+                                taskSwitchingStatus.value = 'opening'
                                 await robotManager.cleanup()
                                 while (!robotManager.isRealStop) {
                                     await new Promise(resolve => setTimeout(resolve, 500));
                                 }
+                                await new Promise(resolve => setTimeout(resolve, 3000))
                                 robotManager.crawlPosition({
                                     jobTitle: result.data.jobTitle,
                                     cityInfos: result.data.cityName,
                                     experience: enumEcho(result.data.experience, workExperienceList, 'value', 'key')
                                 }, result.data.uuid, resumeText.value, UserInfo.info.matchAnalysisPrompt)
-                                await new Promise(resolve => setTimeout(resolve, 3000))
                                 UserInfo.info.isRunningTask = true
-                                hideLoading()
+                                taskSwitchingStatus.value = ''
                             }
                         }
                     }
@@ -473,7 +490,7 @@ const handleExhaustedOfAttempts = async () => {
 
 const handleCancelLoading = async () => {
     await new Promise(resolve => setTimeout(resolve, 3000))
-    hideLoading()
+    loggingInChannel.value = ''
 }
 
 /**
@@ -535,13 +552,20 @@ onBeforeUnmount(() => {
             <div class="task-card">
                 <div class="task-header align-between">
                     <div class="task-left">
-                        <span class="task-title">{{ currentTask?.jobTitle }}</span>
-                        <div :class="{ 'is-active': taskStatus }" class="task-switch mr-20"
-                             @click="handleToggleTaskStatus">
+                        <span class="task-title mr-20">{{ currentTask?.jobTitle }}</span>
+                        <div
+                            :class="{ 'is-active': (taskStatus && taskSwitchingStatus !== 'opening') || taskSwitchingStatus === 'closing', 'disabled': taskSwitchingStatus }"
+                            class="task-switch mr-10"
+                            @click="!taskSwitchingStatus && handleToggleTaskStatus()">
                             <div class="switch-dot"></div>
-                            <span class="switch-text">{{ taskStatus ? '任务进行中' : '任务已关闭' }}</span>
+                            <span class="switch-text">
+                                {{
+                                    taskSwitchingStatus === 'opening' ? '开启中...' : taskSwitchingStatus === 'closing' ? '关闭中...' : (taskStatus ? '任务进行中' : '任务已关闭')
+                                }}
+                            </span>
                         </div>
-                        <div v-if="hasNewPositions" class="new-pos-tip">
+                        <Loading v-if="taskSwitchingStatus"/>
+                        <div v-if="hasNewPositions" class="new-pos-tip mr-20">
                             <div class="new-pos-text mr-20">有新职位</div>
                             <div class="refresh-con" @click="handleRefresh">
                                 <SvgIcon class="mr-5" color="#9499A5" name="icon-shuaxin" size="12"/>
@@ -563,7 +587,8 @@ onBeforeUnmount(() => {
                     <Dropdown ref="dropdownRef" :visible="showTaskDropdown" class="task-dropdown"
                               placement="bottom-start"
                               trigger="custom">
-                        <div class="action-item" @click="handleTaskSwitch">
+                        <div :class="{ 'disabled': taskSwitchingStatus }" class="action-item"
+                             @click="!taskSwitchingStatus && handleTaskSwitch()">
                             <SvgIcon name="icon-qiehuan" size="12"/>
                             <span>切换任务</span>
                         </div>
@@ -588,12 +613,14 @@ onBeforeUnmount(() => {
                             </DropdownMenu>
                         </template>
                     </Dropdown>
-                    <div class="action-item" @click="handleOpenCreateModal">
+                    <div :class="{ 'disabled': taskSwitchingStatus }" class="action-item"
+                         @click="!taskSwitchingStatus && handleOpenCreateModal()">
                         <SvgIcon name="icon-xinzeng" size="12"/>
                         <span>新增任务</span>
                     </div>
                     <div class="action-item-wrapper">
-                        <div class="action-item" @click="handleChannelLogin">
+                        <div :class="{ 'disabled': taskSwitchingStatus }" class="action-item"
+                             @click="!taskSwitchingStatus && handleChannelLogin()">
                             <SvgIcon name="icon-user" size="12"/>
                             <span>渠道登录</span>
                         </div>
@@ -671,7 +698,8 @@ onBeforeUnmount(() => {
                class-name="channel-modal">
             <div class="modal-header">
                 <span class="modal-title">渠道登录</span>
-                <SvgIcon class="close-icon pointer" name="icon-cha" size="16" @click="showChannelModal = false"/>
+                <SvgIcon v-if="!loggingInChannel" class="close-icon pointer" name="icon-cha" size="16"
+                         @click="showChannelModal = false"/>
             </div>
             <div class="modal-content">
                 <div class="modal-desc">
@@ -687,7 +715,10 @@ onBeforeUnmount(() => {
                         </div>
                         <div class="channel-name mb-40">{{ channel.name }}</div>
                         <div :class="{ 'is-login': channel.isLogin }" class="channel-status">
-                            {{ channel.isLogin ? '已登录' : '立即登录' }}
+                            <span>{{
+                                    loggingInChannel === channel.value ? '正在跳转...' : (channel.isLogin ? '已登录' : '立即登录')
+                                }}</span>
+                            <Loading v-if="loggingInChannel === channel.value"/>
                         </div>
                     </div>
                 </div>
@@ -892,27 +923,24 @@ onBeforeUnmount(() => {
                     height: vh(24);
                     display: flex;
                     align-items: center;
-                    column-gap: vw(20);
 
                     .task-title {
                         height: 100%;
                         font-family: 'PingFang SC', sans-serif;
                         font-size: vw(24);
                         font-weight: 600;
-                        line-height: vh(24);
+                        line-height: vh(20);
                         color: $theme-color;
                     }
 
                     .task-switch {
-                        position: relative;
                         width: vw(96);
-                        height: 100%;
+                        padding: vw(1) 0;
                         border-radius: vw(14);
-                        border: 1px solid $border-default;
+                        border: vh(1) solid $border-default;
                         background: $white;
                         display: flex;
                         align-items: center;
-                        justify-content: center;
                         cursor: pointer;
                         transition: border-color 0.2s ease;
 
@@ -928,21 +956,23 @@ onBeforeUnmount(() => {
                             }
                         }
 
+                        &.disabled {
+                            cursor: not-allowed;
+                        }
+
                         .switch-dot {
-                            position: absolute;
                             width: vw(18);
                             height: vw(18);
-                            border-radius: vw(12);
+                            margin-left: vw(2);
+                            border-radius: 50%;
                             background: $border-default;
-                            left: vw(3);
                             transition: background 0.2s ease;
                         }
 
                         .switch-text {
-                            padding-left: vw(20);
+                            padding-left: vw(6);
                             font-family: 'PingFang SC', sans-serif;
                             font-size: vw(12);
-                            line-height: vw(12);
                             color: $font-middle;
                             transition: color 0.2s ease;
                         }
@@ -1085,13 +1115,25 @@ onBeforeUnmount(() => {
                         color: $font-middle;
                     }
 
-                    &:hover {
+                    &:hover:not(.disabled) {
                         span {
                             color: $theme-color;
                         }
 
                         :deep(use) {
                             fill: $theme-color;
+                        }
+                    }
+
+                    &.disabled {
+                        cursor: not-allowed;
+
+                        span {
+                            color: #B0B7C6;
+                        }
+
+                        :deep(use) {
+                            fill: #B0B7C6;
                         }
                     }
                 }
@@ -1456,5 +1498,12 @@ onBeforeUnmount(() => {
             }
         }
     }
+}
+
+.channel-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: vw(5);
 }
 </style>

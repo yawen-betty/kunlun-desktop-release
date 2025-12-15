@@ -15,8 +15,12 @@ fn main() {
             .unwrap()
             .to_path_buf();
         
-        let binaries_dir = target_dir.join("binaries");
-        fs::create_dir_all(&binaries_dir).ok();
+        let target_binaries_dir = target_dir.join("binaries");
+        fs::create_dir_all(&target_binaries_dir).ok();
+        
+        // 源文件在 src-tauri/binaries/ 目录中
+        let src_tauri_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let src_binaries_dir = PathBuf::from(src_tauri_dir).join("binaries");
         
         // 根据平台选择正确的 node 文件
         let node_filename = if cfg!(target_os = "macos") {
@@ -31,11 +35,11 @@ fn main() {
             "node" // fallback
         };
         
-        let source = binaries_dir.join(node_filename);
+        let source = src_binaries_dir.join(node_filename);
         let dest = if cfg!(target_os = "windows") {
-            binaries_dir.join("node.exe")
+            target_binaries_dir.join("node.exe")
         } else {
-            binaries_dir.join("node")
+            target_binaries_dir.join("node")
         };
         
         // 如果源文件存在，创建符号链接或复制
