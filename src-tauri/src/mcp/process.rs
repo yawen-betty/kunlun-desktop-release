@@ -43,16 +43,52 @@ impl McpProcess {
         // Windows: 移除 UNC 路径前缀 \\?\
         let node_path_str = node_path.to_string_lossy().to_string();
         let node_path_clean = node_path_str.strip_prefix(r"\\?\").unwrap_or(&node_path_str);
-
-        eprintln!("[MCP] Using node: {}", node_path_clean);
-        let mut cmd = Command::new(node_path_clean);
         let entry_str = mcp_entry.to_string_lossy().to_string();
         let entry_clean = entry_str.strip_prefix(r"\\?\").unwrap_or(&entry_str);
-        cmd.arg(entry_clean)
-            .arg("--browser")
-            .arg("chromium")
-            .arg("--isolated");
 
+//         eprintln!("[MCP] Using node: {}", node_path_clean);
+//         let mut cmd = Command::new(node_path_clean);
+//         let entry_str = mcp_entry.to_string_lossy().to_string();
+//         let entry_clean = entry_str.strip_prefix(r"\\?\").unwrap_or(&entry_str);
+//         cmd.arg(entry_clean)
+//             .arg("--browser")
+//             .arg("chromium")
+//             .arg("--isolated");
+//
+//         if !headless {
+//             eprintln!("[MCP] Starting in HEADED mode (visible browser)");
+//         } else {
+//             eprintln!("[MCP] Starting in HEADLESS mode");
+//             cmd.arg("--headless");
+//         }
+//
+//         #[cfg(target_os = "windows")]
+//         cmd.creation_flags(0x08000000);
+        let mut cmd;
+
+        #[cfg(target_os = "windows")]
+        {
+            cmd = Command::new("cmd");
+            cmd.arg("/C")
+               .arg("start")
+               .arg("/B")
+               .arg(node_path_clean)
+               .arg(entry_clean)
+               .arg("--browser")
+               .arg("chromium")
+               .arg("--isolated");
+        }
+
+        #[cfg(not(target_os = "windows"))]
+        {
+            cmd = Command::new(node_path_clean);
+            cmd.arg(entry_clean)
+               .arg("--browser")
+               .arg("chromium")
+               .arg("--isolated");
+        }
+
+        // 共同的 headless 参数处理
         if !headless {
             eprintln!("[MCP] Starting in HEADED mode (visible browser)");
         } else {
