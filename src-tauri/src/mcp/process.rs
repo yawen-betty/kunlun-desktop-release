@@ -4,11 +4,6 @@ use tauri::{AppHandle, Manager};
 use tauri::path::BaseDirectory;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
-#[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
-#[cfg(target_os = "windows")]
-use winapi::um::winbase::{CREATE_NO_WINDOW, DETACHED_PROCESS};
-
 
 /// MCP 进程管理器
 ///
@@ -66,8 +61,7 @@ impl McpProcess {
         }
 
         #[cfg(target_os = "windows")]
-//         cmd.creation_flags(0x08000000);
-        cmd.creation_flags(CREATE_NO_WINDOW);
+        cmd.creation_flags(0x08000000);
 
         let mut child = cmd.env("PLAYWRIGHT_BROWSERS_PATH", browsers_path.to_str().unwrap())
             .stdin(Stdio::piped())
