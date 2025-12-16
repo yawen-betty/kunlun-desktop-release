@@ -296,6 +296,7 @@ const handleSelectTask = debounce(async (taskId: string) => {
         if (result.code === 200) {
             resetFilters()
             selectedId.value = '';
+            hasNewPositions.value = false
             await loadCurrentTask(true)
         }
     } catch (error) {
@@ -513,6 +514,7 @@ onMounted(() => {
     emitter.on('exhaustedOfAttempts', handleExhaustedOfAttempts)
     emitter.on('cancelLoading', handleCancelLoading)
     emitter.on('loginFailure', handleLoginFailure)
+    emitter.on('closeTask', handleToggleTaskStatus);
     document.addEventListener('click', handleClickOutside)
 })
 
@@ -520,7 +522,8 @@ onBeforeUnmount(() => {
     emitter.off('updateNewPosition', handleUpdateNewPosition)
     emitter.off('exhaustedOfAttempts', handleExhaustedOfAttempts)
     emitter.off('cancelLoading', handleCancelLoading)
-    emitter.on('loginFailure', handleLoginFailure)
+    emitter.off('loginFailure', handleLoginFailure)
+    emitter.off('closeTask', handleToggleTaskStatus);
     document.removeEventListener('click', handleClickOutside)
 })
 </script>
@@ -565,7 +568,7 @@ onBeforeUnmount(() => {
                             </span>
                         </div>
                         <Loading v-if="taskSwitchingStatus"/>
-                        <div v-if="hasNewPositions" class="new-pos-tip mr-20">
+                        <div v-if="hasNewPositions" class="new-pos-tip ml-20">
                             <div class="new-pos-text mr-20">有新职位</div>
                             <div class="refresh-con" @click="handleRefresh">
                                 <SvgIcon class="mr-5" color="#9499A5" name="icon-shuaxin" size="12"/>

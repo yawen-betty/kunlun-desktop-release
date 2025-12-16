@@ -125,7 +125,7 @@ export class RobotManager {
 
         // 外层循环：持续执行直到被停止（最多10轮）
         let roundCount = 0;
-        const maxRounds = 10;
+        const maxRounds = 20;
         while (this.isRunning && roundCount < maxRounds) {
             roundCount++;
             logger.info(`[RobotManager] 第 ${roundCount}/${maxRounds} 轮爬取开始`);
@@ -215,6 +215,7 @@ export class RobotManager {
             await this.cleanup();
             this.isRealStop = true;
             logger.info(`[RobotManager] 已完成最大轮次 ${maxRounds}，爬取结束`);
+            emitter.emit('closeTask')
         } else {
             this.isRealStop = true;
             logger.info('[RobotManager] 爬取循环结束');
