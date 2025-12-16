@@ -94,7 +94,7 @@ const formatDescription = (text: string) => {
 
 const channelMap: Record<number, string> = {
     0: 'BOSS直聘',
-    1: '智联校园',
+    1: '智联招聘',
     2: '猎聘',
     3: '国聘',
     4: '应届生招聘',
@@ -173,9 +173,10 @@ const channelMap: Record<number, string> = {
 
                     <!-- 公司名称 -->
                     <div v-if="detailData?.companyName" class="company-name">{{ detailData.companyName }}</div>
-                    
+
                     <!-- 标签组 -->
-                    <div v-if="detailData?.educational || detailData?.workExperience || detailData?.labels?.length" class="tags-row mb-20">
+                    <div v-if="detailData?.educational || detailData?.workExperience || detailData?.labels?.length"
+                         class="tags-row mb-20">
                         <span v-if="detailData?.educational" class="tag">{{ detailData.educational }}</span>
                         <span v-if="detailData?.workExperience" class="tag">{{ detailData.workExperience }}</span>
                         <span v-for="(tag, index) in detailData?.labels" :key="index" class="tag">{{ tag }}</span>
@@ -207,7 +208,9 @@ const channelMap: Record<number, string> = {
                     <div v-if="detailData?.benefits?.length" class="section">
                         <div class="section-title">福利待遇</div>
                         <div class="tags-row mb-20">
-                            <span v-for="(benefit, index) in detailData.benefits" :key="index" class="tag">{{ benefit }}</span>
+                            <span v-for="(benefit, index) in detailData.benefits" :key="index" class="tag">{{
+                                    benefit
+                                }}</span>
                         </div>
                     </div>
 
