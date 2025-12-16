@@ -6,7 +6,7 @@ type Events = {
     exhaustedOfAttempts: void; // 推荐次数用完
     cancelLoading: void; // 取消loading
     loginFailure: string; // 登录失效
-    closeTask: void; // 关闭任务
+    closeTask: boolean; // 关闭任务
 };
 
 const emitter = mitt<Events>();

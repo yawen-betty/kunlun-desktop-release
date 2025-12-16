@@ -215,7 +215,7 @@ export class RobotManager {
             await this.cleanup();
             this.isRealStop = true;
             logger.info(`[RobotManager] 已完成最大轮次 ${maxRounds}，爬取结束`);
-            emitter.emit('closeTask')
+            emitter.emit('closeTask', false)
         } else {
             this.isRealStop = true;
             logger.info('[RobotManager] 爬取循环结束');
