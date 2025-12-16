@@ -140,7 +140,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
                 }
 
                 if (count === 0) {
-                    return { code: 200, message: '暂无职位' };
+                    return {code: 200, message: '暂无职位'};
                 }
             }
         }
@@ -182,91 +182,92 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
                     dataInfo = Object.assign(dataInfo, position)
                     logger.info('///////////////////////////////2', position);
                 }
-            }
-            // 获取所有 targets（包括新打开的 tab）
-            const result = await cdpService.sendCommand('Target.getTargets', {});
 
-            // 找到新打开的 tab
-            const newTab = result.targetInfos.find((t: any) =>
-                t.type === 'page' &&
-                t.url.includes('detail') // 根据 URL 特征判断
-            );
-            console.log('newTab ==>', newTab)
-            logger.info('newTab ==> ', newTab)
-            logger.info('新 tab URL:', newTab.url);
-            dataInfo = Object.assign(dataInfo, {
-                jobDetailUrl: newTab.url
-            })
+                // 获取所有 targets（包括新打开的 tab）
+                const result = await cdpService.sendCommand('Target.getTargets', {});
 
-            let keepCompany = true
-            // boss判断是否是代招
-            if (channelName === 'boss') {
-                const result = await cdpService.executeScript(`document.querySelector(".job-medium-icon")`);
-                const isDz = result.result?.value;
-                if (isDz) {
-                    keepCompany = false;
-                    logger.info('[PositionClick] 检测到代招职位，跳过公司详情获取');
-                }
-            }
+                // 找到新打开的 tab
+                const newTab = result.targetInfos.find((t: any) =>
+                    t.type === 'page' &&
+                    t.url.includes('detail') // 根据 URL 特征判断
+                );
+                console.log('newTab ==>', newTab)
+                logger.info('newTab ==> ', newTab)
+                logger.info('新 tab URL:', newTab.url);
+                dataInfo = Object.assign(dataInfo, {
+                    jobDetailUrl: newTab.url
+                })
 
-            if (keepCompany) {
-                checkStop();
-                await robotManager.sleep(3000);
-                // 点击公司打开公司详情
-
-                checkStop();
-                await cdpService.clearNetworkEvents(); // 执行任务前先清空网络监听
-                const clickCompanyResult = await executeAITask(`切换到浏览器最后一个标签页,点击页面右侧公司名称`, apiKey);
-                logger.info(`[CompanyClick] 任务完成`, clickCompanyResult);
-
-                checkStop();
-                await robotManager.sleep(3000);
-
-                // 刷新新 tab（此时监听已启用）
-                await cdpService.executeScript('location.reload()');
-
-                checkStop();
-                await robotManager.sleep(3000); // 等待接口完成
-                const companyNetwork = await cdpService.getNetworkEvents();
-
-                // 获取公司详情
-                logger.info('[PositionClick] 获取公司数据...');
-
-                const guopinCompanyInfoList = companyNetwork.filter(e => e.url.includes(config.companyNetUrl));
-                logger.info('///////////////////////////////3', guopinCompanyInfoList);
-                logger.info('获取到公司接口:', guopinCompanyInfoList);
-                if (guopinCompanyInfoList.length > 0) {
-                    const guopinCompanyInfo = guopinCompanyInfoList.pop(); // 获取最后一个
-
-                    if (guopinCompanyInfo?.response_body) {
-                        const company = await buildCompanyData(JSON.parse(guopinCompanyInfo.response_body), channelName);
-                        dataInfo = Object.assign(dataInfo, company)
-                        logger.info('///////////////////////////////4', company);
+                let keepCompany = true
+                // boss判断是否是代招
+                if (channelName === 'boss') {
+                    const result = await cdpService.executeScript(`document.querySelector(".job-medium-icon")`);
+                    const isDz = result.result?.value;
+                    if (isDz) {
+                        keepCompany = false;
+                        logger.info('[PositionClick] 检测到代招职位，跳过公司详情获取');
                     }
                 }
-            }
 
-            // 匹配
-            checkStop();
-            try {
+                if (keepCompany) {
+                    checkStop();
+                    await robotManager.sleep(3000);
+                    // 点击公司打开公司详情
 
-                let matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt, abortController.signal);
-                while (matchJobRes === 1305) {
-                    logger.warning('[PositionSearch] AI 请求频率限制，等待 60 秒');
                     checkStop();
-                    await robotManager.sleep(1000 * 60);
+                    await cdpService.clearNetworkEvents(); // 执行任务前先清空网络监听
+                    const clickCompanyResult = await executeAITask(`切换到浏览器最后一个标签页,点击页面右侧公司名称`, apiKey);
+                    logger.info(`[CompanyClick] 任务完成`, clickCompanyResult);
+
                     checkStop();
-                    matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt, abortController.signal);
+                    await robotManager.sleep(3000);
+
+                    // 刷新新 tab（此时监听已启用）
+                    await cdpService.executeScript('location.reload()');
+
+                    checkStop();
+                    await robotManager.sleep(3000); // 等待接口完成
+                    const companyNetwork = await cdpService.getNetworkEvents();
+
+                    // 获取公司详情
+                    logger.info('[PositionClick] 获取公司数据...');
+
+                    const guopinCompanyInfoList = companyNetwork.filter(e => e.url.includes(config.companyNetUrl));
+                    logger.info('///////////////////////////////3', guopinCompanyInfoList);
+                    logger.info('获取到公司接口:', guopinCompanyInfoList);
+                    if (guopinCompanyInfoList.length > 0) {
+                        const guopinCompanyInfo = guopinCompanyInfoList.pop(); // 获取最后一个
+
+                        if (guopinCompanyInfo?.response_body) {
+                            const company = await buildCompanyData(JSON.parse(guopinCompanyInfo.response_body), channelName);
+                            dataInfo = Object.assign(dataInfo, company)
+                            logger.info('///////////////////////////////4', company);
+                        }
+                    }
                 }
 
-                // 发送数据给接口
-                await crawlPositions(dataInfo, taskId, matchJobRes);
-            } catch (error: any) {
-                if (error.name === 'AbortError') {
-                    logger.info('[PositionSearch] matchJob 已被取消');
-                    return { code: 499, message: '任务已被停止' };
+                // 匹配
+                checkStop();
+                try {
+
+                    let matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt, abortController.signal);
+                    while (matchJobRes === 1305) {
+                        logger.warning('[PositionSearch] AI 请求频率限制，等待 60 秒');
+                        checkStop();
+                        await robotManager.sleep(1000 * 60);
+                        checkStop();
+                        matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt, abortController.signal);
+                    }
+
+                    // 发送数据给接口
+                    await crawlPositions(dataInfo, taskId, matchJobRes);
+                } catch (error: any) {
+                    if (error.name === 'AbortError') {
+                        logger.info('[PositionSearch] matchJob 已被取消');
+                        return {code: 499, message: '任务已被停止'};
+                    }
+                    throw error; // 重新抛出其他错误
                 }
-                throw error; // 重新抛出其他错误
             }
 
             checkStop();
@@ -294,10 +295,10 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
             message: '执行成功'
         };
 
-    } catch (error:any) {
+    } catch (error: any) {
         if (error.name === 'AbortError') {
             logger.info('[PositionSearch] 任务已被取消');
-            return { code: 499, message: '任务已被停止' };
+            return {code: 499, message: '任务已被停止'};
         }
         logger.error('[PositionSearch] 执行失败:', error);
         await aiService.stopTask();
@@ -374,7 +375,7 @@ async function crawlPositions(data: ChannelPositionBean, taskId: string, matchIn
 /**
  * 匹配
  */
-async function matchJob(apiKey: string, resumeText: string, positionInfo: any, prompt: string, signal: AbortSignal ): Promise<any> {
+async function matchJob(apiKey: string, resumeText: string, positionInfo: any, prompt: string, signal: AbortSignal): Promise<any> {
     const parts: string[] = [];
 
     if (positionInfo.title) {
