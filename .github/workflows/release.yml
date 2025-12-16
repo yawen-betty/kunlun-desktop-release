@@ -1,0 +1,234 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+      - test
+      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-tauri:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Install MCP modules dependencies
+        run: |
+          cd src-tauri/binaries/mcp-modules
+          npm install
+        shell: bash
+
+      - name: Generate config file based on branch
+        run: |
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            npm run config:prod
+          elif [[ "${{ github.ref_name }}" == "test" ]]; then
+            npm run config:test
+          elif [[ "${{ github.ref_name }}" == "dev" ]]; then
+            npm run config:dev
+          fi
+        shell: bash
+
+      - name: Update tauri.conf.json endpoints based on branch and platform
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          CONFIG_FILE="src-tauri/tauri.conf.json"
+          PLATFORM="${{ matrix.platform }}"
+          
+          echo "Updating endpoints for branch: $BRANCH, platform: $PLATFORM"
+          
+          # 根据分支设置基础 URL
+          if [[ "$BRANCH" == "master" ]]; then
+            BASE_URL="https://hr-ai.qianniaohudong.cn/assets/kl-desktop"
+          elif [[ "$BRANCH" == "test" ]]; then
+            BASE_URL="https://hr-ai.test.lingxizhifu.cn/assets/kl-desktop"
+          else
+            BASE_URL="https://hr-ai.dev.lingxizhifu.cn/assets/kl-desktop"
+          fi
+          
+          # 根据平台设置文件名
+          if [[ "$PLATFORM" == "macos-latest" ]]; then
+            LATEST_FILE="latest-macos.json"
+          elif [[ "$PLATFORM" == "windows-latest" ]]; then
+            LATEST_FILE="latest-windows.json"
+          else
+            LATEST_FILE="latest-linux.json"
+          fi
+          
+          # 完整的 endpoint URL
+          ENDPOINT_URL="$BASE_URL/$LATEST_FILE"
+          
+
+          
+          # 使用 Node.js 替换 endpoints（处理多行 JSON）
+          node -e "
+            const fs = require('fs');
+            const config = JSON.parse(fs.readFileSync('$CONFIG_FILE', 'utf8'));
+            config.plugins.updater.endpoints = ['$ENDPOINT_URL'];
+            fs.writeFileSync('$CONFIG_FILE', JSON.stringify(config, null, 2));
+          "
+          
+          echo "✅ Updated endpoints to: $ENDPOINT_URL"
+          
+          # 验证 URL 格式正确（直接读取文件，避免变量脱敏）
+          echo "📋 Verifying endpoint in config file:"
+          node -e "
+            const fs = require('fs');
+            const config = JSON.parse(fs.readFileSync('$CONFIG_FILE', 'utf8'));
+            const endpoint = config.plugins.updater.endpoints[0];
+            console.log('  - Starts with https://', endpoint.startsWith('https://'));
+            console.log('  - Contains .json:', endpoint.includes('.json'));
+            console.log('  - Length:', endpoint.length);
+            console.log('  - Valid URL:', /^https:\/\/[\w.-]+\/[\w\/.-]+\.json$/.test(endpoint));
+            if (!/^https:\/\/[\w.-]+\/[\w\/.-]+\.json$/.test(endpoint)) {
+              console.error('ERROR: Invalid URL format!');
+              process.exit(1);
+            }
+          "
+          
+          # 确保 DevTools 在 dev 和 test 分支启用
+          if [[ "$BRANCH" == "dev" ]] || [[ "$BRANCH" == "test" ]]; then
+            echo "Enabling DevTools for $BRANCH branch"
+            node -e "
+              const fs = require('fs');
+              const config = JSON.parse(fs.readFileSync('$CONFIG_FILE', 'utf8'));
+              config.app.windows[0].devtools = true;
+              fs.writeFileSync('$CONFIG_FILE', JSON.stringify(config, null, 2));
+            "
+            echo "✅ DevTools enabled"
+            grep '"devtools"' "$CONFIG_FILE" || true
+          fi
+        shell: bash
+
+      - name: Build the application
+        run: npm run tauri build
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-${{ matrix.platform }}
+          path: src-tauri/target/release/bundle
+
+  create-release:
+    name: Create Release
+    needs: build-tauri
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Move artifacts to bundle directory
+        run: |
+          mkdir -p src-tauri/target/release/bundle
+          shopt -s dotglob
+          if [ -d "artifacts/bundle-macos-latest" ]; then cp -r artifacts/bundle-macos-latest/* src-tauri/target/release/bundle/; fi
+          if [ -d "artifacts/bundle-windows-latest" ]; then cp -r artifacts/bundle-windows-latest/* src-tauri/target/release/bundle/; fi
+
+      - name: List files for debugging
+        run: ls -R src-tauri/target/release/bundle
+
+      - name: Set Environment Variables for Branch
+        run: |
+          # Construct the full remote path based on the branch name
+          FULL_REMOTE_PATH="${{ secrets.SERVER_WEB_ROOT }}/${{ secrets.UPDATE_SUB_PATH }}/${{ github.ref_name }}"
+
+          echo "REMOTE_PATH=${FULL_REMOTE_PATH}" >> $GITHUB_ENV
+
+          echo "Remote Path: ${FULL_REMOTE_PATH}"
+        shell: bash
+
+      - name: Generate latest.json
+        run: |
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            APP_ENV=prod npm run generate-latest
+          elif [[ "${{ github.ref_name }}" == "test" ]]; then
+            APP_ENV=test npm run generate-latest
+          elif [[ "${{ github.ref_name }}" == "dev" ]]; then
+            APP_ENV=dev npm run generate-latest
+          fi
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}-build-${{ github.run_number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Package all artifacts
+        run: |
+          mkdir -p staging
+          
+          # 从 bundle 目录复制安装包
+          find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.msi" -o -name "*.AppImage" -o -name "*.exe" \) -exec cp {} staging/ \; 2>/dev/null || true
+          
+          # 从 bundle/macos 复制更新包
+          find src-tauri/target/release/bundle/macos -type f -name "*.tar.gz" -exec cp {} staging/ \; 2>/dev/null || true
+          find src-tauri/target/release/bundle/macos -type f -name "*.tar.gz.sig" -exec cp {} staging/ \; 2>/dev/null || true
+          
+          # 从 bundle/msi 复制 Windows 更新包
+          find src-tauri/target/release/bundle/msi -type f -name "*.msi" -exec cp {} staging/ \; 2>/dev/null || true
+          find src-tauri/target/release/bundle/msi -type f -name "*.msi.sig" -exec cp {} staging/ \; 2>/dev/null || true
+          
+          # 从 bundle/nsis 复制 Windows 安装程序
+          find src-tauri/target/release/bundle/nsis -type f -name "*.exe" -exec cp {} staging/ \; 2>/dev/null || true
+          find src-tauri/target/release/bundle/nsis -type f -name "*.exe.sig" -exec cp {} staging/ \; 2>/dev/null || true
+          
+          # 复制所有 latest JSON 文件
+          cp latest*.json staging/ 2>/dev/null || true
+          
+          echo "--- Files to package ---"
+          ls -lh staging
+          echo "--- Total size ---"
+          du -sh staging
+          
+          echo "--- Creating compressed archive ---"
+          tar -czf all-artifacts-${{ github.ref_name }}.tar.gz -C staging .
+          echo "--- Compressed archive ---"
+          ls -lh all-artifacts-${{ github.ref_name }}.tar.gz
+
+      - name: Create and publish release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}-build-${{ github.run_number }}
+          name: Build for ${{ github.ref_name }} #${{ github.run_number }}
+          body: |
+            CI build from branch ${{ github.ref_name }}.
+            
+            **下载说明：**
+            - 下载 `all-artifacts-${{ github.ref_name }}.tar.gz` 获取所有平台的安装包和更新文件（推荐）
+          draft: true
+          prerelease: true
+          files: all-artifacts-${{ github.ref_name }}.tar.gz

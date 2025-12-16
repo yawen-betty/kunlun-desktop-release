@@ -1,0 +1,92 @@
+<template>
+    <div class="personal-info-tabs">
+        <Tabs :model-value="modelValue" @on-click="handleTabClick">
+            <TabPane label="我的简历" name="resume"></TabPane>
+            <TabPane label="辅导记录" name="tutorship"></TabPane>
+            <TabPane label="面试记录" name="interview"></TabPane>
+            <TabPane :label="renderBasicLabel" name="basic" />
+        </Tabs>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import {h, inject, ref, Ref} from 'vue';
+const showVersionUpdate = inject<Ref<boolean>>('showVersionUpdate', ref(false));
+
+interface Props {
+    modelValue: string;
+}
+
+interface Emits {
+    (e: 'update:modelValue', value: string): void;
+}
+
+const vw = (px: number) => `${(px / 1920) * 100}vw`;
+
+const renderBasicLabel = () => {
+    return h('span', {style: 'position: relative; display: inline-block;'}, [
+        '基础设置',
+        showVersionUpdate.value
+            ? h('span', {
+                  style: `
+              position: absolute;
+              top: ${vw(-2)};
+              right: ${vw(-14)};
+              width: ${vw(8)};
+              height: ${vw(8)};
+              background: #ff4d4f;
+              border-radius: 50%;
+            `
+              })
+            : null
+    ]);
+};
+
+defineProps<Props>();
+const emit = defineEmits<Emits>();
+
+const handleTabClick = (name: string) => {
+    emit('update:modelValue', name);
+};
+</script>
+
+<style lang="scss" scoped>
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
+
+.personal-info-tabs {
+    border-bottom: 1px solid $border-default;
+
+    :deep(.ivu-tabs-ink-bar) {
+        height: 0;
+    }
+
+    :deep(.ivu-tabs) {
+        padding: 0 vw(40);
+
+        .ivu-tabs-bar {
+            margin-bottom: 0;
+            border: 0;
+        }
+
+        .ivu-tabs-nav {
+            .ivu-tabs-tab {
+                color: $font-middle;
+                font-size: vw(14);
+                font-weight: 500;
+                padding: vh(34) 0 vh(22);
+                margin-right: vw(40);
+
+                &:first-child {
+                    margin-left: 0;
+                }
+
+                &.ivu-tabs-tab-active {
+                    color: $font-dark;
+                    font-weight: 600;
+                }
+            }
+        }
+    }
+}
+</style>

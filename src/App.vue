@@ -1,0 +1,164 @@
+<script lang="ts" setup>
+import {onMounted, ref, provide, onUnmounted} from 'vue';
+import {checkForUpdates} from '@/updater';
+import UpdateDialog from '@/components/updateDialog/index.vue';
+import {Config} from '@/Config.ts';
+import {GetProfileInDto} from '@/api/user/dto/GetProfile.ts';
+import {UserInfo} from '@/utiles/userInfo.ts';
+import {UserService} from '@/service/UserService.ts';
+import {auth} from '@/utiles/tauriCommonds.ts';
+import {useRouter} from 'vue-router';
+import {GetConfigInDto} from '@/api/admin/dto/GetConfig.ts';
+import {GetMatchAnalysisPromptInDto} from '@/api/admin/dto/GetMatchAnalysisPrompt.ts';
+import {SystemInfo} from '@/utiles/systemInfo.ts';
+import {AdminService} from '@/service/AdminService.ts';
+import emitter from '@/utiles/eventBus';
+import {GetVersionInfoOutDto} from './api/admin/dto/GetVersionInfo';
+import {GetJobTaskInDto} from "@/api/job/dto/GetJobTask.ts";
+import {JobService} from "@/service/JobService.ts";
+import {ActivateJobTaskInDto} from "@/api/job/dto/ActivateJobTask.ts";
+
+const jobService = new JobService()
+const adminService = new AdminService();
+const userService = new UserService();
+const updateDialogRef = ref();
+const currentVersion = Config.version; // 从 package.json 或 tauri.conf.json 读取
+// 检测最新版本
+
+const router = useRouter();
+
+// 提供给子组件的配置状态
+const showVersionUpdate = ref(false);
+const currentShowVersion = ref(false);
+const versionUpdateInfo = ref<GetVersionInfoOutDto>(new GetVersionInfoOutDto());
+provide('showVersionUpdate', showVersionUpdate);
+provide('currentShowVersion', currentShowVersion);
+
+// 应用启动时自动检查更新
+onMounted(async () => {
+    emitter.on('forcedUpdate', manualCheckUpdate);
+    preCheck();
+    getConfigInfo();
+    auth.getToken().then((token) => {
+        if (token) {
+            UserInfo.info.token = token;
+            getUserInfo(userService);
+            getMatchAnalysisPrompt();
+            console.log(adminService, userService, jobService)
+            switchTaskStatus()
+        } else {
+            router.push('/login');
+        }
+    });
+});
+
+onUnmounted(() => {
+    emitter.off('forcedUpdate', manualCheckUpdate);
+});
+
+const checkForUpdatesResult = ref<Record<string, any> | null>({});
+const version = ref(false);
+const preCheck = async () => {
+    const result = await checkForUpdates(currentVersion, false);
+    checkForUpdatesResult.value = result;
+    showVersionUpdate.value = !!checkForUpdatesResult.value?.newVersion && currentVersion !== checkForUpdatesResult.value?.newVersion;
+    currentShowVersion.value = showVersionUpdate.value;
+};
+// 启动获取最新版本信息
+const theCheckForUpdates = async () => {
+    try {
+        const version = checkForUpdatesResult.value?.forceUpdate ? checkForUpdatesResult.value?.newVersion : currentVersion;
+        const res = await adminService.getVersionInfo({version});
+        versionUpdateInfo.value = res.data;
+    } catch (error) {
+        console.warn('获取版本信息失败', error);
+    }
+};
+
+// 检查更新
+const manualCheckUpdate = async () => {
+    try {
+        await preCheck();
+
+        await theCheckForUpdates();
+        if (checkForUpdatesResult.value) {
+            updateDialogRef.value?.show({
+                ...checkForUpdatesResult.value,
+                currentVersion,
+                versionUpdateDetails: versionUpdateInfo.value?.content || ''
+            });
+        }
+    } catch (e) {
+        console.info('=====检测更新失败====', e);
+    }
+};
+
+// 获取用户信息
+const getUserInfo = (userService: UserService) => {
+    userService.getProfile(new GetProfileInDto()).then((res) => {
+        if (res.code === 200) {
+            if (res.data.avatarUrl) {
+                UserInfo.info.avatar = res.data.avatarUrl || '';
+            }
+            UserInfo.info.userName = res.data.name!;
+            UserInfo.info.userId = res.data.uuid!;
+            if (res.data.modelAccountBeanList && res.data.modelAccountBeanList.length) UserInfo.info.modelList = res.data.modelAccountBeanList;
+            if (Config.env !== 'dev') {
+                if (res.data.profileCompleteFlag === '1') {
+                    router.push('/resume');
+                } else {
+                    router.push('/initProfile');
+                }
+            }
+        }
+    });
+};
+
+const switchTaskStatus = async () => {
+    const params = new GetJobTaskInDto()
+    const result = await jobService.getJobTask(params)
+    if (result.code === 200 && result.data && result.data.status === 0) {
+        const inDto = new ActivateJobTaskInDto()
+        inDto.uuid = result.data.uuid
+        inDto.status = 1
+        jobService.activateJobTask(inDto)
+    }
+}
+
+// 获取系统配置
+const getConfigInfo = () => {
+    adminService.getConfig(new GetConfigInDto()).then((res) => {
+        if (res.code === 200) {
+            SystemInfo.info.loginTitle = res.data.appName;
+            SystemInfo.info.loginBg = res.data.loginPageImage;
+        }
+    });
+};
+
+// 获取简历匹配分析提示词
+const getMatchAnalysisPrompt = () => {
+    adminService.getMatchAnalysisPrompt(new GetMatchAnalysisPromptInDto()).then((res) => {
+        if (res.code === 200) {
+            UserInfo.info.matchAnalysisPrompt = res.data.content;
+        }
+    });
+};
+</script>
+
+<template>
+    <main class="container">
+        <router-view/>
+    </main>
+    <UpdateDialog ref="updateDialogRef"/>
+</template>
+<style lang="scss" scoped>
+@use '@/assets/styles/variable.scss' as *;
+@use '@/assets/styles/compute.scss' as *;
+
+.container {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: $bg-gray;
+}
+</style>

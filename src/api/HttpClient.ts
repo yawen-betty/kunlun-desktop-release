@@ -1,0 +1,431 @@
+import type {App} from 'vue';
+import {Config} from '@/Config.ts';
+import {UserInfo} from '@/utiles/userInfo.ts';
+import {invoke} from '@tauri-apps/api/core';
+import {listen} from '@tauri-apps/api/event';
+import type {Path} from '@/api/Path.ts';
+import {message} from '@/utiles/Message.ts';
+import {Message} from 'view-ui-plus';
+import {platform} from '@tauri-apps/plugin-os';
+import emitter from '@/utiles/eventBus';
+import {auth} from '@/utiles/tauriCommonds.ts';
+import {showLoading, hideLoading} from '@/utiles/loading.ts';
+
+// 定义请求参数接口
+interface HttpRequestParams {
+    url: string;
+    method: string;
+    headers?: Record<string, string>;
+    body?: any;
+    field_name?: string;
+    file_name?: string;
+    file_bytes?: number[];
+    extra_fields?: Record<string, any>;
+}
+
+// 定义响应接口
+interface HttpResponse {
+    status: number;
+    headers: Record<string, string>;
+    body: any;
+}
+
+export interface EmptyOutDto {
+}
+
+export default class HttpClient {
+    static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
+
+    static osPlatform = platform();
+
+    // loading 计数器，用于处理多个接口同时请求的情况
+    private static loadingCount = 0;
+
+    // 异步获取token，如果内存中没有则从持久化存储获取
+    static async getToken(): Promise<string> {
+        if (UserInfo.info?.token) {
+            return UserInfo.info.token;
+        }
+        const token = await auth.getToken();
+        if (token) {
+            UserInfo.info.token = token;
+            return token;
+        }
+        return '';
+    }
+
+    static create(): any {
+        return {
+            install: (app: App) => {
+                app.provide('$http', new HttpClient());
+            }
+        };
+    }
+
+    // 接口URL拼接
+    private static fixUrl(path: Path, data?: any): string {
+        let baseUrl = HttpClient.baseURL;
+        let urlParts = [];
+
+        // 确保baseUrl末尾没有斜杠
+        if (baseUrl && baseUrl.endsWith('/')) {
+            baseUrl = baseUrl.slice(0, -1);
+        }
+
+        // 确保baseUrl包含协议
+        if (baseUrl && !baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+            // 如果没有指定协议，默认使用http
+            baseUrl = `http://${baseUrl}`;
+        }
+
+        // 添加基础URL
+        if (baseUrl) {
+            urlParts.push(baseUrl);
+        }
+
+        // 添加api路径段
+        urlParts.push('api');
+        urlParts.push('kunlun');
+
+        // 添加prefix（如果有）
+        if (path.prefix) {
+            urlParts.push(path.prefix);
+        }
+
+        // 添加具体的url
+        if (path.url) {
+            // 确保url不以斜杠开头
+            const cleanUrl = path.url.startsWith('/') ? path.url.slice(1) : path.url;
+            urlParts.push(cleanUrl);
+        }
+
+        // 构建完整URL
+        let fullUrl = urlParts.join('/');
+
+        // 再次确保URL包含协议，如果还是没有的话
+        if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+            fullUrl = `http://${fullUrl}`;
+        }
+
+        // 处理路径参数
+        if (data && Object.keys(data).length > 0) {
+            const remainingData = {...data};
+
+            // 先处理路径参数 (如 /job-tasks/{uuid})
+            fullUrl = fullUrl.replace(/\{([^}]+)\}/g, (match, key) => {
+                if (remainingData[key] !== undefined) {
+                    const value = remainingData[key];
+                    delete remainingData[key]; // 从剩余数据中移除已使用的参数
+                    return encodeURIComponent(value);
+                }
+                return match; // 如果没有对应参数，保持原样
+            });
+
+            // GET请求处理剩余的查询参数
+            if (path.method === 'GET' && Object.keys(remainingData).length > 0) {
+                const params = new URLSearchParams(remainingData).toString();
+                fullUrl += fullUrl.includes('?') ? `&${params}` : `?${params}`;
+            }
+        }
+        return fullUrl;
+    }
+
+    // 在 HttpClient 类中添加一个私有方法来处理特殊 code
+    private static handleSpecialCode(responseBody: any): void {
+        // 检查响应体是否包含 code 字段
+        if (responseBody && typeof responseBody === 'object' && 'code' in responseBody) {
+            const code = responseBody.code;
+
+            switch (code) {
+                // 满额
+                case 2601:
+                // 未达到推荐门槛
+                case 2602:
+                // 简历ID不存在
+                case 2306:
+                // 职位已存在
+                case 2604:
+                    break;
+                // ai账号没有配置
+                case 2603:
+                    message.error(Message, responseBody.msg);
+                    break;
+
+                // 增值服务不存在
+                case 2701:
+                    message.error(Message, responseBody.msg);
+                    break;
+
+                // 已预约
+                case 2702:
+                    message.error(Message, responseBody.msg);
+                    break;
+
+                case 302:
+                    message.error(Message, responseBody.msg);
+                    UserInfo.logout();
+                    break;
+
+                case 2108:
+                    message.error(Message, ' 账号已在其他设备登录！');
+                    UserInfo.logout();
+                    break;
+
+                // 简历数量已达上限
+                case 2305:
+                    message.error(Message, responseBody.msg);
+                    break;
+
+                // 强制更新版本
+                case 417:
+                    message.error(Message, responseBody.msg);
+                    emitter.emit('forcedUpdate');
+                    break;
+
+                // 账号停用
+                case 2107:
+                    message.error(Message, responseBody.msg);
+                    break;
+
+                default:
+                    // 其他错误码的通用处理
+                    // TODO 白名单
+                    if (code !== 200) {
+                        console.log(responseBody, 'responseBodyresponseBody');
+                        const msg = responseBody.msg || '请求失败';
+                        message.error(Message, msg);
+                        throw new Error(msg);
+                    }
+            }
+        }
+    }
+
+    // 显示 loading
+    private static showRequestLoading(): void {
+        if (this.loadingCount === 0) {
+            showLoading();
+        }
+        this.loadingCount++;
+    }
+
+    // 隐藏 loading
+    private static hideRequestLoading(): void {
+        this.loadingCount--;
+        if (this.loadingCount <= 0) {
+            this.loadingCount = 0;
+            hideLoading();
+        }
+    }
+
+    /**
+     * 核心请求方法。通过 Path 对象封装了请求的 URL 和 Method。
+     *
+     * @param path Path 接口对象，包含 url, method, prefix 等。
+     * @param data 请求体数据 (仅 POST/PUT 有效)。
+     * @param options 额外选项，如文件上传和loading控制
+     * @returns Promise，解析为响应数据 (T)。
+     */
+    public async request<T>(
+        path: Path,
+        data?: any,
+        options?: {
+            file?: File;
+            extraFields?: Record<string, string>;
+            showLoading?: boolean; // 是否显示loading，默认true
+        }
+    ): Promise<T> {
+        const shouldShowLoading = options?.showLoading !== false;
+        console.log('开始请求:', path);
+        console.log('请求数据:', data);
+
+        // 显示 loading
+        if (shouldShowLoading) {
+            HttpClient.showRequestLoading();
+        }
+
+        // 传递data参数用于构建URL（包括路径参数和查询参数）
+        const fullUrl = HttpClient.fixUrl(path, data);
+        console.log('构建的URL:', fullUrl);
+
+        // 请求头和认证逻辑
+        let defaultHeaders: Record<string, string> = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'x-version': Config.version,
+            'x-source': HttpClient.osPlatform === 'macos' ? 'mac' : HttpClient.osPlatform
+            // x-version: '1.0.0'
+        };
+
+        const token = await HttpClient.getToken();
+        if (token) {
+            defaultHeaders['Admin-Token'] = token;
+        }
+
+        // 为版本管理接口添加额外的header
+        // if (/get(Release)?VersionInfo/.test(path.url)) {
+        //     const platformMap: Record<string, string> = {
+        //         android: '1',
+        //         ios: '2',
+        //         macos: '3',
+        //         windows: '4'
+        //     };
+        //     const os = platform();
+        //     defaultHeaders['x_type'] = platformMap[os] || os;
+        //     defaultHeaders['x_version'] = '1.0.0';
+        // }
+
+        console.log('请求头:', defaultHeaders);
+
+        // 构建请求参数
+        const requestParams: HttpRequestParams = {
+            url: fullUrl,
+            method: path.method,
+            headers: defaultHeaders
+        };
+
+        // 添加请求体 - 判断是文件上传还是普通请求
+        if (options?.file) {
+            // 文件上传
+            const buffer = await options.file.arrayBuffer();
+            const fileBytes = Array.from(new Uint8Array(buffer));
+            requestParams.field_name = 'file';
+            requestParams.file_name = options.file.name;
+            requestParams.file_bytes = fileBytes;
+            requestParams.extra_fields = options.extraFields;
+            delete requestParams.headers?.['Content-Type'];
+        } else if (path.method !== 'GET' && data) {
+            // 普通 JSON 请求 - 需要过滤掉路径参数
+            const bodyData = {...data};
+            // 移除URL中已使用的路径参数
+            const pathParams = path.url.match(/\{([^}]+)\}/g)?.map((p) => p.slice(1, -1)) || [];
+            pathParams.forEach((param) => delete bodyData[param]);
+
+            if (Object.keys(bodyData).length > 0) {
+                requestParams.body = bodyData;
+                console.log('请求体:', requestParams.body);
+            }
+        }
+
+        try {
+            const response: HttpResponse = await invoke('http_request', {
+                req: requestParams
+            });
+
+            console.info('HTTP请求响应:', response);
+
+            // 检查HTTP状态码
+            if (response.status >= 200 && response.status < 300) {
+                HttpClient.handleSpecialCode(response.body);
+                return response.body as T;
+            } else if (response.status === 504) {
+                message.error(Message, '网络异常，请稍后重试');
+                throw new Error(`请求超时`);
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.body?.msg || '请求失败'}`);
+            }
+        } catch (error) {
+            console.error('HTTP请求失败:', error);
+            throw error;
+        } finally {
+            // 隐藏 loading
+            if (shouldShowLoading) {
+                HttpClient.hideRequestLoading();
+            }
+        }
+    }
+
+    /**
+     * SSE 流式请求方法
+     * @param path Path对象
+     * @param data 请求体数据
+     * @param onMessage 接收到消息时的回调
+     * @param onError 发生错误时的回调
+     * @param onComplete 完成时的回调
+     * @param options formData请求参数
+     */
+    public async sseRequest(
+        path: Path,
+        data?: any,
+        onMessage?: (data: string) => void,
+        onError?: (error: any) => void,
+        onComplete?: () => void,
+        options?: {
+            file?: File;
+            extraFields?: Record<string, string>;
+        }
+    ): Promise<void> {
+        const fullUrl = HttpClient.fixUrl(path);
+        const eventId = `sse-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+            Accept: 'text/event-stream',
+            'x-version': Config.version,
+            'x-source': HttpClient.osPlatform === 'macos' ? 'mac' : HttpClient.osPlatform
+        };
+
+        const token = await HttpClient.getToken();
+        if (token) {
+            headers['Admin-Token'] = token;
+        }
+
+        // 监听消息
+        const unlistenMessage = await listen(`sse-message-${eventId}`, (event) => {
+            if (onMessage) {
+                onMessage(event.payload as string);
+            }
+        });
+
+        // 监听错误
+        const unlistenError = await listen(`sse-error-${eventId}`, (event) => {
+            if (onError) {
+                onError(event.payload);
+            }
+            unlistenMessage();
+            unlistenError();
+            unlistenComplete();
+        });
+
+        // 监听完成
+        const unlistenComplete = await listen(`sse-complete-${eventId}`, () => {
+            if (onComplete) {
+                onComplete();
+            }
+            unlistenMessage();
+            unlistenError();
+            unlistenComplete();
+        });
+
+        // 发起 SSE 请求
+        try {
+            const params: any = {
+                url: fullUrl,
+                headers,
+                eventId
+            };
+
+            // 判断是文件上传还是 JSON
+            if (options?.file) {
+                const buffer = await options.file.arrayBuffer();
+                const fileBytes = Array.from(new Uint8Array(buffer));
+                params.fieldName = 'file';
+                params.fileName = options.file.name;
+                params.fileBytes = fileBytes;
+                params.extraFields = options.extraFields;
+                delete params.headers['Content-Type'];
+            } else {
+                params.body = data;
+            }
+
+            await invoke('sse_request', params);
+        } catch (error) {
+            console.error('SSE 请求失败:', error);
+            unlistenMessage();
+            unlistenError();
+            unlistenComplete();
+            if (onError) {
+                onError(error);
+            }
+        }
+    }
+}
