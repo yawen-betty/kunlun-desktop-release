@@ -10,7 +10,7 @@
     },
     "prod": {
       "basePath": "/",
-      "baseUrl": "https://hr-ai.qianniaohudong.cn",
+      "baseUrl": "https://hr-ai.qianniaohudong.cn/",
       "downloadUrl": "https://hr-ai.qianniaohudong.cn/assets/kl-desktop"
     },
     "test": {
