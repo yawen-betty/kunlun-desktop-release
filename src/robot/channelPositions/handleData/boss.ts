@@ -28,7 +28,8 @@ export async function buildPositionData(data: any): Promise<any> {
     educational: '',      // 学历要求
     workExperience: '',     // 工作经验
     labels: [] as string[],           // 职位标签
-    benefits: [] as string[]        // 福利待遇
+    benefits: [] as string[],        // 福利待遇
+    sourceChannel: 0,        // 来源渠道 (0: BOSS直聘, 1: 智联, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)
   }
 
   Object.assign(position, {
@@ -38,7 +39,8 @@ export async function buildPositionData(data: any): Promise<any> {
     educational: await execScript(`document.querySelector(".text-degree").textContent`),
     workExperience: await execScript(`document.querySelector(".text-experiece").textContent`),
     labels: await execScript(`[...document.querySelectorAll(".job-keyword-list li")].map(li => li.textContent.trim())`),
-    benefits: await execScript(`[...document.querySelectorAll(".detail-box > .tag-container-new > .job-tags span")].map(span => span.textContent.trim())`)
+    benefits: await execScript(`[...document.querySelectorAll(".detail-box > .tag-container-new > .job-tags span")].map(span => span.textContent.trim())`),
+    sourceChannel: 0
   });
 
   // 薪资范围和薪资月数
@@ -70,7 +72,6 @@ export async function buildCompanyData(info: any): Promise<any> {
     financingStage: '',   // 融资阶段
     companyAddress: [] as string[], // 公司地址
     companyLabel: [] as string[],   // 公司标签
-    sourceChannel: 0,        // 来源渠道 (0: BOSS直聘, 1: 智联, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)
   }
 
   Object.assign(company, {
@@ -80,8 +81,7 @@ export async function buildCompanyData(info: any): Promise<any> {
     size: await execScript(`document.querySelector(".info p").childNodes[2].textContent.trim()`),
     financingStage: await execScript(`document.querySelector(".info p").childNodes[0].textContent.trim()`),
     companyLabel:  await execScript(`[...document.querySelectorAll(".company-talents-list li")].map(li => li.textContent.trim())`),
-    companyAddress:  await execScript(`[...document.querySelectorAll(".location-address")].map(a => a.textContent.trim())`),
-    sourceChannel: 0
+    companyAddress:  await execScript(`[...document.querySelectorAll(".location-address")].map(a => a.textContent.trim())`)
   });
 
   return company;
