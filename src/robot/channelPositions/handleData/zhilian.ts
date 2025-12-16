@@ -28,7 +28,8 @@ export async function buildPositionData(info: any): Promise<any> {
     educational: '',      // 学历要求
     workExperience: '',     // 工作经验
     labels: [] as string[],           // 职位标签
-    benefits: [] as string[]        // 福利待遇
+    benefits: [] as string[],        // 福利待遇
+    sourceChannel: 1,        // 来源渠道 (0: BOSS直聘, 1: 智联, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)
   }
 
   Object.assign(position, {
@@ -36,6 +37,7 @@ export async function buildPositionData(info: any): Promise<any> {
     educational: await execScript(`__INITIAL_STATE__.jobInfo.jobDetail.detailedPosition.education`),
     workExperience: await execScript(`__INITIAL_STATE__.jobInfo.jobDetail.detailedPosition.workingExp`),
     labels: await execScript(`__INITIAL_STATE__.jobInfo.jobDetail.detailedPosition.skillLabel`),
+    sourceChannel: 1
   });
 
   // 职位描述
@@ -84,7 +86,6 @@ export async function buildCompanyData(info: any): Promise<any> {
     financingStage: '',   // 融资阶段
     companyAddress: [] as string[], // 公司地址
     companyLabel: [] as string[],   // 公司标签
-    sourceChannel: 1,        // 来源渠道 (0: BOSS直聘, 1: 智联, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)
   }
 
   Object.assign(company, {
@@ -93,8 +94,7 @@ export async function buildCompanyData(info: any): Promise<any> {
     industry: await execScript(`__INITIAL_STATE__.companyDetail.companyBase.industryLevel`),
     size: await execScript(`__INITIAL_STATE__.companyDetail.companyBase.companySize`),
     natures: await execScript(`__INITIAL_STATE__.companyDetail.companyBase.property`),
-    financingStage: await execScript(`__INITIAL_STATE__.companyDetail.companyBase.financingStageName`),
-    sourceChannel: 1
+    financingStage: await execScript(`__INITIAL_STATE__.companyDetail.companyBase.financingStageName`)
   });
 
   const address = await execScript(`__INITIAL_STATE__.companyDetail.companyAddresses.addresses`, 'array');

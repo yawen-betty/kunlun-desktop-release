@@ -2,7 +2,7 @@
     <div class="login-page">
         <div class="left-section">
             <div class="brand-area">
-                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30" />
+                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30"/>
                 <h1 class="app-name">{{ SystemInfo.info.loginTitle }}</h1>
             </div>
 
@@ -12,7 +12,7 @@
             </div>
 
             <div class="illustration-area">
-                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration" />
+                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration"/>
             </div>
         </div>
 
@@ -82,6 +82,7 @@ import {showLoading, hideLoading} from '@/utiles/loading.ts';
 import {GetJobTaskInDto} from '@/api/job/dto/GetJobTask.ts';
 import {ActivateJobTaskInDto} from '@/api/job/dto/ActivateJobTask.ts';
 import {JobService} from '@/service/JobService.ts';
+import {GetMatchAnalysisPromptInDto} from "@/api/admin/dto/GetMatchAnalysisPrompt.ts";
 
 const qrCodeUrl = ref<string>('');
 const qrcodeIframe = ref<HTMLIFrameElement>();
@@ -199,8 +200,18 @@ const getStatus = () => {
             auth.saveToken(res.data.token);
             message.success(Message, '登录成功！');
             getUserInfo();
+            getMatchAnalysisPrompt();
         } else if (res.code === 2107) {
             isError.value = true;
+        }
+    });
+};
+
+// 获取简历匹配分析提示词
+const getMatchAnalysisPrompt = () => {
+    adminService.getMatchAnalysisPrompt(new GetMatchAnalysisPromptInDto()).then((res) => {
+        if (res.code === 200) {
+            UserInfo.info.matchAnalysisPrompt = res.data.content;
         }
     });
 };

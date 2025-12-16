@@ -12,7 +12,8 @@ export function buildPositionData(data: any): any {
         educational: '',      // 学历要求
         workExperience: '',     // 工作经验
         labels: [] as string[],           // 职位标签
-        benefits: [] as string[]        // 福利待遇
+        benefits: [] as string[],        // 福利待遇
+        sourceChannel: 3,        // 来源渠道 (0: BOSS直聘, 1: 智联校园, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)
     }
 
     Object.assign(position, {
@@ -23,6 +24,7 @@ export function buildPositionData(data: any): any {
         educational: data.data.education_cn,
         workExperience: data.data.experience_cn,
         labels: [data.data.category_cn].concat(data.data?.job_custom_tags_cn || []),
+        sourceChannel: 3
     });
     // 处理区域信息和工作地址
     if (data.data.district_list[0]?.area_cn) {
@@ -60,7 +62,6 @@ export function buildCompanyData(data: any): any {
         financingStage: '',   // 融资阶段
         companyAddress: [] as string[], // 公司地址
         companyLabel: [] as string[],   // 公司标签
-        sourceChannel: 3,        // 来源渠道 (0: BOSS直聘, 1: 智联校园, 2: 猎聘, 3: 国聘, 4: 应届生招聘, 5: 拉钩, 0: 手动创建)
     }
 
     Object.assign(company, {
@@ -69,8 +70,7 @@ export function buildCompanyData(data: any): any {
         industry: data.data.company_info.industry_cn,
         size: data.data.company_info.scale_cn,
         natures: data.data.company_info.nature_cn,
-        financingStage: data.data.company_info.financing_stage_cn,
-        sourceChannel: 3
+        financingStage: data.data.company_info.financing_stage_cn
     });
 
     const address = (data.data.company_info.area_cn || '') + (data.data.company_info?.address || '')

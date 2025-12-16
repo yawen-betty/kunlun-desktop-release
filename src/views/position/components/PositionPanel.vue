@@ -226,7 +226,7 @@ const handleClickOutside = (event: MouseEvent) => {
     showTaskDropdown.value = false
 }
 
-const handleToggleTaskStatus = debounce(async () => {
+const handleToggleTaskStatus = debounce(async (isShowTip: boolean = true) => {
     if (!currentTask.value?.uuid) return
     try {
         const params = new ActivateJobTaskInDto()
@@ -258,7 +258,7 @@ const handleToggleTaskStatus = debounce(async () => {
                         UserInfo.info.isRunningTask = true
                     }
                     taskSwitchingStatus.value = ''
-                    message.success(Message, '任务已开启，请至少登录一个招聘渠道！')
+                    isShowTip && message.success(Message, '任务已开启，请至少登录一个招聘渠道！')
                 } else {
                     // 关闭状态，停止爬取
                     await robotManager.cleanup()
@@ -268,16 +268,16 @@ const handleToggleTaskStatus = debounce(async () => {
                     await new Promise(resolve => setTimeout(resolve, 5000))
                     UserInfo.info.isRunningTask = false
                     taskSwitchingStatus.value = ''
-                    message.success(Message, '任务已关闭，将不再推送精选职位！')
+                    isShowTip && message.success(Message, '任务已关闭，将不再推送精选职位！')
                 }
             }
         } else if (result.code === 2601) { // 满额
             UserInfo.info.isRunningTask = false
             taskSwitchingStatus.value = ''
-            message.info(Message, '今日推荐次数已用完，请明日再来！')
+            isShowTip && message.info(Message, '今日推荐次数已用完，请明日再来！')
         } else if (result.code === 2306) { // 简历id不存在
             taskSwitchingStatus.value = ''
-            message.error(Message, '求职简历不存在，任务开启失败!')
+            isShowTip && message.error(Message, '求职简历不存在，任务开启失败!')
         }
     } catch (error) {
         console.error('切换任务状态失败:', error)
@@ -296,6 +296,7 @@ const handleSelectTask = debounce(async (taskId: string) => {
         if (result.code === 200) {
             resetFilters()
             selectedId.value = '';
+            hasNewPositions.value = false
             await loadCurrentTask(true)
         }
     } catch (error) {
@@ -513,6 +514,7 @@ onMounted(() => {
     emitter.on('exhaustedOfAttempts', handleExhaustedOfAttempts)
     emitter.on('cancelLoading', handleCancelLoading)
     emitter.on('loginFailure', handleLoginFailure)
+    emitter.on('closeTask', handleToggleTaskStatus);
     document.addEventListener('click', handleClickOutside)
 })
 
@@ -520,7 +522,8 @@ onBeforeUnmount(() => {
     emitter.off('updateNewPosition', handleUpdateNewPosition)
     emitter.off('exhaustedOfAttempts', handleExhaustedOfAttempts)
     emitter.off('cancelLoading', handleCancelLoading)
-    emitter.on('loginFailure', handleLoginFailure)
+    emitter.off('loginFailure', handleLoginFailure)
+    emitter.off('closeTask', handleToggleTaskStatus);
     document.removeEventListener('click', handleClickOutside)
 })
 </script>
@@ -565,7 +568,7 @@ onBeforeUnmount(() => {
                             </span>
                         </div>
                         <Loading v-if="taskSwitchingStatus"/>
-                        <div v-if="hasNewPositions" class="new-pos-tip mr-20">
+                        <div v-if="hasNewPositions" class="new-pos-tip ml-20">
                             <div class="new-pos-text mr-20">有新职位</div>
                             <div class="refresh-con" @click="handleRefresh">
                                 <SvgIcon class="mr-5" color="#9499A5" name="icon-shuaxin" size="12"/>
