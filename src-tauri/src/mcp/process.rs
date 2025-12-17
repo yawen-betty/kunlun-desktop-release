@@ -72,39 +72,58 @@ impl McpProcess {
 
         eprintln!("[MCP] Process spawned with PID: {:?}", child.id());
 
-        // 捕获 stderr 并解析 CDP 端口
-        let cdp_port = std::sync::Arc::new(std::sync::Mutex::new(None));
-        let cdp_port_clone = cdp_port.clone();
+//         // 捕获 stderr 并解析 CDP 端口
+//         let cdp_port = std::sync::Arc::new(std::sync::Mutex::new(None));
+//         let cdp_port_clone = cdp_port.clone();
+//
+//         if let Some(stderr) = child.stderr.take() {
+//             tokio::spawn(async move {
+//                 let reader = BufReader::new(stderr);
+//                 for line in reader.lines().flatten() {
+//                     eprintln!("[MCP stderr] {}", line);
+//
+//                     // 解析 CDP 端口: --remote-debugging-port=XXXXX
+//                     if line.contains("--remote-debugging-port=") {
+//                         if let Some(port_str) = line.split("--remote-debugging-port=").nth(1) {
+//                             if let Some(port_str) = port_str.split_whitespace().next() {
+//                                 if let Ok(port) = port_str.parse::<u16>() {
+//                                     eprintln!("[MCP] Detected CDP port: {}", port);
+//                                     *cdp_port_clone.lock().unwrap() = Some(port);
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//             });
+//         }
+//
+//         // 等待 CDP 端口被检测到（增加等待时间）
+// //         tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
+//         for _ in 0..50 {
+//             if cdp_port.lock().unwrap().is_some() {
+//                 break;
+//             }
+//             tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+//         }
+//
+//         let detected_port = *cdp_port.lock().unwrap();
+//
+//         if detected_port.is_some() {
+//             eprintln!("[MCP] Detected CDP port from stderr: {:?}", detected_port);
+//         } else {
+//             eprintln!("[MCP] No CDP port detected from stderr");
+//         }
 
+
+
+        // 捕获 stderr 用于调试日志
         if let Some(stderr) = child.stderr.take() {
             tokio::spawn(async move {
                 let reader = BufReader::new(stderr);
                 for line in reader.lines().flatten() {
                     eprintln!("[MCP stderr] {}", line);
-
-                    // 解析 CDP 端口: --remote-debugging-port=XXXXX
-                    if line.contains("--remote-debugging-port=") {
-                        if let Some(port_str) = line.split("--remote-debugging-port=").nth(1) {
-                            if let Some(port_str) = port_str.split_whitespace().next() {
-                                if let Ok(port) = port_str.parse::<u16>() {
-                                    eprintln!("[MCP] Detected CDP port: {}", port);
-                                    *cdp_port_clone.lock().unwrap() = Some(port);
-                                }
-                            }
-                        }
-                    }
                 }
             });
-        }
-
-        // 等待 CDP 端口被检测到（增加等待时间）
-        tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
-        let detected_port = *cdp_port.lock().unwrap();
-
-        if detected_port.is_some() {
-            eprintln!("[MCP] Detected CDP port from stderr: {:?}", detected_port);
-        } else {
-            eprintln!("[MCP] No CDP port detected from stderr");
         }
 
         let stdin = child.stdin.take()
@@ -112,7 +131,7 @@ impl McpProcess {
         let stdout = child.stdout.take()
             .ok_or("Failed to get stdout")?;
 
-        Ok((Self { child, cdp_port: detected_port }, stdin, stdout))
+        Ok((Self { child, cdp_port: None }, stdin, stdout))
     }
 
     /// 终止进程
