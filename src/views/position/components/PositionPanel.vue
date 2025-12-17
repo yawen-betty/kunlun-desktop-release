@@ -30,6 +30,7 @@ import {debounce} from "@/utiles/debounce.ts";
 import emitter from "@/utiles/eventBus.ts";
 import {hideLoading} from "@/utiles/loading.ts";
 import Loading from '@/components/loading/index.vue';
+import PositionItem from '@/views/position/components/PositionItem.vue';
 
 // 创建任务弹框实例
 const createTaskModalRef = useCompRef(CreateTaskModal)
@@ -445,27 +446,7 @@ const handleRefresh = async () => {
     await loadPositions()
 }
 
-const openBaidu = async (url: string) => {
-    if (url) {
-        await openWeb(url);
-    }
-}
 
-// 计算可显示的标签
-const getVisibleTags = (item: MatchedPositionBean) => {
-    const tags: string[] = []
-    if (item.educational) tags.push(item.educational)
-    if (item.workExperience) tags.push(item.workExperience)
-    if (item.labels) tags.push(...item.labels)
-
-    // 根据标签内容长度动态估算，时间信息占约25%宽度，每个标签平均占8%宽度
-    const timeWidthPercent = 25
-    const avgTagWidthPercent = 8
-    const availablePercent = 100 - timeWidthPercent
-    const maxTags = Math.floor(availablePercent / avgTagWidthPercent)
-
-    return tags.slice(0, Math.max(1, maxTags))
-}
 
 /**
  * 显示有新职位
@@ -639,43 +620,13 @@ onBeforeUnmount(() => {
             </div>
 
             <div v-if="positionList.length > 0" class="position-list">
-                <div v-for="(item) in positionList" :key="item.uuid"
-                     :class="{ 'is-active': selectedId === item.uuid }" class="position-item"
-                     @click="handleSelectPosition(item.uuid)">
-                    <div class="item-top">
-                        <div class="top-left">
-                            <span class="item-title">{{ item.title }}</span>
-                            <div class="match-badge">
-                                <SvgIcon color="#FC8919" name="icon-pipei" size="14"/>
-                                <span>{{ item.matchScore }}%</span>
-                            </div>
-                        </div>
-                        <span class="item-salary">{{
-                                [item.salary, item.salaryNumber].filter(Boolean).join('·')
-                            }}</span>
-                    </div>
-                    <div class="item-middle">
-                        <div class="item-tags">
-                            <span v-for="(tag, idx) in getVisibleTags(item)" :key="idx" class="tag-item">{{
-                                    tag
-                                }}</span>
-                        </div>
-                        <span class="item-time">{{ parseDate(item.recommendedAt, '{y}-{m}-{d} {h}:{i}') }} <span
-                            class="separator">｜</span>{{
-                                enumEcho(item.sourceChannel, channelList, 'value', 'key')
-                            }}</span>
-                    </div>
-                    <div class="item-bottom">
-                        <span class="company-info">{{ item.areaName }}
-                            <span v-if="item.companyName" class="separator">｜</span>{{
-                                item.companyName
-                            }}</span>
-                        <div class="item-action pointer" @click="openBaidu(item.jobDetailUrl)">
-                            <SvgIcon color="#9499A4" name="icon-send" size="14"/>
-                            <span>去投递</span>
-                        </div>
-                    </div>
-                </div>
+                <PositionItem
+                    v-for="item in positionList"
+                    :key="item.uuid"
+                    :is-active="selectedId === item.uuid"
+                    :item="item"
+                    @select="handleSelectPosition"
+                />
             </div>
 
             <Pagination
@@ -1158,161 +1109,6 @@ onBeforeUnmount(() => {
 
             -ms-overflow-style: none;
             scrollbar-width: none;
-
-            .position-item {
-                width: 100%;
-                background: $white;
-                border-radius: vw(2);
-                box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
-                padding: vw(20);
-                display: flex;
-                flex-direction: column;
-                row-gap: vh(12);
-                position: relative;
-                flex-shrink: 0;
-                cursor: pointer;
-
-                &.is-active::before {
-                    content: '';
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: vw(4);
-                    height: 100%;
-                    background: $theme-color;
-                    border-radius: vw(2) 0 0 vw(2);
-                }
-
-                .item-top {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-
-                    .top-left {
-                        display: flex;
-                        align-items: center;
-                        column-gap: vw(10);
-
-                        .item-title {
-                            font-size: vw(20);
-                            font-weight: 500;
-                            color: $font-dark;
-                            line-height: vw(20);
-                        }
-
-                        .match-badge {
-                            display: flex;
-                            align-items: center;
-                            column-gap: vw(4);
-
-                            svg {
-                                width: vw(14) !important;
-                                height: vw(14) !important;
-                            }
-
-                            span {
-                                font-size: vw(14);
-                                font-weight: 500;
-                                background: linear-gradient(90deg, #FFB32C 0%, #FC8919 100%);
-                                -webkit-background-clip: text;
-                                -webkit-text-fill-color: transparent;
-                                background-clip: text;
-                                line-height: vw(14);
-                            }
-                        }
-                    }
-
-                    .item-salary {
-                        font-size: vw(20);
-                        font-weight: 500;
-                        color: $font-dark;
-                        line-height: vw(20);
-                    }
-                }
-
-                .item-middle {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-
-                    .item-tags {
-                        display: flex;
-                        align-items: center;
-                        column-gap: vw(10);
-                        flex-wrap: nowrap;
-
-                        .tag-item {
-                            padding: vw(5);
-                            background: #F6F8FA;
-                            font-size: vw(12);
-                            color: $font-dark;
-                            line-height: vw(12);
-                            white-space: nowrap;
-                        }
-                    }
-
-                    .item-time {
-                        font-size: vw(14);
-                        color: $font-middle;
-                        line-height: vw(14);
-                        display: inline-flex;
-                        align-items: center;
-
-                        .separator {
-                            color: #B0B7C6;
-                            display: inline-flex;
-                            align-items: center;
-                        }
-                    }
-                }
-
-                .item-bottom {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-
-                    .company-info {
-                        font-size: vw(14);
-                        color: $font-dark;
-                        line-height: vw(14);
-                        display: inline-flex;
-                        align-items: center;
-
-                        .separator {
-                            color: #B0B7C6;
-                            display: inline-flex;
-                            align-items: center;
-                        }
-                    }
-
-                    .item-action {
-                        display: flex;
-                        align-items: center;
-                        column-gap: vw(6);
-
-                        span {
-                            font-size: vw(14);
-                            color: $font-dark;
-                            line-height: vw(14);
-                        }
-
-                        svg {
-                            width: vw(14) !important;
-                            height: vw(14) !important;
-                        }
-
-                        &:hover {
-                            span {
-                                color: $theme-color;
-                            }
-
-                            :deep(use) {
-                                fill: $theme-color;
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         .empty-state {

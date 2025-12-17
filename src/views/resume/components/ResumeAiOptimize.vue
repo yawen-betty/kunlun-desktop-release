@@ -138,6 +138,8 @@ const handleSubmit = () => {
         },
         (error: any) => {
             AiErrorHandler.handleError(error.status);
+            emit('update:modelValue', false);
+            hideLoading();
         },
         () => {
             state.value = '4';

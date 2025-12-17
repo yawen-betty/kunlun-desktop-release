@@ -255,6 +255,8 @@ const handleSave = debounce(async () => {
 }
 
 .config-form {
+    width: vw(400);
+
     :deep(.ivu-form-item) {
         margin-bottom: vh(40);
     }
@@ -301,8 +303,6 @@ const handleSave = debounce(async () => {
     }
 
     .api-key-input {
-        width: vw(400);
-
         :deep(.ivu-form-item-label::after) {
             content: '*';
             color: $remind-error;
@@ -342,6 +342,7 @@ const handleSave = debounce(async () => {
     border-radius: vw(2);
     cursor: pointer;
     padding: 0;
+    box-shadow: none;
 
     &:hover {
         background-color: $theme-color;
