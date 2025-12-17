@@ -384,6 +384,7 @@ const changeMode = () => {
 const over = () => {
     currentMode.value = 'manual';
     usageExhaustedModalVisible.value = true
+    isGenerating.value = false
 }
 
 /**
