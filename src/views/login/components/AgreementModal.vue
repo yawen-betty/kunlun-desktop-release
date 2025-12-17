@@ -34,10 +34,6 @@ import {GetAgreementInDto} from '@/api/admin/dto/GetAgreement.ts';
 import {Config} from '@/Config.ts';
 import {createLoadingTask, VuePdf} from 'vue3-pdfjs';
 import {PDFDocumentProxy} from 'pdfjs-dist/types/src/display/api';
-import * as pdfjsLib from 'pdfjs-dist';
-
-// 配置 PDF.js worker 路径
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
 
 // 组件属性定义
 const props = defineProps<{
