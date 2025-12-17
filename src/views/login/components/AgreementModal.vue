@@ -1,15 +1,26 @@
 <template>
+    <!-- 协议弹窗遮罩层 -->
     <div v-if="visible" class="modal-overlay">
+        <!-- 弹窗主容器 -->
         <div class="modal-container" @click.stop>
             <!-- 标题栏 -->
             <div class="modal-header">
                 <h3 class="modal-title">{{ title }}</h3>
             </div>
+
+            <!-- 关闭按钮 -->
             <svg-icon name="icon-cha" size="20" color="#9499A4" @click="handleClose" class="cha pointer" />
 
-            <!-- 内容区域 -->
+            <!-- PDF内容区域 -->
             <div class="modal-content mt-40">
-                <iframe :src="agreementFileUrl" class="agreement-iframe" scrolling="no" frameborder="0"></iframe>
+                <!-- 渲染PDF的每一页 -->
+                <VuePdf
+                    v-for="pageNum in numOfPages"
+                    :key="`${agreementFileUrl}-${pageNum}`"
+                    class="agreement-iframe"
+                    :src="agreementFileUrl"
+                    :page="pageNum"
+                />
             </div>
         </div>
     </div>
@@ -21,46 +32,87 @@ import SvgIcon from '@/components/svgIcon/index.vue';
 import {AdminService} from '@/service/AdminService.ts';
 import {GetAgreementInDto} from '@/api/admin/dto/GetAgreement.ts';
 import {Config} from '@/Config.ts';
+import {createLoadingTask, VuePdf} from 'vue3-pdfjs';
+import {PDFDocumentProxy} from 'pdfjs-dist/types/src/display/api';
+import * as pdfjsLib from 'pdfjs-dist';
 
-// 定义组件属性
+// 配置 PDF.js worker 路径
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
+
+// 组件属性定义
 const props = defineProps<{
-    visible: boolean; // 显示
-    title: string; // 标题
-    agreementType: number; // 类型
+    visible: boolean; // 弹窗显示状态
+    title: string; // 弹窗标题
+    agreementType: number; // 协议类型（1:服务协议 2:隐私协议）
 }>();
 
+// 事件定义
 const emit = defineEmits(['update:visible']);
 
+// 服务实例
 const adminService = new AdminService();
 
-// 协议地址
-const agreementFileUrl = ref<string>('');
+// 响应式数据
+const numOfPages = ref<number>(0); // PDF总页数
+const agreementFileUrl = ref<string>(''); // 协议文件URL
 
+/**
+ * 监听弹窗显示状态，当弹窗显示时加载协议内容
+ */
 watch(
     () => props.visible,
-    (newVal: boolean) => {
-        if (newVal) {
-            getAgreement();
+    async (isVisible: boolean) => {
+        if (isVisible) {
+            await getAgreement();
+            // 加载PDF并获取页数
+            const loadingTask = createLoadingTask(agreementFileUrl.value);
+            loadingTask.promise.then((pdf: PDFDocumentProxy) => {
+                numOfPages.value = pdf.numPages;
+            });
+        } else {
+            agreementFileUrl.value = '';
+            numOfPages.value = 0;
         }
     }
 );
 
-// 获取协议
-const getAgreement = () => {
+/**
+ * 将相对URL转换为完整的代理URL
+ * @param url 原始URL
+ * @returns 完整的URL
+ */
+const toProxyUrl = (url: string): string => {
+    if (!url) return '';
+    return Config.baseUrl + url;
+};
+
+/**
+ * 获取协议文件信息
+ */
+const getAgreement = async (): Promise<void> => {
     const params: GetAgreementInDto = {
         type: props.agreementType
     };
 
-    adminService.getAgreements(params).then((res) => {
+    try {
+        const res = await adminService.getAgreements(params);
         if (res.code === 200) {
-            // 添加参数隐藏PDF工具栏
-            agreementFileUrl.value = Config.baseUrl + res.data.agreementFileUrl + '#toolbar=0&navpanes=0&scrollbar=0';
+            agreementFileUrl.value = toProxyUrl(res.data.agreementFileUrl);
+            console.log(
+                '%c ⤴️: getAgreement -> agreementFileUrl.value ',
+                'font-size:16px;background-color:#4c02da;color:white;',
+                agreementFileUrl.value
+            );
         }
-    });
+    } catch (error) {
+        console.error('获取协议失败:', error);
+    }
 };
 
-// 处理关闭弹窗
-const handleClose = () => {
+/**
+ * 关闭弹窗
+ */
+const handleClose = (): void => {
     emit('update:visible', false);
 };
 </script>
@@ -68,6 +120,7 @@ const handleClose = () => {
 <style scoped lang="scss">
 @use '@/assets/styles/variable.scss' as *;
 @use '@/assets/styles/compute.scss' as *;
+
 /* 弹窗遮罩层 */
 .modal-overlay {
     position: fixed;
@@ -79,7 +132,7 @@ const handleClose = () => {
     z-index: 1000;
 }
 
-/* 弹窗容器 */
+/* 弹窗主容器 */
 .modal-container {
     width: vw(1200);
     height: vh(800);
@@ -93,6 +146,7 @@ const handleClose = () => {
     display: flex;
     flex-direction: column;
 
+    /* 关闭按钮定位 */
     .cha {
         position: absolute;
         right: vw(20);
@@ -100,12 +154,13 @@ const handleClose = () => {
     }
 }
 
-/* 标题栏 */
+/* 标题栏布局 */
 .modal-header {
     display: flex;
     justify-content: space-between;
 }
 
+/* 弹窗标题样式 */
 .modal-title {
     color: $font-dark;
     font-size: vw(28);
@@ -115,7 +170,7 @@ const handleClose = () => {
     font-family: 'YouSheBiaoTiHei', serif;
 }
 
-/* 内容区域 */
+/* PDF内容区域 */
 .modal-content {
     flex: 1;
     color: $font-dark;
@@ -125,23 +180,20 @@ const handleClose = () => {
     line-height: vw(22);
     word-break: break-all;
     position: relative;
-    overflow: hidden;
+    overflow-y: auto; /* 允许垂直滚动 */
     border-radius: vw(2);
 
+    /* PDF页面样式 */
     .agreement-iframe {
         width: 100%;
-        height: 100%;
         border: none;
         outline: none;
         border-radius: vw(2);
-        overflow: hidden;
-        scrolling: no;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
+        display: block;
+        margin-bottom: vw(10); /* 页面间距 */
     }
 
-    /* 隐藏滚动条 */
+    /* 隐藏Webkit滚动条 */
     &::-webkit-scrollbar {
         display: none;
     }
