@@ -112,7 +112,7 @@ impl McpManager {
         {
             Ok(_) => {
                 // 等待浏览器完全启动
-                tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+                tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
 
                 // 连接 CDP
                 eprintln!("[MCP] Connecting CDP...");
