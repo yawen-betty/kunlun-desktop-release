@@ -3,6 +3,8 @@ use super::browser::BrowserManager;
 use super::process::McpProcess;
 use super::protocol::McpProtocol;
 use crate::cdp::CDPClient;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 
 /// MCP 管理器
 ///
@@ -52,13 +54,51 @@ impl McpManager {
 
         self.process = Some(process);
 
-        // 等待进程启动
-        tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
+//         // 等待进程启动
+//         tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
+//
+//         // 初始化协议
+//         eprintln!("[MCP] Initializing protocol...");
+//         let mut protocol = McpProtocol::new(stdin, stdout);
+//         protocol.initialize().await?;
 
-        // 初始化协议
+        // 初始化协议（带超时和重试）
         eprintln!("[MCP] Initializing protocol...");
         let mut protocol = McpProtocol::new(stdin, stdout);
-        protocol.initialize().await?;
+
+        let mut retries = 0;
+        const MAX_RETRIES: u32 = 5;
+        const INIT_TIMEOUT_MS: u64 = 3000;
+
+        loop {
+            match tokio::time::timeout(
+                tokio::time::Duration::from_millis(INIT_TIMEOUT_MS),
+                protocol.initialize()
+            ).await {
+                Ok(Ok(_)) => {
+                    eprintln!("[MCP] Protocol initialized successfully");
+                    break;
+                }
+                Ok(Err(e)) => {
+                    if retries < MAX_RETRIES {
+                        eprintln!("[MCP] Protocol init failed (attempt {}): {}", retries + 1, e);
+                        retries += 1;
+                        tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+                    } else {
+                        return Err(format!("Failed to initialize protocol after {} attempts: {}", MAX_RETRIES, e));
+                    }
+                }
+                Err(_) => {
+                    if retries < MAX_RETRIES {
+                        eprintln!("[MCP] Protocol init timeout (attempt {})", retries + 1);
+                        retries += 1;
+                        tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+                    } else {
+                        return Err(format!("Protocol initialization timeout after {} attempts", MAX_RETRIES));
+                    }
+                }
+            }
+        }
 
         self.protocol = Some(protocol);
         self.initialized = true;
@@ -130,10 +170,17 @@ impl McpManager {
         // 5. 清理 Playwright Chrome 进程
         eprintln!("[MCP] Cleaning up Chrome processes...");
         #[cfg(target_os = "windows")]
+//         {
+//             let _ = std::process::Command::new("taskkill")
+//                 .args(&["/F", "/FI", "IMAGENAME eq chrome.exe", "/FI", "COMMANDLINE eq *playwright-browsers*"])
+//                 .output();
+//         }
         {
-            let _ = std::process::Command::new("taskkill")
-                .args(&["/F", "/FI", "IMAGENAME eq chrome.exe", "/FI", "COMMANDLINE eq *playwright-browsers*"])
-                .output();
+            let mut cmd = std::process::Command::new("taskkill");
+            cmd.args(&["/F", "/FI", "IMAGENAME eq chrome.exe", "/FI", "COMMANDLINE eq *playwright-browsers*"]);
+            cmd.creation_flags(0x08000000);  // ← 添加这行
+
+            let _ = cmd.output();
         }
 
         #[cfg(not(target_os = "windows"))]
@@ -185,14 +232,26 @@ impl McpManager {
 
         for _ in 0..10 {
             #[cfg(target_os = "windows")]
-            let output = std::process::Command::new("wmic")
-                .args(&[
+//             let output = std::process::Command::new("wmic")
+//                 .args(&[
+//                     "process", "where",
+//                     "name='chrome.exe' and commandline like '%playwright-browsers%' and commandline like '%--no-startup-window%'",
+//                     "get", "commandline"
+//                 ])
+//                 .output()
+//                 .map_err(|e| format!("Failed to run wmic: {}", e))?;
+            let output = {
+                let mut cmd = std::process::Command::new("wmic");
+                cmd.args(&[
                     "process", "where",
                     "name='chrome.exe' and commandline like '%playwright-browsers%' and commandline like '%--no-startup-window%'",
                     "get", "commandline"
-                ])
-                .output()
-                .map_err(|e| format!("Failed to run wmic: {}", e))?;
+                ]);
+                cmd.creation_flags(0x08000000);
+
+                cmd.output()
+                    .map_err(|e| format!("Failed to run wmic: {}", e))?
+            };
 
             #[cfg(not(target_os = "windows"))]
             let output = std::process::Command::new("ps")

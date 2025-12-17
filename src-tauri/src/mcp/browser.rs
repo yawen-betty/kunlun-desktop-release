@@ -3,6 +3,8 @@ use std::process::Stdio;
 use tauri::{AppHandle, Manager};
 use tauri::path::BaseDirectory;
 use super::types::BrowserStatus;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 
 /// 浏览器管理器
 /// 
@@ -81,15 +83,19 @@ impl BrowserManager {
         eprintln!("[Browser] Using node: {}", node_path_clean);
         eprintln!("[Browser] Playwright CLI: {}", playwright_clean);
 
-        let mut child = std::process::Command::new(node_path_clean)
-            .arg(playwright_clean)
+        let mut cmd = std::process::Command::new(node_path_clean);
+        cmd.arg(playwright_clean)
             .arg("install")
             .arg("chromium")
             .current_dir(mcp_modules_clean)
             .env("PLAYWRIGHT_BROWSERS_PATH", browsers_path_clean)
             .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn()
+            .stderr(Stdio::piped());
+
+        #[cfg(target_os = "windows")]
+        cmd.creation_flags(0x08000000);
+
+        let mut child = cmd.spawn()
             .map_err(|e| format!("Failed to spawn playwright install: {}", e))?;
 
         // 捕获输出
