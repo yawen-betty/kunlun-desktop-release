@@ -230,7 +230,7 @@ impl McpManager {
         // 从 Chrome 进程参数中查找 CDP 端口
         eprintln!("[CDP] Searching for Chrome process with CDP port...");
 
-        for _ in 0..20 {
+        for _ in 0..10 {
             #[cfg(target_os = "windows")]
 //             let output = std::process::Command::new("wmic")
 //                 .args(&[
