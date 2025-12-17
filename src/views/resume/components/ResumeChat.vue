@@ -16,21 +16,18 @@
                         <div class="ai-chat-box mb-20">
                             <div class="ai-chat">
                                 <div class="ai-chat-text">{{ info.content }}</div>
-                                <div v-if="['1', '2'].includes(info.thinkingStatus || '0') && !info.isExpand"
-                                     class="is-think mt-10">
+                                <div v-if="['1', '2'].includes(info.thinkingStatus || '0') && !info.isExpand" class="is-think mt-10">
                                     <div class="think-text mr-5">{{ thinkingText[info.thinkingStatus!] }}</div>
-                                    <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12"
-                                             @click="info.isExpand = true"></SvgIcon>
+                                    <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12" @click="info.isExpand = true"></SvgIcon>
                                 </div>
                             </div>
                         </div>
 
                         <div v-if="info.isExpand" class="deep-thinking mt-10 mb-20">
-                            <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12"
-                                     @click="info.isExpand = false"></SvgIcon>
+                            <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12" @click="info.isExpand = false"></SvgIcon>
 
                             <div v-if="info.thinkingStatus === '2'" class="deep-thinking-title">
-                                <img class="deep-log" src="@/assets/images/deep-logo.gif"/>
+                                <img class="deep-log" src="@/assets/images/deep-logo.gif" />
                                 <div class="deep-thinking-title-text">深度思考</div>
                             </div>
 
@@ -65,14 +62,13 @@
                     @keydown="handleKeyDown"
                 ></Input>
                 <button :disabled="disabled || !sendContent" class="save-btn" @click="handleSendMessage">
-                    <SvgIcon :color="disabled || !sendContent ? '#C5C8CE' : '#fff'" name="icon-fasong" size="10"/>
+                    <SvgIcon :color="disabled || !sendContent ? '#C5C8CE' : '#fff'" name="icon-fasong" size="10" />
                     发送
                 </button>
             </div>
         </div>
 
-        <Modal v-model="diagnoseModal" :closable="false" :footer-hide="true" :mask-closable="false"
-               class-name="delete-confirm-modal question-modal">
+        <Modal v-model="diagnoseModal" :closable="false" :footer-hide="true" :mask-closable="false" class-name="delete-confirm-modal question-modal">
             <div class="delete-modal-content">
                 <div class="modal-header">
                     <span class="modal-title">提示</span>
@@ -108,6 +104,7 @@ import {scrollToBottom} from '@/utiles/domUtils.ts';
 import {AiConversationOutDto} from '@/api/ai/dto/bean/AiConversationOutDto.ts';
 import {AiErrorHandler} from '@/utiles/aiErrorHandler.ts';
 import {UserInfo} from '@/utiles/userInfo.ts';
+import {hideLoading} from '@/utiles/loading.ts';
 
 type TextType = {
     [key: string]: string;
@@ -177,6 +174,7 @@ const diagnoseStr = ref<string>('');
 
 // 根据错误码显示提示信息
 const showErrorMessage = (code: number) => {
+    hideLoading();
     AiErrorHandler.handleError(code, props.over);
 };
 

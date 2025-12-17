@@ -284,7 +284,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
             }
             // 每条间短暂延迟
             checkStop();
-            await robotManager.sleep(1000 * 60);
+            await robotManager.sleep(1000 * 30);
         }
 
         await robotManager.sleep(1000); // 等待数据加载
