@@ -127,8 +127,10 @@ const open = (resumeId: string) => {
                 }
             }
         },
-        (error) => {
+        (error: any) => {
             AiErrorHandler.handleError(error.status);
+            visible.value = false
+            hideLoading();
         },
         () => {
             state.value = '4'
