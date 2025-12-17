@@ -112,7 +112,7 @@ impl McpManager {
         {
             Ok(_) => {
                 // 等待浏览器完全启动
-                tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
+                tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
 
                 // 连接 CDP
                 eprintln!("[MCP] Connecting CDP...");
@@ -230,7 +230,7 @@ impl McpManager {
         // 从 Chrome 进程参数中查找 CDP 端口
         eprintln!("[CDP] Searching for Chrome process with CDP port...");
 
-        for _ in 0..10 {
+        for _ in 0..20 {
             #[cfg(target_os = "windows")]
 //             let output = std::process::Command::new("wmic")
 //                 .args(&[
