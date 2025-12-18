@@ -117,6 +117,17 @@ impl BrowserManager {
             });
         }
 
+        // 等待进程完成
+        eprintln!("[Browser] Waiting for installation process to complete...");
+        let status = child.wait()
+            .map_err(|e| format!("Failed to wait for installation: {}", e))?;
+
+        if !status.success() {
+            return Err(format!("Browser installation failed with exit code: {:?}", status.code()));
+        }
+
+        eprintln!("[Browser] Installation process completed successfully");
+
         Ok(())
     }
 
