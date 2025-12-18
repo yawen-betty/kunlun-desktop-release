@@ -272,6 +272,7 @@ const channelMap: Record<number, string> = {
                     cursor: pointer;
                     border-radius: vw(2);
                     transition: all 0.3s;
+                    white-space: nowrap;
 
                     &.active {
                         background: $theme-color;

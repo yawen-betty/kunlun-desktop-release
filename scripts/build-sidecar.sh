@@ -46,6 +46,15 @@ mkdir -p "$MCP_DIR"
 cd "$MCP_DIR"
 npm init -y
 npm install @playwright/mcp@latest
+
+# ✨ 预装 Chromium（仅当前平台）
+echo "🌐 预装 Chromium 浏览器..."
+BROWSERS_PATH="$MCP_DIR/.playwright-browsers"
+export PLAYWRIGHT_BROWSERS_PATH="$BROWSERS_PATH"
+npx playwright install chromium
+echo "✅ 浏览器预装完成！"
+echo "浏览器路径: $BROWSERS_PATH"
+
 cd ../../..
 
 echo "📝 创建启动脚本..."

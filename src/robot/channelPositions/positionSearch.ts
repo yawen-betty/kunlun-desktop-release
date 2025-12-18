@@ -266,7 +266,8 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
                         logger.info('[PositionSearch] matchJob 已被取消');
                         return {code: 499, message: '任务已被停止'};
                     }
-                    throw error; // 重新抛出其他错误
+                    logger.info('[PositionSearch] matchJob 匹配失败：', error)
+                    // throw error; // 重新抛出其他错误
                 }
             }
 

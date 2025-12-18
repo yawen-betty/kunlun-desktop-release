@@ -37,6 +37,15 @@ jobs:
           npm install
         shell: bash
 
+#      - name: Install Chromium Browser
+#        run: |
+#          cd src-tauri/binaries/mcp-modules
+#          export PLAYWRIGHT_BROWSERS_PATH=".playwright-browsers"
+#          npx playwright install chromium
+#          echo "✅ Chromium installed"
+#          du -sh .playwright-browsers/ || true
+#        shell: bash
+
       - name: Generate config file based on branch
         run: |
           if [[ "${{ github.ref_name }}" == "master" ]]; then
