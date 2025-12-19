@@ -36,11 +36,11 @@ impl McpManager {
         // 保存 AppHandle
         self.app_handle = Some(app.clone());
         // 检查并安装浏览器
-        if !BrowserManager::check_installed(app).installed {
-            eprintln!("[MCP] Browser not installed, starting installation...");
-            BrowserManager::install(app).await?;
-            BrowserManager::wait_for_installation(app, 300).await?;
-        }
+//         if !BrowserManager::check_installed(app).installed {
+//             eprintln!("[MCP] Browser not installed, starting installation...");
+//             BrowserManager::install(app).await?;
+//             BrowserManager::wait_for_installation(app, 300).await?;
+//         }
 
         // 启动进程
         eprintln!("[MCP] Starting MCP Server (headless: {})...", headless);
