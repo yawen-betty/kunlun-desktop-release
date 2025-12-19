@@ -462,36 +462,27 @@ const handleConfirm = async () => {
             message.warning(Message, '请完善必填项！');
             return;
         }
-        try {
-            const params = new RenameResumeInDto();
-            params.resumeId = props.resumeId || '';
-            params.name = formData.resumeName;
+        const params = new RenameResumeInDto();
+        params.resumeId = props.resumeId || '';
+        params.name = formData.resumeName;
 
-            await resumeService.renameResume(params);
-            resumeName.value = formData.resumeName;
-            showRenameModal.value = false;
-            message.success(Message, '重命名成功');
-            fetchResumeDetail(props.resumeId)
-        } catch (error) {
-            message.error(Message, '重命名失败');
-            console.error(error);
-        }
+        await resumeService.renameResume(params);
+        resumeName.value = formData.resumeName;
+        showRenameModal.value = false;
+        message.success(Message, '重命名成功');
+        fetchResumeDetail(props.resumeId)
+
     });
 };
 
 // 保存操作
 const saveResume = async (isShowAnimate: boolean = true) => {
-    try {
-        const params = new SaveResumeInDto();
-        params.resumeId = props.resumeId;
-        params.modules = resumeData.value.modules;
+    const params = new SaveResumeInDto();
+    params.resumeId = props.resumeId;
+    params.modules = resumeData.value.modules;
 
-        await resumeService.saveResume(params);
-        isShowAnimate && showSaveSuccessAnimation();
-    } catch (error) {
-        message.error(Message, '保存失败');
-        console.error(error);
-    }
+    await resumeService.saveResume(params);
+    isShowAnimate && showSaveSuccessAnimation();
 };
 
 const showSaveSuccessAnimation = async () => {
