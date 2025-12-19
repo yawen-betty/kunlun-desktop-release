@@ -8,28 +8,30 @@
                 <div class="form-label mb-20">头像</div>
                 <div class="avatar-upload pointer">
                     <Upload :before-upload="beforeAvatarUpload" :show-upload-list="false">
-                        <div class="avatar-container" v-if="isFinish">
-                            <img v-if="filePreviewUrl" :src="filePreviewUrl" class="avatar-img" />
+                        <div v-if="isFinish" class="avatar-container">
+                            <img v-if="filePreviewUrl" :src="filePreviewUrl" class="avatar-img"/>
                             <div v-else class="avatar-circle">
-                                <span class="avatar-text">{{ hasChineseCharacters(UserInfo.info.userName || '') }}</span>
+                                <span class="avatar-text">{{
+                                        hasChineseCharacters(UserInfo.info.userName || '')
+                                    }}</span>
                             </div>
                         </div>
 
-                        <div class="bg-white" v-else></div>
+                        <div v-else class="bg-white"></div>
 
                         <div class="avatar-modal">
-                            <SvgIcon color="#fff" name="icon-bianji-xian" size="20" />
+                            <SvgIcon color="#fff" name="icon-bianji-xian" size="20"/>
                         </div>
                     </Upload>
                 </div>
             </div>
 
-            <InitProfileForm :form-data="formValidate" :form-validate-ref="formRef" />
+            <InitProfileForm :form-data="formValidate" :form-validate-ref="formRef"/>
 
             <!-- 保存按钮 -->
             <div class="form-actions">
                 <Button class="save-btn" type="primary" @click="handleSave">
-                    <SvgIcon color="#fff" name="icon-baocun" size="12" />
+                    <SvgIcon color="#fff" name="icon-baocun" size="12"/>
                     保存
                 </Button>
             </div>
@@ -229,6 +231,7 @@ onMounted(() => {
             width: vw(80);
             height: vw(80);
             border-radius: 50%;
+            object-fit: cover;
         }
 
         .avatar-circle {
