@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {nextTick, onMounted, ref, watch, computed, inject, type Ref} from 'vue';
 import {UserInfo} from '@/utiles/userInfo.ts';
 import Ellipsis from '@/components/ellipsis/index.vue';
@@ -52,24 +52,28 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="left-menu" :class="{minibar: minSize}">
+    <div :class="{minibar: minSize}" class="left-menu">
         <div class="user">
-            <img v-if="UserInfo.info.avatar" :src="Config.baseUrl + UserInfo.info.avatar" :class="['user-avatar', !minSize && 'mr-10']" />
-            <div v-else :class="['user-circle', !minSize && 'mr-10']">{{ hasChineseCharacters(UserInfo.info.userName || '') }}</div>
+            <img v-if="UserInfo.info.avatar" :class="['user-avatar', !minSize && 'mr-10']"
+                 :src="Config.baseUrl + UserInfo.info.avatar"/>
+            <div v-else :class="['user-circle', !minSize && 'mr-10']">
+                {{ hasChineseCharacters(UserInfo.info.userName || '') }}
+            </div>
             <div v-if="!minSize" class="user-text">
-                <Ellipsis :content="UserInfo.info.userName" placement="bottom" />
+                <Ellipsis :content="UserInfo.info.userName" placement="bottom"/>
             </div>
         </div>
-        <Menu class="menu" :active-name="activeMenu" @on-select="selectMenu" ref="menuRef">
+        <Menu ref="menuRef" :active-name="activeMenu" class="menu" @on-select="selectMenu">
             <template v-for="item in routes" :key="item.path">
-                <MenuItem :name="item.path" v-if="item.show">
-                    <SvgIcon :name="item.meta.icon" :size="minSize ? '20px' : '16px'" />
+                <MenuItem v-if="item.show" :name="item.path">
+                    <SvgIcon :name="item.meta.icon" :size="minSize ? '20px' : '16px'"/>
                     <span>{{ item.meta.title }}</span>
                     <div v-if="item.path === '/personalInfo' && currentShowVersion" @click.stop>
-                        <SvgIcon class="new-svg" name="icon-triangle" size="10px" />
+                        <SvgIcon class="new-svg" name="icon-triangle" size="10px"/>
                         <span class="new-badge">
                             <span style="width: 94px">NEW 新版本！</span>
-                            <SvgIcon class="new-close" name="icon-cha" size="10px" color="#fff" @click.stop="currentShowVersion = false" />
+                            <SvgIcon class="new-close" color="#fff" name="icon-cha" size="10px"
+                                     @click.stop="currentShowVersion = false"/>
                         </span>
                     </div>
                 </MenuItem>
@@ -78,7 +82,7 @@ onMounted(() => {
     </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @use '@/assets/styles/variable.scss' as *;
 @use '@/assets/styles/compute.scss' as *;
 
@@ -99,9 +103,10 @@ onMounted(() => {
         padding: 60px 20px 20px;
 
         .user-avatar {
-           width: 30px;
+            width: 30px;
             height: 30px;
             border-radius: 50%;
+            object-fit: cover;
         }
 
         .user-circle {
@@ -156,6 +161,7 @@ onMounted(() => {
             margin-right: 10px;
             color: $font-dark;
         }
+
         .new-svg {
             position: absolute;
             top: 50%;
@@ -238,8 +244,8 @@ onMounted(() => {
 
 
     .user-avatar {
-      width: 40px;
-      height: 40px;
+        width: 40px;
+        height: 40px;
     }
 }
 </style>
