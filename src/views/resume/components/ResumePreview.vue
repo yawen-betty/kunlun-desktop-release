@@ -834,42 +834,38 @@ const fetchAvailableModules = async () => {
 const handleModulesApply = async (modules: any[]) => {
     if (!props.resumeData?.modules) return;
 
-    try {
-        const params = new UpdateModulesInDto();
-        params.resumeId = props.resumeData.uuid || '';
 
-        const basicInfo = basicInfoModule.value;
-        const basicBean = new ModuleUpdateBean();
-        basicBean.moduleDefinitionUuid = basicInfo.moduleDefinitionUuid;
-        basicBean.sortOrder = 1;
-        basicBean.uuid = basicInfo.uuid;
+    const params = new UpdateModulesInDto();
+    params.resumeId = props.resumeData.uuid || '';
 
-        params.modules = [
-            basicBean,
-            ...modules.map((module, index) => {
-                const bean = new ModuleUpdateBean();
-                bean.moduleDefinitionUuid = module.id.includes('custom') ? undefined : module.id;
-                bean.sortOrder = index + 2;
-                const existingModule = props.resumeData.modules.find((m: any) => m.moduleDefinitionUuid === module.id);
-                console.log(bean, 'bean')
-                bean.uuid = existingModule?.uuid || undefined;
-                if (!bean.uuid) {
-                    bean.moduleName = module.name;
-                }
-                return bean;
-            })
-        ];
+    const basicInfo = basicInfoModule.value;
+    const basicBean = new ModuleUpdateBean();
+    basicBean.moduleDefinitionUuid = basicInfo.moduleDefinitionUuid;
+    basicBean.sortOrder = 1;
+    basicBean.uuid = basicInfo.uuid;
 
-        await resumeService.updateModules(params);
-        isEditingBasicInfo.value = false;
-        editingEntryUuid.value = '';
-        editingModuleUuid.value = '';
-        message.success(Message, '模块更新成功');
-        emit('update-modules');
-    } catch (error) {
-        message.error(Message, '模块更新失败');
-        console.error(error);
-    }
+    params.modules = [
+        basicBean,
+        ...modules.map((module, index) => {
+            const bean = new ModuleUpdateBean();
+            bean.moduleDefinitionUuid = module.id.includes('custom') ? undefined : module.id;
+            bean.sortOrder = index + 2;
+            const existingModule = props.resumeData.modules.find((m: any) => m.moduleDefinitionUuid === module.id);
+            console.log(bean, 'bean')
+            bean.uuid = existingModule?.uuid || undefined;
+            if (!bean.uuid) {
+                bean.moduleName = module.name;
+            }
+            return bean;
+        })
+    ];
+
+    await resumeService.updateModules(params);
+    isEditingBasicInfo.value = false;
+    editingEntryUuid.value = '';
+    editingModuleUuid.value = '';
+    message.success(Message, '模块更新成功');
+    emit('update-modules');
 };
 
 const basicInfoModule = computed(() => {
@@ -932,31 +928,27 @@ const getAppliedEntries = (moduleUuid: string) => {
 };
 
 const handleEntriesApply = async (moduleUuid: string, entries: any[]) => {
-    try {
-        emit('save-resume', false);
-        await new Promise(resolve => setTimeout(resolve, 200))
 
-        const params = new UpdateModuleEntriesInDto();
-        params.resumeId = props.resumeData.uuid || '';
-        params.moduleId = moduleUuid;
-        params.entries = entries.map((entry, index) => {
-            const bean = new EntryUpdateBean();
-            bean.entryUuid = entry.id;
-            bean.entrySortOrder = index + 1;
-            return bean;
-        });
+    emit('save-resume', false);
+    await new Promise(resolve => setTimeout(resolve, 200))
 
-        await resumeService.updateModuleEntries(params);
-        isEditingBasicInfo.value = false;
-        editingEntryUuid.value = '';
-        editingModuleUuid.value = '';
-        entryEditData.value = {};
-        message.success(Message, '条目更新成功');
-        emit('update-modules');
-    } catch (error) {
-        message.error(Message, '条目更新失败');
-        console.error(error);
-    }
+    const params = new UpdateModuleEntriesInDto();
+    params.resumeId = props.resumeData.uuid || '';
+    params.moduleId = moduleUuid;
+    params.entries = entries.map((entry, index) => {
+        const bean = new EntryUpdateBean();
+        bean.entryUuid = entry.id;
+        bean.entrySortOrder = index + 1;
+        return bean;
+    });
+
+    await resumeService.updateModuleEntries(params);
+    isEditingBasicInfo.value = false;
+    editingEntryUuid.value = '';
+    editingModuleUuid.value = '';
+    entryEditData.value = {};
+    message.success(Message, '条目更新成功');
+    emit('update-modules');
 };
 
 const handleFieldsApply = async (fields: any[]) => {

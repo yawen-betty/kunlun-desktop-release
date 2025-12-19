@@ -3,12 +3,12 @@
         <div v-for="(resume, index) in resumeList" :key="resume.uuid" class="resume-card">
             <div :class="['resume-content', `resume-content-index_${index}`]">
                 <div class="resume-content-wrapper">
-                    <ResumePreviewCard :resume-data="resume" :scrollable="true" size="small" />
+                    <ResumePreviewCard :resume-data="resume" :scrollable="true" size="small"/>
                 </div>
-                <div class="resume-mask" v-if="resume.aiProcessing === '1'">
+                <div v-if="resume.aiProcessing === '1'" class="resume-mask">
                     <div class="mask-text">简历正在处理中...</div>
                     <div class="mask-reload pointer" @click="getResumeList">
-                        <SvgIcon class="mask-icon" color="#fff" name="icon-shuaxin" size="16" />
+                        <SvgIcon class="mask-icon" color="#fff" name="icon-shuaxin" size="16"/>
                         <div class="reload-text">刷新</div>
                     </div>
                 </div>
@@ -18,7 +18,7 @@
                     <span>{{ resume.name }}</span>
 
                     <Poptip placement="bottom-end">
-                        <SvgIcon class="pointer" color="#9499A4" name="icon-gengduo" size="18" />
+                        <SvgIcon class="pointer" color="#9499A4" name="icon-gengduo" size="18"/>
 
                         <template #content>
                             <div class="select-list">
@@ -46,17 +46,19 @@
     </div>
 
     <div v-else class="no-data">
-        <img class="no-data_icon" src="@/assets/images/no-data.png" />
+        <img class="no-data_icon" src="@/assets/images/no-data.png"/>
         <div class="no-data-text">暂无数据</div>
     </div>
 
-    <Modal v-model="previewVisible" :closable="false" :mask-closable="false" :width="1200" class="resume-preview-modal" footer-hide>
+    <Modal v-model="previewVisible" :closable="false" :mask-closable="false" :width="1200" class="resume-preview-modal"
+           footer-hide>
         <div class="preview-header">
             <div class="preview-title">预览</div>
-            <SvgIcon class="cha pointer" color="#9499A4" name="icon-cha" size="20" @click="previewVisible = false"></SvgIcon>
+            <SvgIcon class="cha pointer" color="#9499A4" name="icon-cha" size="20"
+                     @click="previewVisible = false"></SvgIcon>
         </div>
         <div class="preview-content">
-            <ResumePreviewCard :resume-data="previewResume" size="large" />
+            <ResumePreviewCard :resume-data="previewResume" size="large"/>
         </div>
     </Modal>
 
@@ -65,7 +67,8 @@
             <div class="delete-content">
                 <div class="delete-header">
                     <h3 class="delete-title mb-40">提示</h3>
-                    <SvgIcon class="cha pointer" color="#9499A4" name="icon-cha" size="20" @click="deleteVisible = false"></SvgIcon>
+                    <SvgIcon class="cha pointer" color="#9499A4" name="icon-cha" size="20"
+                             @click="deleteVisible = false"></SvgIcon>
                 </div>
                 <div class="delete-html">删除后将无法恢复，确认是否删除？</div>
             </div>
@@ -82,7 +85,8 @@
             <div class="delete-content">
                 <div class="delete-header">
                     <h3 class="delete-title mb-40">提示</h3>
-                    <SvgIcon class="cha pointer" color="#9499A4" name="icon-cha" size="20" @click="deleteVisible = false"></SvgIcon>
+                    <SvgIcon class="cha pointer" color="#9499A4" name="icon-cha" size="20"
+                             @click="deleteVisible = false"></SvgIcon>
                 </div>
                 <div class="delete-html">当前有正在编辑的简历，如执行此操作将会中断当前的简历制作；是否继续？</div>
             </div>
@@ -171,10 +175,10 @@ const handleClick = (resume: MyResumeBean, key: string) => {
             downLoadResume(resume);
             break;
         case 'delete':
-            if (UserInfo.info.runningResumeId === resume.uuid) {
-                message.error(Message, '简历正在编辑中，不可删除！');
-                return;
-            }
+            // if (UserInfo.info.runningResumeId === resume.uuid) {
+            //     message.error(Message, '简历正在编辑中，不可删除！');
+            //     return;
+            // }
             deleteVisible.value = true;
             deleteResumeId.value = resume.uuid!;
             break;
