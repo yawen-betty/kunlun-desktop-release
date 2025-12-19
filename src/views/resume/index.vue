@@ -86,7 +86,8 @@ onActivated(() => {
     <div class="resume-cont">
         <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
         <WriteResume v-else ref="writeResumeRef" :initial-mode="initialMode" :resume-id="resumeId"
-                     :resume-name="resumeName" :uploaded-file="uploadedFile" @back-to-make="exit"/>
+                     :resume-name="resumeName" :uploaded-file="uploadedFile" @back-to-make="exit"
+                     @resume-deleted="handleResumeDeleted"/>
     </div>
 </template>
 

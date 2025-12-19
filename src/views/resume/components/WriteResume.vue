@@ -120,8 +120,8 @@
                 <Transition name="slide-right">
                     <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :changeMode="changeMode"
                                 :hasAttachment="uploadedFile" :over="over" :resumeUuid="resumeId"
-                                :streamWrite="handleWriteStream" :updateCache="updateCache" @listFinish="listFinish"
-                                @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
+                                :streamWrite="handleWriteStream" :updateCache="updateCache" @exit="handleResumeDeleted"
+                                @listFinish="listFinish" @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
                 </Transition>
             </div>
         </div>
@@ -221,6 +221,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'back-to-make': [];
+    'resume-deleted': [];
 }>();
 
 const resumeData = ref<any>({modules: []});
@@ -317,6 +318,10 @@ onUnmounted(() => {
     stopAutoSave();
     window.removeEventListener('keydown', handleKeyDown);
 });
+
+const handleResumeDeleted = () => {
+    emit('resume-deleted')
+}
 
 const handleWriteStream = async (items: StreamItem[], speed?: number) => {
     console.log(items, speed, 'speed')
