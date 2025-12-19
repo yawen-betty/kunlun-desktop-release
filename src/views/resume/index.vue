@@ -11,6 +11,9 @@ import MakePanel from './components/MakePanel.vue'
 import WriteResume from "@/views/resume/components/WriteResume.vue";
 import {UserInfo} from "@/utiles/userInfo.ts";
 import {useCompRef} from "@/hooks/useComponent";
+import emitter from "@/utiles/eventBus.ts";
+import {message} from "@/utiles/Message.ts";
+import {Message} from "view-ui-plus";
 
 const route = useRoute();
 const router = useRouter();
@@ -44,12 +47,18 @@ const exit = () => {
     }
 };
 
+// 处理简历被删除
+const handleResumeDeleted = () => {
+    exit()
+    if (route.fullPath.includes('/resume')) {
+        message.error(Message, '简历不存在或已被删除  ');
+    }
+}
+
 onActivated(() => {
     const routeResumeId = route.query.resumeId as string;
     // 如果id和runningResumeId一致，则不进行任何操作，
     // 如果不一致，则进行人工模式的展示
-    console.log(routeResumeId, 'routeResumeId')
-    console.log(UserInfo.info.runningResumeId, 'UserInfo.info.runningResumeId')
     if (routeResumeId && routeResumeId !== UserInfo.info.runningResumeId) {
         resumeId.value = routeResumeId;
         console.log(resumeId.value, 'resumeId.value')
@@ -66,8 +75,9 @@ onActivated(() => {
             })
         }
         UserInfo.info.runningResumeId = resumeId.value
-
     }
+
+    emitter.on('resumeHasBeenDeleted', handleResumeDeleted)
 });
 
 </script>
@@ -76,7 +86,8 @@ onActivated(() => {
     <div class="resume-cont">
         <MakePanel v-if="showMakePanel" @resume-created="handleResumeCreated"/>
         <WriteResume v-else ref="writeResumeRef" :initial-mode="initialMode" :resume-id="resumeId"
-                     :resume-name="resumeName" :uploaded-file="uploadedFile" @back-to-make="exit"/>
+                     :resume-name="resumeName" :uploaded-file="uploadedFile" @back-to-make="exit"
+                     @resume-deleted="handleResumeDeleted"/>
     </div>
 </template>
 

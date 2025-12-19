@@ -141,10 +141,12 @@ export default class HttpClient {
                 case 2601:
                 // 未达到推荐门槛
                 case 2602:
-                // 简历ID不存在
-                case 2306:
                 // 职位已存在
                 case 2604:
+                    break;
+                // 简历ID不存在
+                case 2306:
+                    emitter.emit('resumeHasBeenDeleted')
                     break;
                 // ai账号没有配置
                 case 2603:

@@ -7,6 +7,7 @@ type Events = {
     cancelLoading: void; // 取消loading
     loginFailure: string; // 登录失效
     closeTask: boolean; // 关闭任务
+    resumeHasBeenDeleted: void; // 简历被删除
 };
 
 const emitter = mitt<Events>();
