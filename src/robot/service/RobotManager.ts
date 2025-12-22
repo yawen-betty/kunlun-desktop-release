@@ -196,7 +196,7 @@ export class RobotManager {
             }
 
             // 轮次间延迟（可配置）
-            await this.sleep(1000 * 60 * 3);
+            await this.sleep(1000 * 30);
 
             // 检查 MCP 是否需要重新初始化（浏览器被关闭）
             if (!this.mcpInitialized && this.isRunning) {
