@@ -5,6 +5,7 @@ import {channelList, enumEcho} from "@/enums/enumDict.ts";
 import {parseDate} from "@/utiles/DateUtils.ts";
 import {openWeb} from "@/utiles/openWeb.ts";
 import SvgIcon from "@/components/svgIcon/index.vue";
+import Ellipsis from "@/components/ellipsis/index.vue";
 
 const props = defineProps<{
     item: MatchedPositionBean
@@ -28,13 +29,13 @@ const getAllTags = (item: MatchedPositionBean) => {
 
 const calculateVisibleTags = () => {
     if (!tagsWrapperRef.value) return
-    
+
     const allTags = getAllTags(props.item)
     const containerWidth = tagsWrapperRef.value.offsetWidth
     const tagElements = tagsWrapperRef.value.querySelectorAll('.tag-item')
     const result: string[] = []
     let totalWidth = 0
-    
+
     tagElements.forEach((el, index) => {
         const tagWidth = (el as HTMLElement).offsetWidth + 10
         if (totalWidth + tagWidth <= containerWidth) {
@@ -42,7 +43,7 @@ const calculateVisibleTags = () => {
             result.push(allTags[index])
         }
     })
-    
+
     visibleTags.value = result
 }
 
@@ -63,7 +64,7 @@ onMounted(() => {
     <div :class="{ 'is-active': isActive }" class="position-item" @click="emit('select', item.uuid)">
         <div class="item-top">
             <div class="top-left">
-                <span class="item-title">{{ item.title }}</span>
+                <Ellipsis :content="item.title" class="item-title"/>
                 <div class="match-badge">
                     <SvgIcon color="#FC8919" name="icon-pipei" size="14"/>
                     <span>{{ item.matchScore }}%</span>
@@ -74,7 +75,8 @@ onMounted(() => {
         <div class="item-middle">
             <div ref="tagsWrapperRef" class="item-tags-wrapper">
                 <div class="item-tags">
-                    <span v-for="(tag, idx) in (visibleTags.length ? visibleTags : getAllTags(item))" :key="idx" class="tag-item">{{ tag }}</span>
+                    <span v-for="(tag, idx) in (visibleTags.length ? visibleTags : getAllTags(item))" :key="idx"
+                          class="tag-item">{{ tag }}</span>
                 </div>
             </div>
             <span class="item-time">{{ parseDate(item.recommendedAt, '{y}-{m}-{d} {h}:{i}') }} <span
@@ -125,6 +127,7 @@ onMounted(() => {
         align-items: center;
 
         .top-left {
+            max-width: 80%;
             display: flex;
             align-items: center;
             column-gap: vw(10);
@@ -159,6 +162,7 @@ onMounted(() => {
         }
 
         .item-salary {
+            flex-shrink: 0;
             font-size: vw(20);
             font-weight: 500;
             color: $font-dark;
