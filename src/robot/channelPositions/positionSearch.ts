@@ -357,6 +357,9 @@ async function tabCount(): Promise<number> {
  * 调用接口上传数据
  */
 async function crawlPositions(data: ChannelPositionBean, taskId: string, matchInfo: MatchInfoBean) {
+    if (!data.title) {
+        return
+    }
     const res = await http.request<Result<CrawlPositionsOutDto>>(JobPaths.crawlPositions, {
         taskUuid: taskId,
         positions: data,
