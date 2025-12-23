@@ -42,6 +42,16 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
         }
     };
 
+    // 10分钟超时监听
+    let matchJobTimer: NodeJS.Timeout | null = null;
+    const resetMatchJobTimer = () => {
+        if (matchJobTimer) clearTimeout(matchJobTimer);
+        matchJobTimer = setTimeout(() => {
+            throw new Error('10分钟内未调用matchJob，任务超时');
+        }, 10 * 60 * 1000);
+    };
+    resetMatchJobTimer();
+
     try {
         const {channelName, searchParams, apiKey} = options;
         const config = CHANNEL_CONFIG[channelName.toLowerCase() as keyof typeof CHANNEL_CONFIG];
@@ -249,13 +259,14 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
                 // 匹配
                 checkStop();
                 try {
-
+                    resetMatchJobTimer();
                     let matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt, abortController.signal);
                     while (matchJobRes === 1305) {
                         logger.warning('[PositionSearch] AI 请求频率限制，等待 60 秒');
                         checkStop();
                         await robotManager.sleep(1000 * 60);
                         checkStop();
+                        resetMatchJobTimer();
                         matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt, abortController.signal);
                     }
 
@@ -290,6 +301,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
 
         await robotManager.sleep(1000); // 等待数据加载
         checkStop();
+        if (matchJobTimer) clearTimeout(matchJobTimer);
         await aiService.stopTask();
         return {
             code: 200,
@@ -297,6 +309,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
         };
 
     } catch (error: any) {
+        if (matchJobTimer) clearTimeout(matchJobTimer);
         if (error.name === 'AbortError') {
             logger.info('[PositionSearch] 任务已被取消');
             return {code: 499, message: '任务已被停止'};

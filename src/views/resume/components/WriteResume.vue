@@ -120,7 +120,7 @@
                 </div>
                 <!-- 聊天区 -->
                 <Transition name="slide-right">
-                    <ResumeChat v-if="currentMode === 'ai'" ref="resumeChatRef" :changeMode="changeMode"
+                    <ResumeChat v-if="currentMode === 'ai' && isShowChat" ref="resumeChatRef" :changeMode="changeMode"
                                 :hasAttachment="uploadedFile" :over="over" :resumeUuid="resumeId"
                                 :streamWrite="handleWriteStream" :updateCache="updateCache" @exit="handleResumeDeleted"
                                 @listFinish="listFinish" @sendDiagnose="sendDiagnose" @sendTemplate="sendTemplate"/>
@@ -255,6 +255,8 @@ const showDownloadModal = ref(false);
 const scoreLoading = ref(false)
 // 模型次数用完弹窗
 const usageExhaustedModalVisible = ref(false)
+// 控制是否显示右侧聊天区
+const isShowChat = ref(true)
 // 重命名弹框表单数据
 const formData = reactive({
     resumeName: ''
@@ -634,6 +636,10 @@ const handleUpdateModules = async () => {
  */
 const reset = () => {
     fetchResumeDetail(props.resumeId);
+    isShowChat.value = false;
+    nextTick(() => {
+        isShowChat.value = true
+    })
 }
 
 defineExpose({reset})

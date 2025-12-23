@@ -76,6 +76,7 @@ onActivated(() => {
     }
 
     emitter.on('resumeHasBeenDeleted', handleResumeDeleted)
+    emitter.on('deletedResume', handleResumeDeleted)
 });
 
 </script>

@@ -41,7 +41,8 @@
     border: 0 !important;
     font-size: vw(14);
 }
-textarea.ivu-input{
+
+textarea.ivu-input {
     font-size: vw(14);
 }
 
@@ -208,12 +209,12 @@ textarea.ivu-input{
     background-position: center;
 }
 
-.ivu-icon-ios-arrow-down:before,
-.ivu-icon-ios-close-circle:before {
+.ivu-icon-ios-arrow-down:not(.ivu-message-custom-content *):before,
+.ivu-icon-ios-close-circle:not(.ivu-message-custom-content *):before {
     display: none;
 }
 
-.ivu-icon-ios-close-circle {
+.ivu-icon-ios-close-circle:not(.ivu-message-custom-content *) {
     right: vw(10) !important;
     width: vw(10);
     height: vw(10);
@@ -466,7 +467,8 @@ fieldset[disabled] .ivu-input,
 .ivu-form-label-top .ivu-form-item-label {
     padding: 0 0 vh(14) 0;
 }
-.ivu-form .ivu-form-item-label{
+
+.ivu-form .ivu-form-item-label {
     font-size: vw(14);
     padding: vh(10) vw(12) vh(10) 0;
 }
