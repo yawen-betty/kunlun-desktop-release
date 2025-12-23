@@ -18,17 +18,17 @@
                                 <div class="ai-chat-text">{{ info.content }}</div>
                                 <div v-if="['1', '2'].includes(info.thinkingStatus || '0') && !info.isExpand" class="is-think mt-10">
                                     <div class="think-text mr-5">{{ thinkingText[info.thinkingStatus!] }}</div>
-                                    <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12" @click="info.isExpand = true"></SvgIcon>
+                                    <!--                                    <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12" @click="info.isExpand = true"></SvgIcon>-->
                                 </div>
                             </div>
                         </div>
 
                         <div v-if="info.isExpand" class="deep-thinking mt-10 mb-20">
-                            <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12" @click="info.isExpand = false"></SvgIcon>
+                            <!--                            <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12" @click="info.isExpand = false"></SvgIcon>-->
 
                             <div v-if="info.thinkingStatus === '2'" class="deep-thinking-title">
                                 <img class="deep-log" src="@/assets/images/deep-logo.gif" />
-                                <div class="deep-thinking-title-text">深度思考</div>
+                                <div class="deep-thinking-title-text">深度思考中</div>
                             </div>
 
                             <div v-else-if="info.thinkingStatus === '1'" class="deep-thinking-finish">

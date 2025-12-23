@@ -2,517 +2,520 @@
 @use '@/assets/styles/compute.scss' as *;
 
 .ivu-modal-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    .ivu-modal {
-        top: 0;
-    }
+  .ivu-modal {
+    top: 0;
+  }
 }
 
 .ivu-modal-content {
-    border-radius: 0;
+  border-radius: 0;
 }
 
 .ivu-modal-header {
-    padding: vh(15) vw(20);
-    border-bottom: none;
+  padding: vh(15) vw(20);
+  border-bottom: none;
 }
 
 .ivu-modal-header p,
 .ivu-modal-header-inner {
-    font-size: vw(14);
-    color: $font-dark;
-    line-height: vh(22);
-    font-weight: bold;
+  font-size: vw(14);
+  color: $font-dark;
+  line-height: vh(22);
+  font-weight: bold;
 }
 
 .ivu-modal-close {
-    top: vh(18);
-    right: vw(20);
+  top: vh(18);
+  right: vw(20);
 }
 
 .ivu-modal-close .ivu-icon.ivu-icon-ios-close {
-    width: vw(16);
-    height: vw(16);
+  width: vw(16);
+  height: vw(16);
 }
 
 .ivu-modal-body {
-    padding: vh(25) vw(40) vh(100);
-    color: $font-dark;
-    line-height: vh(20);
+  padding: vh(25) vw(40) vh(100);
+  color: $font-dark;
+  line-height: vh(20);
 }
 
 .ivu-modal-footer {
-    border-top: none;
-    padding: 0 vw(20) vh(15) 0;
+  border-top: none;
+  padding: 0 vw(20) vh(15) 0;
 
-    .ivu-btn.ivu-btn-text {
-        height: vh(32);
-        border: vw(1) solid $theme-color;
-        padding: 0 vw(20);
-    }
+  .ivu-btn.ivu-btn-text {
+    height: vh(32);
+    border: vw(1) solid $theme-color;
+    padding: 0 vw(20);
+  }
 }
 
 .ivu-modal-footer button + button {
-    margin-left: vw(10);
+  margin-left: vw(10);
 }
 
 /**
     删除二次确认框
  */
 .delete-confirm-modal.ivu-modal-wrap {
-    .ivu-modal {
-        width: vw(460) !important;
-    }
+  .ivu-modal {
+    width: vw(460) !important;
+  }
 
-    .ivu-modal-content {
-        border-radius: vw(2);
-        box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
-    }
+  .ivu-modal-content {
+    border-radius: vw(2);
+    box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
+  }
 
-    .ivu-modal-body {
-        padding: 0;
-    }
+  .ivu-modal-body {
+    padding: 0;
+  }
 }
 
 .delete-modal-content {
-    padding: vh(15) vw(20);
+  padding: vh(15) vw(20);
 
-    .modal-header {
-        margin-bottom: vh(40);
+  .modal-header {
+    margin-bottom: vh(40);
 
-        .modal-title {
-            font-size: vw(14);
-            font-weight: 600;
-            color: $font-dark;
-            line-height: vh(22);
-        }
+    .modal-title {
+      font-size: vw(14);
+      font-weight: 600;
+      color: $font-dark;
+      line-height: vh(22);
+    }
+  }
+
+  .modal-body {
+    padding: 0 vw(20);
+    height: vh(126);
+
+    p {
+      font-size: vw(14);
+      color: $font-dark;
+      line-height: vh(20);
+      margin: 0;
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: vw(10);
+
+    button {
+      padding: vh(10) vw(20);
+      border-radius: vw(2);
+      font-size: vw(12);
+      font-weight: 600;
+      line-height: vh(12);
+      cursor: pointer;
+      border: none;
+      outline: none;
     }
 
-    .modal-body {
-        padding: 0 vw(20);
-        height: vh(126);
+    .btn-cancel {
+      background: $white;
+      color: $theme-color;
+      border: vw(1) solid $theme-color;
 
-        p {
-            font-size: vw(14);
-            color: $font-dark;
-            line-height: vh(20);
-            margin: 0;
-        }
+      &:hover {
+        opacity: 0.8;
+      }
     }
 
-    .modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: vw(10);
+    .btn-confirm {
+      background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
+      color: $white;
 
-        button {
-            padding: vh(10) vw(20);
-            border-radius: vw(2);
-            font-size: vw(12);
-            font-weight: 600;
-            line-height: vh(12);
-            cursor: pointer;
-            border: none;
-            outline: none;
-        }
-
-        .btn-cancel {
-            background: $white;
-            color: $theme-color;
-            border: vw(1) solid $theme-color;
-
-            &:hover {
-                opacity: 0.8;
-            }
-        }
-
-        .btn-confirm {
-            background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
-            color: $white;
-
-            &:hover {
-                opacity: 0.9;
-            }
-        }
+      &:hover {
+        opacity: 0.9;
+      }
     }
+  }
 }
 
 /**
     带单行输入框的弹窗
  */
 .custom-module-modal.ivu-modal-wrap {
-    .ivu-modal {
-        width: vw(460) !important;
-    }
+  .ivu-modal {
+    width: vw(460) !important;
+  }
 
-    .ivu-modal-content {
-        border-radius: vw(2);
-        box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
-    }
+  .ivu-modal-content {
+    border-radius: vw(2);
+    box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
+  }
 
-    .ivu-modal-body {
-        padding: 0;
-    }
+  .ivu-modal-body {
+    padding: 0;
+  }
 }
 
 .custom-modal-content {
-    padding: vh(15) vw(20);
+  padding: vh(15) vw(20);
 
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: vh(40);
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: vh(40);
 
-        .modal-title {
-            font-size: vw(14);
-            font-weight: 600;
-            color: $font-dark;
-            line-height: vh(22);
-        }
-
-        .icon-close {
-            cursor: pointer;
-            color: $font-middle;
-            flex-shrink: 0;
-
-            &:hover {
-                color: $theme-color;
-            }
-        }
+    .modal-title {
+      font-size: vw(14);
+      font-weight: 600;
+      color: $font-dark;
+      line-height: vh(22);
     }
 
-    .ivu-form {
-        padding: 0 vw(20);
-        height: vh(126);
+    .icon-close {
+      cursor: pointer;
+      color: $font-middle;
+      flex-shrink: 0;
+
+      &:hover {
+        color: $theme-color;
+      }
+    }
+  }
+
+  .ivu-form {
+    padding: 0 vw(20);
+    height: vh(126);
+  }
+
+  .ivu-form-item {
+    margin-bottom: 0;
+  }
+
+  .input-wrapper {
+    position: relative;
+    margin-bottom: vh(40);
+
+    .ivu-input {
+      height: vh(40);
+      background: $bg-gray;
+      border: none;
+      border-radius: vw(2);
+      padding: 0 vw(65) 0 vw(20);
+      font-size: vw(16);
+      font-weight: 600;
+      color: $font-dark;
+
+      &::placeholder {
+        color: $placeholder-color;
+      }
+
+      &:focus {
+        background: $bg-gray;
+        box-shadow: none;
+      }
     }
 
-    .ivu-form-item {
-        margin-bottom: 0;
+    .ivu-input-word-count {
+      right: vw(20);
+      font-size: vw(16);
+      font-weight: 600;
+      color: $placeholder-color;
+      background: transparent;
+      pointer-events: none;
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: vw(10);
+
+    button {
+      padding: vh(10) vw(20);
+      border-radius: vw(2);
+      font-size: vw(12);
+      font-weight: 600;
+      line-height: vh(12);
+      cursor: pointer;
+      border: none;
+      outline: none;
     }
 
-    .input-wrapper {
-        position: relative;
-        margin-bottom: vh(40);
+    .btn-cancel {
+      background: $white;
+      color: $theme-color;
+      border: vw(1) solid $theme-color;
 
-        .ivu-input {
-            height: vh(40);
-            background: $bg-gray;
-            border: none;
-            border-radius: vw(2);
-            padding: 0 vw(65) 0 vw(20);
-            font-size: vw(16);
-            font-weight: 600;
-            color: $font-dark;
-
-            &::placeholder {
-                color: $placeholder-color;
-            }
-
-            &:focus {
-                background: $bg-gray;
-                box-shadow: none;
-            }
-        }
-
-        .ivu-input-word-count {
-            right: vw(20);
-            font-size: vw(16);
-            font-weight: 600;
-            color: $placeholder-color;
-            background: transparent;
-            pointer-events: none;
-        }
+      &:hover {
+        opacity: 0.8;
+      }
     }
 
-    .modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: vw(10);
+    .btn-confirm {
+      background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
+      color: $white;
 
-        button {
-            padding: vh(10) vw(20);
-            border-radius: vw(2);
-            font-size: vw(12);
-            font-weight: 600;
-            line-height: vh(12);
-            cursor: pointer;
-            border: none;
-            outline: none;
-        }
-
-        .btn-cancel {
-            background: $white;
-            color: $theme-color;
-            border: vw(1) solid $theme-color;
-
-            &:hover {
-                opacity: 0.8;
-            }
-        }
-
-        .btn-confirm {
-            background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
-            color: $white;
-
-            &:hover {
-                opacity: 0.9;
-            }
-        }
+      &:hover {
+        opacity: 0.9;
+      }
     }
+  }
 }
 
 /**
  * 渠道登录弹窗
  */
 .channel-modal {
-    .ivu-modal {
-        width: vw(900) !important;
+  .ivu-modal {
+    width: vw(900) !important;
+  }
+
+  .ivu-modal-content {
+    border-radius: vw(2);
+    box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .ivu-modal-body {
+    padding: 0;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: vh(40) vw(40) 0 vw(40);
+
+    .modal-title {
+      font-family: 'YouSheBiaoTiHei';
+      font-size: vw(28);
+      color: $font-dark;
+      line-height: vh(28);
     }
 
-    .ivu-modal-content {
+    .close-icon {
+      position: absolute;
+      top: vh(18);
+      right: vw(20);
+
+      svg {
+        width: vw(16) !important;
+        height: vw(16) !important;
+      }
+    }
+  }
+
+  .modal-content {
+    padding: vw(40);
+
+    .modal-desc {
+      margin-bottom: vh(35);
+
+      p {
+        font-family: 'PingFang SC', sans-serif;
+        font-size: vw(16);
+        font-weight: 600;
+        color: $font-dark;
+        line-height: vh(20);
+        margin: 0;
+      }
+    }
+
+    .channel-list {
+      display: flex;
+      gap: vw(40);
+      margin-bottom: vh(147);
+
+      .channel-card {
+        width: vw(200);
+        height: vh(250);
+        border: 1px solid $border-default;
         border-radius: vw(2);
-        box-shadow: 0 0 vw(6) 0 rgba(0, 0, 0, 0.1);
-    }
-
-    .ivu-modal-body {
-        padding: 0;
-    }
-
-    .modal-header {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
         align-items: center;
-        padding: vh(40) vw(40) 0 vw(40);
+        justify-content: center;
+        cursor: pointer;
 
-        .modal-title {
-            font-family: 'YouSheBiaoTiHei';
-            font-size: vw(28);
-            color: $font-dark;
-            line-height: vh(28);
-        }
+        .channel-icon-wrapper {
+          position: relative;
+          width: vw(70);
+          height: vw(70);
+          border-radius: vw(14);
+          box-shadow: 0 0 vw(14) 0 rgba(0, 0, 0, 0.1);
+          overflow: hidden;
 
-        .close-icon {
+          .channel-img {
+            width: 100%;
+            height: 100%;
+            border-radius: vw(14);
+          }
+
+          .icon-mask {
             position: absolute;
-            top: vh(18);
-            right: vw(20);
-
-            svg {
-                width: vw(16) !important;
-                height: vw(16) !important;
-            }
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: vw(14);
+          }
         }
+
+        .channel-name {
+          font-family: 'PingFang SC', sans-serif;
+          font-size: vw(16);
+          font-weight: 600;
+          color: $font-dark;
+          line-height: vh(16);
+        }
+
+        .channel-status {
+          font-family: 'PingFang SC', sans-serif;
+          font-size: vw(14);
+          font-weight: 600;
+          color: $theme-color;
+          line-height: vh(14);
+
+          &.is-login {
+            color: $font-middle;
+          }
+        }
+      }
     }
-
-    .modal-content {
-        padding: vw(40);
-
-        .modal-desc {
-            margin-bottom: vh(35);
-
-            p {
-                font-family: 'PingFang SC', sans-serif;
-                font-size: vw(16);
-                font-weight: 600;
-                color: $font-dark;
-                line-height: vh(20);
-                margin: 0;
-            }
-        }
-
-        .channel-list {
-            display: flex;
-            gap: vw(40);
-            margin-bottom: vh(147);
-
-            .channel-card {
-                width: vw(200);
-                height: vh(250);
-                border: 1px solid $border-default;
-                border-radius: vw(2);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-
-                .channel-icon-wrapper {
-                    position: relative;
-                    width: vw(70);
-                    height: vw(70);
-                    border-radius: vw(14);
-                    box-shadow: 0 0 vw(14) 0 rgba(0, 0, 0, 0.1);
-                    overflow: hidden;
-
-                    .channel-img {
-                        width: 100%;
-                        height: 100%;
-                        border-radius: vw(14);
-                    }
-
-                    .icon-mask {
-                        position: absolute;
-                        inset: 0;
-                        background: rgba(0, 0, 0, 0.5);
-                        border-radius: vw(14);
-                    }
-                }
-
-                .channel-name {
-                    font-family: 'PingFang SC', sans-serif;
-                    font-size: vw(16);
-                    font-weight: 600;
-                    color: $font-dark;
-                    line-height: vh(16);
-                }
-
-                .channel-status {
-                    font-family: 'PingFang SC', sans-serif;
-                    font-size: vw(14);
-                    font-weight: 600;
-                    color: $theme-color;
-                    line-height: vh(14);
-
-                    &.is-login {
-                        color: $font-middle;
-                    }
-                }
-            }
-        }
-    }
+  }
 }
 
 /**
  * 更新弹窗
  */
 .update-dialog-modal {
-    .ivu-modal {
-        width: vw(680) !important;
+  .ivu-modal {
+    width: vw(680) !important;
+  }
+
+  .ivu-modal-content {
+    border-radius: vw(2);
+    box-shadow: 0 0 vw(6) 0 inset rgba(0, 0, 0, 0.1);
+  }
+
+  .ivu-modal-body {
+    padding: 0;
+  }
+
+  .update-dialog-container {
+    padding: vh(60) vw(40) vh(20) vw(40);
+
+    .update-dialog-content {
+      position: relative;
+      display: flex;
+      min-height: vh(259);
+
+      .content-left {
+        flex: 1;
+        padding-right: vw(40);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .content-right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        .update-illustration {
+          width: vw(223);
+          height: vh(189);
+          object-fit: contain;
+        }
+      }
+
+      .dialog-title {
+        font-family: 'YouSheBiaoTiHei', 'PingFang SC', sans-serif;
+        font-size: vw(28);
+        font-weight: normal;
+        line-height: vh(28);
+        color: $font-dark;
+        margin: 0 0 vh(20) 0;
+      }
+
+      .version-text {
+        font-family: 'PingFang SC', sans-serif;
+        font-size: vw(14);
+        line-height: vh(20);
+        color: $font-dark;
+        margin: 0 0 vh(10) 0;
+      }
+
+      .update-details {
+        font-family: 'PingFang SC', sans-serif;
+        font-size: vw(14);
+        line-height: vh(20);
+        color: $font-dark;
+        flex: 1;
+
+        p {
+          margin: 0;
+          word-wrap: break-word;
+        }
+
+        .force-tip {
+          color: $remind-error;
+          font-weight: bold;
+        }
+      }
+
+      .progress-box {
+        margin-top: vh(20);
+
+        .progress-text {
+          text-align: center;
+          margin-top: vh(10);
+          font-size: vw(14);
+          color: $font-middle;
+        }
+      }
     }
 
-    .ivu-modal-content {
+    .button-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: vw(22);
+      margin-top: vh(40);
+
+      .ivu-btn {
+        height: vh(32);
+        padding: 0 vw(20);
         border-radius: vw(2);
-        box-shadow: 0 0 vw(6) 0 inset rgba(0, 0, 0, 0.1);
-    }
+        font-size: vw(12);
+        line-height: vh(12);
+        font-weight: 500;
+      }
 
-    .ivu-modal-body {
-        padding: 0;
-    }
-    .update-dialog-container {
-        padding: vh(60) vw(40) vh(20) vw(40);
+      .btn-cancel {
+        border-color: $theme-color;
+        color: $theme-color;
+        background: $white;
 
-        .update-dialog-content {
-            position: relative;
-            display: flex;
-            min-height: vh(259);
-
-            .content-left {
-                flex: 1;
-                padding-right: vw(40);
-                display: flex;
-                flex-direction: column;
-            }
-
-            .content-right {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-
-                .update-illustration {
-                    width: vw(223);
-                    height: vh(189);
-                    object-fit: contain;
-                }
-            }
-
-            .dialog-title {
-                font-family: 'YouSheBiaoTiHei', 'PingFang SC', sans-serif;
-                font-size: vw(28);
-                font-weight: normal;
-                line-height: vh(28);
-                color: $font-dark;
-                margin: 0 0 vh(20) 0;
-            }
-
-            .version-text {
-                font-family: 'PingFang SC', sans-serif;
-                font-size: vw(14);
-                line-height: vh(20);
-                color: $font-dark;
-                margin: 0 0 vh(10) 0;
-            }
-
-            .update-details {
-                font-family: 'PingFang SC', sans-serif;
-                font-size: vw(14);
-                line-height: vh(20);
-                color: $font-dark;
-                flex: 1;
-
-                p {
-                    margin: 0;
-                    word-wrap: break-word;
-                }
-
-                .force-tip {
-                    color: $remind-error;
-                    font-weight: bold;
-                }
-            }
-
-            .progress-box {
-                margin-top: vh(20);
-
-                .progress-text {
-                    text-align: center;
-                    margin-top: vh(10);
-                    font-size: vw(14);
-                    color: $font-middle;
-                }
-            }
+        &:hover {
+          border-color: $theme-color;
+          color: $theme-color;
+          background: $hover-color;
         }
+      }
 
-        .button-group {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: vw(22);
-            margin-top: vh(40);
+      .btn-confirm {
+        background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
+        border-color: $theme-color;
+        color: $white;
 
-            .ivu-btn {
-                height: vh(32);
-                padding: 0 vw(20);
-                border-radius: vw(2);
-                font-size: vw(12);
-                line-height: vh(12);
-                font-weight: 500;
-            }
-
-            .btn-cancel {
-                border-color: $theme-color;
-                color: $theme-color;
-                background: $white;
-
-                &:hover {
-                    border-color: $theme-color;
-                    color: $theme-color;
-                    background: $hover-color;
-                }
-            }
-
-            .btn-confirm {
-                background: linear-gradient(90deg, $theme-color 0%, $theme-color 100%);
-                border-color: $theme-color;
-                color: $white;
-
-                &:hover {
-                    opacity: 0.9;
-                }
-            }
+        &:hover {
+          opacity: 0.9;
         }
+      }
     }
+  }
 }
