@@ -90,8 +90,15 @@ const state = ref<string>('1');
 const thinkContent = ref<string>('');
 // 生成内容
 const content = ref<string>('');
+// 是否正在工作
+const isWorking = ref<boolean>(false);
 
 const handleCancel = () => {
+    if (isWorking.value) {
+        message.warning(Message, 'AI正在生成中，请稍后再试！');
+        return;
+    }
+
     emit('update:modelValue', false);
     thinkContent.value = '';
     content.value = '';
@@ -119,6 +126,8 @@ const handleSubmit = () => {
     aiService.polishStream(
         params,
         (data: string) => {
+            console.log(data);
+            isWorking.value = true;
             hideLoading();
             if (data.includes('event:thinking')) {
                 state.value = '2';
@@ -143,6 +152,7 @@ const handleSubmit = () => {
         },
         () => {
             state.value = '4';
+            isWorking.value = false;
         }
     );
 };
