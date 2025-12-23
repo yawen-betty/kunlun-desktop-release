@@ -27,7 +27,7 @@
                     </div>
                     <div v-else class="tag-box">
                         <span v-for="(info, index) in props.modelValue as AreaInfoBean[]" :key="info.id" class="tag p5">
-                            <span class="tag-text ellipsis mr-5">info.name</span>
+                            <span class="tag-text ellipsis mr-5">{{ info.name }}</span>
                             <svg-icon class="icon-cha pointer" color="#9499A5" name="icon-cha" size="8" @click.stop="clearSelect(index)" />
                         </span>
                     </div>
@@ -131,11 +131,20 @@ const selectVal = ref<AreaInfoBean[]>([]);
 // 国内全量数据
 const cityTree = ref<AreaInfoBean[]>([]);
 
+// 监听modelValue变化，确保回显正确
+watch(
+    () => props.modelValue,
+    (newVal: AreaInfoBean[]) => {
+        selectVal.value = [...newVal];
+    },
+    { immediate: true, deep: true }
+);
+
 watch(
     () => isDropDown.value,
     (newVal: boolean) => {
         if (newVal) {
-            selectVal.value = props.modelValue as any;
+            selectVal.value = [...props.modelValue];
         }
     }
 );
