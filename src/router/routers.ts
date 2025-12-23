@@ -64,13 +64,6 @@ const all = [
         icon: 'icon-mianshi',
         component: () => import('@/views/interview/index.vue')
     }),
-    // 个人信息
-    layout({
-        path: '/personalInfo',
-        title: '个人中心',
-        icon: 'icon-gerenzhongxin',
-        component: () => import('@/views/personalInfo/index.vue')
-    }),
     // 增值服务
     layout({
         path: '/addedServices',
@@ -84,7 +77,14 @@ const all = [
         title: 'mcp',
         icon: 'icon-gerenzhongxin',
         component: () => import('@/views/resume/mcpManager.vue')
-    })
+    }),
+    // 个人信息
+    layout({
+        path: '/personalInfo',
+        title: '个人中心',
+        icon: 'icon-gerenzhongxin',
+        component: () => import('@/views/personalInfo/index.vue')
+    }),
 ];
 
 // 重新组织后导出

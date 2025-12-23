@@ -5,10 +5,12 @@
             <!-- 左侧区域 -->
             <div class="left-section">
                 <!-- 左侧顶部 -->
-                <div class="left-header align-between mb-20">
-                    <div class="title-section">
-                        <SvgIcon class="ai-icon" name="icon-AI" size="30"/>
-                        <p class="title">简历制作</p>
+                <div class="left-header align-between mb-10">
+                    <div style="display: flex;align-items: end;">
+                        <div class="title-section flex-column">
+                            <SvgIcon class="ai-icon" color="#FC8719" name="icon-AI" size="30"/>
+                            <p class="title">简历制作</p>
+                        </div>
                         <div v-if="currentMode === 'manual'" class="resume-name flex-column pointer ml-20">
                             <span>{{ resumeName }}</span>
                             <SvgIcon class="pointer" color="#9499A4" name="icon-bianji-xian" size="14"
@@ -21,9 +23,9 @@
                                  @click="showRenameModal = true"/>
                     </div>
                     <div v-if="currentMode === 'manual'" class="score-wrapper flex flex-column">
-                        <div class="score-text mr-10">当前简历分数：{{ resumeScore }}</div>
-                        <Poptip v-if="scoreProblems.length" class="questions-pop flex-column mr-20" placement="bottom"
-                                trigger="hover">
+                        <div class="score-text ">当前简历分数：{{ resumeScore }}</div>
+                        <Poptip v-if="scoreProblems.length" class="questions-pop flex-column ml-10 mr-20"
+                                placement="bottom" trigger="hover">
                             <SvgIcon class="tip" color="#FC8919" name="icon-tishi" size="14"/>
                             <template #content>
                                 <ul class="problem-list">
@@ -53,7 +55,7 @@
             <!-- 右侧区域 -->
             <div class="right-section ml-40">
                 <!-- 右侧顶部 -->
-                <div class="right-header align-between mb-20">
+                <div class="right-header align-between ">
                     <div v-if="showScoreAndMode && currentMode === 'ai'" class="score-wrapper flex flex-column">
                         <div class="score-text mr-10">当前简历分数：{{ resumeScore }}</div>
                         <Poptip v-if="scoreProblems.length" class="questions-pop flex-column mr-20" placement="bottom"
@@ -666,7 +668,7 @@ defineExpose({reset})
 }
 
 .left-header {
-    padding-top: vh(11);
+    padding-top: vh(12);
     align-items: end;
 }
 
@@ -704,27 +706,19 @@ defineExpose({reset})
 }
 
 .title-section {
-    display: flex;
-    align-items: end;
-    gap: vw(4);
+    color: $font-dark;
+    font-family: 'YouSheBiaoTiHei';
+    font-size: vw(28);
+    font-style: normal;
+    line-height: normal; /* 131.579% */
 
-    :deep(.ai-icon) {
-        width: vw(40) !important;
-        height: vh(30) !important;
-        margin-top: -1px;
-
-        > use {
-            fill: $theme-color;
-        }
+    .ai-icon {
+        margin-right: vw(3);
     }
 
-    .title {
-        font-family: 'YouSheBiaoTiHei', sans-serif;
-        font-size: vw(28);
-        line-height: vh(28);
-        font-weight: 400;
-        color: $font-dark;
-        margin: 0;
+    svg {
+        width: vw(40) !important;
+        height: vh(30) !important;
     }
 }
 
@@ -761,7 +755,8 @@ defineExpose({reset})
 
 .right-header {
     align-items: end;
-    padding-top: vh(8);
+    padding-top: vh(18);
+    margin-bottom: vh(11);
 }
 
 .score-wrapper {
@@ -813,7 +808,7 @@ defineExpose({reset})
         }
 
         .ivu-poptip-body {
-            width: vw(280) !important;
+            width: vw(500) !important;
             padding: vh(10) vw(14);
             overflow: visible;
         }
