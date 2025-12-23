@@ -1,17 +1,21 @@
-import {Message} from "view-ui-plus";
-import {message} from "@/utiles/Message.ts";
+import {Message} from 'view-ui-plus';
+import {message} from '@/utiles/Message.ts';
 
 /**
  * AI相关错误处理工具
  */
 export class AiErrorHandler {
-    private static readonly ERROR_MESSAGES: { [key: number]: string } = {
+    private static readonly ERROR_MESSAGES: {[key: number]: string} = {
         526: '简历不存在或已被删除！',
         525: '免费模型次数已用完，自动切换为人工撰写模式！',
         520: '简历模版生成失败，自动切换为人工撰写模式！',
         521: '简历解析失败！',
         522: '简历诊断失败！',
-        523: '简历撰写失败！'
+        523: '简历撰写失败！',
+        527: '内容润色失败！',
+        528: '内容扩展失败！',
+        529: '内容简化失败！',
+        530: '内容总结失败！'
     };
 
     /**
@@ -29,6 +33,5 @@ export class AiErrorHandler {
         if (errorMsg) {
             message.error(Message, errorMsg);
         }
-
     }
 }

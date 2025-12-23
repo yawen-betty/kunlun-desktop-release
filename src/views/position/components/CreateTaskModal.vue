@@ -177,7 +177,8 @@ defineExpose({
                         </Select>
                     </FormItem>
                     <FormItem prop="resumeUuid">
-                        <CustomSelect v-model="formData.resumeUuid" :option-list="resumeList.map(item => ({label: item.name, value: item.uuid}))"
+                        <CustomSelect v-model="formData.resumeUuid"
+                                      :option-list="resumeList.map(item => ({label: item.name, value: item.uuid}))"
                                       placeholder="请选择简历"/>
                     </FormItem>
                 </Form>
@@ -281,10 +282,6 @@ defineExpose({
             background-color: $white;
             border: vw(1) solid $theme-color !important;
             font-size: vw(18);
-
-            &::placeholder {
-                font-weight: 600;
-            }
         }
     }
 
@@ -304,7 +301,6 @@ defineExpose({
 
             .custom-placeholder {
                 font-size: vw(18);
-                font-weight: 600;
                 height: 100%;
                 line-height: vh(48);
             }
@@ -324,7 +320,6 @@ defineExpose({
                 font-size: vw(18);
                 line-height: vh(50);
                 height: 100%;
-                font-weight: 600;
             }
 
             .ivu-select-selected-value {
@@ -344,10 +339,6 @@ defineExpose({
             display: flex;
             flex-direction: column;
             gap: vw(10);
-
-            &::-webkit-scrollbar {
-                display: none;
-            }
         }
 
         .ivu-select-item {

@@ -10,12 +10,13 @@
             <li>· 面试AI辅导、模拟面试</li>
         </ul>
 
-        <div class="tutorial-link mb-40" v-if="status === 0">
-            <Icon type="md-help-circle" />
+        <div v-if="status === 0" class="tutorial-link mb-40">
+            <Icon type="md-help-circle"/>
             <span @click="handleTutorial(true)">如何注册智谱账号</span>
         </div>
 
-        <Form ref="formRef" :model="formData" :rules="rules" class="config-form mb-60" label-position="top">
+        <Form ref="formRef" :model="formData" :rules="rules" class="config-form mb-60" label-position="top"
+              @submit.prevent>
             <FormItem class="model-item" label="模型" prop="model">
                 <RadioGroup v-model="formData.modelType" class="model-radio-group">
                     <Radio v-for="info in aiModal" :key="info.key" :label="info.key">{{ info.value }}</Radio>
@@ -23,21 +24,22 @@
             </FormItem>
 
             <FormItem class="api-key-item" label="API Key" prop="apiKey">
-                <Input v-model="formData.apiKey" class="api-key-input" password placeholder="请输入" type="password"></Input>
+                <Input v-model="formData.apiKey" class="api-key-input" password placeholder="请输入"
+                       type="password"></Input>
             </FormItem>
         </Form>
 
         <Button :disabled="!formData.apiKey" class="save-btn" type="primary" @click="handleSave">
-            <SvgIcon color="#fff" name="icon-baocun" size="12" />
+            <SvgIcon color="#fff" name="icon-baocun" size="12"/>
             保存
         </Button>
 
-        <img alt="" class="decoration-img" src="@/assets/images/ai.png" />
+        <img alt="" class="decoration-img" src="@/assets/images/ai.png"/>
     </div>
 
     <Modal v-model="tutorialVisible" :closable="false" :mask-closable="false" class="tutorial-modal" footer-hide>
         <div class="tutorial-content">
-            <Icon class="tutorial-close-icon" type="md-close" @click="handleTutorial(false)" />
+            <Icon class="tutorial-close-icon" type="md-close" @click="handleTutorial(false)"/>
             <h3 class="tutorial-title mb-20">如何注册智谱账号</h3>
             <div class="tutorial-html pt-20" v-html="tutorialContent"></div>
         </div>
@@ -273,6 +275,7 @@ onMounted(() => {
     border-radius: vw(2);
     cursor: pointer;
     padding: 0;
+    box-shadow: none;
 
     &:hover {
         background-color: $theme-color;

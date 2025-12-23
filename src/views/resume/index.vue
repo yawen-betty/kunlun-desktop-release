@@ -61,8 +61,6 @@ onActivated(() => {
     // 如果不一致，则进行人工模式的展示
     if (routeResumeId && routeResumeId !== UserInfo.info.runningResumeId) {
         resumeId.value = routeResumeId;
-        console.log(resumeId.value, 'resumeId.value')
-        console.log(showMakePanel.value, 'showMakePanel.value')
         if (showMakePanel.value) {
             showMakePanel.value = false;
             nextTick(() => {
@@ -78,6 +76,7 @@ onActivated(() => {
     }
 
     emitter.on('resumeHasBeenDeleted', handleResumeDeleted)
+    emitter.on('deletedResume', handleResumeDeleted)
 });
 
 </script>

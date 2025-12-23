@@ -1132,7 +1132,7 @@ onBeforeUnmount(() => {
     }
 
     .panel-right {
-        margin-top: vh(48);
+        margin-top: vh(49);
         flex: 1;
         background: $white;
         border-radius: vw(2);
