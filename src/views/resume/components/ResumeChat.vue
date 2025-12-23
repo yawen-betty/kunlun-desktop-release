@@ -293,9 +293,30 @@ const generateTemplate = (msg: string, content: string) => {
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
                 chatList.value.forEach((item) => (item.loadingContentStart = false));
+            } else if (data.includes('event:error')) {
+                const str: string = extractDataContent(data, 'event:error');
+                showErrorMessage(JSON.parse(str).status);
             } else {
                 const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'template');
+                setThinkState();
+                // 完成处理 查询是否存在附件，解析附件 || 分析简历
+                if (props.hasAttachment) {
+                    // 解析模板
+                    const msg: string = '正在解析附件内容，请稍后！';
+
+                    chatList.value.push({
+                        role: 'assistant',
+                        content: msg,
+                        thinkingStatus: '2',
+                        isExpand: true,
+                        thinking: ''
+                    });
+
+                    parseAttachment(msg);
+                } else {
+                    diagnoseResume();
+                }
             }
             smartScrollToBottom();
         },
@@ -304,31 +325,12 @@ const generateTemplate = (msg: string, content: string) => {
         },
         () => {
             isWorking.value = false;
-            setThinkState();
-            // 完成处理 查询是否存在附件，解析附件 || 分析简历
-            if (props.hasAttachment) {
-                // 解析模板
-                const msg: string = '正在解析附件内容，请稍后！';
-
-                chatList.value.push({
-                    role: 'assistant',
-                    content: msg,
-                    thinkingStatus: '2',
-                    isExpand: true,
-                    thinking: ''
-                });
-
-                parseAttachment(msg);
-            } else {
-                diagnoseResume();
-            }
         }
     );
 };
 
 // 解析简历附件
 const parseAttachment = (msg: string) => {
-    isWorking.value = true;
     isWorking.value = true;
     const params = {
         resumeId: props.resumeUuid,
@@ -355,9 +357,14 @@ const parseAttachment = (msg: string) => {
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
                 chatList.value.forEach((item) => (item.loadingContentStart = false));
+            } else if (data.includes('event:error')) {
+                const str: string = extractDataContent(data, 'event:error');
+                showErrorMessage(JSON.parse(str).status);
             } else {
                 const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'attachmentStream');
+                setThinkState();
+                diagnoseResume();
             }
             smartScrollToBottom();
         },
@@ -366,8 +373,6 @@ const parseAttachment = (msg: string) => {
         },
         () => {
             isWorking.value = false;
-            setThinkState();
-            diagnoseResume();
         }
     );
 };
@@ -378,6 +383,7 @@ const parseAttachment = (msg: string) => {
  * @param reply 是否需要用户回复
  */
 const diagnoseResume = (message?: string, reply?: boolean) => {
+    console.log(isWorking.value);
     isWorking.value = true;
 
     // 解析模板
@@ -419,6 +425,9 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
                 chatList.value.forEach((item) => (item.loadingContentStart = false));
+            } else if (data.includes('event:error')) {
+                const str: string = extractDataContent(data, 'event:error');
+                showErrorMessage(JSON.parse(str).status);
             } else {
                 setThinkState();
                 const str: string = extractDataContent(data, 'event:content');
@@ -551,6 +560,9 @@ const write = () => {
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
                 chatList.value.forEach((item) => (item.loadingContentStart = false));
+            } else if (data.includes('event:error')) {
+                const str: string = extractDataContent(data, 'event:error');
+                showErrorMessage(JSON.parse(str).status);
             } else {
                 setThinkState();
                 const str: string = extractDataContent(data, 'event:content');

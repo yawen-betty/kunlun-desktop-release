@@ -136,6 +136,11 @@ const handleSubmit = () => {
                     thinkContent.value += str;
                     scrollToBottom('think-content');
                 }
+            } else if (data.includes('event:error')) {
+                const str: string = extractDataContent(data, 'event:error');
+                AiErrorHandler.handleError(JSON.parse(str).status);
+                emit('update:modelValue', false);
+                hideLoading();
             } else {
                 state.value = '3';
                 const str: string = extractDataContent(data, 'event:content');
