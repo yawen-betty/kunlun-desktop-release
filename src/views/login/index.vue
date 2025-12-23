@@ -2,7 +2,7 @@
     <div class="login-page">
         <div class="left-section">
             <div class="brand-area">
-                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30"/>
+                <Image :src="configInfo.appIcon" alt="Logo" class="logo mr-30" />
                 <h1 class="app-name">{{ SystemInfo.info.loginTitle }}</h1>
             </div>
 
@@ -12,7 +12,7 @@
             </div>
 
             <div class="illustration-area">
-                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration"/>
+                <img :src="SystemInfo.info.loginBg" alt="Illustration" class="illustration" />
             </div>
         </div>
 
@@ -82,7 +82,7 @@ import {showLoading, hideLoading} from '@/utiles/loading.ts';
 import {GetJobTaskInDto} from '@/api/job/dto/GetJobTask.ts';
 import {ActivateJobTaskInDto} from '@/api/job/dto/ActivateJobTask.ts';
 import {JobService} from '@/service/JobService.ts';
-import {GetMatchAnalysisPromptInDto} from "@/api/admin/dto/GetMatchAnalysisPrompt.ts";
+import {GetMatchAnalysisPromptInDto} from '@/api/admin/dto/GetMatchAnalysisPrompt.ts';
 
 const qrCodeUrl = ref<string>('');
 const qrcodeIframe = ref<HTMLIFrameElement>();
@@ -401,13 +401,14 @@ onMounted(() => {
                         gap: vw(10);
                         justify-content: center;
                         align-content: center;
+                        flex-wrap: nowrap;
 
                         .reload-text {
                             color: $theme-color;
                             font-size: vw(18);
                             font-style: normal;
                             font-weight: 600;
-                            line-height: vw(24);
+                            line-height: vw(20);
                         }
                     }
                 }
