@@ -87,6 +87,12 @@ const handleCancel = () => {
     isRequesting.value = false
 }
 
+// 根据错误码显示提示信息
+const showErrorMessage = (code: number) => {
+    hideLoading();
+    AiErrorHandler.handleError(code);
+};
+
 const open = (resumeId: string) => {
     visible.value = true;
     // 解析模板
@@ -117,6 +123,9 @@ const open = (resumeId: string) => {
                     thinkContent.value += str;
                     scrollToBottom('think-content');
                 }
+            } else if (data.includes('event:error')) {
+                const str: string = extractDataContent(data, 'event:error');
+                showErrorMessage(JSON.parse(str).status);
             } else {
                 state.value = '3'
                 const str: string = extractDataContent(data, 'event:content')

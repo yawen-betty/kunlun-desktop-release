@@ -257,10 +257,6 @@ defineExpose({loadResumeList})
                     background-color: $white;
                     border: vw(1) solid $theme-color !important;
                     font-size: vw(18);
-
-                    &::placeholder {
-                        font-weight: 600;
-                    }
                 }
             }
 
@@ -280,7 +276,6 @@ defineExpose({loadResumeList})
 
                     .custom-placeholder {
                         font-size: vw(18);
-                        font-weight: 600;
                         height: 100%;
                         line-height: vh(48);
                     }
@@ -300,7 +295,6 @@ defineExpose({loadResumeList})
                         font-size: vw(18);
                         line-height: vh(50);
                         height: 100%;
-                        font-weight: 600;
                     }
 
                     .ivu-select-selected-value {
@@ -320,10 +314,6 @@ defineExpose({loadResumeList})
                     display: flex;
                     flex-direction: column;
                     gap: vw(10);
-
-                    &::-webkit-scrollbar {
-                        display: none;
-                    }
                 }
 
                 .ivu-select-item {

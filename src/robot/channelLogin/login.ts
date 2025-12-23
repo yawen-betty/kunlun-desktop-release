@@ -66,8 +66,8 @@ export async function executeLogin(channelName: string): Promise<LoginResult> {
         await cdpService.clearNetworkEvents();
 
         // 4. 打开登录页面
-        logger.info('[ChannelLogin] 打开登录页面:', config.url);
-        await mcpService.callTool('browser_navigate', {url: config.url});
+        logger.info('[ChannelLogin] 打开登录页面:', config.loginUrl);
+        await mcpService.callTool('browser_navigate', {url: config.loginUrl});
         logger.info('[ChannelLogin] 页面导航完成');
 
         // 等待页面加载
@@ -139,16 +139,19 @@ async function waitForLogin(channelName: string): Promise<void> {
 const CHANNEL_CONFIG = {
     boss: {
         url: 'https://www.zhipin.com/',
+        loginUrl: 'https://www.zhipin.com/web/user/?ka=header-login',
         apiUrl: '/wapi/zpuser/wap/getUserInfo.json',
         successCode: 0
     },
     zhilian: {
         url: 'https://www.zhaopin.com/',
+        loginUrl: 'https://passport.zhaopin.com/login',
         apiUrl: '/user/detail',
         successCode: 200
     },
     guopin: {
         url: 'https://www.iguopin.com/',
+        loginUrl: 'https://www.iguopin.com/login',
         apiUrl: '/personal/user/account/v1/userinfo',
         successCode: 200
     }

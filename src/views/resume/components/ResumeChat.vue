@@ -16,21 +16,18 @@
                         <div class="ai-chat-box mb-20">
                             <div class="ai-chat">
                                 <div class="ai-chat-text">{{ info.content }}</div>
-                                <div v-if="['1', '2'].includes(info.thinkingStatus || '0') && !info.isExpand"
-                                     class="is-think mt-10">
+                                <div v-if="['1', '2'].includes(info.thinkingStatus || '0') && !info.isExpand" class="is-think mt-10">
                                     <div class="think-text mr-5">{{ thinkingText[info.thinkingStatus!] }}</div>
-                                    <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12"
-                                             @click="info.isExpand = true"></SvgIcon>
+                                    <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12" @click="info.isExpand = true"></SvgIcon>
                                 </div>
                             </div>
                         </div>
 
                         <div v-if="info.isExpand" class="deep-thinking mt-10 mb-20">
-                            <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12"
-                                     @click="info.isExpand = false"></SvgIcon>
+                            <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12" @click="info.isExpand = false"></SvgIcon>
 
                             <div v-if="info.thinkingStatus === '2'" class="deep-thinking-title">
-                                <img class="deep-log" src="@/assets/images/deep-logo.gif"/>
+                                <img class="deep-log" src="@/assets/images/deep-logo.gif" />
                                 <div class="deep-thinking-title-text">深度思考</div>
                             </div>
 
@@ -53,7 +50,7 @@
                 </template>
             </div>
 
-            <div class="send-message">
+            <div :class="['send-message', disabled && 'send-message_disabled']">
                 <Input
                     v-model="sendContent"
                     :autosize="{minRows: 2, maxRows: 5}"
@@ -65,14 +62,13 @@
                     @keydown="handleKeyDown"
                 ></Input>
                 <button :disabled="disabled || !sendContent" class="save-btn" @click="handleSendMessage">
-                    <SvgIcon :color="disabled || !sendContent ? '#C5C8CE' : '#fff'" name="icon-fasong" size="10"/>
+                    <SvgIcon :color="disabled || !sendContent ? '#C5C8CE' : '#fff'" name="icon-fasong" size="10" />
                     发送
                 </button>
             </div>
         </div>
 
-        <Modal v-model="diagnoseModal" :closable="false" :footer-hide="true" :mask-closable="false"
-               class-name="delete-confirm-modal question-modal">
+        <Modal v-model="diagnoseModal" :closable="false" :footer-hide="true" :mask-closable="false" class-name="delete-confirm-modal question-modal">
             <div class="delete-modal-content">
                 <div class="modal-header">
                     <span class="modal-title">提示</span>
@@ -181,7 +177,7 @@ const diagnoseStr = ref<string>('');
 const showErrorMessage = (code: number) => {
     hideLoading();
     if (code === 526) {
-        emits('exit')
+        emits('exit');
     } else {
         AiErrorHandler.handleError(code, props.over);
     }
@@ -288,6 +284,8 @@ const generateTemplate = (msg: string, content: string) => {
         params,
         (data) => {
             const lastData = chatList.value[chatList.value.length - 1];
+            console.log(data);
+
             if (data.includes('event:thinking')) {
                 const str: string = extractDataContent(data, 'event:thinking');
                 lastData.thinking += str;
@@ -297,9 +295,30 @@ const generateTemplate = (msg: string, content: string) => {
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
                 chatList.value.forEach((item) => (item.loadingContentStart = false));
+            } else if (data.includes('event:error')) {
+                const str: string = extractDataContent(data, 'event:error');
+                showErrorMessage(JSON.parse(str).status);
             } else {
                 const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'template');
+                setThinkState();
+                // 完成处理 查询是否存在附件，解析附件 || 分析简历
+                if (props.hasAttachment) {
+                    // 解析模板
+                    const msg: string = '正在解析附件内容，请稍后！';
+
+                    chatList.value.push({
+                        role: 'assistant',
+                        content: msg,
+                        thinkingStatus: '2',
+                        isExpand: true,
+                        thinking: ''
+                    });
+
+                    parseAttachment(msg);
+                } else {
+                    diagnoseResume();
+                }
             }
             smartScrollToBottom();
         },
@@ -308,31 +327,12 @@ const generateTemplate = (msg: string, content: string) => {
         },
         () => {
             isWorking.value = false;
-            setThinkState();
-            // 完成处理 查询是否存在附件，解析附件 || 分析简历
-            if (props.hasAttachment) {
-                // 解析模板
-                const msg: string = '正在解析附件内容，请稍后！';
-
-                chatList.value.push({
-                    role: 'assistant',
-                    content: msg,
-                    thinkingStatus: '2',
-                    isExpand: true,
-                    thinking: ''
-                });
-
-                parseAttachment(msg);
-            } else {
-                diagnoseResume();
-            }
         }
     );
 };
 
 // 解析简历附件
 const parseAttachment = (msg: string) => {
-    isWorking.value = true;
     isWorking.value = true;
     const params = {
         resumeId: props.resumeUuid,
@@ -349,6 +349,7 @@ const parseAttachment = (msg: string) => {
         props.hasAttachment!,
         (data) => {
             const lastData = chatList.value[chatList.value.length - 1];
+            console.log(data);
 
             if (data.includes('event:thinking')) {
                 const str: string = extractDataContent(data, 'event:thinking');
@@ -359,9 +360,14 @@ const parseAttachment = (msg: string) => {
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
                 chatList.value.forEach((item) => (item.loadingContentStart = false));
+            } else if (data.includes('event:error')) {
+                const str: string = extractDataContent(data, 'event:error');
+                showErrorMessage(JSON.parse(str).status);
             } else {
                 const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'attachmentStream');
+                setThinkState();
+                diagnoseResume();
             }
             smartScrollToBottom();
         },
@@ -370,8 +376,6 @@ const parseAttachment = (msg: string) => {
         },
         () => {
             isWorking.value = false;
-            setThinkState();
-            diagnoseResume();
         }
     );
 };
@@ -382,6 +386,7 @@ const parseAttachment = (msg: string) => {
  * @param reply 是否需要用户回复
  */
 const diagnoseResume = (message?: string, reply?: boolean) => {
+    console.log(isWorking.value);
     isWorking.value = true;
 
     // 解析模板
@@ -423,6 +428,9 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
                 chatList.value.forEach((item) => (item.loadingContentStart = false));
+            } else if (data.includes('event:error')) {
+                const str: string = extractDataContent(data, 'event:error');
+                showErrorMessage(JSON.parse(str).status);
             } else {
                 setThinkState();
                 const str: string = extractDataContent(data, 'event:content');
@@ -555,6 +563,9 @@ const write = () => {
                 lastData.loadingContentStart = true;
             } else if (data.includes('event:loadingContentEnd')) {
                 chatList.value.forEach((item) => (item.loadingContentStart = false));
+            } else if (data.includes('event:error')) {
+                const str: string = extractDataContent(data, 'event:error');
+                showErrorMessage(JSON.parse(str).status);
             } else {
                 setThinkState();
                 const str: string = extractDataContent(data, 'event:content');
@@ -855,12 +866,13 @@ defineExpose({
         justify-content: space-between;
         align-items: flex-end;
         flex-direction: column;
-        background: $form-bg-disabled;
+        background: $white;
         gap: vh(12);
 
         :deep(.ivu-input) {
             padding: 0;
             resize: none;
+            background: $white;
 
             &::-webkit-scrollbar {
                 width: vw(6);
@@ -875,6 +887,13 @@ defineExpose({
 
             &::-webkit-scrollbar-track {
                 border-radius: vw(3);
+            }
+        }
+
+        &.send-message_disabled {
+            background: $form-bg-disabled;
+            :deep(.ivu-input) {
+                background: $form-bg-disabled;
             }
         }
 

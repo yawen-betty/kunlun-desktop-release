@@ -44,7 +44,7 @@ export class RobotManager {
         }
 
         logger.info('[RobotManager] 初始化 MCP...');
-        await mcpService.start(true);
+        await mcpService.start(false);
         await cdpService.init();
         this.mcpInitialized = true;
         logger.info('[RobotManager] MCP 初始化完成');
@@ -239,6 +239,7 @@ export class RobotManager {
                 this.cleanup();
                 // 通知前端 取消loading
                 emitter.emit('cancelLoading');
+                emitter.emit('closeTask', false)
 
                 // 标记 MCP 未初始化（需要重新初始化）
                 this.mcpInitialized = false;

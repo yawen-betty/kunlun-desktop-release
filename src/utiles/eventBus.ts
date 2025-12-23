@@ -8,6 +8,7 @@ type Events = {
     loginFailure: string; // 登录失效
     closeTask: boolean; // 关闭任务
     resumeHasBeenDeleted: void; // 简历被删除
+    deletedResume: void; // 手动删除简历
 };
 
 const emitter = mitt<Events>();
