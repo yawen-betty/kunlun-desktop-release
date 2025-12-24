@@ -390,9 +390,9 @@ const changeMode = () => {
 /**
  * ai次数用完，切换成人工模式，打开弹窗
  */
-const over = () => {
+const over = (isOpenModal: boolean = true) => {
     currentMode.value = 'manual';
-    usageExhaustedModalVisible.value = true
+    isOpenModal && (usageExhaustedModalVisible.value = true)
     isGenerating.value = false
 }
 

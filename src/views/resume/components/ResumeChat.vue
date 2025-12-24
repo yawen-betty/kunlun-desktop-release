@@ -23,8 +23,16 @@
                                     </div>
                                     <div class="ai-chat-score-close pointer" v-else @click="info.isExpandChat = !info.isExpandChat">收起</div>
                                 </div>
-                                <div v-if="['1', '2'].includes(info.thinkingStatus || '0') && !info.isExpand" class="is-think mt-10">
-                                    <div class="think-text mr-5">{{ thinkingText[info.thinkingStatus!] }}</div>
+
+                                <div v-if="['1', '2', '3'].includes(info.thinkingStatus || '0') && !info.isExpand" class="is-think mt-10">
+                                    <div :class="['think-text', 'mr-5', info.thinkingStatus === '3' && 'think-reload']">
+                                        {{ thinkingText[info.thinkingStatus!] }}
+
+                                        <div class="reload ml-10 pointer" @click="handleReload">
+                                            <SvgIcon color="#EC6B62" name="icon-shuaxin" size="12"></SvgIcon>
+                                            <div class="reload-text">重试</div>
+                                        </div>
+                                    </div>
                                     <!-- <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12" @click="info.isExpand = true"></SvgIcon>-->
                                 </div>
                             </div>
@@ -134,7 +142,7 @@ const props = defineProps<{
     resumeUuid: string; // 简历id
     hasAttachment?: File | null; // 简历附件
     streamWrite: Function; // 流式回填
-    over: () => void; // 结束ai 撰写（ai次数用完调用的）
+    over: (isOpenModal: boolean) => void; // 结束ai 撰写（ai次数用完调用的）
     changeMode: () => void; // ai 结束调用
     updateCache: (s: string) => void; // 最后一次诊断保存
 }>();
@@ -148,7 +156,8 @@ const emits = defineEmits<{
 
 const thinkingText: TextType = {
     '1': '已完成思考',
-    '2': '深度思考中'
+    '2': '深度思考中',
+    '3': '生成失败'
 };
 // 输入内容
 const sendContent = ref<string>('');
@@ -182,6 +191,8 @@ const isUserAtBottom = ref<boolean>(true);
 const isWorking = ref<boolean>(false);
 // 诊断的话术
 const diagnoseStr = ref<string>('');
+// 需要重试的诊断流程 3-诊断 4-撰写
+const reloadFlow = ref<string>('');
 
 // 根据错误码显示提示信息
 const showErrorMessage = (code: number) => {
@@ -190,6 +201,16 @@ const showErrorMessage = (code: number) => {
         emits('exit');
     } else {
         AiErrorHandler.handleError(code, props.over);
+    }
+};
+
+// 重试
+const handleReload = () => {
+    chatList.value.pop();
+    if (reloadFlow.value === '3') {
+        diagnoseResume();
+    } else {
+        write();
     }
 };
 
@@ -398,7 +419,6 @@ const parseAttachment = (msg: string) => {
  * @param reply 是否需要用户回复
  */
 const diagnoseResume = (message?: string, reply?: boolean) => {
-    console.log(isWorking.value);
     isWorking.value = true;
 
     // 解析模板
@@ -443,6 +463,12 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
             } else if (data.includes('event:error')) {
                 const str: string = extractDataContent(data, 'event:error');
                 showErrorMessage(JSON.parse(str).status);
+
+                if (JSON.parse(str).status === 522) {
+                    setThinkState();
+                    lastData.thinkingStatus = '3';
+                    reloadFlow.value = '3';
+                }
             } else {
                 setThinkState();
                 const str: string = extractDataContent(data, 'event:content');
@@ -578,6 +604,11 @@ const write = () => {
             } else if (data.includes('event:error')) {
                 const str: string = extractDataContent(data, 'event:error');
                 showErrorMessage(JSON.parse(str).status);
+                if (JSON.parse(str).status === 522) {
+                    setThinkState();
+                    lastData.thinkingStatus = '3';
+                    reloadFlow.value = '4';
+                }
             } else {
                 setThinkState();
                 const str: string = extractDataContent(data, 'event:content');
@@ -813,6 +844,29 @@ defineExpose({
                     font-style: normal;
                     font-weight: 400;
                     line-height: vw(12);
+                    display: flex;
+
+                    &.think-reload {
+                        color: #df6f6b;
+                        font-size: vw(12);
+                        font-style: normal;
+                        font-weight: 400;
+                        line-height: vw(12);
+                    }
+
+                    .reload {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: vw(5);
+                        .reload-text {
+                            color: #df6f6b;
+                            font-size: vw(12);
+                            font-style: normal;
+                            font-weight: 400;
+                            line-height: vw(12);
+                        }
+                    }
                 }
             }
         }

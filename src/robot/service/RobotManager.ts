@@ -239,7 +239,7 @@ export class RobotManager {
                 this.cleanup();
                 // 通知前端 取消loading
                 emitter.emit('cancelLoading');
-                emitter.emit('closeTask', false)
+                // emitter.emit('closeTask', false)
 
                 // 标记 MCP 未初始化（需要重新初始化）
                 this.mcpInitialized = false;

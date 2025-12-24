@@ -269,7 +269,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
                         resetMatchJobTimer();
                         matchJobRes = await matchJob(apiKey, resumeText, dataInfo, prompt, abortController.signal);
                     }
-
+                    checkStop();
                     // 发送数据给接口
                     await crawlPositions(dataInfo, taskId, matchJobRes);
                 } catch (error: any) {

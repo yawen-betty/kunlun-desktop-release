@@ -6,6 +6,7 @@ import {JobService} from '@/service/JobService'
 import {GetPositionDetailOutDto} from '@/api/job/dto/GetPositionDetail'
 import {GetPositionReportOutDto} from '@/api/job/dto/GetPositionReport'
 import {parseDate} from "@/utiles/DateUtils.ts";
+import Ellipsis from "@/components/ellipsis/index.vue";
 
 const props = withDefaults(defineProps<{
     id?: string
@@ -165,7 +166,7 @@ const channelMap: Record<number, string> = {
 
                     <!-- 职位标题 -->
                     <div v-if="detailData?.title || detailData?.salary || detailData?.salaryNumber" class="title-row">
-                        <div v-if="detailData?.title" class="position-title">{{ detailData.title }}</div>
+                        <Ellipsis v-if="detailData?.title" :content="detailData.title" class="position-title"/>
                         <div v-if="detailData?.salary || detailData?.salaryNumber" class="salary">
                             {{ [detailData?.salary, detailData?.salaryNumber].filter(Boolean).join('·') }}
                         </div>
@@ -391,6 +392,7 @@ const channelMap: Record<number, string> = {
                 font-size: vw(20);
                 line-height: vh(20);
                 color: $font-dark;
+                max-width: 80%;
             }
 
             .salary {
