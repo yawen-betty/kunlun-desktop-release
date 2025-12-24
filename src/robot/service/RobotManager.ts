@@ -44,7 +44,7 @@ export class RobotManager {
         }
 
         logger.info('[RobotManager] 初始化 MCP...');
-        await mcpService.start(false);
+        await mcpService.start(true);
         await cdpService.init();
         this.mcpInitialized = true;
         logger.info('[RobotManager] MCP 初始化完成');

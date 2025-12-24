@@ -1167,7 +1167,10 @@ const handleAiAction = (action: 'polish' | 'expand' | 'simplify' | 'summarize') 
         fieldName = module?.entries?.[0]?.fields?.[0]?.fieldName || '';
         maxLength = getTextModuleMaxLength(module);
     }
-
+    if (text.length < 20) {
+        message.warning(Message, '请至少填写20个字！');
+        return;
+    }
     aiOptimizeProps.value = {
         resumeId: props.resumeData?.uuid || '',
         text,
