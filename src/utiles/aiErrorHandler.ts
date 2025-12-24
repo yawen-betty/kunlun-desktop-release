@@ -23,10 +23,10 @@ export class AiErrorHandler {
      * @param code 错误码
      * @param onModeSwitch 模式切换回调（当错误码为525或520时调用）
      */
-    static handleError(code: number, onModeSwitch?: (() => void) | undefined): void {
+    static handleError(code: number, onModeSwitch?: ((isOpenModal: boolean) => void) | undefined): void {
         // 特定错误码需要切换模式
         if ([525, 520].includes(code) && onModeSwitch) {
-            onModeSwitch();
+            onModeSwitch(!(code === 520));
         }
 
         const errorMsg = this.ERROR_MESSAGES[code];

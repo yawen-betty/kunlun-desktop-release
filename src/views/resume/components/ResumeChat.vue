@@ -134,7 +134,7 @@ const props = defineProps<{
     resumeUuid: string; // 简历id
     hasAttachment?: File | null; // 简历附件
     streamWrite: Function; // 流式回填
-    over: () => void; // 结束ai 撰写（ai次数用完调用的）
+    over: (isOpenModal: boolean) => void; // 结束ai 撰写（ai次数用完调用的）
     changeMode: () => void; // ai 结束调用
     updateCache: (s: string) => void; // 最后一次诊断保存
 }>();
