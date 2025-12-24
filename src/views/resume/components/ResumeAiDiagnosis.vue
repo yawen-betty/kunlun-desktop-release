@@ -88,6 +88,7 @@ const handleCancel = () => {
     requirement.value = '';
     state.value = '1'
     isRequesting.value = false
+    isFailed.value = false
 }
 
 // 根据错误码显示提示信息
