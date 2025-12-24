@@ -28,7 +28,7 @@
                                     <div :class="['think-text', 'mr-5', info.thinkingStatus === '3' && 'think-reload']">
                                         {{ thinkingText[info.thinkingStatus!] }}
 
-                                        <div class="reload ml-10 pointer" @click="handleReload">
+                                        <div class="reload ml-10 pointer" @click="handleReload" v-if="info.thinkingStatus === '3'">
                                             <SvgIcon color="#EC6B62" name="icon-shuaxin" size="12"></SvgIcon>
                                             <div class="reload-text">重试</div>
                                         </div>
