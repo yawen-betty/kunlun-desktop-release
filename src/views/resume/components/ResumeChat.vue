@@ -15,16 +15,23 @@
                     <div v-else>
                         <div class="ai-chat-box mb-20">
                             <div class="ai-chat">
-                                <div class="ai-chat-text">{{ info.content }}</div>
+                                <div class="ai-chat-text" v-if="!info.content?.includes('当前简历评分')">{{ info.content }}</div>
+                                <div :class="['ai-chat-score', info.isExpandChat && 'ai-chat-score-expand']" v-else>
+                                    <div class="ai-chat-score_content">{{ info.content }}</div>
+                                    <div class="ai-chat-score-open pointer" v-if="!info.isExpandChat" @click="info.isExpandChat = !info.isExpandChat">
+                                        查看当前问题
+                                    </div>
+                                    <div class="ai-chat-score-close pointer" v-else @click="info.isExpandChat = !info.isExpandChat">收起</div>
+                                </div>
                                 <div v-if="['1', '2'].includes(info.thinkingStatus || '0') && !info.isExpand" class="is-think mt-10">
                                     <div class="think-text mr-5">{{ thinkingText[info.thinkingStatus!] }}</div>
-                                    <!--                                    <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12" @click="info.isExpand = true"></SvgIcon>-->
+                                    <!-- <SvgIcon class="pointer" color="#9499A4" name="icon-zhankai" size="12" @click="info.isExpand = true"></SvgIcon>-->
                                 </div>
                             </div>
                         </div>
 
                         <div v-if="info.isExpand" class="deep-thinking mt-10 mb-20">
-                            <!--                            <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12" @click="info.isExpand = false"></SvgIcon>-->
+                            <!-- <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12" @click="info.isExpand = false"></SvgIcon>-->
 
                             <div v-if="info.thinkingStatus === '2'" class="deep-thinking-title">
                                 <img class="deep-log" src="@/assets/images/deep-logo.gif" />
@@ -116,6 +123,9 @@ class CustomMessagesBean extends AiConversationOutDto {
 
     // 是否展示正在思考完成，等待中
     loadingContentStart?: boolean = false;
+
+    // 聊天内容是否展开
+    isExpandChat?: boolean = false;
 }
 
 const aiService = new AiService();
@@ -363,19 +373,21 @@ const parseAttachment = (msg: string) => {
             } else if (data.includes('event:error')) {
                 const str: string = extractDataContent(data, 'event:error');
                 showErrorMessage(JSON.parse(str).status);
+                emits('sendTemplate', '', 'attachmentStream');
             } else {
                 const str: string = extractDataContent(data, 'event:content');
                 emits('sendTemplate', str, 'attachmentStream');
-                setThinkState();
-                diagnoseResume();
             }
             smartScrollToBottom();
         },
         (error) => {
             showErrorMessage(error.status);
+            emits('sendTemplate', '', 'attachmentStream');
         },
         () => {
             isWorking.value = false;
+            setThinkState();
+            diagnoseResume();
         }
     );
 };
@@ -743,6 +755,50 @@ defineExpose({
                     line-height: vw(20);
                     word-break: break-all;
                     white-space: pre-wrap;
+                }
+
+                .ai-chat-score {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: vw(57);
+                    padding: vh(10) vw(15);
+                    height: vh(40);
+                    border-radius: vw(2);
+                    border: vw(1) solid $border-default;
+                    background: $white;
+
+                    .ai-chat-score_content {
+                        color: $font-dark;
+                        font-size: vw(14);
+                        font-style: normal;
+                        font-weight: 400;
+                        line-height: vw(20);
+                        word-break: break-all;
+                        white-space: pre-wrap;
+                        width: vw(130);
+                        height: vh(20);
+                        overflow: hidden;
+                    }
+
+                    .ai-chat-score-open,
+                    .ai-chat-score-close {
+                        color: $theme-color;
+                        font-size: vw(14);
+                        font-style: normal;
+                        font-weight: 400;
+                        line-height: vw(20);
+                    }
+
+                    &.ai-chat-score-expand {
+                        display: flex;
+                        flex-direction: column;
+                        gap: vh(10);
+                        height: auto;
+                        .ai-chat-score_content {
+                            width: 100%;
+                            height: auto;
+                        }
+                    }
                 }
             }
 

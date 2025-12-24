@@ -602,7 +602,7 @@ const listFinish = () => {
 
 // 第一步传递的模板数据
 const sendTemplate = (templateData: string, type: string) => {
-    resumeData.value = JSON.parse(templateData)
+    if (templateData) resumeData.value = JSON.parse(templateData)
     // 如果没有简历附件，就展示更多的按钮
     if (!props.uploadedFile) {
         isShowToggleBtn.value = true
