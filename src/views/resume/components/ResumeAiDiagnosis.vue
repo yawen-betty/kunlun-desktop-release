@@ -17,7 +17,7 @@
             </div>
             <div class="optimize-content">
                 <div class="ai-content">
-                    <div v-if="!isFailed" class="ai-content-think mt-20">
+                    <div class="ai-content-think mt-20">
                         <div v-if="['2','3'].includes(state)" class="think-title">
                             <img class="think-title-icon" src="@/assets/images/deep-logo.gif"/>
                             <div class="think-text">{{ state === '2' ? '深度思考中...' : '生成中...' }}</div>
@@ -27,7 +27,6 @@
                         <div v-if="state === '2'" class="think-content">{{ thinkContent }}</div>
                         <div v-if="['3','4'].includes(state)" class="content">{{ content }}</div>
                     </div>
-                    <div v-else class="error-con flex-center">诊断失败，请稍后重试</div>
                 </div>
             </div>
         </div>
@@ -66,8 +65,7 @@ const thinkContent = ref<string>('');
 const content = ref<string>('');
 // 是否正在请求中
 const isRequesting = ref<boolean>(false);
-// 是否诊断失败
-const isFailed = ref(false)
+
 
 const handleCancel = () => {
     visible.value = false
@@ -76,7 +74,6 @@ const handleCancel = () => {
     requirement.value = '';
     state.value = '1'
     isRequesting.value = false
-    isFailed.value = false
 }
 
 // 根据错误码显示提示信息
@@ -118,7 +115,7 @@ const open = (resumeId: string) => {
             } else if (data.includes('event:error')) {
                 const str: string = extractDataContent(data, 'event:error');
                 showErrorMessage(JSON.parse(str).status);
-                isFailed.value = true
+                handleCancel()
             } else {
                 state.value = '3'
                 const str: string = extractDataContent(data, 'event:content')
@@ -133,7 +130,7 @@ const open = (resumeId: string) => {
             AiErrorHandler.handleError(error.status);
             visible.value = false
             hideLoading();
-            isFailed.value = true
+            handleCancel()
         },
         () => {
             state.value = '4'

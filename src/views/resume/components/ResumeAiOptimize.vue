@@ -99,11 +99,13 @@ const handleCancel = () => {
         return;
     }
 
-    emit('update:modelValue', false);
     thinkContent.value = '';
     content.value = '';
     requirement.value = '';
     state.value = '1';
+
+    console.log('走了？？？');
+    emit('update:modelValue', false);
 };
 
 // 开始ai 生成
@@ -138,7 +140,7 @@ const handleSubmit = () => {
             } else if (data.includes('event:error')) {
                 const str: string = extractDataContent(data, 'event:error');
                 AiErrorHandler.handleError(JSON.parse(str).status);
-                emit('update:modelValue', false);
+                isWorking.value = false;
                 handleCancel();
                 hideLoading();
             } else {
@@ -157,7 +159,9 @@ const handleSubmit = () => {
             handleCancel();
         },
         () => {
-            state.value = '4';
+            if (state.value === '3') {
+                state.value = '4';
+            }
             isWorking.value = false;
         }
     );
