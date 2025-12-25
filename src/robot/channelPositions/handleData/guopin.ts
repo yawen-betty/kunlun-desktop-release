@@ -31,10 +31,9 @@ export function buildPositionData(data: any): any {
         position.areaName = data.data.district_list[0]?.area_cn
     }
 
-    if (data.data.district_list[0]?.address) {
-        const address = (data.data.district_list[0]?.area_cn || '') + data.data.district_list[0]?.address;
+    if (data.data.district_list[0]?.area_cn) {
+        const address = (data.data.district_list[0]?.area_cn || '') + (data.data.district_list[0]?.address || '') + (data.data.district_list[0]?.house_number || '');
         position.addresses = address ? [address] : [];
-
     }
 
     return position;
