@@ -31,6 +31,8 @@ const handleSelectRecord = (id: string) => {
 
 const handlePageChange = async (page: number) => {
     pagination.current = page
+    const listEl = document.querySelector('.record-list')
+    if (listEl) listEl.scrollTop = 0
     await loadRecords()
 }
 

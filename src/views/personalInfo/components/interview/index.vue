@@ -30,6 +30,8 @@ const handleSelectRecord = (id: string) => {
 
 const handlePageChange = async (page: number) => {
     pagination.current = page
+    const listEl = document.querySelector('.record-list')
+    if (listEl) listEl.scrollTop = 0
     await loadRecords()
 }
 
@@ -44,12 +46,12 @@ const loadRecords = async () => {
         const params = new GetInterviewRecordsInDto()
         params.pageInfo.pageNum = pagination.current
         params.pageInfo.pageSize = pagination.pageSize
-        
+
         const result = await interviewService.getInterviewRecords(params)
         if (result.code === 200 && result.data) {
             recordList.value = result.data.list
             pagination.total = result.data.total
-            
+
             if (recordList.value.length > 0 && !selectedId.value) {
                 selectedId.value = recordList.value[0].uuid
             }
@@ -123,7 +125,7 @@ onMounted(async () => {
                     <div class="item-content">
                         <div class="item-title">
                             <span class="time">{{ formatTime(item.startTime) }}</span>-AI面试
-                            <span class="status-tag" :style="{ color: getStatusColor(item.interviewStatus) }">
+                            <span :style="{ color: getStatusColor(item.interviewStatus) }" class="status-tag">
                                 {{ getStatusText(item.interviewStatus) }}
                             </span>
                         </div>
