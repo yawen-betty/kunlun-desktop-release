@@ -130,6 +130,11 @@ const handlePageSizeChange = async (pageSize: number) => {
     document.querySelector('.position-list')?.scrollTo(0, 0)
 }
 
+const handleFilterChange = async () => {
+    pagination.current = 1
+    await loadPositions()
+}
+
 const channels = ref([
     {
         name: 'BOSS直聘',
@@ -518,15 +523,15 @@ onBeforeUnmount(() => {
                 </div>
                 <div class="title-right">
                     <Checkbox v-model="searchData.isInterested" :false-value="null" :true-value="1"
-                              class="filter-checkbox" @on-change="loadPositions">
+                              class="filter-checkbox" @on-change="handleFilterChange">
                         只看感兴趣
                     </Checkbox>
                     <Select v-model="searchData.sourceChannel" class="filter-select" placeholder="全部渠道"
-                            placement="bottom-end" @on-change="loadPositions">
+                            placement="bottom-end" @on-change="handleFilterChange">
                         <Option v-for="item in allList" :key="item.value" :label="item.key" :value="item.value"/>
                     </Select>
                     <Select v-model="searchData.sortBy" class="filter-select" placeholder="按推荐时间排序"
-                            placement="bottom-end" @on-change="loadPositions">
+                            placement="bottom-end" @on-change="handleFilterChange">
                         <Option v-for="item in sortList" :key="item.value" :label="item.label" :value="item.value"/>
                     </Select>
                 </div>
