@@ -30,8 +30,7 @@ interface HttpResponse {
     body: any;
 }
 
-export interface EmptyOutDto {
-}
+export interface EmptyOutDto {}
 
 export default class HttpClient {
     static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
@@ -146,7 +145,7 @@ export default class HttpClient {
                     break;
                 // 简历ID不存在
                 case 2306:
-                    emitter.emit('resumeHasBeenDeleted')
+                    emitter.emit('resumeHasBeenDeleted');
                     break;
                 // ai账号没有配置
                 case 2603:
@@ -399,35 +398,35 @@ export default class HttpClient {
         });
 
         // 发起 SSE 请求
-        try {
-            const params: any = {
-                url: fullUrl,
-                headers,
-                eventId
-            };
+        // try {
+        const params: any = {
+            url: fullUrl,
+            headers,
+            eventId
+        };
 
-            // 判断是文件上传还是 JSON
-            if (options?.file) {
-                const buffer = await options.file.arrayBuffer();
-                const fileBytes = Array.from(new Uint8Array(buffer));
-                params.fieldName = 'file';
-                params.fileName = options.file.name;
-                params.fileBytes = fileBytes;
-                params.extraFields = options.extraFields;
-                delete params.headers['Content-Type'];
-            } else {
-                params.body = data;
-            }
-
-            await invoke('sse_request', params);
-        } catch (error) {
-            console.error('SSE 请求失败:', error);
-            unlistenMessage();
-            unlistenError();
-            unlistenComplete();
-            if (onError) {
-                onError(error);
-            }
+        // 判断是文件上传还是 JSON
+        if (options?.file) {
+            const buffer = await options.file.arrayBuffer();
+            const fileBytes = Array.from(new Uint8Array(buffer));
+            params.fieldName = 'file';
+            params.fileName = options.file.name;
+            params.fileBytes = fileBytes;
+            params.extraFields = options.extraFields;
+            delete params.headers['Content-Type'];
+        } else {
+            params.body = data;
         }
+
+        await invoke('sse_request', params);
+        // } catch (error) {
+        //     console.error('SSE 请求失败:', error);
+        // unlistenMessage();
+        // unlistenError();
+        // unlistenComplete();
+        // if (onError) {
+        //     onError(error);
+        // }
+        // }
     }
 }
