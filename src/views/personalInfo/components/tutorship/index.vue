@@ -29,6 +29,10 @@ const handleSelectRecord = (id: string) => {
     selectedId.value = id
 }
 
+const handleScroll = () => {
+    document.body.click()
+}
+
 const handlePageChange = async (page: number) => {
     pagination.current = page
     const listEl = document.querySelector('.record-list')
@@ -130,7 +134,7 @@ const handleDownload = async (id: string) => {
 <template>
     <div class="tutorship-page">
         <div class="page-left">
-            <div v-if="recordList.length > 0" class="record-list">
+            <div v-if="recordList.length > 0" class="record-list" @scroll="handleScroll">
                 <div
                     v-for="item in recordList"
                     :key="item.uuid"
@@ -144,7 +148,7 @@ const handleDownload = async (id: string) => {
                         </div>
                         <div class="item-subtitle">{{ item.resumeName }}</div>
                     </div>
-                    <Poptip class="custom-poptip" placement="bottom-end">
+                    <Poptip class="custom-poptip" placement="bottom-end" transfer>
                         <div class="more-icon">
                             <SvgIcon color="#9499A4" name="icon-gengduo" size="18"/>
                         </div>
