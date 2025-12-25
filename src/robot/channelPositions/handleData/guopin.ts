@@ -18,7 +18,7 @@ export function buildPositionData(data: any): any {
 
     Object.assign(position, {
         title: data.data.job_name,
-        salary: data.data.min_wage === 0 ? '面议' : parseSalary(data.data.min_wage, data.data.wage_unit_cn) + '-' + parseSalary(data.data.max_wage, data.data.wage_unit_cn),
+        salary: data.data.min_wage === 0 ? '面议' : parseSalary(data.data.min_wage, data.data.wage_unit_cn) + '-' + parseSalary(data.data.max_wage, data.data.wage_unit_cn) + 'K',
         salaryNumber: data.data.min_wage === 0 ? '' : data.data.months ? data.data.months + '薪' : '',
         description: data.data.contents,
         educational: data.data.education_cn,
