@@ -139,6 +139,7 @@ const handleSubmit = () => {
                 const str: string = extractDataContent(data, 'event:error');
                 AiErrorHandler.handleError(JSON.parse(str).status);
                 emit('update:modelValue', false);
+                handleCancel();
                 hideLoading();
             } else {
                 state.value = '3';

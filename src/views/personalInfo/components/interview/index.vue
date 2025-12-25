@@ -28,8 +28,14 @@ const handleSelectRecord = (id: string) => {
     selectedId.value = id
 }
 
+const handleScroll = () => {
+    document.body.click()
+}
+
 const handlePageChange = async (page: number) => {
     pagination.current = page
+    const listEl = document.querySelector('.record-list')
+    if (listEl) listEl.scrollTop = 0
     await loadRecords()
 }
 
@@ -44,12 +50,12 @@ const loadRecords = async () => {
         const params = new GetInterviewRecordsInDto()
         params.pageInfo.pageNum = pagination.current
         params.pageInfo.pageSize = pagination.pageSize
-        
+
         const result = await interviewService.getInterviewRecords(params)
         if (result.code === 200 && result.data) {
             recordList.value = result.data.list
             pagination.total = result.data.total
-            
+
             if (recordList.value.length > 0 && !selectedId.value) {
                 selectedId.value = recordList.value[0].uuid
             }
@@ -105,7 +111,7 @@ onMounted(async () => {
 <template>
     <div class="interview-page">
         <div class="page-left">
-            <div v-if="recordList.length > 0" class="record-list">
+            <div v-if="recordList.length > 0" class="record-list" @scroll="handleScroll">
                 <div
                     v-for="item in recordList"
                     :key="item.uuid"
@@ -123,13 +129,13 @@ onMounted(async () => {
                     <div class="item-content">
                         <div class="item-title">
                             <span class="time">{{ formatTime(item.startTime) }}</span>-AI面试
-                            <span class="status-tag" :style="{ color: getStatusColor(item.interviewStatus) }">
+                            <span :style="{ color: getStatusColor(item.interviewStatus) }" class="status-tag">
                                 {{ getStatusText(item.interviewStatus) }}
                             </span>
                         </div>
                         <div class="item-subtitle">{{ item.resumeName }}</div>
                     </div>
-                    <Poptip class="custom-poptip" placement="bottom-end">
+                    <Poptip class="custom-poptip" placement="bottom-end" transfer>
                         <div class="more-icon">
                             <SvgIcon color="#9499A4" name="icon-gengduo" size="18"/>
                         </div>

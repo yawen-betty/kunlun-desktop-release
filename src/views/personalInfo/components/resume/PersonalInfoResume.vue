@@ -97,6 +97,12 @@
             </div>
         </div>
     </Modal>
+
+    <!-- 下载弹窗 -->
+    <DownloadModal
+        v-model="showDownloadModal"
+        :resume-data="resumeData"
+    />
 </template>
 
 <script lang="ts" setup>
@@ -114,6 +120,7 @@ import {message} from '@/utiles/Message.ts';
 import {download} from '@/utiles/download.ts';
 import {UserInfo} from '@/utiles/userInfo.ts';
 import emitter from "@/utiles/eventBus.ts";
+import DownloadModal from "@/views/resume/components/DownloadModal.vue";
 
 interface SelectItem {
     name: string;
@@ -123,6 +130,8 @@ interface SelectItem {
 
 const resumeService = new ResumeService();
 const router = useRouter();
+const showDownloadModal = ref<boolean>(false)
+const resumeData = ref<any>({modules: []});
 
 // 预览弹窗状态
 const previewVisible = ref<boolean>(false);
@@ -206,9 +215,8 @@ const handleDeleteResume = () => {
 
 // 下載
 const downLoadResume = (resume: MyResumeBean) => {
-    const index = resumeList.value.findIndex((info) => info.uuid === resume.uuid);
-
-    download(`.resume-content-index_${index} .resume-content-wrapper`, 'pdf', resume.name!);
+    resumeData.value = resume
+    showDownloadModal.value = true
 };
 
 // 复制
