@@ -103,7 +103,7 @@
 <script lang="ts" setup>
 // 聊天组件逻辑待实现
 import {Input, Message, Modal} from 'view-ui-plus';
-import {onActivated, onBeforeUnmount, onDeactivated, onMounted, ref} from 'vue';
+import {onActivated, onBeforeUnmount, onMounted, ref} from 'vue';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import {QueryConversationInDto} from '@/api/ai/dto/QueryConversation.ts';
 import {AiService} from '@/service/AiService.ts';
@@ -315,8 +315,6 @@ const generateTemplate = (msg: string, content: string) => {
         params,
         (data) => {
             const lastData = chatList.value[chatList.value.length - 1];
-            console.log(data);
-
             if (data.includes('event:thinking')) {
                 const str: string = extractDataContent(data, 'event:thinking');
                 lastData.thinking += str;
@@ -402,8 +400,12 @@ const parseAttachment = (msg: string) => {
             smartScrollToBottom();
         },
         (error) => {
+            chatList.value[chatList.value.length - 1].thinkingStatus = '1';
             showErrorMessage(error.status);
             emits('sendTemplate', '', 'attachmentStream');
+            isWorking.value = false;
+            setThinkState();
+            diagnoseResume();
         },
         () => {
             isWorking.value = false;
@@ -449,7 +451,6 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
         (data) => {
             let lastData = chatList.value[chatList.value.length - 1];
 
-            console.log(data);
             if (data.includes('event:thinking')) {
                 const str: string = extractDataContent(data, 'event:thinking');
                 chatList.value[chatList.value.length - 1].thinking += str;
@@ -845,6 +846,7 @@ defineExpose({
                     font-weight: 400;
                     line-height: vw(12);
                     display: flex;
+                    align-items: center;
 
                     &.think-reload {
                         color: #df6f6b;

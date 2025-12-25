@@ -380,13 +380,13 @@ const updateCache = (trick: string) => {
     }
 }
 
-
 /**
  * 结束AI撰写，
  */
 const changeMode = () => {
     currentMode.value = 'manual';
 }
+
 /**
  * ai次数用完，切换成人工模式，打开弹窗
  */
@@ -394,6 +394,7 @@ const over = (isOpenModal: boolean = true) => {
     currentMode.value = 'manual';
     isOpenModal && (usageExhaustedModalVisible.value = true)
     isGenerating.value = false
+    isShowToggleBtn.value = true
 }
 
 /**

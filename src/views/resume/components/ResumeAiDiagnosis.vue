@@ -36,12 +36,9 @@
 </template>
 
 <script lang="ts" setup>
-import {nextTick, ref} from 'vue'
-import {Button, Input, Message, Modal} from "view-ui-plus";
+import {ref} from 'vue'
+import {Modal} from "view-ui-plus";
 import SvgIcon from "@/components/svgIcon/index.vue";
-import {aiOptimize, enumEcho} from "@/enums/enumDict.ts";
-import {message} from "@/utiles/Message.ts";
-import {PolishInDto} from "@/api/ai/dto/Polish.ts";
 import {extractDataContent} from "@/utiles/processing.ts";
 import {AiService} from "@/service/AiService.ts";
 import {scrollToBottom} from "@/utiles/domUtils.ts";
@@ -49,15 +46,6 @@ import {AiErrorHandler} from "@/utiles/aiErrorHandler.ts";
 import {AiMessageBean} from "@/api/ai/dto/bean/AiMessageBean.ts";
 import {DiagnoseInDto} from "@/api/ai/dto/Diagnose.ts";
 import {hideLoading, showLoading} from "@/utiles/loading.ts";
-
-interface Props {
-    visible: boolean; //弹窗状态
-    resumeId: string; // 简历id
-    text: string; //需要优化的原文
-    fieldName: string, // 需要优化的字段名'']
-    maxLength: number, // 最大优化长度'']
-    mode: string, //  优化模式（1-润色 2-扩展 3-简化 4-总结）'']
-}
 
 interface Emits {
     (e: 'submit', value: string): void
