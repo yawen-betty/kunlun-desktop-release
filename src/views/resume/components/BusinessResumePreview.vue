@@ -282,7 +282,7 @@ const getTextModuleFieldName = (module: ResumeModuleBean): string => {
 }
 
 .name {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-weight: 600;
     font-size: vw(21.76);
     line-height: vh(21.76);
@@ -318,7 +318,7 @@ const getTextModuleFieldName = (module: ResumeModuleBean): string => {
 }
 
 .job-position {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-weight: 600;
     font-size: vw(14.96);
     line-height: vh(14.96);
@@ -357,7 +357,7 @@ const getTextModuleFieldName = (module: ResumeModuleBean): string => {
 }
 
 .module-title {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-weight: 600;
     font-size: vw(14.96);
     line-height: vh(14.96);
@@ -414,7 +414,7 @@ const getTextModuleFieldName = (module: ResumeModuleBean): string => {
 }
 
 .entry-title {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-weight: 600;
     font-size: vw(10.88);
     line-height: vh(11);
