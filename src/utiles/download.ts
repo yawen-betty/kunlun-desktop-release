@@ -52,7 +52,7 @@ export const download = async (el: string, ext: 'jpg' | 'pdf', name: string) => 
         await writable.write(blob);
         await writable.close();
 
-        message.success(Message, '下载成功');
+        message.success(Message, '已下载至本地！');
     } catch (error) {
         if ((error as any).name !== 'AbortError') {
             message.success(Message, '下载失败');
