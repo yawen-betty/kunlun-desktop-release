@@ -28,8 +28,14 @@ const handleSelectRecord = (id: string) => {
     selectedId.value = id
 }
 
+const handleScroll = () => {
+    document.body.click()
+}
+
 const handlePageChange = async (page: number) => {
     pagination.current = page
+    const listEl = document.querySelector('.record-list')
+    if (listEl) listEl.scrollTop = 0
     await loadRecords()
 }
 
@@ -44,12 +50,12 @@ const loadRecords = async () => {
         const params = new GetInterviewRecordsInDto()
         params.pageInfo.pageNum = pagination.current
         params.pageInfo.pageSize = pagination.pageSize
-        
+
         const result = await interviewService.getInterviewRecords(params)
         if (result.code === 200 && result.data) {
             recordList.value = result.data.list
             pagination.total = result.data.total
-            
+
             if (recordList.value.length > 0 && !selectedId.value) {
                 selectedId.value = recordList.value[0].uuid
             }
@@ -105,7 +111,7 @@ onMounted(async () => {
 <template>
     <div class="interview-page">
         <div class="page-left">
-            <div v-if="recordList.length > 0" class="record-list">
+            <div v-if="recordList.length > 0" class="record-list" @scroll="handleScroll">
                 <div
                     v-for="item in recordList"
                     :key="item.uuid"
@@ -123,13 +129,13 @@ onMounted(async () => {
                     <div class="item-content">
                         <div class="item-title">
                             <span class="time">{{ formatTime(item.startTime) }}</span>-AI面试
-                            <span class="status-tag" :style="{ color: getStatusColor(item.interviewStatus) }">
+                            <span :style="{ color: getStatusColor(item.interviewStatus) }" class="status-tag">
                                 {{ getStatusText(item.interviewStatus) }}
                             </span>
                         </div>
                         <div class="item-subtitle">{{ item.resumeName }}</div>
                     </div>
-                    <Poptip class="custom-poptip" placement="bottom-end">
+                    <Poptip class="custom-poptip" placement="bottom-end" transfer>
                         <div class="more-icon">
                             <SvgIcon color="#9499A4" name="icon-gengduo" size="18"/>
                         </div>
@@ -242,9 +248,17 @@ onMounted(async () => {
                 cursor: pointer;
                 flex-shrink: 0;
                 transition: box-shadow 0.2s;
+                position: relative;
 
-                &.is-active {
-                    box-shadow: 0 0 vw(10) 0 rgba(252, 135, 25, 0.2);
+                &.is-active::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: vw(4);
+                    height: 100%;
+                    background: $theme-color;
+                    border-radius: vw(2) 0 0 vw(2);
                 }
 
                 .score-section {

@@ -9,7 +9,7 @@
             </div>
 
             <!-- 关闭按钮 -->
-            <svg-icon name="icon-cha" size="20" color="#9499A4" @click="handleClose" class="cha pointer" />
+            <svg-icon class="cha pointer" color="#9499A4" name="icon-cha" size="20" @click="handleClose"/>
 
             <!-- PDF内容区域 -->
             <div class="modal-content mt-40">
@@ -17,16 +17,16 @@
                 <VuePdf
                     v-for="pageNum in numOfPages"
                     :key="`${agreementFileUrl}-${pageNum}`"
-                    class="agreement-iframe"
-                    :src="agreementFileUrl"
                     :page="pageNum"
+                    :src="agreementFileUrl"
+                    class="agreement-iframe"
                 />
             </div>
         </div>
     </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref, watch} from 'vue';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import {AdminService} from '@/service/AdminService.ts';
@@ -113,7 +113,7 @@ const handleClose = (): void => {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @use '@/assets/styles/variable.scss' as *;
 @use '@/assets/styles/compute.scss' as *;
 
@@ -177,6 +177,7 @@ const handleClose = (): void => {
     word-break: break-all;
     position: relative;
     overflow-y: auto; /* 允许垂直滚动 */
+    overflow-x: hidden;
     border-radius: vw(2);
 
     /* PDF页面样式 */
@@ -188,14 +189,5 @@ const handleClose = (): void => {
         display: block;
         margin-bottom: vw(10); /* 页面间距 */
     }
-
-    /* 隐藏Webkit滚动条 */
-    &::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* 隐藏Firefox滚动条 */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
 }
 </style>
