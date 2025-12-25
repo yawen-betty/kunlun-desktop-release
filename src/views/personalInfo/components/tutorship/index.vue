@@ -265,9 +265,17 @@ const handleDownload = async (id: string) => {
                 cursor: pointer;
                 flex-shrink: 0;
                 transition: box-shadow 0.2s;
+                position: relative;
 
-                &.is-active {
-                    box-shadow: 0 0 vw(10) 0 rgba(252, 135, 25, 0.2);
+                &.is-active::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: vw(4);
+                    height: 100%;
+                    background: $theme-color;
+                    border-radius: vw(2) 0 0 vw(2);
                 }
 
 
