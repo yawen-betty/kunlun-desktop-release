@@ -176,7 +176,7 @@ const handleDownload = () => {
 }
 
 .modal-title {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-weight: 600;
     font-size: vw(24);
     line-height: vh(24);
@@ -214,7 +214,7 @@ const handleDownload = () => {
 }
 
 .group-label {
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-weight: 600;
     font-size: vw(16);
     line-height: vh(16);
@@ -235,7 +235,7 @@ const handleDownload = () => {
     justify-content: center;
     background: $bg-gray;
     border-radius: vw(2);
-    font-family: 'PingFangSCBold', sans-serif;
+    font-family: sans-serif;
     font-weight: 600;
     font-size: vw(16);
     color: $font-dark;
@@ -258,7 +258,7 @@ const handleDownload = () => {
 
     :deep(.ivu-input) {
         height: 100%;
-        font-family: 'PingFangSCBold', sans-serif;
+        font-family: sans-serif;
         font-size: vw(16);
         color: $font-dark;
         border-radius: vw(2);
@@ -286,7 +286,7 @@ const handleDownload = () => {
         gap: vw(6);
 
         span {
-            font-family: 'PingFangSCBold', sans-serif;
+            font-family: sans-serif;
             font-weight: 600;
             font-size: vw(12);
             line-height: vh(12);
