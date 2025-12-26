@@ -50,7 +50,7 @@
             </div>
         </div>
 
-        <div class="version-info">{{ Config.buildVersion }} {{ Config.env !== 'prod' && Config.env }}</div>
+        <div class="version-info">{{ Config.buildVersion }} {{ Config.env !== 'prod' ? Config.env : '' }}</div>
     </div>
 
     <AgreementModal

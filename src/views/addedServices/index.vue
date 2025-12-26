@@ -70,7 +70,7 @@ const showModal = ref(false);
 
 .services-grid {
     display: flex;
-    gap: vw(25);
+    gap: vw(21);
     padding-left: vw(40);
     padding-right: vw(40);
     width: fit-content;
