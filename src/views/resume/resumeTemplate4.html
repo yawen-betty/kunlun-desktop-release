@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>简历模板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #fff;
+        }
+
+        .resume {
+            width: 100%;
+            margin: 0 auto;
+            background: url("data:image/png;base64,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ABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABAQUwAAATEFABDYqei9o6Ppvz/6enI0+72jme88aXJ00XcutrW1VW2d9/en35s12nrynwOALhJTHXB0GjUlgur4OTr9+zp4Tr5+MoCWiaE2GJ2GVf25fJrGWPnX1uNgqwPt0fcFGQAbsHV01NH/x+24Ooomk9PPM2E0OY2iOpiYXx1aj4Ps5M/l70fVbHydfAaAlJhagfIbLSk0nswG08zXfuWtMBtY50XXaEtwAXA1MbWk8msrcTSpTmJpMhNLfqX9sn0aWduncVV/LbYAKMTUJS4KJidL1OqTrNHoJLZGMx9CC2AYxFT1ZDSNJ5NHf/arIXE2tKaxNdp6NM8FQD8MKqbqWabDEkuT8nkimtiI2avDnZFrQ4Au621M1WsCxtNTp8lJQIkmWq4+vXKSBdAdvYgp4USf1SdYT4TWSGABtEUnY6r8Vy7BND69qhsLJwaojqud0ejR8LtDLID160RMTU7j6fD01MmME5zv5NRqND252nFFCLAWrYypcuJUTpsOxienTuIJllefXJW4KqGlrwCa1YqYEk+wPqPTmas6ssxfAWQ2ElPlP/LAtR20Rh1W17ZHZq8AFrSWmKqftisnTwdlt5N4glY7uRYcuRoEmMPKYqo+fXJ1B90nrgAu1mhMjSdOn2AIxBXAY1FMzV7f7R8HlNMnGKY6rHZO1zIADMnCMVV++mRwfDK9xhNQwKyt0zUM107Dyq4roO/miqk6oPbNPwELGp1eCV5zJQj01IUxVV/h7Y/HTqCAxkzDantkQzvQG0/FVD1EbgYKWLX61Or6tlkroLumMXU0PYGaVHtjAQVsxuys1Y7rQKBDtnb3Do7KPBRAm7gOBLpiR0gBbVQ/NVyUmLp2GleuA4G22akAWq48DLM3Hk8/zFkBbSOm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");
+            position: relative;
+            background-size: 100% 100%;
+            padding-bottom: 50px;
+        }
+
+        .accent-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 19px;
+            height: 473px;
+            background: #68a1bb;
+        }
+
+        .header {
+            position: relative;
+            height: 78px;
+            margin-left: 19px;
+        }
+
+        .header-bg {
+            position: absolute;
+            left: 0;
+            top: 38px;
+            width: 382px;
+            height: 40px;
+            background: #68a1bb;
+            border-radius: 0 20px 20px 0;
+            padding: 0 22px;
+            line-height: 40px;
+        }
+
+        .name {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+            float: left;
+        }
+
+        .job-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            float: right;
+        }
+
+        .avatar {
+            position: absolute;
+            right: 61px;
+            top: 30px;
+            width: 122px;
+            height: 122px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .avatar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            border: 1px solid transparent;
+        }
+
+        .avatar img {
+            width: 122px;
+            height: 122px;
+            border-radius: 50%;
+        }
+
+        .info-section {
+            margin-top: 13px;
+            padding: 0 46px;
+            overflow: hidden;
+        }
+
+        .info-item {
+            margin-bottom: 7px;
+            font-size: 12px;
+            color: #888484;
+            overflow: hidden;
+            line-height: 15px;
+            width: 41%;
+            float: left;
+            white-space: nowrap;
+        }
+
+        .info-item:nth-child(odd) {
+            margin-right: 4%;
+        }
+
+        .info-icon {
+            width: 16px;
+            height: 16px;
+            background: #68a1bb;
+            border-radius: 3px;
+            margin-right: 7px;
+            float: left;
+            text-align: center;
+            padding: 2px;
+        }
+
+        .info-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .section {
+            margin: 25px 42px 0;
+            overflow: hidden;
+        }
+
+        .section-title {
+            background: #68a1bb;
+            border-radius: 21px;
+            padding: 3px 20px 3px 15px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 10px;
+            line-height: 21px;
+        }
+
+        .section-icon {
+            display: block;
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
+            float: left;
+            margin-top: 3px;
+        }
+
+        .section-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .entry-header {
+            font-size: 14px;
+            color: #515051;
+            font-weight: 500;
+            margin-bottom: 5px;
+            position: relative;
+            height: 20px;
+            text-align: center;
+        }
+
+        .entry-header .time {
+            position: absolute;
+            left: 0;
+        }
+
+        .entry-header .company {
+        }
+
+        .entry-header .position {
+            position: absolute;
+            right: 0;
+        }
+
+        .entry-content {
+            font-size: 12px;
+            color: #57585a;
+            line-height: 1.8;
+        }
+
+        .entry-content p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="resume">
+    <div class="accent-bar"></div>
+
+    <div class="header">
+        <div class="header-bg">
+            <div class="name">大西瓜</div>
+            <div class="job-title">求职意向：行政人事专员</div>
+        </div>
+        <div class="avatar">
+            <img alt="头像"
+                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='122' height='122'%3E%3Crect fill='%23ddd' width='122' height='122'/%3E%3C/svg%3E">
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M2.62346 5.32452L0.821289 7.1267M2.72386 7.02654L0.921676 5.22434M5.44312 2.53739C4.66899 1.76325 3.41385 1.76325 2.63972 2.53739C2.25265 2.92446 2.05912 3.43177 2.05912 3.93908C2.05912 4.4464 2.25265 4.95371 2.63972 5.34078C3.41385 6.11491 4.66899 6.11491 5.44312 5.34078C6.21725 4.56665 6.21725 3.31153 5.44312 2.53739Z"
+      stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.566371"/>
+<path d="M7.17961 2.14762L7.17961 0.873291L5.90527 0.873291" stroke="white" stroke-linecap="round"
+      stroke-linejoin="round" stroke-width="0.566371"/>
+<path d="M5.48633 2.56556L6.89539 1.15649" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.566371"/>
+</svg></span>性别：男
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M7.00033 1.33325H1.00033C0.816231 1.33325 0.666992 1.48249 0.666992 1.66659V6.99992C0.666992 7.18401 0.816231 7.33325 1.00033 7.33325H7.00033C7.18442 7.33325 7.33366 7.18401 7.33366 6.99992V1.66659C7.33366 1.48249 7.18442 1.33325 7.00033 1.33325Z"
+      stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M0.666992 3.33325H7.33366" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path d="M0.666992 5.33325H7.33366" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path d="M2.83398 0.666748V2.00008" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path d="M5.16602 0.666748V2.00008" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+</svg></span>出生日期：1999年12月12日
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M5.66634 0.666748H2.33301C2.05687 0.666748 1.83301 0.890606 1.83301 1.16675V6.83341C1.83301 7.10956 2.05687 7.33341 2.33301 7.33341H5.66634C5.94248 7.33341 6.16634 7.10956 6.16634 6.83341V1.16675C6.16634 0.890606 5.94248 0.666748 5.66634 0.666748Z"
+      stroke="white" stroke-width="0.666667"/>
+<path d="M3.66699 1.66675H4.33366" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path d="M3.33301 6.33325H4.66634" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+</svg></span>手机号码：13888997788
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M4.00003 0.666748L6.88678 5.66675H1.11328L4.00003 0.666748Z" stroke="white" stroke-linecap="round"
+      stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M4.00003 7.33325L6.88678 2.33325H1.11328L4.00003 7.33325Z" stroke="white" stroke-linecap="round"
+      stroke-linejoin="round" stroke-width="0.666667"/>
+</svg></span>星座：白羊座
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd"
+      d="M4 7.33341C5.38072 7.33341 6.5 6.21413 6.5 4.83341C6.5 2.50008 4 0.666748 4 0.666748C4 0.666748 1.5 2.50008 1.5 4.83341C1.5 6.21413 2.61928 7.33341 4 7.33341Z"
+      fill-rule="evenodd" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M1.5 4.83331C1.5 6.21402 2.61928 7.33331 4 7.33331C5.38072 7.33331 6.5 6.21402 6.5 4.83331C6.5 4.83331 5 5.33331 4 4.83331C3 4.33331 1.5 4.83331 1.5 4.83331Z"
+      stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+</svg></span>血型：AB型
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+  <path d="M7.33366 2.33341L5.66699 0.666748L5.04199 1.29175L4.41699 1.91675L3.16699 3.16675L1.91699 4.41675L1.29199 5.04175L0.666992 5.66675L2.33366 7.33341L7.33366 2.33341Z"
+        stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+  <path d="M5.04199 1.29175L1.29199 5.04175" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="0.5"/>
+  <path d="M1.5 4.83325L2.16667 5.49992" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="0.5"/>
+  <path d="M2.33301 4L3.33301 5" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+  <path d="M3.16699 3.16675L3.83366 3.83341" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="0.5"/>
+  <path d="M4 2.33325L5 3.33325" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+  <path d="M4.83301 1.5L5.49967 2.16667" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="0.5"/>
+</svg></span>身高：188cm
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+  <path d="M6.83366 0.666748H1.16699C0.890851 0.666748 0.666992 0.890606 0.666992 1.16675V6.83341C0.666992 7.10956 0.890851 7.33341 1.16699 7.33341H6.83366C7.10981 7.33341 7.33366 7.10956 7.33366 6.83341V1.16675C7.33366 0.890606 7.10981 0.666748 6.83366 0.666748Z"
+        stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+  <path d="M2 3.17554C2.55415 2.50887 3.22082 2.17554 4 2.17554C4.77918 2.17554 5.44585 2.50887 6 3.17554"
+        stroke="white" stroke-linecap="round" stroke-width="0.666667"/>
+  <path d="M4 5.16675C4.27615 5.16675 4.5 4.9429 4.5 4.66675C4.5 4.3906 4.27615 4.16675 4 4.16675C3.72385 4.16675 3.5 4.3906 3.5 4.66675C3.5 4.9429 3.72385 5.16675 4 5.16675Z"
+        fill="white"/>
+  <path d="M3.16699 3.5L4.00171 4.66667" stroke="white" stroke-linecap="round" stroke-width="0.666667"/>
+</svg></span>体重：88kg
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+  <path d="M6.50033 1.16675H1.50033C1.04009 1.16675 0.666992 1.53984 0.666992 2.00008V6.00008C0.666992 6.46031 1.04009 6.83341 1.50033 6.83341H6.50033C6.96056 6.83341 7.33366 6.46031 7.33366 6.00008V2.00008C7.33366 1.53984 6.96056 1.16675 6.50033 1.16675Z"
+        stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+  <path d="M3 2.5L4 3.5L5 2.5" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+  <path d="M2.83301 3.83325H5.16634" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="0.666667"/>
+  <path d="M2.83301 4.83325H5.16634" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="0.666667"/>
+  <path d="M4 3.83325V5.66659" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+</svg></span>目前薪资：22k*14薪
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M2.33301 2.33325C2.33301 1.78097 2.78072 1.33325 3.33301 1.33325H4.83301C5.38529 1.33325 5.83301 1.78097 5.83301 2.33325V2.66659H2.33301V2.33325Z"
+      stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M0.666992 4.16675L3.91948 4.97986C3.97256 4.99315 4.02809 4.99315 4.08118 4.97986L7.33366 4.16675V6.33341C7.33366 6.51751 7.18443 6.66675 7.00033 6.66675H1.00033C0.816231 6.66675 0.666992 6.51751 0.666992 6.33341V4.16675Z"
+      stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+</svg></span>工作经验：10年
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M7.00033 1.33325H1.00033C0.816231 1.33325 0.666992 1.48249 0.666992 1.66659V6.33325C0.666992 6.51735 0.816231 6.66659 1.00033 6.66659H7.00033C7.18442 6.66659 7.33366 6.51735 7.33366 6.33325V1.66659C7.33366 1.48249 7.18442 1.33325 7.00033 1.33325Z"
+      stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M2.83366 4.16659C3.20184 4.16659 3.50033 3.8681 3.50033 3.49992C3.50033 3.13174 3.20184 2.83325 2.83366 2.83325C2.46548 2.83325 2.16699 3.13174 2.16699 3.49992C2.16699 3.8681 2.46548 4.16659 2.83366 4.16659Z"
+      stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M3.83301 5.16675C3.83301 4.61446 3.38529 4.16675 2.83301 4.16675C2.28072 4.16675 1.83301 4.61446 1.83301 5.16675"
+      stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M4.66699 3.33325H6.00033" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path d="M5 4.66675H6" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+</svg></span>个人邮箱：37214226655667566@qq.com
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M0.666992 7H7.33366" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M2.99967 3.66675H1.66634C1.48225 3.66675 1.33301 3.81599 1.33301 4.00008V6.66675C1.33301 6.85084 1.48225 7.00008 1.66634 7.00008H2.99967C3.18377 7.00008 3.33301 6.85084 3.33301 6.66675V4.00008C3.33301 3.81599 3.18377 3.66675 2.99967 3.66675Z"
+      stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M6.33301 0.666748H3.66634C3.48225 0.666748 3.33301 0.815986 3.33301 1.00008V6.66675C3.33301 6.85084 3.48225 7.00008 3.66634 7.00008H6.33301C6.5171 7.00008 6.66634 6.85084 6.66634 6.66675V1.00008C6.66634 0.815986 6.5171 0.666748 6.33301 0.666748Z"
+      stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M4.66699 5.33472H5.33366" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path d="M2 5.33472H2.66667" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M4.66699 3.83472H5.33366" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path d="M4.66699 2.33472H5.33366" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+</svg></span>居住城市：北京
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M3.49967 2.16675L1.83301 3.33341V7.33341" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path clip-rule="evenodd" d="M3.5 0.666748L5.16667 1.83341V4.00008L6.33333 4.83341V7.33341H3.5V0.666748Z"
+      fill-rule="evenodd" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M0.666992 7.33325H7.33366" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+</svg></span>期望城市：北京
+        </div>
+        <div class="info-item">
+            <span class="info-icon">
+                <svg fill="none" height="8" viewBox="0 0 8 8" width="8" xmlns="http://www.w3.org/2000/svg">
+  <path d="M4.91932 2.9166C5.8398 4.5109 5.7459 6.28837 4.7096 6.88669C3.6733 7.48499 2.08702 6.67757 1.16655 5.08327C0.24607 3.48895 0.339967 1.71149 1.37627 1.11319C2.41257 0.514881 3.99885 1.3223 4.91932 2.9166Z"
+        stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+  <path d="M3.04252 2.9166C2.12205 4.5109 2.21594 6.28837 3.25224 6.88669C4.28854 7.48499 5.87482 6.67757 6.7953 5.08327C7.71577 3.48895 7.62187 1.71149 6.58557 1.11319C5.54927 0.514881 3.96299 1.3223 3.04252 2.9166Z"
+        stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+  <path d="M3.95898 1.72388C4.31648 2.04183 4.64718 2.44471 4.91958 2.91651C5.84007 4.51081 5.74617 6.28828 4.70987 6.88659C4.4935 7.01151 4.25317 7.07514 3.99993 7.08314"
+        stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+</svg>
+            </span>婚姻状况：已婚
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+  <path clip-rule="evenodd" d="M4.00033 1.33325L7.33366 3.49992V7.33325H0.666992V3.49992L4.00033 1.33325Z"
+        fill-rule="evenodd" stroke="white"
+        stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+  <path d="M3.33333 7.33325V3.83325L2 4.66659V7.33325" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="0.666667"/>
+  <path d="M4.66699 7.33325V3.83325L6.00033 4.66659V7.33325" stroke="white" stroke-linecap="round"
+        stroke-linejoin="round" stroke-width="0.666667"/>
+  <path d="M6.83301 7.33325H1.33301" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="0.666667"/>
+</svg></span>籍贯：北京
+        </div>
+        <div class="info-item">
+                <span class="info-icon">
+                    <svg fill="none" height="8" viewBox="0 0 8 8" width="8" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7.00033 1.33325H1.00033C0.816231 1.33325 0.666992 1.48249 0.666992 1.66659V6.33325C0.666992 6.51735 0.816231 6.66659 1.00033 6.66659H7.00033C7.18442 6.66659 7.33366 6.51735 7.33366 6.33325V1.66659C7.33366 1.48249 7.18442 1.33325 7.00033 1.33325Z"
+                            stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+                      <path d="M2.83366 4.16659C3.20184 4.16659 3.50033 3.8681 3.50033 3.49992C3.50033 3.13174 3.20184 2.83325 2.83366 2.83325C2.46548 2.83325 2.16699 3.13174 2.16699 3.49992C2.16699 3.8681 2.46548 4.16659 2.83366 4.16659Z"
+                            stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+                      <path d="M3.83301 5.16675C3.83301 4.61446 3.38529 4.16675 2.83301 4.16675C2.28072 4.16675 1.83301 4.61446 1.83301 5.16675"
+                            stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+                      <path d="M4.66699 3.33325H6.00033" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="0.666667"/>
+                      <path d="M5 4.66675H6" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="0.666667"/>
+                    </svg>
+                </span>
+            政治面貌：党员
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+  <path d="M4.00033 7.33341C5.84128 7.33341 7.33366 5.84103 7.33366 4.00008C7.33366 2.15913 5.84128 0.666748 4.00033 0.666748C2.15938 0.666748 0.666992 2.15913 0.666992 4.00008C0.666992 5.84103 2.15938 7.33341 4.00033 7.33341Z"
+        stroke="white" stroke-width="0.666667"/>
+  <path d="M0.666992 3.4734C1.16947 3.23613 1.5411 3.20308 1.78189 3.37423C2.14309 3.63098 2.18838 4.67733 3.00991 4.17725C3.83144 3.67717 2.65811 3.4734 2.91283 2.74898C3.16754 2.02457 4.00171 2.58728 4.08464 1.79378C4.13991 1.26477 3.50713 1.06236 2.18626 1.18654"
+        stroke="white" stroke-width="0.666667"/>
+  <path d="M5.99989 1.33325C5.04749 2.16469 4.71486 2.66677 5.00199 2.83947C5.43268 3.09854 5.61543 2.7338 6.14099 2.83947C6.66656 2.94515 6.55276 3.65754 6.27633 3.65754C5.99989 3.65754 4.56821 3.47522 4.64033 4.31075C4.71243 5.14627 5.57358 5.26997 5.57358 5.73677C5.57358 6.04797 5.38304 6.52425 5.00199 7.16562"
+        stroke="white" stroke-linecap="round" stroke-width="0.666667"/>
+  <path d="M1.01758 5.48757C1.16949 5.42131 1.28369 5.37274 1.36016 5.34184C2.00135 5.08281 2.47711 5.02174 2.78743 5.15867C3.33618 5.40082 3.12521 5.88986 3.2971 6.07002C3.46896 6.25019 3.89816 6.19777 3.89816 6.54051C3.89816 6.76901 3.82141 7.02712 3.66791 7.31486"
+        stroke="white" stroke-linecap="round" stroke-width="0.666667"/>
+</svg></span>国籍：波斯尼亚黑塞哥维那共和国
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M7.33366 6.50008H0.666992V1.50008H3.16699L4.00033 0.666748L4.83366 1.50008H7.33366V6.50008Z" stroke="white"
+      stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M4.00033 4.16667C4.46056 4.16667 4.83366 3.79357 4.83366 3.33333C4.83366 2.8731 4.46056 2.5 4.00033 2.5C3.54009 2.5 3.16699 2.8731 3.16699 3.33333C3.16699 3.79357 3.54009 4.16667 4.00033 4.16667Z"
+      stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+</svg></span>民族：乌孜别克族和柯尔的克孜族
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M4.00033 6C5.84128 6 7.33366 4 7.33366 4C7.33366 4 5.84128 2 4.00033 2C2.15938 2 0.666992 4 0.666992 4C0.666992 4 2.15938 6 4.00033 6Z"
+      stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M4.00033 4.83341C4.46056 4.83341 4.83366 4.46031 4.83366 4.00008C4.83366 3.53985 4.46056 3.16675 4.00033 3.16675C3.54009 3.16675 3.16699 3.53985 3.16699 4.00008C3.16699 4.46031 3.54009 4.83341 4.00033 4.83341Z"
+      stroke="white" stroke-linejoin="round" stroke-width="0.666667"/>
+</svg></span>视力情况：左眼4.8，右眼5.0
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M6.76317 1.22477C7.3906 1.8522 6.65943 3.60067 5.13005 5.13005C3.60067 6.65943 1.85222 7.3906 1.22477 6.76317C0.597331 6.13572 1.3285 4.38727 2.85788 2.85788C4.38727 1.3285 6.13572 0.597331 6.76317 1.22477Z"
+      stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M1.24723 1.22477C0.619792 1.8522 1.35096 3.60067 2.88034 5.13005C4.40972 6.65943 6.15817 7.3906 6.78562 6.76317C7.41306 6.13572 6.68189 4.38727 5.15251 2.85788C3.62312 1.3285 1.87467 0.597331 1.24723 1.22477Z"
+      stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+</svg></span>所属行业：互联网
+        </div>
+        <div class="info-item"><span class="info-icon"><svg fill="none" height="8" viewBox="0 0 8 8" width="8"
+                                                            xmlns="http://www.w3.org/2000/svg">
+<path d="M5 5.99992L5.83333 5.16659L5.00007 4.33325" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path d="M6.33301 5.99992L7.16634 5.16659L6.33307 4.33325" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path d="M7.16634 3.66675V1.50008C7.16634 1.31599 7.01711 1.16675 6.83301 1.16675H1.16634C0.982246 1.16675 0.833008 1.31599 0.833008 1.50008V6.50008C0.833008 6.68418 0.982246 6.83341 1.16634 6.83341H4.74477"
+      stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M2.16699 2.5L3.00033 3.5L3.83366 2.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+      stroke-width="0.666667"/>
+<path d="M2 4.5H4" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M2 3.5H4" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+<path d="M3 3.5V5.5" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+</svg></span>期望薪资：60k*14薪
+        </div>
+        <div class="info-item">
+            <span class="info-icon">
+                <svg fill="none" height="8" viewBox="0 0 8 8" width="8" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0.969727 1.12109V2.33321H2.18185" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="0.666667"/>
+  <path d="M0.666992 4.00008C0.666992 5.84103 2.15938 7.33341 4.00033 7.33341C5.84128 7.33341 7.33366 5.84103 7.33366 4.00008C7.33366 2.15913 5.84128 0.666748 4.00033 0.666748C2.76666 0.666748 1.68951 1.33693 1.11312 2.3331"
+        stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.666667"/>
+  <path d="M4.00118 2L4.00098 4.00147L5.41421 5.4147" stroke="white" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="0.666667"/>
+</svg>
+            </span>到岗时间：一个月
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">
+                <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#clip0_2963_1426)">
+    <path d="M7.99126 9.49293C7.94809 9.51325 7.90097 9.52379 7.85326 9.52379C7.80555 9.52379 7.75843 9.51325 7.71526 9.49293L2.98926 7.25293V9.85993C2.98926 9.98393 3.05826 10.0969 3.16826 10.1519L7.70826 12.4379C7.75325 12.4605 7.80291 12.4723 7.85326 12.4723C7.90361 12.4723 7.95327 12.4605 7.99826 12.4379L12.5383 10.1519C12.5922 10.1247 12.6376 10.0829 12.6692 10.0313C12.7008 9.97976 12.7175 9.92042 12.7173 9.85993V7.25393L7.99126 9.49393"
+          fill="white"/>
+    <path d="M15.5 4.32299L7.97101 1.31499C7.89429 1.28433 7.80873 1.28433 7.73201 1.31499L0.206012 4.32299C0.145003 4.34691 0.0926201 4.38867 0.0556967 4.44281C0.0187733 4.49694 -0.000976563 4.56096 -0.000976562 4.62649C-0.000976563 4.69202 0.0187733 4.75603 0.0556967 4.81017C0.0926201 4.86431 0.145003 4.90606 0.206012 4.92999L2.98901 6.04199V6.53199L7.85301 8.83699L12.717 6.53199V6.04199L14.014 5.52399V13.443C14.014 13.623 14.159 13.769 14.338 13.769C14.518 13.769 14.662 13.623 14.662 13.443V5.27999L14.66 5.26599L15.5 4.92999C15.5606 4.90568 15.6126 4.86378 15.6491 4.80969C15.6857 4.7556 15.7053 4.69179 15.7053 4.62649C15.7053 4.56119 15.6857 4.49738 15.6491 4.44329C15.6126 4.38919 15.5606 4.3473 15.5 4.32299Z"
+          fill="white"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_2963_1426">
+      <rect fill="white" height="16" width="16"/>
+    </clipPath>
+  </defs>
+</svg>
+            </span>教育经历
+        </div>
+        <div class="entry">
+            <div class="entry-header">
+                <span class="time">2013.09-2017.06</span>
+                <span class="company">北京奋斗大学</span>
+                <span class="position">行政管理专业</span>
+            </div>
+            <div class="entry-content">
+                主修课程: 经济学、管理学、统计学、财务管理、经济法、市场营销学、营销策划案例分析、品牌创建与管理、商务谈判与沟通技巧、消费者行为学、公共关系管理等。
+                主修课程: 经济学、管理学、会计学、统计学、财务管理、经济法、市场营销学、营销策划案例分析、品牌创建与管理、商务谈判与沟通技巧、消费者行为学、公共关系管理等。
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">
+                <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+  <path d="M9.33301 2C9.86344 2 10.3721 2.21071 10.7472 2.58579C11.1223 2.96086 11.333 3.46957 11.333 4H13.333C13.5081 4 13.6815 4.03449 13.8433 4.10149C14.005 4.1685 14.152 4.26671 14.2758 4.39052C14.3996 4.51434 14.4978 4.66132 14.5648 4.82309C14.6319 4.98486 14.6663 5.15824 14.6663 5.33333V12.6667C14.6663 12.8418 14.6319 13.0151 14.5648 13.1769C14.4978 13.3387 14.3996 13.4857 14.2758 13.6095C14.152 13.7333 14.005 13.8315 13.8433 13.8985C13.6815 13.9655 13.5081 14 13.333 14H2.66634C2.49125 14 2.31786 13.9655 2.1561 13.8985C1.99433 13.8315 1.84734 13.7333 1.72353 13.6095C1.59972 13.4857 1.50151 13.3387 1.4345 13.1769C1.3675 13.0151 1.33301 12.8418 1.33301 12.6667V5.33333C1.33301 5.15824 1.3675 4.98486 1.4345 4.82309C1.50151 4.66132 1.59972 4.51434 1.72353 4.39052C1.84734 4.26671 1.99433 4.1685 2.1561 4.10149C2.31786 4.03449 2.49125 4 2.66634 4H4.66634C4.66634 3.46957 4.87705 2.96086 5.25213 2.58579C5.6272 2.21071 6.13591 2 6.66634 2H9.33301ZM7.33301 8H2.66634V12.6667H13.333V8H8.66634V8.66667C8.66615 8.83659 8.60109 9.00002 8.48444 9.12358C8.3678 9.24714 8.20837 9.32149 8.03874 9.33145C7.86912 9.34141 7.70209 9.28622 7.57179 9.17716C7.44148 9.0681 7.35774 8.9134 7.33767 8.74467L7.33301 8.66667V8ZM13.333 5.33333H2.66634V6.66667H13.333V5.33333ZM9.33301 3.33333H6.66634C6.50305 3.33335 6.34545 3.3933 6.22343 3.50181C6.1014 3.61032 6.02345 3.75983 6.00434 3.922L5.99967 4H9.99967C9.99965 3.83671 9.9397 3.67911 9.8312 3.55709C9.72269 3.43506 9.57318 3.3571 9.41101 3.338L9.33301 3.33333Z"
+        fill="white"/>
+</svg>
+            </span>实习经历
+        </div>
+        <div class="entry">
+            <div class="entry-header">
+                <span class="time">2013.09-2017.06</span>
+                <span class="company">北京奋斗公司</span>
+                <span class="position">java工程师</span>
+            </div>
+            <div class="entry-content">
+                <p>工作描述：</p>
+                <p>主修课程:
+                    经济学学、财务管理、经济法、市场营销学、营销策划案例分析、品牌创建与管理、商务谈判与沟通技巧、消费者行为学、公共关系管理等。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">
+                <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+  <path d="M9.33301 2C9.86344 2 10.3721 2.21071 10.7472 2.58579C11.1223 2.96086 11.333 3.46957 11.333 4H13.333C13.5081 4 13.6815 4.03449 13.8433 4.10149C14.005 4.1685 14.152 4.26671 14.2758 4.39052C14.3996 4.51434 14.4978 4.66132 14.5648 4.82309C14.6319 4.98486 14.6663 5.15824 14.6663 5.33333V12.6667C14.6663 12.8418 14.6319 13.0151 14.5648 13.1769C14.4978 13.3387 14.3996 13.4857 14.2758 13.6095C14.152 13.7333 14.005 13.8315 13.8433 13.8985C13.6815 13.9655 13.5081 14 13.333 14H2.66634C2.49125 14 2.31786 13.9655 2.1561 13.8985C1.99433 13.8315 1.84734 13.7333 1.72353 13.6095C1.59972 13.4857 1.50151 13.3387 1.4345 13.1769C1.3675 13.0151 1.33301 12.8418 1.33301 12.6667V5.33333C1.33301 5.15824 1.3675 4.98486 1.4345 4.82309C1.50151 4.66132 1.59972 4.51434 1.72353 4.39052C1.84734 4.26671 1.99433 4.1685 2.1561 4.10149C2.31786 4.03449 2.49125 4 2.66634 4H4.66634C4.66634 3.46957 4.87705 2.96086 5.25213 2.58579C5.6272 2.21071 6.13591 2 6.66634 2H9.33301ZM7.33301 8H2.66634V12.6667H13.333V8H8.66634V8.66667C8.66615 8.83659 8.60109 9.00002 8.48444 9.12358C8.3678 9.24714 8.20837 9.32149 8.03874 9.33145C7.86912 9.34141 7.70209 9.28622 7.57179 9.17716C7.44148 9.0681 7.35774 8.9134 7.33767 8.74467L7.33301 8.66667V8ZM13.333 5.33333H2.66634V6.66667H13.333V5.33333ZM9.33301 3.33333H6.66634C6.50305 3.33335 6.34545 3.3933 6.22343 3.50181C6.1014 3.61032 6.02345 3.75983 6.00434 3.922L5.99967 4H9.99967C9.99965 3.83671 9.9397 3.67911 9.8312 3.55709C9.72269 3.43506 9.57318 3.3571 9.41101 3.338L9.33301 3.33333Z"
+        fill="white"/>
+</svg>
+            </span>工作经历
+        </div>
+        <div class="entry">
+            <div class="entry-header">
+                <span class="time">2013.09-2017.06</span>
+                <span class="company">北京奋斗公司</span>
+                <span class="position">java工程师</span>
+            </div>
+            <div class="entry-content">
+                <p>工作描述：</p>
+                <p>主修课程:
+                    经济学、统计学、财务管理、经济法、市场营销学、营销策划案例分析、品牌创建与管理、商务谈判与沟通技巧、消费者行为学、公共关系管理等。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">
+                <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+  <path d="M9.33301 2C9.86344 2 10.3721 2.21071 10.7472 2.58579C11.1223 2.96086 11.333 3.46957 11.333 4H13.333C13.5081 4 13.6815 4.03449 13.8433 4.10149C14.005 4.1685 14.152 4.26671 14.2758 4.39052C14.3996 4.51434 14.4978 4.66132 14.5648 4.82309C14.6319 4.98486 14.6663 5.15824 14.6663 5.33333V12.6667C14.6663 12.8418 14.6319 13.0151 14.5648 13.1769C14.4978 13.3387 14.3996 13.4857 14.2758 13.6095C14.152 13.7333 14.005 13.8315 13.8433 13.8985C13.6815 13.9655 13.5081 14 13.333 14H2.66634C2.49125 14 2.31786 13.9655 2.1561 13.8985C1.99433 13.8315 1.84734 13.7333 1.72353 13.6095C1.59972 13.4857 1.50151 13.3387 1.4345 13.1769C1.3675 13.0151 1.33301 12.8418 1.33301 12.6667V5.33333C1.33301 5.15824 1.3675 4.98486 1.4345 4.82309C1.50151 4.66132 1.59972 4.51434 1.72353 4.39052C1.84734 4.26671 1.99433 4.1685 2.1561 4.10149C2.31786 4.03449 2.49125 4 2.66634 4H4.66634C4.66634 3.46957 4.87705 2.96086 5.25213 2.58579C5.6272 2.21071 6.13591 2 6.66634 2H9.33301ZM7.33301 8H2.66634V12.6667H13.333V8H8.66634V8.66667C8.66615 8.83659 8.60109 9.00002 8.48444 9.12358C8.3678 9.24714 8.20837 9.32149 8.03874 9.33145C7.86912 9.34141 7.70209 9.28622 7.57179 9.17716C7.44148 9.0681 7.35774 8.9134 7.33767 8.74467L7.33301 8.66667V8ZM13.333 5.33333H2.66634V6.66667H13.333V5.33333ZM9.33301 3.33333H6.66634C6.50305 3.33335 6.34545 3.3933 6.22343 3.50181C6.1014 3.61032 6.02345 3.75983 6.00434 3.922L5.99967 4H9.99967C9.99965 3.83671 9.9397 3.67911 9.8312 3.55709C9.72269 3.43506 9.57318 3.3571 9.41101 3.338L9.33301 3.33333Z"
+        fill="white"/>
+</svg>
+            </span>项目经历
+        </div>
+        <div class="entry">
+            <div class="entry-header">
+                <span class="time">2013.09-2017.06</span>
+                <span class="company">奋斗科技项目</span>
+            </div>
+            <div class="entry-content">
+                占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">
+                <svg fill="none" height="16" viewBox="0 0 15 16" width="15" xmlns="http://www.w3.org/2000/svg">
+  <path d="M9.23871 2.84503C9.12654 2.84503 9.03222 2.80679 8.95574 2.73031C8.87926 2.65384 8.81553 2.56461 8.76454 2.46264C8.71355 2.36066 8.67531 2.25614 8.64982 2.14907C8.62433 2.042 8.61158 1.95277 8.61158 1.88139V0H8.64217C8.73395 0 8.82063 0.0101973 8.9022 0.0305918C8.98378 0.0509863 9.08321 0.0994232 9.20047 0.175903C9.31774 0.252382 9.4605 0.359453 9.62876 0.497116C9.79701 0.634779 10.0086 0.81578 10.2635 1.04012C10.5389 1.28485 10.7581 1.49135 10.9213 1.6596C11.0844 1.82786 11.2093 1.97062 11.296 2.08789C11.3827 2.20516 11.4362 2.30458 11.4566 2.38616C11.477 2.46774 11.4872 2.53912 11.4872 2.6003V2.84503H9.23871ZM13.9957 10.0494C14.0263 10.131 14.0467 10.2329 14.0569 10.3553C14.0671 10.4777 14.0161 10.5949 13.904 10.7071C13.853 10.7581 13.8071 10.8065 13.7663 10.8524C13.7255 10.8983 13.6898 10.9366 13.6592 10.9671C13.6184 11.0079 13.5827 11.0385 13.5522 11.0589L12.252 9.77407C12.3132 9.72308 12.382 9.6619 12.4585 9.59052C12.535 9.51914 12.5987 9.46305 12.6497 9.42226C12.7721 9.31009 12.9046 9.26166 13.0474 9.27695C13.1901 9.29225 13.3074 9.32539 13.3992 9.37638C13.5012 9.42736 13.6108 9.51659 13.7281 9.64405C13.8453 9.77152 13.9345 9.90663 13.9957 10.0494ZM8.59629 11.4719C8.82063 11.4719 9.00927 11.4107 9.16223 11.2884L6.19483 14.3781H1.97317C1.77942 14.3781 1.56783 14.322 1.33839 14.2099C1.10895 14.0977 0.894809 13.9498 0.695963 13.7663C0.497116 13.5827 0.331411 13.3712 0.198847 13.1315C0.0662822 12.8919 0 12.6446 0 12.3897V1.97317C0 1.75903 0.048437 1.53469 0.145311 1.30015C0.242185 1.06561 0.374749 0.85402 0.543004 0.665371C0.711259 0.476722 0.902457 0.318664 1.1166 0.191199C1.33074 0.0637329 1.55508 1.49673e-08 1.78962 1.49673e-08H7.64794V1.91199C7.64794 2.10573 7.67853 2.31478 7.73972 2.53912C7.8009 2.76346 7.89522 2.96995 8.02269 3.1586C8.15016 3.34725 8.31586 3.50531 8.51981 3.63277C8.72375 3.76024 8.96849 3.82397 9.25401 3.82397H11.4872V8.88691L9.39167 11.0589C9.50384 10.8958 9.55993 10.7173 9.55993 10.5236C9.55993 10.2584 9.4656 10.0315 9.27695 9.8429C9.0883 9.65425 8.86141 9.55993 8.59629 9.55993H2.86033C2.5952 9.55993 2.37086 9.65425 2.18731 9.8429C2.00376 10.0315 1.91199 10.2584 1.91199 10.5236C1.91199 10.7887 2.00376 11.013 2.18731 11.1966C2.37086 11.3801 2.5952 11.4719 2.86033 11.4719H8.59629ZM2.86033 5.73596C2.5952 5.73596 2.37086 5.83028 2.18731 6.01893C2.00376 6.20758 1.91199 6.43447 1.91199 6.6996C1.91199 6.96472 2.00376 7.18906 2.18731 7.37261C2.37086 7.55617 2.5952 7.64794 2.86033 7.64794H8.59629C8.86141 7.64794 9.0883 7.55617 9.27695 7.37261C9.4656 7.18906 9.55993 6.96472 9.55993 6.6996C9.55993 6.43447 9.4656 6.20758 9.27695 6.01893C9.0883 5.83028 8.86141 5.73596 8.59629 5.73596H2.86033ZM8.62688 13.3992L8.82572 13.2003L9.20812 12.8179C9.36108 12.665 9.52933 12.4942 9.71288 12.3055C9.89644 12.1169 10.08 11.9308 10.2635 11.7472C10.702 11.3088 11.1966 10.8193 11.7472 10.2788L13.0321 11.5637L11.5484 13.0474L10.9977 13.598L10.493 14.1028C10.3502 14.2456 10.2304 14.3679 10.1335 14.4699C10.0366 14.5719 9.98311 14.628 9.97292 14.6382C9.92193 14.6789 9.86584 14.7223 9.80466 14.7682C9.74348 14.8141 9.68229 14.8523 9.62111 14.8829C9.55993 14.9135 9.4656 14.9517 9.33814 14.9976C9.21067 15.0435 9.08066 15.0868 8.94809 15.1276C8.81553 15.1684 8.68806 15.2041 8.56569 15.2347C8.44333 15.2653 8.35155 15.2857 8.29037 15.2959C8.168 15.3163 8.08642 15.301 8.04563 15.25C8.00484 15.199 7.99465 15.1123 8.01504 14.99C8.02524 14.9288 8.04563 14.837 8.07623 14.7146C8.10682 14.5923 8.14251 14.4674 8.1833 14.3399C8.22409 14.2124 8.26233 14.0926 8.29802 13.9804C8.33371 13.8683 8.36175 13.7918 8.38214 13.751C8.44333 13.6184 8.52491 13.5012 8.62688 13.3992Z"
+        fill="white"/>
+</svg>
+            </span>专业技能
+        </div>
+        <div class="entry-content">
+            占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">
+                <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#clip0_2952_1464)">
+    <path d="M7.99126 9.49293C7.94809 9.51325 7.90097 9.52379 7.85326 9.52379C7.80555 9.52379 7.75843 9.51325 7.71526 9.49293L2.98926 7.25293V9.85993C2.98926 9.98393 3.05826 10.0969 3.16826 10.1519L7.70826 12.4379C7.75325 12.4605 7.80291 12.4723 7.85326 12.4723C7.90361 12.4723 7.95327 12.4605 7.99826 12.4379L12.5383 10.1519C12.5922 10.1247 12.6376 10.0829 12.6692 10.0313C12.7008 9.97976 12.7175 9.92042 12.7173 9.85993V7.25393L7.99126 9.49393"
+          fill="white"/>
+    <path d="M15.5 4.32299L7.97101 1.31499C7.89429 1.28433 7.80873 1.28433 7.73201 1.31499L0.206012 4.32299C0.145003 4.34691 0.0926201 4.38867 0.0556967 4.44281C0.0187733 4.49694 -0.000976563 4.56096 -0.000976562 4.62649C-0.000976563 4.69202 0.0187733 4.75603 0.0556967 4.81017C0.0926201 4.86431 0.145003 4.90606 0.206012 4.92999L2.98901 6.04199V6.53199L7.85301 8.83699L12.717 6.53199V6.04199L14.014 5.52399V13.443C14.014 13.623 14.159 13.769 14.338 13.769C14.518 13.769 14.662 13.623 14.662 13.443V5.27999L14.66 5.26599L15.5 4.92999C15.5606 4.90568 15.6126 4.86378 15.6491 4.80969C15.6857 4.7556 15.7053 4.69179 15.7053 4.62649C15.7053 4.56119 15.6857 4.49738 15.6491 4.44329C15.6126 4.38919 15.5606 4.3473 15.5 4.32299Z"
+          fill="white"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_2952_1464">
+      <rect fill="white" height="16" width="16"/>
+    </clipPath>
+  </defs>
+</svg>
+            </span>培训情况
+        </div>
+        <div class="entry-content">
+            占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">
+                <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#clip0_2964_1465)">
+    <path d="M7.99126 9.49293C7.94809 9.51325 7.90097 9.52379 7.85326 9.52379C7.80555 9.52379 7.75843 9.51325 7.71526 9.49293L2.98926 7.25293V9.85993C2.98926 9.98393 3.05826 10.0969 3.16826 10.1519L7.70826 12.4379C7.75325 12.4605 7.80291 12.4723 7.85326 12.4723C7.90361 12.4723 7.95327 12.4605 7.99826 12.4379L12.5383 10.1519C12.5922 10.1247 12.6376 10.0829 12.6692 10.0313C12.7008 9.97976 12.7175 9.92042 12.7173 9.85993V7.25393L7.99126 9.49393"
+          fill="white"/>
+    <path d="M15.5 4.32299L7.97101 1.31499C7.89429 1.28433 7.80873 1.28433 7.73201 1.31499L0.206012 4.32299C0.145003 4.34691 0.0926201 4.38867 0.0556967 4.44281C0.0187733 4.49694 -0.000976563 4.56096 -0.000976562 4.62649C-0.000976563 4.69202 0.0187733 4.75603 0.0556967 4.81017C0.0926201 4.86431 0.145003 4.90606 0.206012 4.92999L2.98901 6.04199V6.53199L7.85301 8.83699L12.717 6.53199V6.04199L14.014 5.52399V13.443C14.014 13.623 14.159 13.769 14.338 13.769C14.518 13.769 14.662 13.623 14.662 13.443V5.27999L14.66 5.26599L15.5 4.92999C15.5606 4.90568 15.6126 4.86378 15.6491 4.80969C15.6857 4.7556 15.7053 4.69179 15.7053 4.62649C15.7053 4.56119 15.6857 4.49738 15.6491 4.44329C15.6126 4.38919 15.5606 4.3473 15.5 4.32299Z"
+          fill="white"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_2964_1465">
+      <rect fill="white" height="16" width="16"/>
+    </clipPath>
+  </defs>
+</svg>
+            </span>语言能力
+        </div>
+        <div class="entry-content">
+            占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">
+                <svg fill="none" height="16" viewBox="0 0 15 16" width="15" xmlns="http://www.w3.org/2000/svg">
+  <path d="M9.23871 2.84503C9.12654 2.84503 9.03222 2.80679 8.95574 2.73031C8.87926 2.65384 8.81553 2.56461 8.76454 2.46264C8.71355 2.36066 8.67531 2.25614 8.64982 2.14907C8.62433 2.042 8.61158 1.95277 8.61158 1.88139V0H8.64217C8.73395 0 8.82063 0.0101973 8.9022 0.0305918C8.98378 0.0509863 9.08321 0.0994232 9.20047 0.175903C9.31774 0.252382 9.4605 0.359453 9.62876 0.497116C9.79701 0.634779 10.0086 0.81578 10.2635 1.04012C10.5389 1.28485 10.7581 1.49135 10.9213 1.6596C11.0844 1.82786 11.2093 1.97062 11.296 2.08789C11.3827 2.20516 11.4362 2.30458 11.4566 2.38616C11.477 2.46774 11.4872 2.53912 11.4872 2.6003V2.84503H9.23871ZM13.9957 10.0494C14.0263 10.131 14.0467 10.2329 14.0569 10.3553C14.0671 10.4777 14.0161 10.5949 13.904 10.7071C13.853 10.7581 13.8071 10.8065 13.7663 10.8524C13.7255 10.8983 13.6898 10.9366 13.6592 10.9671C13.6184 11.0079 13.5827 11.0385 13.5522 11.0589L12.252 9.77407C12.3132 9.72308 12.382 9.6619 12.4585 9.59052C12.535 9.51914 12.5987 9.46305 12.6497 9.42226C12.7721 9.31009 12.9046 9.26166 13.0474 9.27695C13.1901 9.29225 13.3074 9.32539 13.3992 9.37638C13.5012 9.42736 13.6108 9.51659 13.7281 9.64405C13.8453 9.77152 13.9345 9.90663 13.9957 10.0494ZM8.59629 11.4719C8.82063 11.4719 9.00927 11.4107 9.16223 11.2884L6.19483 14.3781H1.97317C1.77942 14.3781 1.56783 14.322 1.33839 14.2099C1.10895 14.0977 0.894809 13.9498 0.695963 13.7663C0.497116 13.5827 0.331411 13.3712 0.198847 13.1315C0.0662822 12.8919 0 12.6446 0 12.3897V1.97317C0 1.75903 0.048437 1.53469 0.145311 1.30015C0.242185 1.06561 0.374749 0.85402 0.543004 0.665371C0.711259 0.476722 0.902457 0.318664 1.1166 0.191199C1.33074 0.0637329 1.55508 1.49673e-08 1.78962 1.49673e-08H7.64794V1.91199C7.64794 2.10573 7.67853 2.31478 7.73972 2.53912C7.8009 2.76346 7.89522 2.96995 8.02269 3.1586C8.15016 3.34725 8.31586 3.50531 8.51981 3.63277C8.72375 3.76024 8.96849 3.82397 9.25401 3.82397H11.4872V8.88691L9.39167 11.0589C9.50384 10.8958 9.55993 10.7173 9.55993 10.5236C9.55993 10.2584 9.4656 10.0315 9.27695 9.8429C9.0883 9.65425 8.86141 9.55993 8.59629 9.55993H2.86033C2.5952 9.55993 2.37086 9.65425 2.18731 9.8429C2.00376 10.0315 1.91199 10.2584 1.91199 10.5236C1.91199 10.7887 2.00376 11.013 2.18731 11.1966C2.37086 11.3801 2.5952 11.4719 2.86033 11.4719H8.59629ZM2.86033 5.73596C2.5952 5.73596 2.37086 5.83028 2.18731 6.01893C2.00376 6.20758 1.91199 6.43447 1.91199 6.6996C1.91199 6.96472 2.00376 7.18906 2.18731 7.37261C2.37086 7.55617 2.5952 7.64794 2.86033 7.64794H8.59629C8.86141 7.64794 9.0883 7.55617 9.27695 7.37261C9.4656 7.18906 9.55993 6.96472 9.55993 6.6996C9.55993 6.43447 9.4656 6.20758 9.27695 6.01893C9.0883 5.83028 8.86141 5.73596 8.59629 5.73596H2.86033ZM8.62688 13.3992L8.82572 13.2003L9.20812 12.8179C9.36108 12.665 9.52933 12.4942 9.71288 12.3055C9.89644 12.1169 10.08 11.9308 10.2635 11.7472C10.702 11.3088 11.1966 10.8193 11.7472 10.2788L13.0321 11.5637L11.5484 13.0474L10.9977 13.598L10.493 14.1028C10.3502 14.2456 10.2304 14.3679 10.1335 14.4699C10.0366 14.5719 9.98311 14.628 9.97292 14.6382C9.92193 14.6789 9.86584 14.7223 9.80466 14.7682C9.74348 14.8141 9.68229 14.8523 9.62111 14.8829C9.55993 14.9135 9.4656 14.9517 9.33814 14.9976C9.21067 15.0435 9.08066 15.0868 8.94809 15.1276C8.81553 15.1684 8.68806 15.2041 8.56569 15.2347C8.44333 15.2653 8.35155 15.2857 8.29037 15.2959C8.168 15.3163 8.08642 15.301 8.04563 15.25C8.00484 15.199 7.99465 15.1123 8.01504 14.99C8.02524 14.9288 8.04563 14.837 8.07623 14.7146C8.10682 14.5923 8.14251 14.4674 8.1833 14.3399C8.22409 14.2124 8.26233 14.0926 8.29802 13.9804C8.33371 13.8683 8.36175 13.7918 8.38214 13.751C8.44333 13.6184 8.52491 13.5012 8.62688 13.3992Z"
+        fill="white"/>
+</svg>
+            </span>奖项证书
+        </div>
+        <div class="entry-content">
+            占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">
+                <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8.00201 15C7.84927 15 7.69251 14.9407 7.57594 14.8262L5.62245 12.9063H3.21074C2.62474 12.9053 2.06305 12.676 1.64868 12.2688C1.23432 11.8616 1.00106 11.3095 1 10.7336V3.17269C1 1.97573 1.99282 1 3.21074 1H12.7893C14.0072 1 15 1.97573 15 3.17269V10.7376C15 11.9345 14.0072 12.9103 12.7893 12.9103H10.3775L8.42406 14.8301C8.31151 14.9447 8.15475 15 8.00201 15ZM3.21074 2.1851C3.07877 2.1851 2.9481 2.21065 2.82619 2.26028C2.70427 2.30991 2.59349 2.38265 2.50018 2.47436C2.40687 2.56606 2.33285 2.67493 2.28235 2.79475C2.23185 2.91457 2.20586 3.04299 2.20586 3.17269V10.7376C2.20586 10.8673 2.23185 10.9957 2.28235 11.1155C2.33285 11.2353 2.40687 11.3442 2.50018 11.4359C2.59349 11.5276 2.70427 11.6004 2.82619 11.65C2.9481 11.6996 3.07877 11.7252 3.21074 11.7252H5.87166C6.03244 11.7252 6.18519 11.7884 6.29773 11.899L8.00201 13.57L9.70629 11.895C9.81883 11.7844 9.97158 11.7212 10.1324 11.7212H12.7933C12.9252 11.7212 13.0559 11.6957 13.1778 11.646C13.2998 11.5964 13.4105 11.5237 13.5038 11.432C13.5972 11.3403 13.6712 11.2314 13.7217 11.1116C13.7722 10.9917 13.7982 10.8633 13.7982 10.7336V3.17269C13.7982 3.04299 13.7722 2.91457 13.7217 2.79475C13.6712 2.67493 13.5972 2.56606 13.5038 2.47436C13.4105 2.38265 13.2998 2.30991 13.1778 2.26028C13.0559 2.21065 12.9252 2.1851 12.7933 2.1851H3.21074Z"
+        fill="white"/>
+  <path d="M7.9989 11C6.9691 11 5.9393 10.4317 5.15552 9.3002C4.94816 9.00084 4.94816 8.51881 5.15552 8.22452C5.36289 7.93023 5.69679 7.92516 5.90064 8.22452C7.05697 9.89386 8.94083 9.89386 10.1007 8.22452C10.308 7.92516 10.6419 7.92516 10.8458 8.22452C11.0496 8.52389 11.0532 9.00591 10.8458 9.3002C10.4723 9.8405 10.0285 10.2688 9.53993 10.5605C9.05135 10.8523 8.52762 11.0016 7.9989 11Z"
+        fill="white"/>
+</svg>
+            </span>自我评价
+        </div>
+        <div class="entry-content">
+            占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <span class="section-icon">
+                <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+  <path d="M11.1664 3.1817C11.0543 3.1817 10.96 3.14346 10.8835 3.06698C10.807 2.99051 10.7433 2.90128 10.6923 2.79931C10.6413 2.69733 10.603 2.59281 10.5776 2.48574C10.5521 2.37867 10.5393 2.28944 10.5393 2.21806V0.33667H10.5699C10.6617 0.33667 10.7484 0.346867 10.8299 0.367262C10.9115 0.387656 11.0109 0.436093 11.1282 0.512573C11.2455 0.589052 11.3882 0.696123 11.5565 0.833786C11.7247 0.971449 11.9363 1.15245 12.1913 1.37679C12.4666 1.62152 12.6858 1.82802 12.849 1.99627C13.0122 2.16453 13.1371 2.30729 13.2237 2.42456C13.3104 2.54183 13.364 2.64125 13.3843 2.72283C13.4047 2.80441 13.4149 2.87579 13.4149 2.93697V3.1817H11.1664ZM15.9235 10.3861C15.9541 10.4676 15.9745 10.5696 15.9846 10.692C15.9948 10.8143 15.9439 10.9316 15.8317 11.0438C15.7807 11.0948 15.7348 11.1432 15.694 11.1891C15.6532 11.235 15.6175 11.2732 15.587 11.3038C15.5462 11.3446 15.5105 11.3752 15.4799 11.3956L14.1797 10.1107C14.2409 10.0598 14.3098 9.99857 14.3862 9.92719C14.4627 9.85581 14.5264 9.79972 14.5774 9.75893C14.6998 9.64676 14.8324 9.59833 14.9751 9.61362C15.1179 9.62892 15.2352 9.66206 15.3269 9.71305C15.4289 9.76403 15.5385 9.85326 15.6558 9.98072C15.7731 10.1082 15.8623 10.2433 15.9235 10.3861ZM10.524 11.8086C10.7484 11.8086 10.937 11.7474 11.09 11.625L8.12257 14.7148H3.9009C3.70716 14.7148 3.49556 14.6587 3.26612 14.5465C3.03669 14.4344 2.82254 14.2865 2.6237 14.103C2.42485 13.9194 2.25915 13.7078 2.12658 13.4682C1.99402 13.2285 1.92773 12.9813 1.92773 12.7263V2.30984C1.92773 2.0957 1.97617 1.87136 2.07305 1.63682C2.16992 1.40228 2.30248 1.19069 2.47074 1.00204C2.63899 0.813392 2.83019 0.655334 3.04433 0.527868C3.25848 0.400403 3.48282 0.33667 3.71735 0.33667H9.57568V2.24866C9.57568 2.4424 9.60627 2.65145 9.66745 2.87579C9.72863 3.10013 9.82296 3.30662 9.95042 3.49527C10.0779 3.68392 10.2436 3.84198 10.4475 3.96944C10.6515 4.09691 10.8962 4.16064 11.1817 4.16064H13.4149V9.22358L11.3194 11.3956C11.4316 11.2324 11.4877 11.054 11.4877 10.8602C11.4877 10.5951 11.3933 10.3682 11.2047 10.1796C11.016 9.99092 10.7891 9.8966 10.524 9.8966H4.78806C4.52294 9.8966 4.2986 9.99092 4.11505 10.1796C3.93149 10.3682 3.83972 10.5951 3.83972 10.8602C3.83972 11.1254 3.93149 11.3497 4.11505 11.5333C4.2986 11.7168 4.52294 11.8086 4.78806 11.8086H10.524ZM4.78806 6.07263C4.52294 6.07263 4.2986 6.16695 4.11505 6.3556C3.93149 6.54425 3.83972 6.77114 3.83972 7.03627C3.83972 7.30139 3.93149 7.52573 4.11505 7.70928C4.2986 7.89284 4.52294 7.98461 4.78806 7.98461H10.524C10.7891 7.98461 11.016 7.89284 11.2047 7.70928C11.3933 7.52573 11.4877 7.30139 11.4877 7.03627C11.4877 6.77114 11.3933 6.54425 11.2047 6.3556C11.016 6.16695 10.7891 6.07263 10.524 6.07263H4.78806ZM10.5546 13.7359L10.7535 13.537L11.1359 13.1546C11.2888 13.0017 11.4571 12.8309 11.6406 12.6422C11.8242 12.4536 12.0077 12.2675 12.1913 12.0839C12.6298 11.6454 13.1243 11.156 13.675 10.6155L14.9598 11.9004L13.4761 13.3841L12.9255 13.9347L12.4207 14.4395C12.2779 14.5822 12.1581 14.7046 12.0613 14.8066C11.9644 14.9085 11.9108 14.9646 11.9007 14.9748C11.8497 15.0156 11.7936 15.059 11.7324 15.1048C11.6712 15.1507 11.61 15.189 11.5488 15.2196C11.4877 15.2502 11.3933 15.2884 11.2659 15.3343C11.1384 15.3802 11.0084 15.4235 10.8758 15.4643C10.7433 15.5051 10.6158 15.5408 10.4934 15.5714C10.3711 15.602 10.2793 15.6224 10.2181 15.6326C10.0957 15.6529 10.0142 15.6376 9.97337 15.5867C9.93258 15.5357 9.92238 15.449 9.94278 15.3266C9.95297 15.2655 9.97337 15.1737 10.004 15.0513C10.0346 14.9289 10.0702 14.804 10.111 14.6766C10.1518 14.5491 10.1901 14.4293 10.2258 14.3171C10.2614 14.2049 10.2895 14.1285 10.3099 14.0877C10.3711 13.9551 10.4526 13.8378 10.5546 13.7359Z"
+        fill="white"/>
+</svg>
+            </span>专利/学术成果
+        </div>
+        <div class="entry-content">
+            占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字占位文字
+        </div>
+    </div>
+</div>
+</body>
+</html>
