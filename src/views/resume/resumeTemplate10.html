@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>简历 - 商务风</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: #f5f5f5;
+        }
+
+        .resume-container {
+            margin: 0 auto;
+            padding-bottom: 27px;
+            background: white;
+            position: relative;
+        }
+
+        /* 头部信息 */
+        .header {
+            padding: 6px 10px 6px 7px;
+            background: #5270ab;
+            position: relative;
+            border-radius: 1.36px;
+            overflow: hidden;
+        }
+
+        .header-left {
+            float: left;
+        }
+
+        .name {
+            font-size: 23px;
+            font-weight: 600;
+            color: #FFFFFF;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 23px;
+            margin: 0;
+            float: left;
+        }
+
+        .position {
+            font-size: 15px;
+            color: #FFFFFF;
+            font-weight: 600;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 15px;
+            text-align: right;
+            float: right;
+            margin-top: 3.4px;
+        }
+
+        .contact-info {
+            float: left;
+            margin-left: 40px;
+            margin-top: 5.44px;
+        }
+
+        .contact-item {
+            font-size: 12.88px;
+            line-height: 12.88px;
+            color: #FFFFFF;
+            font-weight: 500;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            float: left;
+            margin-right: 40px;
+        }
+
+        .contact-item svg {
+            width: 12px;
+            height: 12px;
+            float: left;
+            margin-right: 6.8px;
+            margin-top: 0.68px;
+        }
+
+        .contact-item span {
+            float: left;
+            white-space: nowrap;
+        }
+
+        .avatar-con {
+            width: 88px;
+            height: 88px;
+            background: #f6f8fa;
+            border-radius: 1.36px;
+            position: absolute;
+            right: 20.4px;
+            background: #ccc;
+            top: 68px;
+        }
+
+        .avatar-con img {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 基本信息网格 */
+        .basic-info {
+            padding: 27.2px 20.4px;
+            background: white;
+            font-size: 12px;
+            color: #515a6d;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: hidden;
+        }
+
+        .info-item {
+            width: 50%;
+            height: 21.76px;
+            line-height: 21.76px;
+            font-weight: 400;
+            font-size: 12px;
+            float: left;
+            margin-bottom: 3px;
+        }
+
+        .info-label {
+            display: none;
+        }
+
+        .module-content {
+            margin: 0 20.4px;
+            overflow: hidden;
+        }
+
+        /* 章节标题 */
+        .section {
+            border-bottom: none;
+            margin-bottom: 27px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 14.96px;
+            font-weight: 600;
+            color: #5270ab;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 14.96px;
+            margin-bottom: 21.76px;
+            padding-bottom: 6.72px;
+            border-bottom: 2px solid #5270ab;
+            float: left;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 100%;
+            right: -9999px;
+            height: 2px;
+            background: #e0e0e0;
+        }
+
+        .section-content {
+            margin-top: 0;
+            clear: both;
+        }
+
+        /* 经历项 */
+        .experience-item {
+            margin-bottom: 20px;
+        }
+
+        .experience-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .experience-header {
+            margin-bottom: 13px;
+            font-size: 12.88px;
+            overflow: hidden;
+        }
+
+        .experience-title {
+            font-weight: 600;
+            color: #515a6d;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            float: left;
+        }
+
+        .experience-date {
+            color: #515a6d;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            text-align: right;
+            float: right;
+        }
+
+        .experience-desc {
+            font-size: 12.88px;
+            color: #515a6d;
+            line-height: 16.96px;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* 多列布局 */
+        .two-column {
+            overflow: hidden;
+        }
+
+        .column-item {
+            font-size: 11px;
+            color: #333;
+            line-height: 1.6;
+            float: left;
+            width: calc(50% - 20px);
+            margin-right: 40px;
+        }
+
+        .column-item:nth-child(2n) {
+            margin-right: 0;
+        }
+
+        .column-label {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="resume-container">
+    <!-- 头部 -->
+    <div class="header">
+        <div class="header-left">
+            <div class="name">聘小方</div>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <svg fill="none" height="10" viewBox="0 0 10 10" width="10" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.09012 8.32728L8.55354 8.8706C8.14548 9.28336 7.57773 9.52 6.99543 9.52C6.74672 9.52 6.50112 9.47784 6.26626 9.39488C3.35926 8.36638 1.05639 6.00304 0.106211 3.07258C-0.179223 2.19198 0.123531 1.22298 0.859633 0.66198L1.32866 0.3043C1.58915 0.1054 1.90091 0 2.22999 0C2.78978 0 3.29691 0.30974 3.55325 0.80818L4.3465 2.3494C4.42167 2.49594 4.46151 2.65982 4.46151 2.82404C4.46151 3.08516 4.36417 3.33472 4.18751 3.5275L4.02227 3.70702C3.85808 3.88552 3.8224 4.1497 3.93359 4.36492C4.20448 4.88988 4.62536 5.31046 5.15085 5.5811C5.3625 5.69058 5.63477 5.65352 5.80935 5.4927L5.98948 5.32814C6.30228 5.04016 6.79036 4.97386 7.16829 5.16834L8.71046 5.96054C9.20963 6.21724 9.52 6.72384 9.52 7.28348C9.52 7.67618 9.36758 8.04712 9.09012 8.32728ZM8.8272 7.14034C8.8272 6.65108 6.74879 5.78034 6.74879 5.78034C6.45712 5.67562 6.05599 6.12034 6.05599 6.12034C5.3334 6.64564 4.82454 6.24716 4.67039 6.12034C4.21937 5.75008 3.60625 4.94972 3.28479 4.42034C3.04438 4.02356 3.14726 3.55334 3.28479 3.40034C3.28479 3.40034 3.75035 3.00594 3.63119 2.72034C3.26781 1.83532 2.70075 0.52462 2.24558 0.68034C1.85069 0.80818 0.196968 1.3464 0.944848 3.31364C2.27156 6.80068 5.03272 8.20454 6.71346 8.84C7.88533 8.92466 8.92038 7.47252 8.8272 7.14034Z"
+                              fill="white"/>
+                    </svg>
+                    <span>18824285622</span>
+                </div>
+                <div class="contact-item">
+                    <svg fill="none" height="10" viewBox="0 0 10 10" width="10" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.6158 0.380859H1.90367C0.852186 0.380859 0 1.36828 0 2.58551V6.94389C0 8.16113 0.852186 9.13926 1.90367 9.13926H7.61579C8.66785 9.13926 9.52 8.16112 9.52 6.94389V2.58551C9.52001 1.36829 8.66785 0.380859 7.6158 0.380859ZM6.6004 4.7872L8.92321 3.20584V6.33086L6.6004 4.7872ZM1.90367 1.05311H7.61579C8.29452 1.05311 8.85608 1.67075 8.91753 2.44457L4.76002 5.27559L0.599825 2.44274C0.662306 1.66977 1.22602 1.05311 1.90367 1.05311ZM0.593982 3.20392L2.91963 4.78721L0.593982 6.33274V3.20392ZM7.6158 8.46444H1.90367C1.22675 8.46444 0.663514 7.85966 0.600015 7.08909L3.47943 5.1756C3.48119 5.17439 3.48287 5.17308 3.48459 5.17184L4.6127 5.93986C4.65771 5.9703 4.70857 5.98619 4.76001 5.98619C4.81143 5.98619 4.86228 5.9703 4.9073 5.93986L6.03542 5.17183C6.03716 5.17308 6.03884 5.17439 6.04061 5.1756L8.91733 7.0873C8.85485 7.85872 8.29378 8.46444 7.6158 8.46444Z"
+                              fill="white"/>
+                    </svg>
+                    <span>751665788@qq.com</span>
+                </div>
+            </div>
+        </div>
+        <div class="position">行政专员</div>
+    </div>
+
+    <div class="avatar-con">
+        <img alt="" src="">
+    </div>
+
+    <!-- 基本信息 -->
+    <div class="basic-info">
+        <div class="info-item">国籍：中国</div>
+        <div class="info-item">民族：汉族</div>
+        <div class="info-item">政治面貌：中共党员</div>
+        <div class="info-item">性别：男</div>
+        <div class="info-item">出生日期：1998.10</div>
+        <div class="info-item">星座：天秤座</div>
+        <div class="info-item">血型：AB</div>
+        <div class="info-item">身高：180cm</div>
+        <div class="info-item">体重：80kg</div>
+        <div class="info-item">视力情况：5.0</div>
+        <div class="info-item">婚姻状况：未婚</div>
+        <div class="info-item">籍贯：大连</div>
+        <div class="info-item">居住城市：大连</div>
+        <div class="info-item">期望城市：北京</div>
+        <div class="info-item">目前薪资：5-8K</div>
+        <div class="info-item">期望薪资：30-40K</div>
+        <div class="info-item">工作经验：10年</div>
+        <div class="info-item">所属行业：医药</div>
+        <div class="info-item">到岗时间：一个月内</div>
+        <div class="info-item">微信号：hasdhjkw008</div>
+    </div>
+
+    <div class="module-content">
+        <!-- 教育经历 -->
+        <div class="section">
+            <div class="section-title">教育经历</div>
+            <div class="section-content">
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <span class="experience-title">聘次方师范大学 ｜ 工商管理 ｜ 本科</span>
+                        <span class="experience-date">2016.09-2020.07</span>
+                    </div>
+                    <div class="experience-desc">
+                        基础会计学、货币银行学、统计学、经济法概论、财务会计学、管理学原理、组织行为学、市场营销学、国际贸易理论、国际贸易实务、人力资源开发与管理、财务管理学、企业经营战略概论、质量管理学、西方经济学等等。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 实习经历 -->
+        <div class="section">
+            <div class="section-title">实习经历</div>
+            <div class="section-content">
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <span class="experience-title">聘次方科技有限公司 ｜ 行政助理</span>
+                        <span class="experience-date">2018.09-2019.10</span>
+                    </div>
+                    <div class="experience-desc">
+                        协助团队落地日常行政事务。期间整理归档合同、通知等文件 30 余份，搭建分类标签体系，提升检索效率。
+                        协助组织部门周会、跨部门协调会 15
+                        场，负责会议室预定、会议纪要初稿撰写及物料准备，保障会议零失误开展；同步对接办公用品申领需求，统计库存并及时补给，减少办公中断情况。
+                        实习中熟练掌握 Excel 数据整理与行政办公软件操作，强化细节把控与跨部门沟通能力，为行政工作积累扎实实践经验。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 工作经历 -->
+        <div class="section">
+            <div class="section-title">工作经历</div>
+            <div class="section-content">
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <span class="experience-title">聘次方科技有限公司 ｜ 行政专员</span>
+                        <span class="experience-date">2022.09-至今</span>
+                    </div>
+                    <div class="experience-desc">
+                        拥负责本部的行政人事管理和日常事务，协助总监搞好各部门之间的综合协调，落实公司规章制度，沟通内外联系，保证上情下达和下情上报，负责对会议文件决定的事项进行催办、查办和落实，负责全公司组织系统研讨和修订。
+                        编制公司人事管理制度，规避各项人事风险
+                    </div>
+                </div>
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <span class="experience-title">聘次方科网络技有限公司 ｜ 行政专员</span>
+                        <span class="experience-date">2018.09-2022.09</span>
+                    </div>
+                    <div class="experience-desc">
+                        负责中心简单财务管理，资产管控； 负责公司总部的来访客户接待工作，负责引导和介绍公司的分布情况；
+                        负责中心的行政事务，公司班车管理、负责建立员工归属感及前台管理； 负责招聘工作，确保人才梯队发展和人才储备及培养。
+                        督导公司各项行政、人事制度、员工福利、生日以及公司各种宴会活动的执行。
+                        负责招聘工作，制定公司的人力资源发展计划，确保人才梯队发展和人才储备及培养。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 项目经历 -->
+        <div class="section">
+            <div class="section-title">项目经历</div>
+            <div class="section-content">
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <span class="experience-title">聘次方项目</span>
+                        <span class="experience-date">2022.09-至今</span>
+                    </div>
+                    <div class="experience-desc">
+                        负责设计并实现管理后台核心功能模块，包括用户管理、内容审核、数据分析等系统； 同时参与客户端功能开发，确保前后端高效协作。
+                        采用敏捷开发模式，严格执行自测流程，确保代码质量；主导提测流程，与测试团队紧密协作修复缺陷；负责线上版本发布后的监控与维护，保障系统稳定运行。
+                        通过优化系统架构，提升了应用响应速度和用户体验，支持了用户量的快速增长。
+                    </div>
+                </div>
+                <div class="experience-item">
+                    <div class="experience-header">
+                        <span class="experience-title">聘次方供应商项目</span>
+                        <span class="experience-date">2018.09-2022.09</span>
+                    </div>
+                    <div class="experience-desc">
+                        设计供应商系统的网站和交互原型。汇总整理和收集各个渠道的需求 改版后的调研结果显示，客户满意度提升了30％
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 培训情况 -->
+        <div class="section">
+            <div class="section-title">培训情况</div>
+            <div class="section-content">
+                <div class="experience-desc">
+                    曾进行过「高级工商管理研修课程」的培训，完成涵盖战略、金融、营销、运营、人力资源等核心领域的系统性学习。
+                    应用成果：
+                    将所学战略分析模型应用于公司季度业务规划，识别出3个关键增长点；运用财务知识优化部门预算分配，提升资源使用效率15%。
+                </div>
+            </div>
+        </div>
+
+        <!-- 专业技能 -->
+        <div class="section">
+            <div class="section-title">专业技能</div>
+            <div class="section-content">
+                <div class="experience-desc">
+                    语言能力：大学英语6级证书，荣获全国大学生英语竞赛一等奖，能够熟练的进行交流、读写。
+                    计算机：计算机二级证书，熟练操作windows平台上的各类应用软件，如Word、Excel。
+                    团队能力：具有丰富的团队组建与扩充经验和项目管理与协调经验。
+                </div>
+            </div>
+        </div>
+
+        <!-- 语言能力 -->
+        <div class="section">
+            <div class="section-title">语言能力</div>
+            <div class="section-content">
+                <div class="experience-desc">
+                    通过全国大学英语四级考试（成绩 450-500
+                    分），构建了扎实的英语语言体系，听说读写能力可熟练适配日常沟通与专业场景需求。能精准捕捉英文对话，口语表达流畅自然，可独立与外籍客户进行业务需求对接（如产品功能咨询、订单进度沟通），多次高效解决跨语言沟通问题，无明显理解偏差。
+                    具备快速阅读英文专业文献、行业报告及产品说明书的能力，曾为团队翻译 5 篇以上英文技术文档（累计字数超
+                    3000
+                    字），确保专业术语准确传递；写作方面可独立撰写英文工作邮件、周报及简单合作方案，语法规范、逻辑清晰。
+                </div>
+            </div>
+        </div>
+
+        <!-- 专利/学术成果 -->
+        <div class="section">
+            <div class="section-title">专利/学术成果</div>
+            <div class="section-content">
+                <div class="experience-desc">
+                    主导研发 "基于数字化协同的企业工商管理全流程优化方案"，于2022年成功获得国家发明专利（专利号：X08832），核心解决传统工商管理中
+                    "部门协同低效、流程节点冗余、数据追溯困难" 三大痛点。
+                </div>
+            </div>
+        </div>
+
+        <!-- 奖项证书 -->
+        <div class="section">
+            <div class="section-title">奖项证书</div>
+            <div class="section-content">
+                <div class="experience-desc">
+                    英语四级，听说读写能力良好，能流利的用英语进行日常交流，能快速浏览英文文档和书籍；
+                    通过全国计算机二级考试，熟练运用ofhice等常用的办公软件。
+                </div>
+            </div>
+        </div>
+
+        <!-- 兴趣爱好 -->
+        <div class="section">
+            <div class="section-title">兴趣爱好</div>
+            <div class="section-content">
+                <div class="experience-desc">
+                    我的生活因跑步、旅游、养宠物和画画而丰盈。
+                    晨跑滨江，风携露水掠过，看天际染橘红；夜跑遇同好，拉伸后浑身通透，满是元气。旅游爱踏沙观海日，也喜穿古镇小巷，听老故事，明信片存住时光。橘猫
+                    "年糕" 拍醒我、蜷腿打盹，晚归见它便暖。午后水彩绘多肉晚霞，专注间浮躁消散。
+                    这几样爱好，分别予我活力、视野、温暖与沉淀，构成我喜欢的生活模样。
+                </div>
+            </div>
+        </div>
+
+        <!-- 自我评价 -->
+        <div class="section">
+            <div class="section-title">自我评价</div>
+            <div class="section-content">
+                <div class="experience-desc">
+                    工作积极认真，细心负责，熟练运用办公自动化软件，善于在工作中提出问题、发现问题、解决问题，有较强的分析能力；勤奋好学，踏实肯干，动手能力强，认真负责，有很强的社会责任感；坚毅不拔，吃苦耐劳，喜欢迎接新挑战。
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

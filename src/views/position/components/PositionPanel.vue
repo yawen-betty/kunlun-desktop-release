@@ -118,12 +118,14 @@ const resetFilters = () => {
 }
 
 const handlePageChange = async (page: number) => {
+    hasNewPositions.value = false
     pagination.current = page
     await loadPositions()
     document.querySelector('.position-list')?.scrollTo(0, 0)
 }
 
 const handlePageSizeChange = async (pageSize: number) => {
+    hasNewPositions.value = false
     pagination.pageSize = pageSize
     pagination.current = 1
     await loadPositions()
