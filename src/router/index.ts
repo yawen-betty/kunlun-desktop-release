@@ -1,6 +1,7 @@
 // 导出路由 在 mait.ts 里使用
-import { createRouter, createWebHashHistory }from 'vue-router';
+import {createRouter, createWebHashHistory} from 'vue-router';
 import routes from './routers';
+import {auth} from '@/utiles/tauriCommonds';
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -15,7 +16,13 @@ const router = createRouter({
  */
 
 // @ts-ignore
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+    // 处理根路径，根据登录状态跳转
+    if (to.path === '/') {
+        const token = await auth.getToken();
+        next(token ? '/resume' : '/login');
+        return;
+    }
     next();
 });
 
