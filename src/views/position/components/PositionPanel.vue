@@ -134,6 +134,7 @@ const handlePageSizeChange = async (pageSize: number) => {
 
 const handleFilterChange = async () => {
     pagination.current = 1
+    hasNewPositions.value = false
     await loadPositions()
 }
 
