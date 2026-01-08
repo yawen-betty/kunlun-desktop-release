@@ -52,6 +52,7 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
             logger.error('[PositionSearch] 10分钟内未调用matchJob，任务超时');
             isTimeout = true;
             abortController.abort();
+            throw new DOMException('Task stopped', 'AbortError');
         }, 10 * 60 * 1000);
     };
 

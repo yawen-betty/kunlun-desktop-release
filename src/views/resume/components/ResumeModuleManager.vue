@@ -6,7 +6,7 @@
                 <span>{{ triggerText }}</span>
             </div>
         </slot>
-        <Teleport to="body">
+        <Teleport to=".manual-mode">
             <div v-if="visible" :style="dropdownStyle" class="module-dropdown">
                 <div class="module-manager">
                     <div :style="{ width: columnWidthStyle }" class="module-column">
@@ -378,13 +378,17 @@ const initSortable = () => {
 
 const updateDropdownPosition = () => {
     if (triggerRef.value) {
-        const rect = triggerRef.value.getBoundingClientRect();
-        dropdownStyle.value = {
-            position: 'fixed',
-            top: `${rect.bottom}px`,
-            left: `${rect.left}px`,
-            zIndex: currentZIndex.value
-        };
+        const triggerRect = triggerRef.value.getBoundingClientRect();
+        const container = document.querySelector('.manual-mode');
+        if (container) {
+            const containerRect = container.getBoundingClientRect();
+            dropdownStyle.value = {
+                position: 'absolute',
+                top: `${triggerRect.bottom - containerRect.top}px`,
+                left: `${triggerRect.left - containerRect.left}px`,
+                zIndex: currentZIndex.value
+            };
+        }
     }
 };
 
@@ -401,7 +405,6 @@ const getMaxZIndex = () => {
 };
 
 const toggleVisible = () => {
-    console.log(visible.value)
     if (visible.value) {
         handleCancel();
     } else {
@@ -454,6 +457,11 @@ defineExpose({
 <style lang="scss" scoped>
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
+
+.module-dropdown {
+    position: absolute;
+    z-index: -1;
+}
 
 .module-wrapper {
     position: relative;
