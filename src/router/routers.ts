@@ -28,8 +28,7 @@ const onlyHeader = function (meta: any) {
 // 展示菜单
 const all = [
     {
-        path: '/',
-        redirect: '/resume'
+        path: '/'
     },
     // 登录
     onlyHeader({

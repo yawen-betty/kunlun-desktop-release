@@ -1225,6 +1225,11 @@ const handleAddEntry = (module: any) => {
         return;
     }
 
+    if (module.entries.length === 20) {
+        message.warning(Message, '当前模块，经历已达上限！');
+        return;
+    }
+
     const newEntry = {
         entryUuid: `temp_${Date.now()}`,
         entrySortOrder: module.entries.length + 1,

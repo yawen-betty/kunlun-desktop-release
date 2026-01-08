@@ -77,7 +77,7 @@
                     <div v-else></div>
                     <div class="right-actions flex-column">
                         <!-- 保存成功状态 -->
-                        <div v-if="showSaveSuccess" class="save-success-status flex-column mr-20">
+                        <div v-if="showSaveSuccess" class="save-success-status flex-column mr-5">
                             <div ref="lottieContainer" class="lottie-icon flex"></div>
                             <span class="success-text">保存成功</span>
                         </div>
@@ -664,6 +664,7 @@ defineExpose({reset})
     flex: 1;
     height: 100%;
     position: relative;
+    overflow: hidden;
 }
 
 .left-section {
