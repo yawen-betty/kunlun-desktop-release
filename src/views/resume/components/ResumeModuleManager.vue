@@ -504,6 +504,7 @@ defineExpose({
     &.available {
         background: $white;
         border-left: none;
+        padding: vw(10);
 
         .module-list {
             padding-bottom: vw(10);
@@ -526,6 +527,11 @@ defineExpose({
 
     &::-webkit-scrollbar {
         display: none;
+    }
+
+    &:last-child {
+        max-height: vh(361);
+        padding: 0;
     }
 }
 
