@@ -23,7 +23,8 @@
                                     <SvgIcon class="icon-drag mr-10" color="#9499A4" name="icon-tuozhuai" size="12"/>
                                     <span class="module-name">{{ item.name }}</span>
                                 </div>
-                                <SvgIcon class="icon-delete" color="#9499A4" name="icon-shanchu-xian" size="12"
+                                <SvgIcon v-if="!showAddButton && selectedModules.length > 1" class="icon-delete"
+                                         color="#9499A4" name="icon-shanchu-xian" size="12"
                                          @click="removeModule(item.id)"/>
                             </div>
                         </div>
