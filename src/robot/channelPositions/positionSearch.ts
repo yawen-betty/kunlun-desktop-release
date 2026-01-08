@@ -48,10 +48,22 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
     const resetMatchJobTimer = () => {
         if (matchJobTimer) clearTimeout(matchJobTimer);
         isTimeout = false;
-        matchJobTimer = setTimeout(() => {
+        matchJobTimer = setTimeout(async () => {
             logger.error('[PositionSearch] 10分钟内未调用matchJob，任务超时');
             isTimeout = true;
             abortController.abort();
+            // 获取所有标签页
+            const count = await tabCount();
+            logger.info(`[PositionSearch] 当前有 ${count} 个标签页`);
+
+            // 关闭除第一个外的所有标签页（从后往前关闭）
+            for (let i = count - 1; i >= 1; i--) {
+                logger.info(`[PositionSearch] 关闭标签页 ${i}`);
+                checkStop();
+                await mcpService.callTool('browser_tabs', {action: 'close', index: i});
+                await robotManager.sleep(500);
+            }
+            throw new DOMException('Task stopped', 'AbortError');
         }, 10 * 60 * 1000);
     };
 
