@@ -6,7 +6,7 @@
                 <span>{{ triggerText }}</span>
             </div>
         </slot>
-        <Teleport to=".manual-mode">
+        <Teleport to=".write-content">
             <div v-if="visible" :style="dropdownStyle" class="module-dropdown">
                 <div class="module-manager">
                     <div :style="{ width: columnWidthStyle }" class="module-column">
@@ -23,7 +23,7 @@
                                     <SvgIcon class="icon-drag mr-10" color="#9499A4" name="icon-tuozhuai" size="12"/>
                                     <span class="module-name">{{ item.name }}</span>
                                 </div>
-                                <SvgIcon v-if="!showAddButton && selectedModules.length > 1" class="icon-delete"
+                                <SvgIcon v-if="selectedModules.length > 1" class="icon-delete"
                                          color="#9499A4" name="icon-shanchu-xian" size="12"
                                          @click="removeModule(item.id)"/>
                             </div>
