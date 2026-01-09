@@ -139,12 +139,12 @@ const handleFilterChange = async () => {
 }
 
 const channels = ref([
-    {
-        name: 'BOSS直聘',
-        value: 'boss',
-        icon: bossIcon,
-        isLogin: false
-    },
+    // {
+    //     name: 'BOSS直聘',
+    //     value: 'boss',
+    //     icon: bossIcon,
+    //     isLogin: false
+    // },
     {
         name: '智联招聘',
         value: 'zhilian',

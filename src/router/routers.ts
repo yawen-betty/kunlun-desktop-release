@@ -1,3 +1,5 @@
+import {Config} from "@/Config.ts";
+
 /**
  * 在主框架之内显示
  */
@@ -71,12 +73,12 @@ const all = [
         component: () => import('@/views/addedServices/index.vue')
     }),
     // MCPdemo
-    layout({
+    ...(Config.env === 'prod' ? [] : [layout({
         path: '/mcpMananger',
         title: 'mcp',
         icon: 'icon-gerenzhongxin',
         component: () => import('@/views/resume/mcpManager.vue')
-    }),
+    })]),
     // 个人信息
     layout({
         path: '/personalInfo',

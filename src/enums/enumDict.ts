@@ -86,10 +86,10 @@ export const workExperienceList = [
 ]
 
 export const channelList = [
-    {
-        key: 'BOSS直聘',
-        value: 0
-    },
+    // {
+    //     key: 'BOSS直聘',
+    //     value: 0
+    // },
     {
         key: '智联招聘',
         value: 1

@@ -487,11 +487,11 @@ const diagnoseResume = (message?: string, reply?: boolean) => {
 
                 diagnoseStr.value = JSON.stringify(diagnoseData);
 
+                emits('sendDiagnose', str);
                 if (reply) {
                     diagnoseContent.value = JSON.parse(str).diagnosisResultMessage;
                     diagnoseModal.value = true;
                 } else {
-                    emits('sendDiagnose', str);
                     askQuestion();
                 }
                 props.updateCache(str);

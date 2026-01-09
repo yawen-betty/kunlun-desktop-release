@@ -109,7 +109,7 @@ export class RobotManager {
     public async crawlPosition(searchParams: any, taskId: string, resumeText: string, prompt: string) {
         this.isRunning = true;
         this.isRealStop = false
-        const channelList = ['boss', 'zhilian', 'guopin']
+        const channelList = ['zhilian', 'guopin']
 
         logger.info('[RobotManager] 开始爬取职位...');
 
@@ -153,30 +153,30 @@ export class RobotManager {
                 if (cookiesStr && cookiesStr !== 'no cookies') {
                     logger.info(`[RobotManager] 开始爬取 ${channel} 渠道`);
 
-                    // try {
-                    const res = await executePositionSearch({
-                            channelName: channel,
-                            searchParams: searchParams,
-                            apiKey: UserInfo.info.modelList[0].apiKey!,
-                            // apiKey: 'ca9112c0753043ae9c2f9647892f49e7.bfZ2cqxbzv7duOph'
-                        },
-                        resumeText,
-                        taskId,
-                        prompt,
-                        () => this.isRunning
-                    );
+                    try {
+                        const res = await executePositionSearch({
+                                channelName: channel,
+                                searchParams: searchParams,
+                                apiKey: UserInfo.info.modelList[0].apiKey!,
+                                // apiKey: 'ca9112c0753043ae9c2f9647892f49e7.bfZ2cqxbzv7duOph'
+                            },
+                            resumeText,
+                            taskId,
+                            prompt,
+                            () => this.isRunning
+                        );
 
-                    if (res.code === 403) {
-                        emitter.emit('loginFailure', channel)
+                        if (res.code === 403) {
+                            emitter.emit('loginFailure', channel)
+                        }
+                        logger.info(`[RobotManager] ${channel} 渠道爬取完成`);
+                    } catch (error: any) {
+                        if (error.name === 'AbortError') {
+                            logger.info(`[RobotManager] ${channel} 渠道已被取消`);
+                            return; // 直接退出，不继续处理其他渠道
+                        }
+                        logger.error(`[RobotManager] ${channel} 渠道爬取失败:`, error);
                     }
-                    logger.info(`[RobotManager] ${channel} 渠道爬取完成`);
-                    // } catch (error: any) {
-                    //     if (error.name === 'AbortError') {
-                    //         logger.info(`[RobotManager] ${channel} 渠道已被取消`);
-                    //         return; // 直接退出，不继续处理其他渠道
-                    //     }
-                    //     logger.error(`[RobotManager] ${channel} 渠道爬取失败:`, error);
-                    // }
 
                     // 渠道间延迟
                     await this.sleep(2000);
