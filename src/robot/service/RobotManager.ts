@@ -109,7 +109,7 @@ export class RobotManager {
     public async crawlPosition(searchParams: any, taskId: string, resumeText: string, prompt: string) {
         this.isRunning = true;
         this.isRealStop = false
-        const channelList = ['boss', 'zhilian', 'guopin']
+        const channelList = ['zhilian', 'guopin']
 
         logger.info('[RobotManager] 开始爬取职位...');
 

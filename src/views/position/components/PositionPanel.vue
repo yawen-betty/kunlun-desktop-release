@@ -118,12 +118,14 @@ const resetFilters = () => {
 }
 
 const handlePageChange = async (page: number) => {
+    hasNewPositions.value = false
     pagination.current = page
     await loadPositions()
     document.querySelector('.position-list')?.scrollTo(0, 0)
 }
 
 const handlePageSizeChange = async (pageSize: number) => {
+    hasNewPositions.value = false
     pagination.pageSize = pageSize
     pagination.current = 1
     await loadPositions()
@@ -132,16 +134,17 @@ const handlePageSizeChange = async (pageSize: number) => {
 
 const handleFilterChange = async () => {
     pagination.current = 1
+    hasNewPositions.value = false
     await loadPositions()
 }
 
 const channels = ref([
-    {
-        name: 'BOSS直聘',
-        value: 'boss',
-        icon: bossIcon,
-        isLogin: false
-    },
+    // {
+    //     name: 'BOSS直聘',
+    //     value: 'boss',
+    //     icon: bossIcon,
+    //     isLogin: false
+    // },
     {
         name: '智联招聘',
         value: 'zhilian',

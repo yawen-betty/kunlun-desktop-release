@@ -6,7 +6,7 @@
                 <span>{{ triggerText }}</span>
             </div>
         </slot>
-        <Teleport to="body">
+        <Teleport to=".write-content">
             <div v-if="visible" :style="dropdownStyle" class="module-dropdown">
                 <div class="module-manager">
                     <div :style="{ width: columnWidthStyle }" class="module-column">
@@ -23,7 +23,8 @@
                                     <SvgIcon class="icon-drag mr-10" color="#9499A4" name="icon-tuozhuai" size="12"/>
                                     <span class="module-name">{{ item.name }}</span>
                                 </div>
-                                <SvgIcon class="icon-delete" color="#9499A4" name="icon-shanchu-xian" size="12"
+                                <SvgIcon v-if="selectedModules.length > 1" class="icon-delete"
+                                         color="#9499A4" name="icon-shanchu-xian" size="12"
                                          @click="removeModule(item.id)"/>
                             </div>
                         </div>
@@ -377,13 +378,17 @@ const initSortable = () => {
 
 const updateDropdownPosition = () => {
     if (triggerRef.value) {
-        const rect = triggerRef.value.getBoundingClientRect();
-        dropdownStyle.value = {
-            position: 'fixed',
-            top: `${rect.bottom}px`,
-            left: `${rect.left}px`,
-            zIndex: currentZIndex.value
-        };
+        const triggerRect = triggerRef.value.getBoundingClientRect();
+        const container = document.querySelector('.manual-mode');
+        if (container) {
+            const containerRect = container.getBoundingClientRect();
+            dropdownStyle.value = {
+                position: 'absolute',
+                top: `${triggerRect.bottom - containerRect.top}px`,
+                left: `${triggerRect.left - containerRect.left}px`,
+                zIndex: currentZIndex.value
+            };
+        }
     }
 };
 
@@ -400,7 +405,6 @@ const getMaxZIndex = () => {
 };
 
 const toggleVisible = () => {
-    console.log(visible.value)
     if (visible.value) {
         handleCancel();
     } else {
@@ -454,6 +458,11 @@ defineExpose({
 @use "@/assets/styles/variable.scss" as *;
 @use "@/assets/styles/compute.scss" as *;
 
+.module-dropdown {
+    position: absolute;
+    z-index: -1;
+}
+
 .module-wrapper {
     position: relative;
     display: inline-block;
@@ -495,6 +504,7 @@ defineExpose({
     &.available {
         background: $white;
         border-left: none;
+        padding: vw(10);
 
         .module-list {
             padding-bottom: vw(10);
@@ -517,6 +527,11 @@ defineExpose({
 
     &::-webkit-scrollbar {
         display: none;
+    }
+
+    &:last-child {
+        max-height: vh(361);
+        padding: 0;
     }
 }
 
@@ -542,7 +557,7 @@ defineExpose({
     }
 
     .name-wrapper {
-        width: 96%;
+        width: 93%;
         flex: 1;
         display: flex;
         align-items: center;

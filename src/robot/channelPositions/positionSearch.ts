@@ -44,15 +44,31 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
 
     // 10分钟超时监听
     let matchJobTimer: NodeJS.Timeout | null = null;
+    let isTimeout = false;
     const resetMatchJobTimer = () => {
         if (matchJobTimer) clearTimeout(matchJobTimer);
-        matchJobTimer = setTimeout(() => {
-            throw new Error('10分钟内未调用matchJob，任务超时');
+        isTimeout = false;
+        matchJobTimer = setTimeout(async () => {
+            logger.error('[PositionSearch] 10分钟内未调用matchJob，任务超时');
+            isTimeout = true;
+            abortController.abort();
+            // 获取所有标签页
+            const count = await tabCount();
+            logger.info(`[PositionSearch] 当前有 ${count} 个标签页`);
+
+            // 关闭除第一个外的所有标签页（从后往前关闭）
+            for (let i = count - 1; i >= 1; i--) {
+                logger.info(`[PositionSearch] 关闭标签页 ${i}`);
+                checkStop();
+                await mcpService.callTool('browser_tabs', {action: 'close', index: i});
+                await robotManager.sleep(500);
+            }
+            throw new DOMException('Task stopped', 'AbortError');
         }, 10 * 60 * 1000);
     };
-    resetMatchJobTimer();
 
     try {
+        resetMatchJobTimer();
         const {channelName, searchParams, apiKey} = options;
         const config = CHANNEL_CONFIG[channelName.toLowerCase() as keyof typeof CHANNEL_CONFIG];
 
@@ -275,10 +291,9 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
                 } catch (error: any) {
                     if (error.name === 'AbortError') {
                         logger.info('[PositionSearch] matchJob 已被取消');
-                        return {code: 499, message: '任务已被停止'};
+                        throw error; // 重新抛出，让外层catch处理
                     }
                     logger.info('[PositionSearch] matchJob 匹配失败：', error)
-                    // throw error; // 重新抛出其他错误
                 }
             }
 
@@ -311,6 +326,10 @@ export async function executePositionSearch(options: SearchOptions, resumeText: 
     } catch (error: any) {
         if (matchJobTimer) clearTimeout(matchJobTimer);
         if (error.name === 'AbortError') {
+            if (isTimeout) {
+                logger.info('[PositionSearch] 任务超时，结束当前渠道');
+                return {code: 408, message: '任务超时'};
+            }
             logger.info('[PositionSearch] 任务已被取消');
             return {code: 499, message: '任务已被停止'};
         }

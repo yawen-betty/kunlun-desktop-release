@@ -1,7 +1,7 @@
 <template>
     <div class="write-resume">
         <!-- 主内容区 -->
-        <div :class="['content', { 'manual-mode': currentMode === 'manual' }]">
+        <div :class="['write-content', { 'manual-mode': currentMode === 'manual' }]">
             <!-- 左侧区域 -->
             <div class="left-section">
                 <!-- 左侧顶部 -->
@@ -42,6 +42,7 @@
                 </div>
                 <!-- 简历预览区 -->
                 <ResumePreview
+                    v-if="isShowTmp"
                     ref="previewRef"
                     :is-generating="isGenerating"
                     :mode="currentMode"
@@ -76,7 +77,7 @@
                     <div v-else></div>
                     <div class="right-actions flex-column">
                         <!-- 保存成功状态 -->
-                        <div v-if="showSaveSuccess" class="save-success-status flex-column mr-20">
+                        <div v-if="showSaveSuccess" class="save-success-status flex-column mr-5">
                             <div ref="lottieContainer" class="lottie-icon flex"></div>
                             <span class="success-text">保存成功</span>
                         </div>
@@ -257,6 +258,7 @@ const scoreLoading = ref(false)
 const usageExhaustedModalVisible = ref(false)
 // 控制是否显示右侧聊天区
 const isShowChat = ref(true)
+const isShowTmp = ref(true)
 // 重命名弹框表单数据
 const formData = reactive({
     resumeName: ''
@@ -338,8 +340,6 @@ const handleWriteStream = async (items: StreamItem[], speed?: number) => {
  */
 const checkChanges = () => {
     if (!UserInfo.info.resumeMap[props.resumeId]) return true
-    console.log(UserInfo.info.resumeMap[props.resumeId].template, ' UserInfo.info.resumeMap[props.resumeId].template')
-    console.log(JSON.stringify(resumeData.value.modules), 'JSON.stringify(resumeData.value.modules)')
     return UserInfo.info.resumeMap[props.resumeId].template !== JSON.stringify(resumeData.value.modules)
 }
 
@@ -577,6 +577,7 @@ const handleToggleMode = debounce(() => {
         resetEditingState();
         currentMode.value = 'ai';
         showScoreAndMode.value = true
+        isShowChat.value = true
     }
 }, 300);
 
@@ -638,8 +639,10 @@ const handleUpdateModules = async () => {
 const reset = () => {
     fetchResumeDetail(props.resumeId);
     isShowChat.value = false;
+    isShowTmp.value = false;
+    currentMode.value = 'manual'
     nextTick(() => {
-        isShowChat.value = true
+        isShowTmp.value = true
     })
 }
 
@@ -656,11 +659,12 @@ defineExpose({reset})
     background-color: $bg-gray;
 }
 
-.content {
+.write-content {
     display: flex;
     flex: 1;
     height: 100%;
     position: relative;
+    overflow: hidden;
 }
 
 .left-section {

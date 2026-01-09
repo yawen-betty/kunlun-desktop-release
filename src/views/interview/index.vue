@@ -205,7 +205,7 @@ onActivated(() => {
 
             .img-wrapper {
                 width: vw(375);
-                height: vh(200);
+                height: vh(185);
                 border-radius: vw(5);
                 border: vw(1) solid $border-default;
                 padding: vw(10);
