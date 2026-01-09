@@ -7,7 +7,7 @@
     "windows": [
       {
         "decorations": false,
-        "devtools": true,
+        "devtools": false,
         "dragDropEnabled": true,
         "label": "main",
         "maximized": true,
