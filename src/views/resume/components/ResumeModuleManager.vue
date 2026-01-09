@@ -557,7 +557,7 @@ defineExpose({
     }
 
     .name-wrapper {
-        width: 96%;
+        width: 93%;
         flex: 1;
         display: flex;
         align-items: center;
