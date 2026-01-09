@@ -1,7 +1,7 @@
 <template>
     <div class="write-resume">
         <!-- 主内容区 -->
-        <div :class="['content', { 'manual-mode': currentMode === 'manual' }]">
+        <div :class="['write-content', { 'manual-mode': currentMode === 'manual' }]">
             <!-- 左侧区域 -->
             <div class="left-section">
                 <!-- 左侧顶部 -->
@@ -659,7 +659,7 @@ defineExpose({reset})
     background-color: $bg-gray;
 }
 
-.content {
+.write-content {
     display: flex;
     flex: 1;
     height: 100%;
