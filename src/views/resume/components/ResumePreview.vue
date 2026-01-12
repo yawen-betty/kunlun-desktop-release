@@ -1622,7 +1622,7 @@ defineExpose({
     }
 }
 
-.content.manual-mode .rich-text-desc {
+.write-content.manual-mode .rich-text-desc {
     padding: vh(8) 0;
     border-radius: vw(2);
 
