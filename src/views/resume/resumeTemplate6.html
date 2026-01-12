@@ -10,7 +10,6 @@
         }
 
         body {
-            font-family: 'PingFang SC', sans-serif;
             background: #fff;
         }
 
@@ -23,7 +22,7 @@
         /* 头部区域 */
         .header {
             height: 176px;
-            margin-bottom: 55px;
+            margin-bottom: 50px;
             position: relative;
         }
 
@@ -35,15 +34,21 @@
             height: 124px;
             background: #C0DCE2;
             border-radius: 0 9999px 9999px 0;
-            padding: 8px 8px 8px 40px;
+            padding: 8px;
             z-index: 2;
         }
+
+        //.header-bg::after {
+        //    content: "";
+        //    display: table;
+        //    clear: both;
+        //}
 
         .header-content {
             position: absolute;
             right: 0;
             top: 70px;
-            width: 527px;
+            width: 80%;
             //height: 124px;
             background: #596577;
             padding: 18px 20px;
@@ -62,7 +67,6 @@
             border-radius: 50%;
             border: 2px solid #fff;
             float: right;
-            margin-left: 35px;
             padding: 5px;
             overflow: hidden;
         }
@@ -79,6 +83,7 @@
             padding-top: 14px;
             padding-left: 53px;
             margin-bottom: 20px;
+            white-space: nowrap;
         }
 
         .job-title {
@@ -273,6 +278,7 @@
             line-height: 1.8;
             text-align: justify;
             clear: both;
+            white-space: break-spaces;
         }
     </style>
 </head>
