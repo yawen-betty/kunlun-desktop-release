@@ -316,6 +316,7 @@ onMounted(async () => {
         // 从个人中心简历中点击进入
         await fetchResumeDetail(props.resumeId);
     }
+    getPrevProblemList()
     startAutoSave();
     window.addEventListener('keydown', handleKeyDown);
 });
@@ -324,6 +325,14 @@ onUnmounted(() => {
     stopAutoSave();
     window.removeEventListener('keydown', handleKeyDown);
 });
+
+const getPrevProblemList = () => {
+    // 上一次保存的话术
+    const map = UserInfo.getResumeMap(props.resumeId)
+    if (map) {
+        scoreProblems.value = (JSON.parse(map.trick) as { score: number; issues: QuestionBean[] }).issues || [];
+    }
+}
 
 const handleResumeDeleted = () => {
     emit('resume-deleted')
@@ -339,27 +348,30 @@ const handleWriteStream = async (items: StreamItem[], speed?: number) => {
  * 检查模板是否有变化
  */
 const checkChanges = () => {
-    if (!UserInfo.info.resumeMap[props.resumeId]) return true
-    return UserInfo.info.resumeMap[props.resumeId].template !== JSON.stringify(resumeData.value.modules)
+    if (!UserInfo.getResumeMap(props.resumeId)) return true
+    return UserInfo.getResumeMap(props.resumeId).template !== JSON.stringify(resumeData.value.modules)
 }
 
 const handleDiagnosis = async () => {
-    await saveResume()
-    const isChanged = checkChanges();
-    if (currentMode.value === 'manual') {
-        // 人工模式，检查是否有变化
-        if (isChanged) {
-            aiDiagnosisRef.value?.open(props.resumeId)
+    try {
+        await saveResume()
+    } finally {
+        const isChanged = checkChanges();
+        if (currentMode.value === 'manual') {
+            // 人工模式，检查是否有变化
+            if (isChanged) {
+                aiDiagnosisRef.value?.open(props.resumeId)
+            } else {
+                message.warning(Message, '简历未变更，无需诊断！')
+            }
         } else {
-            message.warning(Message, '简历未变更，无需诊断！')
-        }
-    } else {
-        // ai模式
-        if (resumeChatRef.value?.isWorking) return message.warning(Message, 'Ai正在工作，请稍后再试！')
-        if (isChanged) {
-            resumeChatRef.value?.diagnoseResume()
-        } else {
-            message.warning(Message, '简历未变更，无需诊断！')
+            // ai模式
+            if (resumeChatRef.value?.isWorking) return message.warning(Message, 'Ai正在工作，请稍后再试！')
+            if (isChanged) {
+                resumeChatRef.value?.diagnoseResume()
+            } else {
+                message.warning(Message, '简历未变更，无需诊断！')
+            }
         }
     }
 }
@@ -375,10 +387,10 @@ const getDiagnosisRes = (res: string) => {
  * @param trick 诊断接口返回值
  */
 const updateCache = (trick: string) => {
-    UserInfo.info.resumeMap[props.resumeId] = {
+    UserInfo.setResumeMap(props.resumeId, {
         trick,
         template: JSON.stringify(resumeData.value.modules)
-    }
+    })
 }
 
 /**
@@ -575,11 +587,14 @@ const handleToggleMode = debounce(async () => {
     if (currentMode.value === 'ai') {
         promptDialogRef.value?.open();
     } else {
-        await saveResume()
-        resetEditingState();
-        currentMode.value = 'ai';
-        showScoreAndMode.value = true
-        isShowChat.value = true
+        try {
+            await saveResume()
+        } finally {
+            resetEditingState();
+            currentMode.value = 'ai';
+            showScoreAndMode.value = true
+            isShowChat.value = true
+        }
     }
 }, 300);
 

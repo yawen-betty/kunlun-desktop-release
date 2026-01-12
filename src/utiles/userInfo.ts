@@ -6,6 +6,7 @@ import {robotManager} from "@/robot/service";
 
 type TResumeMap = Record<string, { trick: string; template: string }>;
 
+// trick结构： score： number， issues: 问题列表Array<QuestionBean>
 export class UserInfo {
     static info = reactive({
         token: '', // token
@@ -32,5 +33,17 @@ export class UserInfo {
         UserInfo.info.isRunningTask = false;
         await auth.saveToken('');
         await router.replace('/login');
+    }
+
+    static getResumeMap(key: string) {
+        const resumeMap = JSON.parse(localStorage.getItem('resumeMap') || '{}') as TResumeMap;
+
+        UserInfo.info.resumeMap = resumeMap;
+        return UserInfo.info.resumeMap[UserInfo.info.userId + key];
+    }
+
+    static setResumeMap(key: string, value: { trick: string; template: string }) {
+        UserInfo.info.resumeMap[UserInfo.info.userId + key] = value;
+        localStorage.setItem('resumeMap', JSON.stringify(UserInfo.info.resumeMap))
     }
 }
