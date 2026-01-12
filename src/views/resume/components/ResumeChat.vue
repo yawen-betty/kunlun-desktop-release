@@ -711,7 +711,7 @@ onMounted(() => {
         chattingRecordsRef.value.addEventListener('scroll', saveScrollPosition);
     }
 
-    diagnoseStr.value = UserInfo.info.resumeMap?.[props.resumeUuid]?.trick;
+    diagnoseStr.value = UserInfo.getResumeMap(props.resumeUuid)?.trick;
 });
 
 onActivated(() => {

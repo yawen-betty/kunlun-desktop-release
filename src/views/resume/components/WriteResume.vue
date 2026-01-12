@@ -22,8 +22,8 @@
                         <SvgIcon class="pointer" color="#9499A4" name="icon-bianji-xian" size="14"
                                  @click="showRenameModal = true"/>
                     </div>
-                    <div v-if="currentMode === 'manual'" class="score-wrapper flex flex-column">
-                        <div class="score-text ">当前简历分数：{{ resumeScore }}</div>
+                    <div v-if="showScoreAndMode && currentMode === 'manual'" class="score-wrapper flex flex-column">
+                        <div class="score-text ">当前简历分数：{{ resumeScore || '--' }}</div>
                         <Poptip v-if="scoreProblems.length" class="questions-pop flex-column ml-10 mr-20"
                                 placement="bottom" trigger="hover">
                             <SvgIcon class="tip" color="#FC8919" name="icon-tishi" size="14"/>
@@ -300,6 +300,7 @@ watch(
             currentMode.value = val;
             isShowToggleBtn.value = true
             isGenerating.value = false
+            showScoreAndMode.value = true;
         }
     }
 )
@@ -342,6 +343,7 @@ const handleWriteStream = async (items: StreamItem[], speed?: number) => {
     console.log(items, speed, 'speed')
     await previewRef.value?.streamWrite(items, speed);
     isShowToggleBtn.value = true
+    await saveResume()
 }
 
 /**
@@ -354,7 +356,7 @@ const checkChanges = () => {
 
 const handleDiagnosis = async () => {
     try {
-        await saveResume()
+        await saveResume(true, true)
     } finally {
         const isChanged = checkChanges();
         if (currentMode.value === 'manual') {
@@ -658,6 +660,7 @@ const reset = () => {
     isShowChat.value = false;
     isShowTmp.value = false;
     currentMode.value = 'manual'
+    showScoreAndMode.value = true;
     nextTick(() => {
         isShowTmp.value = true
     })

@@ -35,6 +35,10 @@ export class UserInfo {
         await router.replace('/login');
     }
 
+    /**
+     * 取话术
+     * @param key 简历id
+     */
     static getResumeMap(key: string) {
         const resumeMap = JSON.parse(localStorage.getItem('resumeMap') || '{}') as TResumeMap;
 
