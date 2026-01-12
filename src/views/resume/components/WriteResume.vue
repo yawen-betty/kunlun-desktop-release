@@ -343,7 +343,8 @@ const checkChanges = () => {
     return UserInfo.info.resumeMap[props.resumeId].template !== JSON.stringify(resumeData.value.modules)
 }
 
-const handleDiagnosis = () => {
+const handleDiagnosis = async () => {
+    await saveResume()
     const isChanged = checkChanges();
     if (currentMode.value === 'manual') {
         // 人工模式，检查是否有变化
@@ -486,12 +487,12 @@ const handleConfirm = async () => {
 };
 
 // 保存操作
-const saveResume = async (isShowAnimate: boolean = true) => {
+const saveResume = async (isShowAnimate: boolean = true, isShowLoading: boolean = false) => {
     const params = new SaveResumeInDto();
     params.resumeId = props.resumeId;
     params.modules = resumeData.value.modules;
 
-    await resumeService.saveResume(params);
+    await resumeService.saveResume(params, isShowLoading);
     isShowAnimate && showSaveSuccessAnimation();
 };
 
@@ -544,7 +545,7 @@ const handleSave = debounce(async () => {
         message.warning(Message, '当前处于编辑中,请保存后再操作!');
         return;
     }
-    await saveResume();
+    await saveResume(true, true)
 }, 300);
 
 const handleDownload = debounce(() => {
@@ -561,12 +562,12 @@ const handleExit = debounce(async () => {
         return;
     }
     if (!isGenerating.value) {
-        await saveResume()
+        await saveResume(true, true)
     }
     emit('back-to-make');
 }, 300);
 
-const handleToggleMode = debounce(() => {
+const handleToggleMode = debounce(async () => {
     if (previewRef.value?.isStreaming) {
         message.warning(Message, 'AI正在撰写中，请稍后！');
         return;
@@ -574,6 +575,7 @@ const handleToggleMode = debounce(() => {
     if (currentMode.value === 'ai') {
         promptDialogRef.value?.open();
     } else {
+        await saveResume()
         resetEditingState();
         currentMode.value = 'ai';
         showScoreAndMode.value = true

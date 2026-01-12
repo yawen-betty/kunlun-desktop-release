@@ -49,12 +49,12 @@ export class ResumeService {
     /**
      * 保存简历内容
      */
-    public async saveResume(params: SaveResumeInDto): Promise<EmptyOutDto> {
+    public async saveResume(params: SaveResumeInDto, showLoading: boolean = false): Promise<EmptyOutDto> {
         const path = {
             ...ResumePaths.saveResume,
             url: ResumePaths.saveResume.url.replace('{resumeId}', params.resumeId)
         };
-        return await this.http.request<EmptyOutDto>(path, params, {showLoading: false});
+        return await this.http.request<EmptyOutDto>(path, params, {showLoading});
     }
 
     /**
