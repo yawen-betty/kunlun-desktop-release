@@ -12,7 +12,6 @@
         }
 
         body {
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
             background: #fff;
         }
 
@@ -44,7 +43,7 @@
             position: absolute;
             left: 0;
             top: 38px;
-            width: 382px;
+            width: 65%;
             height: 40px;
             background: #68a1bb;
             border-radius: 0 20px 20px 0;
@@ -96,7 +95,7 @@
 
         .info-section {
             margin-top: 13px;
-            padding: 0 46px;
+            padding: 0 46px 0 46px;
             overflow: hidden;
         }
 
@@ -108,11 +107,11 @@
             line-height: 15px;
             width: 41%;
             float: left;
-            white-space: nowrap;
+            word-break: break-all
         }
 
-        .info-item:nth-child(odd) {
-            margin-right: 4%;
+        .info-item:nth-child(even) {
+            float: right;
         }
 
         .info-icon {

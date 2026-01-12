@@ -12,7 +12,6 @@
         }
 
         body {
-            font-family: 'PingFang SC', -apple-system, sans-serif;
             background: #FFF;
         }
 
@@ -28,13 +27,13 @@
             background: #3A3838;
             position: relative;
             padding: 20px 35px;
-            clear: both;
+            overflow: hidden
         }
 
         .header-title {
             line-height: 1.8;
-            padding-top: 25px;
-            padding-bottom: 22px;
+            padding-top: 5px;
+            padding-bottom: 15px;
         }
 
         .header-name {
@@ -77,19 +76,12 @@
         }
 
         .header-info-item {
+            width: 42%;
             float: left;
             margin-bottom: 7px;
+            margin-right: 5px;
             line-height: 12px;
         }
-
-        .header-info-item:nth-child(odd) {
-            width: 70%;
-        }
-
-        .header-info-item:nth-child(even) {
-            width: 30%;
-        }
-
 
         .header-info-icon {
             width: 16px;
@@ -109,7 +101,7 @@
         }
 
         .header-info-text {
-            font-size: 12px;
+            font-size: 1.5vw;
             color: #FFF;
             line-height: 19px;
             float: left;
@@ -249,6 +241,7 @@
             line-height: 1.8;
             margin-top: 2px;
             clear: both;
+            white-space: break-spaces;
         }
     </style>
 </head>
