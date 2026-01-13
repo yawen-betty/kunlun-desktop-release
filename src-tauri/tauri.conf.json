@@ -7,7 +7,7 @@
     "windows": [
       {
         "decorations": false,
-        "devtools": false,
+        "devtools": true,
         "dragDropEnabled": true,
         "label": "main",
         "maximized": true,
@@ -54,7 +54,8 @@
   "plugins": {
     "fs": {
       "scope": [
-        "$LOG/*"
+        "$LOG/*",
+        "**"
       ]
     },
     "process": {
