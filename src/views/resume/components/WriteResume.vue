@@ -631,6 +631,7 @@ const sendTemplate = (templateData: string, type: string) => {
     }
     if (type === 'attachmentStream') {
         isGenerating.value = false;
+        isShowToggleBtn.value = true
         // 开启自动保存
         autoSave.value = true
     }
