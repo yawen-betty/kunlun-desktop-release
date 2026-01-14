@@ -18,7 +18,7 @@
             <div class="drawer-body">
                 <!-- 左侧缩略图区 -->
                 <div class="resume-list">
-                    <template v-for="key in Object.keys(templateMap)">
+                    <template v-for="key in sortedList">
                         <div :class="[currentTmp?.id === templateMap[key].id && 'active']" class="resume-item pointer"
                              @click="changeTmp(templateMap[key])">
                             <img :src="Config.baseUrl + templateMap[key].thumbnail_url">
@@ -33,13 +33,15 @@
                     <!-- 预览区 -->
                     <div class="preview-section">
                         <!-- 渲染PDF的每一页 -->
-                        <VuePdf
-                            v-for="pageNum in numOfPages"
-                            :key="`${pdfUrl}-${pageNum}`"
-                            :page="pageNum"
-                            :src="pdfUrl"
-                            class="agreement-iframe"
-                        />
+                        <template v-if="isShowPdf">
+                            <VuePdf
+                                v-for="pageNum in numOfPages"
+                                :key="`${pdfUrl}-${pageNum}`"
+                                :page="pageNum"
+                                :src="pdfUrl"
+                                class="agreement-iframe"
+                            />
+                        </template>
                     </div>
                     <div class="config-content">
                         <!-- 水印内容 -->
@@ -63,7 +65,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, watch} from 'vue';
+import {computed, nextTick, ref, watch} from 'vue';
 import {Button, Input, Modal} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import type {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
@@ -100,7 +102,16 @@ const imgUrl = ref<string>('')
 const selectedFormat = ref<'pdf' | 'jpg'>('pdf');
 const watermarkContent = ref('');
 const showWatermark = ref(false);
+const isShowPdf = ref(true)
 
+const sortedList = computed(() => {
+    const keys = Object.keys(templateMap.value)
+    if (!keys.length) return [];
+    // { numeric: true } 会自动处理 "1" < "9" < "10" 的逻辑
+    const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+
+    return keys.sort(collator.compare);
+})
 const resetData = () => {
     numOfPages.value = 0;
     templateMap.value = {};
@@ -163,13 +174,17 @@ const getResumePreview = async () => {
     const res = await resumeService.previewResume(inDto)
 
     if (res.code === 200) {
-        pdfUrl.value = toProxyUrl(res.data.pdfUrl!)
-        imgUrl.value = toProxyUrl(res.data.imageUrl!)
-        // 加载PDF并获取页数
-        const loadingTask = createLoadingTask(pdfUrl.value);
-        loadingTask.promise.then((pdf: PDFDocumentProxy) => {
-            numOfPages.value = pdf.numPages;
-        });
+        isShowPdf.value = false
+        nextTick(() => {
+            pdfUrl.value = toProxyUrl(res.data.pdfUrl!)
+            imgUrl.value = toProxyUrl(res.data.imageUrl!)
+            isShowPdf.value = true
+            // 加载PDF并获取页数
+            const loadingTask = createLoadingTask(pdfUrl.value);
+            loadingTask.promise.then((pdf: PDFDocumentProxy) => {
+                numOfPages.value = pdf.numPages;
+            });
+        })
     }
 }
 
@@ -313,7 +328,8 @@ const handleDownload = () => {
     flex-direction: column;
 
     .preview-section {
-        flex: 1;
+        height: calc(100% - vh(100));
+        overflow-y: auto;
     }
 
     .config-content {
