@@ -15,28 +15,20 @@
                     <div v-else>
                         <div class="ai-chat-box mb-20">
                             <div class="ai-chat">
-                                <div v-if="!info.content?.includes('当前简历评分')" class="ai-chat-text">{{
-                                        info.content
-                                    }}
-                                </div>
+                                <div v-if="!info.content?.includes('当前简历评分')" class="ai-chat-text">{{ info.content }}</div>
                                 <div v-else :class="['ai-chat-score', info.isExpandChat && 'ai-chat-score-expand']">
                                     <div class="ai-chat-score_content">{{ info.content }}</div>
-                                    <div v-if="!info.isExpandChat" class="ai-chat-score-open pointer"
-                                         @click="info.isExpandChat = !info.isExpandChat">
+                                    <div v-if="!info.isExpandChat" class="ai-chat-score-open pointer" @click="info.isExpandChat = !info.isExpandChat">
                                         查看当前问题
                                     </div>
-                                    <div v-else class="ai-chat-score-close pointer"
-                                         @click="info.isExpandChat = !info.isExpandChat">收起
-                                    </div>
+                                    <div v-else class="ai-chat-score-close pointer" @click="info.isExpandChat = !info.isExpandChat">收起</div>
                                 </div>
 
-                                <div v-if="['1', '2', '3'].includes(info.thinkingStatus || '0') && !info.isExpand"
-                                     class="is-think mt-10">
+                                <div v-if="['1', '2', '3'].includes(info.thinkingStatus || '0') && !info.isExpand" class="is-think mt-10">
                                     <div :class="['think-text', 'mr-5', info.thinkingStatus === '3' && 'think-reload']">
                                         {{ thinkingText[info.thinkingStatus!] }}
 
-                                        <div v-if="info.thinkingStatus === '3'" class="reload ml-10 pointer"
-                                             @click="handleReload">
+                                        <div v-if="info.thinkingStatus === '3'" class="reload ml-10 pointer" @click="handleReload">
                                             <SvgIcon color="#EC6B62" name="icon-shuaxin" size="12"></SvgIcon>
                                             <div class="reload-text">重试</div>
                                         </div>
@@ -50,7 +42,7 @@
                             <!-- <SvgIcon class="pointer icon" color="#9499A4" name="icon-shouqi" size="12" @click="info.isExpand = false"></SvgIcon>-->
 
                             <div v-if="info.thinkingStatus === '2'" class="deep-thinking-title">
-                                <img class="deep-log" src="@/assets/images/deep-logo.gif"/>
+                                <img class="deep-log" src="@/assets/images/deep-logo.gif" />
                                 <div class="deep-thinking-title-text">深度思考中</div>
                             </div>
 
@@ -85,14 +77,13 @@
                     @keydown="handleKeyDown"
                 ></Input>
                 <button :disabled="disabled || !sendContent" class="save-btn" @click="handleSendMessage">
-                    <SvgIcon :color="disabled || !sendContent ? '#C5C8CE' : '#fff'" name="icon-fasong" size="10"/>
+                    <SvgIcon :color="disabled || !sendContent ? '#C5C8CE' : '#fff'" name="icon-fasong" size="10" />
                     发送
                 </button>
             </div>
         </div>
 
-        <Modal v-model="diagnoseModal" :closable="false" :footer-hide="true" :mask-closable="false"
-               class-name="delete-confirm-modal question-modal">
+        <Modal v-model="diagnoseModal" :closable="false" :footer-hide="true" :mask-closable="false" class-name="delete-confirm-modal question-modal">
             <div class="delete-modal-content">
                 <div class="modal-header">
                     <span class="modal-title">提示</span>
@@ -812,7 +803,7 @@ defineExpose({
                         font-size: vw(14);
                         font-style: normal;
                         font-weight: 400;
-                        line-height: vw(20);
+                        line-height: vh(20);
                         word-break: break-all;
                         white-space: pre-wrap;
                         width: vw(130);
