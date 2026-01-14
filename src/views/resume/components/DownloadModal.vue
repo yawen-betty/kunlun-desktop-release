@@ -330,6 +330,10 @@ const handleDownload = () => {
     .preview-section {
         height: calc(100% - vh(100));
         overflow-y: auto;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
 
     .config-content {
