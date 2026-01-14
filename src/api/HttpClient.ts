@@ -30,7 +30,8 @@ interface HttpResponse {
     body: any;
 }
 
-export interface EmptyOutDto {}
+export interface EmptyOutDto {
+}
 
 export default class HttpClient {
     static baseURL = Config.baseUrl || 'http://mgt.crm.dev.pangu.cc/';
@@ -82,9 +83,11 @@ export default class HttpClient {
             urlParts.push(baseUrl);
         }
 
-        // 添加api路径段
-        urlParts.push('api');
-        urlParts.push('kunlun');
+        if (!path.url.includes('assets')) {
+            // 添加api路径段
+            urlParts.push('api');
+            urlParts.push('kunlun');
+        }
 
         // 添加prefix（如果有）
         if (path.prefix) {

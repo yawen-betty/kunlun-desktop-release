@@ -55,7 +55,7 @@ const allList = [
         value: -1,
         key: '全部渠道'
     },
-    ...channelList
+    ...channelList.filter(item => item.value !== 0)
 ]
 const sortList = [
     {
