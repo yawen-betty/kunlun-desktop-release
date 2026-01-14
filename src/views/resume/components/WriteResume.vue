@@ -590,7 +590,7 @@ const handleToggleMode = debounce(async () => {
         promptDialogRef.value?.open();
     } else {
         try {
-            await saveResume()
+            await saveResume(true, true)
         } finally {
             resetEditingState();
             currentMode.value = 'ai';

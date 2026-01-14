@@ -18,22 +18,28 @@
             <div class="drawer-body">
                 <!-- 左侧缩略图区 -->
                 <div class="resume-list">
-                    <div class="resume-item pointer active">
-                        <img src="@/assets/images/ai.png">
-                        <div class="use-tag">使用中</div>
-                    </div>
-                    <p class="resume-name">模板名称</p>
-                    <div class="resume-item">
-                        <img src="@/assets/images/ai.png">
-                    </div>
-                    <p class="resume-name">模板名称</p>
+                    <template v-for="key in Object.keys(templateMap)">
+                        <div :class="[currentTmp?.id === templateMap[key].id && 'active']" class="resume-item pointer"
+                             @click="changeTmp(templateMap[key])">
+                            <img :src="Config.baseUrl + templateMap[key].thumbnail_url">
+                            <div v-if="currentTmp?.id === templateMap[key].id" class="use-tag">使用中</div>
+                        </div>
+                        <p class="resume-name">{{ templateMap[key].name }}</p>
+                    </template>
                 </div>
 
                 <!-- 右侧 -->
                 <div class="config-section">
                     <!-- 预览区 -->
                     <div class="preview-section">
-
+                        <!-- 渲染PDF的每一页 -->
+                        <VuePdf
+                            v-for="pageNum in numOfPages"
+                            :key="`${pdfUrl}-${pageNum}`"
+                            :page="pageNum"
+                            :src="pdfUrl"
+                            class="agreement-iframe"
+                        />
                     </div>
                     <div class="config-content">
                         <!-- 水印内容 -->
@@ -61,8 +67,13 @@ import {computed, ref, watch} from 'vue';
 import {Button, Input, Modal} from 'view-ui-plus';
 import SvgIcon from '@/components/svgIcon/index.vue';
 import type {GetResumeDetailOutDto} from '@/api/resume/dto/GetResumeDetail';
-import {download} from "@/utiles/download.ts";
 import {downloadImage, downloadPdf} from "@/utiles/downloadFile.ts";
+import {createLoadingTask, VuePdf} from "vue3-pdfjs";
+import {ResumeService} from "@/service/ResumeService.ts";
+import {ResumeTemplateBean} from "@/api/resume/dto/bean/ResumeTemplateBean.ts";
+import {Config} from "@/Config.ts";
+import {PreviewResumeInDto} from "@/api/resume/dto/PreviewResume.ts";
+import {PDFDocumentProxy} from "pdfjs-dist/types/src/display/api";
 
 const props = defineProps<{
     modelValue: boolean;
@@ -78,13 +89,24 @@ const visible = computed({
     set: (val) => emit('update:modelValue', val)
 });
 
-const selectedStyle = ref<'simple' | 'business'>('simple');
+const resumeService = new ResumeService()
+// 响应式数据
+const numOfPages = ref<number>(0); // PDF总页数
+// 模板列表
+const templateMap = ref<Record<string, ResumeTemplateBean>>({})
+const currentTmp = ref<ResumeTemplateBean>();
+const pdfUrl = ref<string>('')
+const imgUrl = ref<string>('')
 const selectedFormat = ref<'pdf' | 'jpg'>('pdf');
 const watermarkContent = ref('');
 const showWatermark = ref(false);
 
 const resetData = () => {
-    selectedStyle.value = 'simple';
+    numOfPages.value = 0;
+    templateMap.value = {};
+    pdfUrl.value = '';
+    imgUrl.value = '';
+    currentTmp.value = undefined;
     selectedFormat.value = 'pdf';
     watermarkContent.value = '';
     showWatermark.value = false;
@@ -97,17 +119,74 @@ const handleClose = () => {
 watch(visible, (newVal) => {
     if (!newVal) {
         resetData();
+    } else {
+        getTemplateList()
     }
 });
+
+watch(
+    () => currentTmp.value,
+    async (newVal) => {
+        if (newVal) {
+            await getResumePreview()
+        }
+    }
+)
+
+const getTemplateList = () => {
+    resumeService.getResumeTmp()
+        .then(res => {
+            templateMap.value = res
+            currentTmp.value = templateMap.value[Object.keys(templateMap.value)[0]]
+        })
+        .catch(err => {
+
+        })
+}
+
+/**
+ * 将相对URL转换为完整的代理URL
+ * @param url 原始URL
+ * @returns 完整的URL
+ */
+const toProxyUrl = (url: string): string => {
+    if (!url) return '';
+    return Config.baseUrl + url;
+};
+
+const getResumePreview = async () => {
+    const inDto: PreviewResumeInDto = {
+        resumeId: props.resumeData.uuid!,
+        templateId: currentTmp.value?.id!
+    }
+
+    const res = await resumeService.previewResume(inDto)
+
+    if (res.code === 200) {
+        pdfUrl.value = toProxyUrl(res.data.pdfUrl!)
+        imgUrl.value = toProxyUrl(res.data.imageUrl!)
+        // 加载PDF并获取页数
+        const loadingTask = createLoadingTask(pdfUrl.value);
+        loadingTask.promise.then((pdf: PDFDocumentProxy) => {
+            numOfPages.value = pdf.numPages;
+        });
+    }
+}
+
+const changeTmp = (data: ResumeTemplateBean) => {
+    currentTmp.value = data;
+}
 
 const handleWatermarkBlur = () => {
     showWatermark.value = !!watermarkContent.value.trim();
 };
 
 const handleDownload = () => {
-    // downloadPdf('https://hr-ai.dev.lingxizhifu.cn/assets/kunlun/resume/templates/images/resume-template1_thumb.png')
-    downloadImage('https://hr-ai.dev.lingxizhifu.cn//assets/kunlun/personal-image/c2d111d0-157e-46c8-a7a7-51b3ba2ab3a6.jpg')
-    // download('.resume-list .content-wrapper', selectedFormat.value, props.resumeData.name || '未命名')
+    if (selectedFormat.value === 'pdf') {
+        downloadPdf(pdfUrl.value, props.resumeData.name)
+    } else {
+        downloadImage(imgUrl.value, props.resumeData.name)
+    }
 };
 </script>
 
@@ -258,6 +337,7 @@ const handleDownload = () => {
 .watermark-input {
     width: vw(300);
     height: vh(40);
+    visibility: hidden;
 
     :deep(.ivu-input) {
         height: 100%;

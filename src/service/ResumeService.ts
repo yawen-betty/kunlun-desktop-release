@@ -14,8 +14,10 @@ import {UpdateModuleFieldsInDto} from '@/api/resume/dto/UpdateModuleFields';
 import {UpdateModuleEntriesInDto} from '@/api/resume/dto/UpdateModuleEntries';
 import {DeleteResumeInDto, DeleteResumeOutDto} from '@/api/resume/dto/DeleteResume';
 import {CopyResumeInDto, CopyResumeOutDto} from '@/api/resume/dto/CopyResume';
+import {PreviewResumeInDto, PreviewResumeOutDto} from '@/api/resume/dto/PreviewResume';
 import {Result} from '@/api/BaseDto';
 import {EmptyOutDto} from '@/api/HttpClient';
+import {ResumeTemplateBean} from "@/api/resume/dto/bean/ResumeTemplateBean.ts";
 
 export class ResumeService {
     private static instance: ResumeService;
@@ -172,5 +174,20 @@ export class ResumeService {
             url: ResumePaths.getResumeText.url.replace('{resumeId}', resumeId)
         };
         return await this.http.request<Result<EmptyOutDto>>(path, {});
+    }
+
+    /**
+     * 查询简历模板信息
+     */
+    public async getResumeTmp(): Promise<Record<string, ResumeTemplateBean>> {
+        const path = ResumePaths.getResumeTmp;
+        return await this.http.request<Record<string, ResumeTemplateBean>>(path, {});
+    }
+
+    /**
+     * 生成简历预览
+     */
+    public async previewResume(params: PreviewResumeInDto): Promise<Result<PreviewResumeOutDto>> {
+        return await this.http.request<Result<PreviewResumeOutDto>>(ResumePaths.previewResume, params);
     }
 }

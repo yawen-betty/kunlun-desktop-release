@@ -31,15 +31,18 @@
 .ivu-input,
 .ivu-select-visible .ivu-select-selection,
 .ivu-form-item-error .ivu-input:focus,
-.ivu-radio-focus,
 .ivu-switch, input,
 .ivu-input-number {
     box-shadow: none !important;
-    //height: vh(40);
-    //background: $bg-gray;
-    //padding: vh(12) vw(20);
-    //border: 0 !important;
-    //font-size: vw(14);
+    height: vh(40);
+    background: $bg-gray;
+    padding: vh(12) vw(20);
+    border: 0 !important;
+    font-size: vw(14);
+}
+
+.ivu-radio-focus {
+    box-shadow: none !important;
 }
 
 textarea.ivu-input {
