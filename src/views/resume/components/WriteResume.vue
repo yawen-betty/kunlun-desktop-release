@@ -22,8 +22,8 @@
                         <SvgIcon class="pointer" color="#9499A4" name="icon-bianji-xian" size="14"
                                  @click="showRenameModal = true"/>
                     </div>
-                    <div v-if="currentMode === 'manual'" class="score-wrapper flex flex-column">
-                        <div class="score-text ">当前简历分数：{{ resumeScore }}</div>
+                    <div v-if="showScoreAndMode && currentMode === 'manual'" class="score-wrapper flex flex-column">
+                        <div class="score-text ">当前简历分数：{{ resumeScore || '--' }}</div>
                         <Poptip v-if="scoreProblems.length" class="questions-pop flex-column ml-10 mr-20"
                                 placement="bottom" trigger="hover">
                             <SvgIcon class="tip" color="#FC8919" name="icon-tishi" size="14"/>
@@ -300,6 +300,7 @@ watch(
             currentMode.value = val;
             isShowToggleBtn.value = true
             isGenerating.value = false
+            showScoreAndMode.value = true;
         }
     }
 )
@@ -316,6 +317,7 @@ onMounted(async () => {
         // 从个人中心简历中点击进入
         await fetchResumeDetail(props.resumeId);
     }
+    getPrevProblemList()
     startAutoSave();
     window.addEventListener('keydown', handleKeyDown);
 });
@@ -325,6 +327,14 @@ onUnmounted(() => {
     window.removeEventListener('keydown', handleKeyDown);
 });
 
+const getPrevProblemList = () => {
+    // 上一次保存的话术
+    const map = UserInfo.getResumeMap(props.resumeId)
+    if (map) {
+        scoreProblems.value = (JSON.parse(map.trick) as { score: number; issues: QuestionBean[] }).issues || [];
+    }
+}
+
 const handleResumeDeleted = () => {
     emit('resume-deleted')
 }
@@ -333,32 +343,37 @@ const handleWriteStream = async (items: StreamItem[], speed?: number) => {
     console.log(items, speed, 'speed')
     await previewRef.value?.streamWrite(items, speed);
     isShowToggleBtn.value = true
+    await saveResume()
 }
 
 /**
  * 检查模板是否有变化
  */
 const checkChanges = () => {
-    if (!UserInfo.info.resumeMap[props.resumeId]) return true
-    return UserInfo.info.resumeMap[props.resumeId].template !== JSON.stringify(resumeData.value.modules)
+    if (!UserInfo.getResumeMap(props.resumeId)) return true
+    return UserInfo.getResumeMap(props.resumeId).template !== JSON.stringify(resumeData.value.modules)
 }
 
-const handleDiagnosis = () => {
-    const isChanged = checkChanges();
-    if (currentMode.value === 'manual') {
-        // 人工模式，检查是否有变化
-        if (isChanged) {
-            aiDiagnosisRef.value?.open(props.resumeId)
+const handleDiagnosis = async () => {
+    try {
+        await saveResume(true, true)
+    } finally {
+        const isChanged = checkChanges();
+        if (currentMode.value === 'manual') {
+            // 人工模式，检查是否有变化
+            if (isChanged) {
+                aiDiagnosisRef.value?.open(props.resumeId)
+            } else {
+                message.warning(Message, '简历未变更，无需诊断！')
+            }
         } else {
-            message.warning(Message, '简历未变更，无需诊断！')
-        }
-    } else {
-        // ai模式
-        if (resumeChatRef.value?.isWorking) return message.warning(Message, 'Ai正在工作，请稍后再试！')
-        if (isChanged) {
-            resumeChatRef.value?.diagnoseResume()
-        } else {
-            message.warning(Message, '简历未变更，无需诊断！')
+            // ai模式
+            if (resumeChatRef.value?.isWorking) return message.warning(Message, 'Ai正在工作，请稍后再试！')
+            if (isChanged) {
+                resumeChatRef.value?.diagnoseResume()
+            } else {
+                message.warning(Message, '简历未变更，无需诊断！')
+            }
         }
     }
 }
@@ -374,10 +389,10 @@ const getDiagnosisRes = (res: string) => {
  * @param trick 诊断接口返回值
  */
 const updateCache = (trick: string) => {
-    UserInfo.info.resumeMap[props.resumeId] = {
+    UserInfo.setResumeMap(props.resumeId, {
         trick,
         template: JSON.stringify(resumeData.value.modules)
-    }
+    })
 }
 
 /**
@@ -486,12 +501,12 @@ const handleConfirm = async () => {
 };
 
 // 保存操作
-const saveResume = async (isShowAnimate: boolean = true) => {
+const saveResume = async (isShowAnimate: boolean = true, isShowLoading: boolean = false) => {
     const params = new SaveResumeInDto();
     params.resumeId = props.resumeId;
     params.modules = resumeData.value.modules;
 
-    await resumeService.saveResume(params);
+    await resumeService.saveResume(params, isShowLoading);
     isShowAnimate && showSaveSuccessAnimation();
 };
 
@@ -544,7 +559,7 @@ const handleSave = debounce(async () => {
         message.warning(Message, '当前处于编辑中,请保存后再操作!');
         return;
     }
-    await saveResume();
+    await saveResume(true, true)
 }, 300);
 
 const handleDownload = debounce(() => {
@@ -561,12 +576,12 @@ const handleExit = debounce(async () => {
         return;
     }
     if (!isGenerating.value) {
-        await saveResume()
+        await saveResume(true, true)
     }
     emit('back-to-make');
 }, 300);
 
-const handleToggleMode = debounce(() => {
+const handleToggleMode = debounce(async () => {
     if (previewRef.value?.isStreaming) {
         message.warning(Message, 'AI正在撰写中，请稍后！');
         return;
@@ -574,10 +589,14 @@ const handleToggleMode = debounce(() => {
     if (currentMode.value === 'ai') {
         promptDialogRef.value?.open();
     } else {
-        resetEditingState();
-        currentMode.value = 'ai';
-        showScoreAndMode.value = true
-        isShowChat.value = true
+        try {
+            await saveResume(true, true)
+        } finally {
+            resetEditingState();
+            currentMode.value = 'ai';
+            showScoreAndMode.value = true
+            isShowChat.value = true
+        }
     }
 }, 300);
 
@@ -641,6 +660,7 @@ const reset = () => {
     isShowChat.value = false;
     isShowTmp.value = false;
     currentMode.value = 'manual'
+    showScoreAndMode.value = true;
     nextTick(() => {
         isShowTmp.value = true
     })

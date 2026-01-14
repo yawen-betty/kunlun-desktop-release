@@ -1,4 +1,4 @@
-import { Path } from "@/api/Path.ts";
+import {Path} from "@/api/Path.ts";
 
 export class ResumePaths {
     /**
@@ -124,6 +124,24 @@ export class ResumePaths {
     static getResumeText: Path = {
         url: '/{resumeId}/text',
         method: 'GET',
+        prefix: 'resumes'
+    }
+
+    /**
+     * 获取简历模板信息
+     */
+    static getResumeTmp: Path = {
+        url: '/assets/kunlun/resume/templates/info.json',
+        method: 'GET',
+        prefix: ''
+    }
+
+    /**
+     * 生成简历预览
+     */
+    static previewResume: Path = {
+        url: '/preview',
+        method: 'POST',
         prefix: 'resumes'
     }
 }
