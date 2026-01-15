@@ -378,7 +378,6 @@ const parseAttachment = (msg: string) => {
         props.hasAttachment!,
         (data) => {
             const lastData = chatList.value[chatList.value.length - 1];
-            console.log(data);
 
             if (data.includes('event:thinking')) {
                 const str: string = extractDataContent(data, 'event:thinking');
@@ -641,7 +640,9 @@ const write = () => {
                     disabled.value = false;
                 }
 
-                emits('sendDiagnose', JSON.stringify(diagnoseData));
+                diagnoseStr.value = JSON.stringify(diagnoseData);
+
+                emits('sendDiagnose', diagnoseStr.value);
                 // props.updateCache(JSON.stringify(diagnoseData))
             }
             smartScrollToBottom();
