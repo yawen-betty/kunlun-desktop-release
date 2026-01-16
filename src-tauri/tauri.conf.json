@@ -7,7 +7,7 @@
     "windows": [
       {
         "decorations": false,
-        "devtools": true,
+        "devtools": false,
         "dragDropEnabled": true,
         "label": "main",
         "maximized": true,
@@ -52,12 +52,6 @@
   },
   "identifier": "com.liangji.kunlun",
   "plugins": {
-    "fs": {
-      "scope": [
-        "$LOG/*",
-        "**"
-      ]
-    },
     "process": {
       "relaunch": true
     },

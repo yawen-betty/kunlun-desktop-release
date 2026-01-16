@@ -2,7 +2,9 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:window:default",
     "core:window:allow-start-dragging",
@@ -24,6 +26,17 @@
     "shell:allow-execute",
     "shell:allow-open",
     "core:path:default",
-    "core:path:allow-resolve-directory"
+    "core:path:allow-resolve-directory",
+    "dialog:allow-save",
+    "fs:allow-write-file",
+    "fs:allow-read-file",
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [
+        {
+          "path": "**"
+        }
+      ]
+    }
   ]
 }
