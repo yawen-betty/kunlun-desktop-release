@@ -214,6 +214,7 @@ import PromptDialog from '@/components/promptDialog/index.vue'
 import {message} from "@/utiles/Message.ts";
 import ResumeAiDiagnosis from "@/views/resume/components/ResumeAiDiagnosis.vue";
 import {UserInfo} from "@/utiles/userInfo.ts";
+import {hideLoading, showLoading} from "@/utiles/loading.ts";
 
 const props = defineProps<{
     resumeId: string;
@@ -340,10 +341,11 @@ const handleResumeDeleted = () => {
 }
 
 const handleWriteStream = async (items: StreamItem[], speed?: number) => {
-    console.log(items, speed, 'speed')
+    showLoading()
     await previewRef.value?.streamWrite(items, speed);
     isShowToggleBtn.value = true
     await saveResume()
+    hideLoading()
 }
 
 /**
@@ -562,11 +564,12 @@ const handleSave = debounce(async () => {
     await saveResume(true, true)
 }, 300);
 
-const handleDownload = debounce(() => {
+const handleDownload = debounce(async () => {
     if (isEditing.value) {
         message.warning(Message, '当前处于编辑中,请保存后再操作!');
         return;
     }
+    await saveResume(true, true)
     showDownloadModal.value = true;
 }, 300);
 
