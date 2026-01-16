@@ -35,6 +35,8 @@ pub fn run() {
       }
 
       builder
+        .plugin(tauri_plugin_dialog::init()) // 必须添加这一行
+        .plugin(tauri_plugin_fs::init())     // 必须添加这一行
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
