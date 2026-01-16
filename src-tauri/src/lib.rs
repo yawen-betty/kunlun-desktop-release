@@ -47,6 +47,7 @@ pub fn run() {
             get_token,
             http_request,
             download_pdf,
+            download_file,
             image_to_base64,
             sse_request,
             start_mcp_server,

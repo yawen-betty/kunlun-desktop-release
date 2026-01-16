@@ -39,7 +39,7 @@ export async function downloadPdf(pdfUrl: string, defaultFileName = 'document.pd
  */
 export async function downloadImage(imageUrl: string, defaultFileName = 'image.jpg') {
   try {
-    const bytes = await invoke<number[]>('download_pdf', { url: imageUrl });
+    const bytes = await invoke<number[]>('download_file', { url: imageUrl });
     const blob = new Blob([new Uint8Array(bytes)], { type: 'image/jpeg' });
     
     const handle = await (window as any).showSaveFilePicker({
