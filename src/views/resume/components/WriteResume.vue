@@ -562,11 +562,12 @@ const handleSave = debounce(async () => {
     await saveResume(true, true)
 }, 300);
 
-const handleDownload = debounce(() => {
+const handleDownload = debounce(async () => {
     if (isEditing.value) {
         message.warning(Message, '当前处于编辑中,请保存后再操作!');
         return;
     }
+    await saveResume(true, true)
     showDownloadModal.value = true;
 }, 300);
 
