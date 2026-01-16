@@ -347,6 +347,10 @@ const handleDownload = () => {
             margin-right: vw(26);
             line-height: vh(40);
 
+            label {
+                font-size: vw(12);
+            }
+
             label:last-child {
                 margin-right: 0;
             }
@@ -381,6 +385,10 @@ const handleDownload = () => {
         align-items: center;
         justify-content: center;
         gap: vw(6);
+
+        svg {
+            flex-shrink: 0;
+        }
 
         span {
             font-family: sans-serif;
