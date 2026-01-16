@@ -1296,6 +1296,7 @@ const handlePhotoChange = async (e: Event) => {
             }
 
             emit('data-change', props.resumeData);
+            emit('save-resume', false)
             message.success(Message, '上传成功');
         } else {
             message.error(Message, '上传失败');
