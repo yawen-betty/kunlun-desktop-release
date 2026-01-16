@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 #[command]
-pub async fn download_pdf(url: String) -> Result<Vec<u8>, String> {
+pub async fn download_file(url: String) -> Result<Vec<u8>, String> {
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(true)
         .build()
@@ -19,6 +19,12 @@ pub async fn download_pdf(url: String) -> Result<Vec<u8>, String> {
         .map_err(|e| format!("读取文件失败: {}", e))?;
 
     Ok(bytes.to_vec())
+}
+
+// 保持向后兼容
+#[command]
+pub async fn download_pdf(url: String) -> Result<Vec<u8>, String> {
+    download_file(url).await
 }
 
 // 请求参数结构体
