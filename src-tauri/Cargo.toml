@@ -35,6 +35,8 @@ tokio = { version = "1", features = ["sync", "rt-multi-thread", "macros"] }
 dirs = "5"
 tokio-tungstenite = "0.21"
 url = "2.5"
+tauri-plugin-dialog = "2.6.0"
+tauri-plugin-fs = "2.4.5"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.
